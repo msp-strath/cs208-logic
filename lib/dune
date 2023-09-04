@@ -1,0 +1,3 @@
+(library
+ (name sat_widget_core)
+ (libraries msat.sat))
