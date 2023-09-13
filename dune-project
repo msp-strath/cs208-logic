@@ -1,6 +1,8 @@
 (lang dune 3.7)
+(using menhir 2.1)
 
-(name sat-widget)
+
+(name traintor)
 
 (generate_opam_files true)
 
@@ -16,10 +18,10 @@
 (documentation https://url/to/documentation)
 
 (package
- (name sat-widget)
+ (name traintor)
  (synopsis "A tool for exploring logical modelling.")
  (description "A tools for exploting logical modelling.")
- (depends ocaml dune msat)
+ (depends ocaml dune msat menhir)
  (tags
   (topics "to describe" your project)))
 

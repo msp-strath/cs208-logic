@@ -1,3 +1,8 @@
 (library
- (name sat_widget_core)
+ (name traintor)
  (libraries msat.sat))
+
+(menhir
+ (modules parser))
+
+(ocamllex lexer)

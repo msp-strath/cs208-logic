@@ -13,6 +13,7 @@ depends: [
   "ocaml"
   "dune" {>= "3.7"}
   "msat"
+  "menhir"
   "odoc" {with-doc}
 ]
 build: [
