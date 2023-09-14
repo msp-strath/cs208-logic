@@ -21,7 +21,7 @@
  (name traintor)
  (synopsis "A tool for exploring logical modelling.")
  (description "A tools for exploting logical modelling.")
- (depends ocaml dune msat menhir)
+ (depends ocaml dune msat menhir fmt)
  (tags
   (topics "to describe" your project)))
 

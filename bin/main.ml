@@ -16,15 +16,6 @@ let () =
      in
      prerr_endline msg;
      exit 1
-  | Ok environment ->
-     let result = Evaluator.eval_main environment in
-     match result with
-     | `True ->
-        Printf.printf "Always true"
-     | `False ->
-        Printf.printf "Always false"
-     | `Clauses clauses ->
-        List.iter
-          (fun clause ->
-            print_endline (String.concat " | " (List.map (function (true, a) -> a | (false, a) -> "-" ^ a) clause)))
-          clauses
+  | Ok commands ->
+     List.iter Evaluator.execute_command commands;
+     exit 0

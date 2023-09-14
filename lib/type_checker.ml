@@ -1,6 +1,6 @@
 open Ast
 open Result_syntax
-open Evaluator
+open Environment
 
 let combine_opt xs ys =
   match List.combine xs ys with
@@ -12,6 +12,10 @@ type kind =
   | Clause
   | Clauses
   | Domain of name
+  | Json
+  | JsonSequence
+  | Assignments
+  | Symbol
 
 let errorf location fmt =
   Printf.ksprintf (fun msg -> Error (location, msg)) fmt
@@ -21,15 +25,15 @@ let is_domain_type location = function
   | _ ->
      errorf location "Expecting a value of domain type, not a logical formula."
 
-let check_domain global_env domain =
-  if NameMap.mem domain.detail global_env.domains then
+let check_domain env domain =
+  if NameMap.mem domain.detail env.domains then
     Ok ()
   else
     errorf domain.location
       "Named domain '%s' has not (yet) been defined."
       domain.detail
 
-let check_term global_env ctxt kind term =
+let check_term env ctxt kind term =
   let rec check_application ctxt location arg_domains terms =
     let num_expected = List.length arg_domains in
     let num_given = List.length terms in
@@ -51,7 +55,7 @@ let check_term global_env ctxt kind term =
         | domain ->
            Ok (Domain domain)
         | exception Not_found ->
-           (match NameMap.find name.detail global_env.defns with
+           (match NameMap.find name.detail env.defns with
             | exception Not_found ->
                errorf name.location
                  "'%s' not defined"
@@ -65,25 +69,23 @@ let check_term global_env ctxt kind term =
     | IntConstant _i ->
        failwith "int constants"
     | Constructor cnm ->
-       (match NameMap.find cnm global_env.constructor_domains with
+       (match NameMap.find cnm env.constructor_domains with
         | exception Not_found ->
-           errorf term.location
-             "Constructor '%s' not defined."
-             cnm
+           errorf term.location "Value constructor '%s' has not been declared." cnm
         | domain_name, _ ->
            Ok (Domain domain_name))
     | Eq (term1, term2) | Ne (term1, term2) ->
-       (let* kind1 = kind_of ~ctxt term1 in
-        let* kind2 = kind_of ~ctxt term2 in
-        let* dom1 = is_domain_type term1.location kind1 in
-        let* dom2 = is_domain_type term2.location kind2 in
-        if dom1 = dom2 then
-          Ok Literal
-        else
-          errorf term.location
-            "Cannot compare values of incompatible domain types '%s' and '%s'"
-            dom1
-            dom2)
+       let* kind1 = kind_of ~ctxt term1 in
+       let* kind2 = kind_of ~ctxt term2 in
+       let* dom1 = is_domain_type term1.location kind1 in
+       let* dom2 = is_domain_type term2.location kind2 in
+       if dom1 = dom2 then
+         Ok Literal
+       else
+         errorf term.location
+           "Cannot compare values of incompatible domain types '%s' and '%s'"
+           dom1
+           dom2
     | Neg term ->
        let* () = check ~ctxt (Literal, term) in
        Ok Literal
@@ -98,15 +100,47 @@ let check_term global_env ctxt kind term =
        let* () = traverse_ (fun tm -> check ~ctxt (Clauses, tm)) terms in
        Ok Clauses
     | BigOr (var_name, domain, term) ->
-       let* () = check_domain global_env domain in
+       let* () = check_domain env domain in
        let ctxt = NameMap.add var_name domain.detail ctxt in
        let* () = check ~ctxt (Clause, term) in
        Ok Clause
     | BigAnd (var_name, domain, term) ->
-       let* () = check_domain global_env domain in
+       let* () = check_domain env domain in
        let ctxt = NameMap.add var_name domain.detail ctxt in
        let* () = check ~ctxt (Clauses, term) in
        Ok Clauses
+
+    | JSONObject term ->
+       let* () = check ~ctxt (Assignments, term) in
+       Ok Json
+    | JSONArray term ->
+       let* () = check ~ctxt (JsonSequence, term) in
+       Ok Json
+    | For (var_name, domain, body) ->
+       let* () = check_domain env domain in
+       let ctxt = NameMap.add var_name domain.detail ctxt in
+       check_is_sequence ~ctxt body
+    | If (term1, term2) ->
+       let* () = check ~ctxt (Clauses, term1) in
+       check_is_sequence ~ctxt term2
+    | Sequence terms ->
+       let* () = traverse_ (fun tm -> check ~ctxt (Assignments, tm)) terms in
+       Ok Assignments (* FIXME: or json sequence, but must all be the same *)
+    | Assign (t1, t2) ->
+       let* () = check ~ctxt (Symbol, t1) in
+       let* () = check ~ctxt (Json, t2) in
+       Ok Assignments
+    | StrConstant _ ->
+       Ok Symbol
+
+  and check_is_sequence ~ctxt term =
+    let* computed_kind = kind_of ~ctxt term in
+    match computed_kind with
+    | Clauses | Clause | Literal | Symbol | Domain _ | Json | JsonSequence ->
+       Ok JsonSequence
+    | Assignments ->
+       Ok Assignments
+
   and check ~ctxt (required_kind, term) =
     let* computed_kind = kind_of ~ctxt term in
     match required_kind with
@@ -116,7 +150,11 @@ let check_term global_env ctxt kind term =
         | Domain dom ->
            errorf term.location
              "Required logical clause(s), but this code represents a \
-              value of domain type '%s'." dom)
+              value of domain type '%s'." dom
+        | Symbol | Json | JsonSequence | Assignments ->
+           errorf term.location
+             "Required logical clauses(s), but this code represents \
+              some JSON for output.")
     | Clause ->
        (match computed_kind with
         | Literal | Clause -> Ok ()
@@ -127,7 +165,11 @@ let check_term global_env ctxt kind term =
         | Domain dom ->
            errorf term.location
              "Required a logical clause, but this code represents a \
-              value of domain type '%s'." dom)
+              value of domain type '%s'." dom
+        | Symbol | Json | JsonSequence | Assignments ->
+           errorf term.location
+             "Required logical clause, but this code represents \
+              some JSON for output.")
     | Literal ->
        (match computed_kind with
         | Literal -> Ok ()
@@ -142,7 +184,11 @@ let check_term global_env ctxt kind term =
         | Domain dom ->
            errorf term.location
              "Required a logical literal, but this code represents a \
-              value of domain type '%s'." dom)
+              value of domain type '%s'." dom
+        | Symbol | Json | JsonSequence | Assignments ->
+           errorf term.location
+             "Required logical clauses(s), but this code represents \
+              some JSON for output.")
     | Domain required_dom ->
        (match computed_kind with
         | Literal | Clause | Clauses ->
@@ -157,7 +203,40 @@ let check_term global_env ctxt kind term =
                "Required a value of domain type '%s', but this code \
                 represents a value of domain type '%s'."
                required_dom
-               dom)
+               dom
+        | Symbol | Json | JsonSequence | Assignments ->
+           errorf term.location
+             "Required a value of domain type '%s', but this code represents \
+              some JSON for output." required_dom)
+    | Symbol ->
+       (match computed_kind with
+        | Domain _ | Symbol -> Ok ()
+        | _ ->
+           errorf term.location "Required a symbol, or code representing a symbol.")
+    | Json ->
+       (match computed_kind with
+        | Symbol | Domain _ | Literal | Clause | Clauses | Json ->
+           Ok ()
+        | JsonSequence ->
+           errorf term.location
+             "Required JSON, but this code represents a sequence of JSON values."
+        | Assignments ->
+           errorf term.location
+             "Required JSON, but this code represents a sequence of JSON fields.")
+    | JsonSequence ->
+       (match computed_kind with
+        | Symbol | Domain _ | Literal | Clause | Clauses | Json | JsonSequence ->
+           Ok ()
+        | Assignments ->
+           errorf term.location
+             "Required JSON value(s), but this code represents a sequence of JSON fields.")
+    | Assignments ->
+       (match computed_kind with
+        | Symbol | Domain _ | Literal | Clause | Clauses | Assignments ->
+           Ok ()
+        | Json | JsonSequence ->
+           errorf term.location
+             "Required JSON, but this code represents a sequence of JSON fields.")
   in
   check ~ctxt (kind, term)
 
@@ -200,49 +279,66 @@ let check_domain_not_declared global_env domain =
      errorf domain.location "Domain '%s' already defined." domain.detail (* FIXME: where? *)
   | false -> Ok ()
 
-let check_declaration global_env = function
+let check_declaration (env, commands) = function
   | Definition (name, arg_specs, body) ->
-     let* () = check_not_declared global_env name in
-     let* () = check_arg_specs global_env arg_specs in
+     let* () = check_not_declared env name in
+     let* () = check_arg_specs env arg_specs in
      let ctxt = List.fold_right
                   (fun (name, domain) -> NameMap.add name.detail domain.detail)
                   arg_specs
                   NameMap.empty
      in
-     let* () = check_term global_env ctxt Clauses body in
+     let* () = check_term env ctxt Clauses body in
      let defn =
        Defined { args = List.map (fun (n,d) -> n.detail, d.detail) arg_specs; body }
      in
-     Ok { global_env with defns = NameMap.add name.detail defn global_env.defns }
+     Ok ({ env with defns = NameMap.add name.detail defn env.defns }, commands)
 
   | Atom_decl (name, arg_specs) ->
-     let* () = check_not_declared global_env name in
-     let* () = check_arg_specs global_env arg_specs in
+     let* () = check_not_declared env name in
+     let* () = check_arg_specs env arg_specs in
      let defn = Atom { args = List.map (fun (n,d) -> n.detail, d.detail) arg_specs } in
-     Ok { global_env with defns = NameMap.add name.detail defn global_env.defns }
+     Ok ({ env with defns = NameMap.add name.detail defn env.defns }, commands)
 
   | Domain_decl (name, constructors) ->
-     let* () = check_domain_not_declared global_env name in
+     let* () = check_domain_not_declared env name in
      let* constructor_domains =
        fold_left_err
          (fun constructor_domains constructor ->
            match NameMap.find constructor.detail constructor_domains with
            | exception Not_found ->
-              Ok (NameMap.add constructor.detail (name.detail, constructor.location) constructor_domains)
+              Ok (NameMap.add
+                    constructor.detail
+                    (name.detail, constructor.location)
+                    constructor_domains)
            | existing_domain, previous_location ->
               errorf constructor.location
                 "Constructor '%s' previously defined in domain '%s' at %a"
                 constructor.detail
                 existing_domain
                 Location.to_string previous_location)
-         global_env.constructor_domains
+         env.constructor_domains
          constructors
      in
-     let domains = NameMap.add name.detail { constructors = List.map (fun c -> c.detail) constructors } global_env.domains in
-     Ok { global_env with constructor_domains; domains }
+     let domains = NameMap.add name.detail { constructors = List.map (fun c -> c.detail) constructors } env.domains in
+     Ok ({ env with constructor_domains; domains }, commands)
+
+  | Dump term ->
+     let* () = check_term env NameMap.empty Clauses term in
+     (* Add this to a list of commands to execute? *)
+     Ok (env, Dump_Clauses (env, term) :: commands)
+
+  | IfSat (term, json_term) ->
+     let* () = check_term env NameMap.empty Clauses term in
+     let* () = check_term env NameMap.empty Json json_term in
+     (* Add this to a list of commands to execute? *)
+     Ok (env, IfSat (env, term, json_term) :: commands)
 
 let check_declarations decls =
-  fold_left_err
-    check_declaration
-    initial_global_env
-    decls
+  let* _, commands_rev =
+    fold_left_err
+      check_declaration
+      (initial_global_env, [])
+      decls
+  in
+  Ok (List.rev commands_rev)

@@ -21,12 +21,25 @@ rule token = parse
 | "definition" { DEFINITION }
 | "atom"       { ATOM }
 | "domain"     { DOMAIN }
+| "dump"       { KW_DUMP }
+| "ifsat"      { KW_IFSAT }
 | ','          { COMMA }
 | ':'          { COLON }
 | '{'          { LBRACE }
 | '}'          { RBRACE }
 | '('          { LPAREN }
 | ')'          { RPAREN }
+| '['          { LBRACK }
+| ']'          { RBRACK }
+| "for"        { KW_FOR }
+| "if"         { KW_IF }
+| '"'          { let b = Buffer.create 128 in string_literal b lexbuf }
 | ident        { IDENT (Lexing.lexeme lexbuf) }
 | constructorname { CONSTRUCTOR_NAME (Lexing.lexeme lexbuf) }
 | eof          { EOF }
+
+and string_literal b = parse
+| '"'          { STRING_LITERAL (Buffer.contents b) }
+| '\\' '"'     { Buffer.add_char b '"'; string_literal b lexbuf }
+| eof          { EOF } (* FIXME: some other error *)
+| [^'\\' '"']+ { Buffer.add_string b (Lexing.lexeme lexbuf); string_literal b lexbuf }

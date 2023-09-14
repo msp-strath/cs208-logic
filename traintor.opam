@@ -14,6 +14,7 @@ depends: [
   "dune" {>= "3.7"}
   "msat"
   "menhir"
+  "fmt"
   "odoc" {with-doc}
 ]
 build: [

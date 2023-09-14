@@ -1,6 +1,6 @@
 (library
  (name traintor)
- (libraries msat.sat))
+ (libraries msat.sat fmt))
 
 (menhir
  (modules parser))
