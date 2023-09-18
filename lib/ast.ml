@@ -73,6 +73,12 @@ and pp_connected_term fmt term =
           ~pp_sep:(fun fmt () -> Format.fprintf fmt " &@ ")
           pp_quant_term)
        terms
+  | Sequence terms ->
+     Format.fprintf fmt "@[<hv>%a@]"
+       (Format.pp_print_list
+          ~pp_sep:(fun fmt () -> Format.fprintf fmt ",@ ")
+          pp_quant_term)
+       terms
   | _ ->
      pp_quant_term fmt term
 and pp_quant_term fmt term =
@@ -87,6 +93,15 @@ and pp_quant_term fmt term =
        nm
        pp_name domain
        pp_quant_term body
+  | For (nm, domain, body) ->
+     Format.fprintf fmt "for(%s : %a) %a"
+       nm
+       pp_name domain
+       pp_quant_term body
+  | If (term1, term2) ->
+     Format.fprintf fmt "if(%a) %a"
+       pp_term term1
+       pp_quant_term term2
   | _ ->
      pp_eq_term fmt term
 and pp_eq_term fmt term =
@@ -97,6 +112,10 @@ and pp_eq_term fmt term =
        pp_base_term t2
   | Ne (t1, t2) ->
      Format.fprintf fmt "@[<hv2>%a@ != %a@]"
+       pp_base_term t1
+       pp_base_term t2
+  | Assign (t1, t2) ->
+     Format.fprintf fmt "@[<hv2>%a@ : %a@]"
        pp_base_term t1
        pp_base_term t2
   | _ ->
@@ -119,6 +138,12 @@ and pp_base_term fmt term =
      Format.fprintf fmt "~%a" pp_base_term t
   | StrConstant s ->
      Format.fprintf fmt "%S" s
+  | JSONObject t ->
+     Format.fprintf fmt "{ @[<hv2>%a }@]"
+       pp_term t
+  | JSONArray t ->
+     Format.fprintf fmt "[ @[<hv2>%a }@]"
+       pp_term t
   | _ -> (* FIXME: the JSON constructors *)
      Format.fprintf fmt "(%a)" pp_term term
 
