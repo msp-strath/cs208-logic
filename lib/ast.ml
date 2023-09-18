@@ -52,6 +52,9 @@ and term = term_detail with_location
 let pp_name fmt name =
   Format.fprintf fmt "%s" name.detail
 
+let pp_comma fmt () =
+  Format.fprintf fmt ",@ "
+
 let rec pp_term fmt term = match term.detail with
   | Implies (t1, t2) ->
      Format.fprintf fmt "%a ==> %a"
@@ -127,8 +130,7 @@ and pp_base_term fmt term =
   | Apply (name, args) ->
      Format.fprintf fmt "%a(@[<hov>%a@])"
        pp_name name
-       (Format.pp_print_list ~pp_sep:(fun fmt () -> Format.fprintf fmt ",@ ")
-          pp_term)
+       (Format.pp_print_list ~pp_sep:pp_comma pp_term)
        args
   | IntConstant i ->
      Format.fprintf fmt "%d" i
@@ -147,11 +149,53 @@ and pp_base_term fmt term =
   | _ -> (* FIXME: the JSON constructors *)
      Format.fprintf fmt "(%a)" pp_term term
 
+type arg_spec =
+  (name with_location * name with_location) list
 
 (* Declarations that can appear at the top-level in a file *)
 type declaration =
-  | Definition  of name with_location * (name with_location * name with_location) list * term
+  | Definition  of name with_location * arg_spec * term
   | Domain_decl of name with_location * constructor_name with_location list
-  | Atom_decl of name with_location * (name with_location * name with_location) list
+  | Atom_decl of name with_location * arg_spec
   | Dump of term
   | IfSat of term * term
+
+let pp_arg fmt (nm1, nm2) =
+  Format.fprintf fmt "%a : %a"
+    pp_name nm1
+    pp_name nm2
+
+let pp_arg_spec =
+  Format.pp_print_list
+    ~pp_sep:pp_comma
+    pp_arg
+
+let pp_declaration fmt = function
+  | Definition (name, [], body) ->
+     Format.fprintf fmt
+       "@[<v0>@[<v2>definition %a {@ %a@]@,}@]@,"
+       pp_name name
+       pp_term body
+  | Definition (name, arg_spec, body) ->
+     Format.fprintf fmt
+       "@[<v0>@[<v2>definition %a(@[%a@]) {@ %a@]@,}@]@,"
+       pp_name name
+       pp_arg_spec arg_spec
+       pp_term body
+  | Domain_decl (name, constructors) ->
+     Format.fprintf fmt "@[<hv0>domain %a @[<hv2>{@ %a@]@ }@]@,"
+       pp_name name
+       (Format.pp_print_list ~pp_sep:pp_comma pp_name) constructors
+  | Atom_decl (name, []) ->
+     Format.fprintf fmt "atom %a@,"
+       pp_name name
+  | Atom_decl (name, arg_spec) ->
+     Format.fprintf fmt "atom %a(%a)@,"
+       pp_name name
+       pp_arg_spec arg_spec
+  | Dump t ->
+     Format.fprintf fmt "@[<hv2>dump %a@]@," pp_base_term t
+  | IfSat (t1, t2) ->
+     Format.fprintf fmt "@[<v2>ifsat %a@ %a@]@,"
+       pp_base_term t1
+       pp_base_term t2
