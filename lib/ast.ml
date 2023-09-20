@@ -30,6 +30,8 @@ type term_detail =
   | StrConstant of string
   | Constructor of string
   (* built-in atoms *)
+  | True
+  | False
   | Eq of term * term
   | Ne of term * term
   (* Logical operations on literals, clauses, and conjunctions of clauses *)
@@ -87,22 +89,22 @@ and pp_connected_term fmt term =
 and pp_quant_term fmt term =
   match term.detail with
   | BigAnd (nm, domain, body) ->
-     Format.fprintf fmt "forall(%s : %a) %a"
+     Format.fprintf fmt "@[<hov2>forall(%s : %a)@ %a@]"
        nm
        pp_name domain
        pp_quant_term body
   | BigOr (nm, domain, body) ->
-     Format.fprintf fmt "some(%s : %a) %a"
+     Format.fprintf fmt "@[<hov2>some(%s : %a)@ %a@]"
        nm
        pp_name domain
        pp_quant_term body
   | For (nm, domain, body) ->
-     Format.fprintf fmt "for(%s : %a) %a"
+     Format.fprintf fmt "@[<hov2>for(%s : %a)@ %a@]"
        nm
        pp_name domain
        pp_quant_term body
   | If (term1, term2) ->
-     Format.fprintf fmt "if(%a) %a"
+     Format.fprintf fmt "@[<hov2>if(%a)@ %a@]"
        pp_term term1
        pp_quant_term term2
   | _ ->
@@ -144,9 +146,13 @@ and pp_base_term fmt term =
      Format.fprintf fmt "{ @[<hv2>%a }@]"
        pp_term t
   | JSONArray t ->
-     Format.fprintf fmt "[ @[<hv2>%a }@]"
+     Format.fprintf fmt "[ @[<hv2>%a ]@]"
        pp_term t
-  | _ -> (* FIXME: the JSON constructors *)
+  | True ->
+     Format.fprintf fmt "true"
+  | False ->
+     Format.fprintf fmt "false"
+  | _ ->
      Format.fprintf fmt "(%a)" pp_term term
 
 type arg_spec =
@@ -159,6 +165,8 @@ type declaration =
   | Atom_decl of name with_location * arg_spec
   | Dump of term
   | IfSat of term * term
+  | AllSat of term * term
+  | Print of term
 
 let pp_arg fmt (nm1, nm2) =
   Format.fprintf fmt "%a : %a"
@@ -190,12 +198,18 @@ let pp_declaration fmt = function
      Format.fprintf fmt "atom %a@,"
        pp_name name
   | Atom_decl (name, arg_spec) ->
-     Format.fprintf fmt "atom %a(%a)@,"
+     Format.fprintf fmt "atom %a(@[<hv>%a@])@,"
        pp_name name
        pp_arg_spec arg_spec
   | Dump t ->
-     Format.fprintf fmt "@[<hv2>dump %a@]@," pp_base_term t
+     Format.fprintf fmt "@[<hv2>dump(%a)@]@," pp_term t
   | IfSat (t1, t2) ->
-     Format.fprintf fmt "@[<v2>ifsat %a@ %a@]@,"
-       pp_base_term t1
+     Format.fprintf fmt "@[<v2>ifsat(%a)@ %a@]@,"
+       pp_term t1
        pp_base_term t2
+  | AllSat (t1, t2) ->
+     Format.fprintf fmt "@[<v2>allsat(%a)@ %a@]@,"
+       pp_term t1
+       pp_base_term t2
+  | Print t ->
+     Format.fprintf fmt "@[<hv2>print(%a)@]@," pp_term t

@@ -1,5 +1,7 @@
 {
   open Parser
+
+  type token = Parser.token
 }
 
 let white = [' ' '\t']+
@@ -23,6 +25,10 @@ rule token = parse
 | "domain"     { DOMAIN }
 | "dump"       { KW_DUMP }
 | "ifsat"      { KW_IFSAT }
+| "allsat"     { KW_ALLSAT }
+| "print"      { KW_PRINT }
+| "true"       { TRUE }
+| "false"      { FALSE }
 | ','          { COMMA }
 | ':'          { COLON }
 | '{'          { LBRACE }
@@ -37,6 +43,7 @@ rule token = parse
 | ident        { IDENT (Lexing.lexeme lexbuf) }
 | constructorname { CONSTRUCTOR_NAME (Lexing.lexeme lexbuf) }
 | eof          { EOF }
+| _            { UNKNOWN }
 
 and string_literal b = parse
 | '"'          { STRING_LITERAL (Buffer.contents b) }

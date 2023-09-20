@@ -1,0 +1,840 @@
+structure: TRUE
+##
+## Ends in an error in state: 0.
+##
+## structure' -> . structure [ # ]
+##
+## The known suffix of the stack is as follows:
+##
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+structure: DOMAIN TRUE
+##
+## Ends in an error in state: 5.
+##
+## item -> DOMAIN . identifier LBRACE loption(separated_nonempty_list(COMMA,constructor)) RBRACE [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## DOMAIN
+##
+
+Expecting a name after $0.
+
+structure: DOMAIN IDENT TRUE
+##
+## Ends in an error in state: 7.
+##
+## item -> DOMAIN identifier . LBRACE loption(separated_nonempty_list(COMMA,constructor)) RBRACE [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## DOMAIN identifier
+##
+
+Expecting a '{' after $1-0.
+
+structure: DOMAIN IDENT LBRACE TRUE
+##
+## Ends in an error in state: 8.
+##
+## item -> DOMAIN identifier LBRACE . loption(separated_nonempty_list(COMMA,constructor)) RBRACE [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## DOMAIN identifier LBRACE
+##
+
+Expecting a constructor name (an identifier starting with a capital letter) after $2-0.
+
+structure: DOMAIN IDENT LBRACE CONSTRUCTOR_NAME TRUE
+##
+## Ends in an error in state: 13.
+##
+## separated_nonempty_list(COMMA,constructor) -> constructor . [ RBRACE ]
+## separated_nonempty_list(COMMA,constructor) -> constructor . COMMA separated_nonempty_list(COMMA,constructor) [ RBRACE ]
+##
+## The known suffix of the stack is as follows:
+## constructor
+##
+
+Expecting a ',' after the constructor name $0.
+
+structure: DOMAIN IDENT LBRACE CONSTRUCTOR_NAME COMMA TRUE
+##
+## Ends in an error in state: 14.
+##
+## separated_nonempty_list(COMMA,constructor) -> constructor COMMA . separated_nonempty_list(COMMA,constructor) [ RBRACE ]
+##
+## The known suffix of the stack is as follows:
+## constructor COMMA
+##
+
+Expecting another constructor name (an identifier starting with a capital letter) after $2-0.
+
+structure: DEFINITION TRUE
+##
+## Ends in an error in state: 16.
+##
+## item -> DEFINITION . identifier arg_specs LBRACE term RBRACE [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## DEFINITION
+##
+
+Expecting an identifier after $0.
+
+structure: DEFINITION IDENT TRUE
+##
+## Ends in an error in state: 17.
+##
+## item -> DEFINITION identifier . arg_specs LBRACE term RBRACE [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## DEFINITION identifier
+##
+
+Expecting either an argument list starting with '(', or a definition body starting with '{', after $1-0.
+
+structure: ATOM IDENT LPAREN TRUE
+##
+## Ends in an error in state: 18.
+##
+## arg_specs -> LPAREN . loption(separated_nonempty_list(COMMA,arg_spec)) RPAREN [ LBRACE KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN
+##
+
+Expecting a variable name or ')' after $0 in a parameter list for a definition or atom declaration.
+
+structure: ATOM IDENT LPAREN IDENT TRUE
+##
+## Ends in an error in state: 22.
+##
+## arg_spec -> identifier . COLON identifier [ RPAREN COMMA ]
+##
+## The known suffix of the stack is as follows:
+## identifier
+##
+
+Expecting a ':' between the variable name and its domain in a parameter list.
+
+structure: ATOM IDENT LPAREN IDENT COLON TRUE
+##
+## Ends in an error in state: 23.
+##
+## arg_spec -> identifier COLON . identifier [ RPAREN COMMA ]
+##
+## The known suffix of the stack is as follows:
+## identifier COLON
+##
+
+Expecting a domain name after $1-0 in a parameter list.
+
+structure: ATOM IDENT LPAREN IDENT COLON IDENT TRUE
+##
+## Ends in an error in state: 25.
+##
+## separated_nonempty_list(COMMA,arg_spec) -> arg_spec . [ RPAREN ]
+## separated_nonempty_list(COMMA,arg_spec) -> arg_spec . COMMA separated_nonempty_list(COMMA,arg_spec) [ RPAREN ]
+##
+## The known suffix of the stack is as follows:
+## arg_spec
+##
+
+Expecting either a ',' and more parameters or a ')' in parameter list.
+
+structure: ATOM IDENT LPAREN IDENT COLON IDENT COMMA TRUE
+##
+## Ends in an error in state: 26.
+##
+## separated_nonempty_list(COMMA,arg_spec) -> arg_spec COMMA . separated_nonempty_list(COMMA,arg_spec) [ RPAREN ]
+##
+## The known suffix of the stack is as follows:
+## arg_spec COMMA
+##
+
+Expecting a variable name after a ',' in a parameter list.
+
+structure: DEFINITION IDENT LPAREN RPAREN TRUE
+##
+## Ends in an error in state: 28.
+##
+## item -> DEFINITION identifier arg_specs . LBRACE term RBRACE [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## DEFINITION identifier arg_specs
+##
+
+Expecting a '{' here to start the definition of $1.
+
+structure: DEFINITION IDENT LBRACE RPAREN
+##
+## Ends in an error in state: 29.
+##
+## item -> DEFINITION identifier arg_specs LBRACE . term RBRACE [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## DEFINITION identifier arg_specs LBRACE
+##
+
+Expecting a term in the body of the definition of $1.
+
+structure: KW_DUMP LPAREN OP_NOT SOME
+##
+## Ends in an error in state: 33.
+##
+## base_term -> OP_NOT . base_term [ RPAREN RBRACK RBRACE OP_OR OP_NE OP_IMPLIES OP_EQ OP_AND KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION COMMA COLON ATOM ]
+##
+## The known suffix of the stack is as follows:
+## OP_NOT
+##
+
+Expecting a definition reference '<name>(..)', a constructor, a constant, or something in brackets after $0.
+
+structure: KW_DUMP LPAREN LPAREN RPAREN
+##
+## Ends in an error in state: 34.
+##
+## base_term -> LPAREN . term RPAREN [ RPAREN RBRACK RBRACE OP_OR OP_NE OP_IMPLIES OP_EQ OP_AND KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION COMMA COLON ATOM ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN
+##
+
+Expecting a term after $0.
+
+structure: KW_DUMP LPAREN LBRACK RPAREN
+##
+## Ends in an error in state: 35.
+##
+## base_term -> LBRACK . term RBRACK [ RPAREN RBRACK RBRACE OP_OR OP_NE OP_IMPLIES OP_EQ OP_AND KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION COMMA COLON ATOM ]
+##
+## The known suffix of the stack is as follows:
+## LBRACK
+##
+
+Expecting a term after $0.
+
+structure: KW_DUMP LPAREN LBRACE RPAREN
+##
+## Ends in an error in state: 36.
+##
+## base_term -> LBRACE . term RBRACE [ RPAREN RBRACK RBRACE OP_OR OP_NE OP_IMPLIES OP_EQ OP_AND KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION COMMA COLON ATOM ]
+##
+## The known suffix of the stack is as follows:
+## LBRACE
+##
+
+Expecting a term after $0.
+
+structure: KW_DUMP LPAREN KW_IF TRUE
+##
+## Ends in an error in state: 37.
+##
+## quant_term -> KW_IF . LPAREN term RPAREN quant_term [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## KW_IF
+##
+
+Expecting '(' after $0.
+
+structure: KW_DUMP LPAREN KW_IF LPAREN RPAREN
+##
+## Ends in an error in state: 38.
+##
+## quant_term -> KW_IF LPAREN . term RPAREN quant_term [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## KW_IF LPAREN
+##
+
+Expecting a term after $1-0.
+
+structure: KW_DUMP LPAREN KW_IF LPAREN IDENT RBRACK
+##
+## Ends in an error in state: 43.
+##
+## quant_term -> KW_IF LPAREN term . RPAREN quant_term [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## KW_IF LPAREN term
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 52, spurious reduction of production base_term -> identifier
+## In state 66, spurious reduction of production eq_term -> base_term
+## In state 60, spurious reduction of production connected_term -> eq_term
+## In state 82, spurious reduction of production quant_term -> connected_term
+## In state 84, spurious reduction of production term -> quant_term
+##
+
+Expecting a ')' to close the conditional term part of $0.
+
+structure: KW_DUMP LPAREN KW_IF LPAREN IDENT RPAREN RPAREN
+##
+## Ends in an error in state: 44.
+##
+## quant_term -> KW_IF LPAREN term RPAREN . quant_term [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## KW_IF LPAREN term RPAREN
+##
+
+Expecting a term after the ')' of $2-0.
+
+structure: KW_DUMP LPAREN FORALL TRUE
+##
+## Ends in an error in state: 45.
+##
+## quant_term -> quantifier . LPAREN IDENT COLON identifier RPAREN quant_term [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## quantifier
+##
+
+Expecting a '(' after $0.
+
+structure: KW_DUMP LPAREN FORALL LPAREN TRUE
+##
+## Ends in an error in state: 46.
+##
+## quant_term -> quantifier LPAREN . IDENT COLON identifier RPAREN quant_term [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## quantifier LPAREN
+##
+
+Expecting a variable name after $1-0.
+
+structure: KW_DUMP LPAREN FORALL LPAREN IDENT TRUE
+##
+## Ends in an error in state: 47.
+##
+## quant_term -> quantifier LPAREN IDENT . COLON identifier RPAREN quant_term [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## quantifier LPAREN IDENT
+##
+
+Expecting a ':' after $2-0.
+
+structure: KW_DUMP LPAREN FORALL LPAREN IDENT COLON TRUE
+##
+## Ends in an error in state: 48.
+##
+## quant_term -> quantifier LPAREN IDENT COLON . identifier RPAREN quant_term [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## quantifier LPAREN IDENT COLON
+##
+
+Expecting a domain name after $3-0.
+
+structure: KW_DUMP LPAREN FORALL LPAREN IDENT COLON IDENT TRUE
+##
+## Ends in an error in state: 49.
+##
+## quant_term -> quantifier LPAREN IDENT COLON identifier . RPAREN quant_term [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## quantifier LPAREN IDENT COLON identifier
+##
+
+Expecting a ')' after $4-0.
+
+structure: KW_DUMP LPAREN FORALL LPAREN IDENT COLON IDENT RPAREN RPAREN
+##
+## Ends in an error in state: 50.
+##
+## quant_term -> quantifier LPAREN IDENT COLON identifier RPAREN . quant_term [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## quantifier LPAREN IDENT COLON identifier RPAREN
+##
+
+Expecting an expression for the body of this quantifier $5-0.
+
+structure: KW_DUMP LPAREN IDENT TRUE
+##
+## Ends in an error in state: 52.
+##
+## base_term -> identifier . [ RPAREN RBRACK RBRACE OP_OR OP_NE OP_IMPLIES OP_EQ OP_AND KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION COMMA COLON ATOM ]
+## base_term -> identifier . LPAREN loption(separated_nonempty_list(COMMA,base_term)) RPAREN [ RPAREN RBRACK RBRACE OP_OR OP_NE OP_IMPLIES OP_EQ OP_AND KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION COMMA COLON ATOM ]
+##
+## The known suffix of the stack is as follows:
+## identifier
+##
+
+Unexpected token after $0. Maybe a missing connective or comma?
+
+structure: KW_DUMP LPAREN IDENT LPAREN SOME
+##
+## Ends in an error in state: 53.
+##
+## base_term -> identifier LPAREN . loption(separated_nonempty_list(COMMA,base_term)) RPAREN [ RPAREN RBRACK RBRACE OP_OR OP_NE OP_IMPLIES OP_EQ OP_AND KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION COMMA COLON ATOM ]
+##
+## The known suffix of the stack is as follows:
+## identifier LPAREN
+##
+
+Expecting a simple term in argument list after $1-0. To put a complex term here, use parentheses.
+
+structure: KW_DUMP LPAREN IDENT LPAREN IDENT RBRACK
+##
+## Ends in an error in state: 57.
+##
+## separated_nonempty_list(COMMA,base_term) -> base_term . [ RPAREN ]
+## separated_nonempty_list(COMMA,base_term) -> base_term . COMMA separated_nonempty_list(COMMA,base_term) [ RPAREN ]
+##
+## The known suffix of the stack is as follows:
+## base_term
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 52, spurious reduction of production base_term -> identifier
+##
+
+Expecting a ',' or ')' in this argument list.
+
+structure: KW_DUMP LPAREN IDENT LPAREN IDENT COMMA SOME
+##
+## Ends in an error in state: 58.
+##
+## separated_nonempty_list(COMMA,base_term) -> base_term COMMA . separated_nonempty_list(COMMA,base_term) [ RPAREN ]
+##
+## The known suffix of the stack is as follows:
+## base_term COMMA
+##
+
+Expecting some more arguments after $1.
+
+structure: KW_DUMP LPAREN IDENT COLON IDENT OP_NE
+##
+## Ends in an error in state: 60.
+##
+## connected_term -> eq_term . OP_AND separated_nonempty_list(OP_AND,eq_term) [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+## connected_term -> eq_term . OP_OR separated_nonempty_list(OP_OR,eq_term) [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+## connected_term -> eq_term . COMMA separated_nonempty_list(COMMA,eq_term) [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+## connected_term -> eq_term . [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## eq_term
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 52, spurious reduction of production base_term -> identifier
+## In state 71, spurious reduction of production eq_term -> base_term binop base_term
+##
+
+Expecting an operator or closing bracket here.
+
+structure: KW_DUMP LPAREN IDENT OP_OR SOME
+##
+## Ends in an error in state: 61.
+##
+## connected_term -> eq_term OP_OR . separated_nonempty_list(OP_OR,eq_term) [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## eq_term OP_OR
+##
+
+Expecting a simple term after $1. Use parentheses to place a complex term here.
+
+structure: KW_DUMP LPAREN IDENT OP_OR IDENT OP_AND
+##
+## Ends in an error in state: 63.
+##
+## separated_nonempty_list(OP_OR,eq_term) -> eq_term . [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+## separated_nonempty_list(OP_OR,eq_term) -> eq_term . OP_OR separated_nonempty_list(OP_OR,eq_term) [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## eq_term
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 52, spurious reduction of production base_term -> identifier
+## In state 66, spurious reduction of production eq_term -> base_term
+##
+
+Expecting an '|' or some kind of closing bracket here.
+
+structure: KW_DUMP LPAREN IDENT OP_OR IDENT OP_OR SOME
+##
+## Ends in an error in state: 64.
+##
+## separated_nonempty_list(OP_OR,eq_term) -> eq_term OP_OR . separated_nonempty_list(OP_OR,eq_term) [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## eq_term OP_OR
+##
+
+Expecting a simple term after $1. Use parentheses to place a complex term here.
+
+structure: KW_DUMP LPAREN IDENT KW_PRINT
+##
+## Ends in an error in state: 66.
+##
+## eq_term -> base_term . binop base_term [ RPAREN RBRACK RBRACE OP_OR OP_IMPLIES OP_AND COMMA ]
+## eq_term -> base_term . [ RPAREN RBRACK RBRACE OP_OR OP_IMPLIES OP_AND COMMA ]
+##
+## The known suffix of the stack is as follows:
+## base_term
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 52, spurious reduction of production base_term -> identifier
+##
+
+Expecting either a binary operator, a ',', or a closing bracket here.
+
+structure: KW_DUMP LPAREN IDENT COLON SOME
+##
+## Ends in an error in state: 70.
+##
+## eq_term -> base_term binop . base_term [ RPAREN RBRACK RBRACE OP_OR OP_IMPLIES OP_AND COMMA ]
+##
+## The known suffix of the stack is as follows:
+## base_term binop
+##
+
+Expecting a simple term after $1. Use parenthese to place a complex term here.
+
+structure: KW_DUMP LPAREN IDENT OP_AND SOME
+##
+## Ends in an error in state: 72.
+##
+## connected_term -> eq_term OP_AND . separated_nonempty_list(OP_AND,eq_term) [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## eq_term OP_AND
+##
+
+Expecting a simple term after $1. Use parentheses to place a complex term here.
+
+structure: KW_DUMP LPAREN IDENT OP_AND IDENT OP_OR
+##
+## Ends in an error in state: 74.
+##
+## separated_nonempty_list(OP_AND,eq_term) -> eq_term . [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+## separated_nonempty_list(OP_AND,eq_term) -> eq_term . OP_AND separated_nonempty_list(OP_AND,eq_term) [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## eq_term
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 52, spurious reduction of production base_term -> identifier
+## In state 66, spurious reduction of production eq_term -> base_term
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+structure: KW_DUMP LPAREN IDENT OP_AND IDENT OP_AND SOME
+##
+## Ends in an error in state: 75.
+##
+## separated_nonempty_list(OP_AND,eq_term) -> eq_term OP_AND . separated_nonempty_list(OP_AND,eq_term) [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## eq_term OP_AND
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+structure: KW_DUMP LPAREN IDENT COMMA SOME
+##
+## Ends in an error in state: 77.
+##
+## connected_term -> eq_term COMMA . separated_nonempty_list(COMMA,eq_term) [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## eq_term COMMA
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+structure: KW_DUMP LPAREN IDENT COMMA IDENT OP_OR
+##
+## Ends in an error in state: 79.
+##
+## separated_nonempty_list(COMMA,eq_term) -> eq_term . [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+## separated_nonempty_list(COMMA,eq_term) -> eq_term . COMMA separated_nonempty_list(COMMA,eq_term) [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## eq_term
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 52, spurious reduction of production base_term -> identifier
+## In state 66, spurious reduction of production eq_term -> base_term
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+structure: KW_DUMP LPAREN IDENT COMMA IDENT COMMA SOME
+##
+## Ends in an error in state: 80.
+##
+## separated_nonempty_list(COMMA,eq_term) -> eq_term COMMA . separated_nonempty_list(COMMA,eq_term) [ RPAREN RBRACK RBRACE OP_IMPLIES ]
+##
+## The known suffix of the stack is as follows:
+## eq_term COMMA
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+structure: KW_DUMP LPAREN IDENT OP_IMPLIES RPAREN
+##
+## Ends in an error in state: 85.
+##
+## term -> quant_term OP_IMPLIES . term [ RPAREN RBRACK RBRACE ]
+##
+## The known suffix of the stack is as follows:
+## quant_term OP_IMPLIES
+##
+
+Expecting a term after $1.
+
+structure: KW_DUMP LPAREN LBRACE IDENT RPAREN
+##
+## Ends in an error in state: 87.
+##
+## base_term -> LBRACE term . RBRACE [ RPAREN RBRACK RBRACE OP_OR OP_NE OP_IMPLIES OP_EQ OP_AND KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION COMMA COLON ATOM ]
+##
+## The known suffix of the stack is as follows:
+## LBRACE term
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 52, spurious reduction of production base_term -> identifier
+## In state 66, spurious reduction of production eq_term -> base_term
+## In state 60, spurious reduction of production connected_term -> eq_term
+## In state 82, spurious reduction of production quant_term -> connected_term
+## In state 84, spurious reduction of production term -> quant_term
+##
+
+Expecting a closing '}' after $1-0.
+
+structure: KW_DUMP LPAREN LBRACK IDENT RPAREN
+##
+## Ends in an error in state: 89.
+##
+## base_term -> LBRACK term . RBRACK [ RPAREN RBRACK RBRACE OP_OR OP_NE OP_IMPLIES OP_EQ OP_AND KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION COMMA COLON ATOM ]
+##
+## The known suffix of the stack is as follows:
+## LBRACK term
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 52, spurious reduction of production base_term -> identifier
+## In state 66, spurious reduction of production eq_term -> base_term
+## In state 60, spurious reduction of production connected_term -> eq_term
+## In state 82, spurious reduction of production quant_term -> connected_term
+## In state 84, spurious reduction of production term -> quant_term
+##
+
+Expecting a closing ']' after $1-0.
+
+structure: KW_DUMP LPAREN LPAREN IDENT RBRACK
+##
+## Ends in an error in state: 91.
+##
+## base_term -> LPAREN term . RPAREN [ RPAREN RBRACK RBRACE OP_OR OP_NE OP_IMPLIES OP_EQ OP_AND KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION COMMA COLON ATOM ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN term
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 52, spurious reduction of production base_term -> identifier
+## In state 66, spurious reduction of production eq_term -> base_term
+## In state 60, spurious reduction of production connected_term -> eq_term
+## In state 82, spurious reduction of production quant_term -> connected_term
+## In state 84, spurious reduction of production term -> quant_term
+##
+
+Expecting a closing ')' after $1-0.
+
+structure: DEFINITION IDENT LBRACE IDENT RPAREN
+##
+## Ends in an error in state: 94.
+##
+## item -> DEFINITION identifier arg_specs LBRACE term . RBRACE [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## DEFINITION identifier arg_specs LBRACE term
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 52, spurious reduction of production base_term -> identifier
+## In state 66, spurious reduction of production eq_term -> base_term
+## In state 60, spurious reduction of production connected_term -> eq_term
+## In state 82, spurious reduction of production quant_term -> connected_term
+## In state 84, spurious reduction of production term -> quant_term
+##
+
+Expecting a closing '}' here after the definition body $4.
+
+structure: ATOM TRUE
+##
+## Ends in an error in state: 96.
+##
+## item -> ATOM . identifier arg_specs [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## ATOM
+##
+
+Expecting an identifier after $0.
+
+structure: ATOM IDENT TRUE
+##
+## Ends in an error in state: 97.
+##
+## item -> ATOM identifier . arg_specs [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## ATOM identifier
+##
+
+Expecting either a parameter list or another declaration after $1-0.
+
+structure: KW_ALLSAT TRUE
+##
+## Ends in an error in state: 100.
+##
+## item -> solve_command . LPAREN term RPAREN base_term [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## solve_command
+##
+
+Expecting '(' after $0.
+
+structure: KW_ALLSAT LPAREN RPAREN
+##
+## Ends in an error in state: 101.
+##
+## item -> solve_command LPAREN . term RPAREN base_term [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## solve_command LPAREN
+##
+
+Expecting a term representing clauses to be solved after $1-0.
+
+structure: KW_ALLSAT LPAREN IDENT RBRACK
+##
+## Ends in an error in state: 102.
+##
+## item -> solve_command LPAREN term . RPAREN base_term [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## solve_command LPAREN term
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 52, spurious reduction of production base_term -> identifier
+## In state 66, spurious reduction of production eq_term -> base_term
+## In state 60, spurious reduction of production connected_term -> eq_term
+## In state 82, spurious reduction of production quant_term -> connected_term
+## In state 84, spurious reduction of production term -> quant_term
+##
+
+Expecting a ')' after $2-0.
+
+structure: KW_ALLSAT LPAREN IDENT RPAREN SOME
+##
+## Ends in an error in state: 103.
+##
+## item -> solve_command LPAREN term RPAREN . base_term [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## solve_command LPAREN term RPAREN
+##
+
+Expecting a simple term for the output specification. Use parentheses to place a complex term here.
+
+structure: KW_DUMP TRUE
+##
+## Ends in an error in state: 105.
+##
+## item -> print_command . LPAREN term RPAREN [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## print_command
+##
+
+Expecting an '(' after $0.
+
+structure: KW_DUMP LPAREN RPAREN
+##
+## Ends in an error in state: 106.
+##
+## item -> print_command LPAREN . term RPAREN [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## print_command LPAREN
+##
+
+Expecting a term after $1-0.
+
+structure: KW_DUMP LPAREN IDENT RBRACK
+##
+## Ends in an error in state: 107.
+##
+## item -> print_command LPAREN term . RPAREN [ KW_PRINT KW_IFSAT KW_DUMP KW_ALLSAT EOF DOMAIN DEFINITION ATOM ]
+##
+## The known suffix of the stack is as follows:
+## print_command LPAREN term
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 52, spurious reduction of production base_term -> identifier
+## In state 66, spurious reduction of production eq_term -> base_term
+## In state 60, spurious reduction of production connected_term -> eq_term
+## In state 82, spurious reduction of production quant_term -> connected_term
+## In state 84, spurious reduction of production term -> quant_term
+##
+
+Expecting a closing ')' after $2-0.
+
+structure: KW_DUMP LPAREN IDENT RPAREN RPAREN
+##
+## Ends in an error in state: 111.
+##
+## list(item) -> item . list(item) [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## item
+##
+
+Expecting another top-level declaration after $0.

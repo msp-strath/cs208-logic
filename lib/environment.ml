@@ -26,3 +26,5 @@ let initial_global_env =
 type command =
   | Dump_Clauses of environment * term
   | IfSat of environment * term * term
+  | AllSat of environment * term * term
+  | Print of environment * term

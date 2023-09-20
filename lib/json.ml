@@ -3,6 +3,7 @@ type json =
   | JBool of bool
   | JInt of int
   | JArray of json list
+  | JNull
   | JObject of (string * json) list
 
 module Printing = struct
@@ -34,8 +35,8 @@ module Printing = struct
     | JBool true -> Format.pp_print_string fmt "true"
     | JBool false -> Format.pp_print_string fmt "false"
     | JInt i -> Format.pp_print_int fmt i
-(*  | Float f -> Format.pp_print_float fmt f (* FIXME: proper format *)
-    | Null -> Format.pp_print_string fmt "null" *)
+    (*  | Float f -> Format.pp_print_float fmt f (* FIXME: proper format *) *)
+    | JNull -> Format.pp_print_string fmt "null"
     | JArray [] -> Fmt.(styled `Bold (any "[]")) fmt ()
     | JArray elems ->
        Format.fprintf fmt "%a@,@[<v2>  %a@]@,%a"

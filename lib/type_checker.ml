@@ -18,7 +18,7 @@ type kind =
   | Symbol
 
 let errorf location fmt =
-  Printf.ksprintf (fun msg -> Error (location, msg)) fmt
+  Printf.ksprintf (fun msg -> Error (`Type_error (location, msg))) fmt
 
 let is_domain_type location = function
   | Domain d -> Ok d
@@ -132,6 +132,8 @@ let check_term env ctxt kind term =
        Ok Assignments
     | StrConstant _ ->
        Ok Symbol
+    | True | False ->
+       Ok Literal
 
   and check_is_sequence ~ctxt term =
     let* computed_kind = kind_of ~ctxt term in
@@ -325,14 +327,21 @@ let check_declaration (env, commands) = function
 
   | Dump term ->
      let* () = check_term env NameMap.empty Clauses term in
-     (* Add this to a list of commands to execute? *)
      Ok (env, Dump_Clauses (env, term) :: commands)
+
+  | Print term ->
+     let* () = check_term env NameMap.empty Json term in
+     Ok (env, Print (env, term) :: commands)
 
   | IfSat (term, json_term) ->
      let* () = check_term env NameMap.empty Clauses term in
      let* () = check_term env NameMap.empty Json json_term in
-     (* Add this to a list of commands to execute? *)
      Ok (env, IfSat (env, term, json_term) :: commands)
+
+  | AllSat (term, json_term) ->
+     let* () = check_term env NameMap.empty Clauses term in
+     let* () = check_term env NameMap.empty Json json_term in
+     Ok (env, AllSat (env, term, json_term) :: commands)
 
 let check_declarations decls =
   let* _, commands_rev =

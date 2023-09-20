@@ -1,8 +1,24 @@
 (library
  (name traintor)
- (libraries msat.sat fmt))
+ (libraries msat.sat fmt menhirLib parser_util))
 
 (menhir
+ (flags --table --unused-token UNKNOWN)
  (modules parser))
 
 (ocamllex lexer)
+
+(rule
+ (targets parser_messages.ml)
+ (deps parser.mly parser.messages)
+ (action
+  (with-stdout-to
+   parser_messages.ml
+   (run
+    %{bin:menhir}
+    --unused-token
+    UNKNOWN
+    --table
+    %{dep:parser.mly}
+    --compile-errors
+    %{dep:parser.messages}))))
