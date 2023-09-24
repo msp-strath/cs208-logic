@@ -5,7 +5,7 @@ open Environment
 type 'a assignment =
   | True
   | False
-  | Symb of 'a
+  | Symbolic of 'a
 
 module type ASSIGNMENT = sig
   type atom
@@ -185,7 +185,7 @@ module Eval (Assignment : ASSIGNMENT) = struct
                  let detail = match eval_atom name.detail values with
                    | True -> VTrue
                    | False -> VFalse
-                   | Symb a -> VLiteral (true, a)
+                   | Symbolic a -> VLiteral (true, a)
                  in
                  { detail; location = term.location }
               | Defined { args; body; _ } ->
@@ -320,8 +320,8 @@ end
 module StringAtom = struct
   type atom = string
   let eval_atom nm = function
-    | [] -> Symb nm
-    | args -> Symb (nm^"("^(String.concat "," args)^")")
+    | [] -> Symbolic nm
+    | args -> Symbolic (nm^"("^(String.concat "," args)^")")
 end
 
 module EvalSymb = Eval (StringAtom)
@@ -336,8 +336,8 @@ let assignment_of_solver : Solver.t -> (string,Solver.v) Hashtbl.t -> (module AS
         let str = mk_atom_str nm args in
         match Hashtbl.find atom_table str with
         | exception Not_found ->
-           let a = Solver.gen solver in Hashtbl.add atom_table str a; Symb a
-        | a -> Symb a
+           let a = Solver.gen solver in Hashtbl.add atom_table str a; Symbolic a
+        | a -> Symbolic a
     end
   in
   (module A)
