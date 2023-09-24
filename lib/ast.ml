@@ -181,12 +181,12 @@ let pp_arg_spec =
 let pp_declaration fmt = function
   | Definition (name, [], body) ->
      Format.fprintf fmt
-       "@[<v0>@[<v2>definition %a {@ %a@]@,}@]@,"
+       "@[<v0>@[<v2>define %a {@ %a@]@,}@]@,"
        pp_name name
        pp_term body
   | Definition (name, arg_spec, body) ->
      Format.fprintf fmt
-       "@[<v0>@[<v2>definition %a(@[%a@]) {@ %a@]@,}@]@,"
+       "@[<v0>@[<v2>define %a(@[%a@]) {@ %a@]@,}@]@,"
        pp_name name
        pp_arg_spec arg_spec
        pp_term body

@@ -14,7 +14,7 @@
 
 %token FORALL
 %token SOME
-%token DEFINITION
+%token DEFINE
 %token ATOM
 %token DOMAIN
 %token KW_DUMP KW_IFSAT KW_FOR KW_IF KW_ALLSAT KW_PRINT
@@ -36,7 +36,7 @@ structure:
   { items }
 
 item:
-| DEFINITION; name=identifier; args=arg_specs; LBRACE; body=term; RBRACE
+| DEFINE; name=identifier; args=arg_specs; LBRACE; body=term; RBRACE
   { Definition (name, args, body) }
 | DOMAIN; name=identifier; LBRACE; constructors=separated_list(COMMA, constructor); RBRACE
   { Domain_decl (name, constructors) }

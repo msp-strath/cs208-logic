@@ -20,7 +20,7 @@ rule token = parse
 | "==>"        { OP_IMPLIES }
 | "forall"     { FORALL }
 | "some"       { SOME }
-| "definition" { DEFINITION }
+| "define"     { DEFINE }
 | "atom"       { ATOM }
 | "domain"     { DOMAIN }
 | "dump"       { KW_DUMP }
