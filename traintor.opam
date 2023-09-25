@@ -16,6 +16,10 @@ depends: [
   "menhir"
   "fmt"
   "odoc" {with-doc}
+  "ulmus"
+]
+pin-depends: [
+  [ "ulmus.~dev" "/home/jjb15109/Sync/ulmus#bc4efeb36419aad80da5ed484b99dfbc9469f716" ]
 ]
 build: [
   ["dune" "subst"] {dev}
