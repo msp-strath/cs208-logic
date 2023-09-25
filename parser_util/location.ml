@@ -15,8 +15,8 @@ let to_string () = function
   | Generated -> "<generated>"
   | FromSource { loc_start; loc_end } when loc_start.pos_lnum = loc_end.pos_lnum
     ->
-      Printf.sprintf "file %S, line %d, characters %d-%d"
-        loc_start.pos_fname loc_start.pos_lnum
+      Printf.sprintf "line %d, characters %d-%d"
+        loc_start.pos_lnum
         (loc_start.pos_cnum - loc_start.pos_bol)
         (loc_end.pos_cnum - loc_end.pos_bol)
   | FromSource { loc_start; loc_end } ->

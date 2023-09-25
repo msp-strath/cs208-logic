@@ -81,7 +81,7 @@ structure: DEFINE TRUE
 ## DEFINE
 ##
 
-Expecting an identifier after $0.
+expecting a name for this definition after $0.
 
 structure: DEFINE IDENT TRUE
 ##
@@ -178,7 +178,7 @@ structure: DEFINE IDENT LBRACE RPAREN
 ## DEFINE identifier arg_specs LBRACE
 ##
 
-expecting a term in the body of the definition of $1.
+expecting a term in the body of the definition of $2.
 
 structure: KW_DUMP LPAREN OP_NOT SOME
 ##

@@ -1,7 +1,5 @@
 open Traintor
 
-module P = Parser_util.Driver.Make (Parser) (Lexer) (Parser_messages)
-
 open Result_syntax
 
 let handle_errors = function
@@ -22,8 +20,8 @@ let handle_errors = function
      exit 1
 
 let execute filename =
-  let contents = In_channel.with_open_bin filename In_channel.input_all in
-  let* decls = P.parse Parser.Incremental.structure contents in
+  let contents  = In_channel.with_open_bin filename In_channel.input_all in
+  let* decls    = Reader.parse contents in
   let* commands = Type_checker.check_declarations decls in
   List.iter Evaluator.execute_command commands;
   Ok ()
@@ -45,7 +43,7 @@ let execute filename =
 
 let pretty_print filename =
   let contents = In_channel.with_open_bin filename In_channel.input_all in
-  let* decls = P.parse Parser.Incremental.structure contents in
+  let* decls   = Reader.parse contents in
   Format.printf
     "@[<v0>%a@]"
     (Format.pp_print_list Ast.pp_declaration) decls;

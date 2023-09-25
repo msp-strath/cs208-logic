@@ -19,7 +19,8 @@ depends: [
   "ulmus"
 ]
 pin-depends: [
-  [ "ulmus.~dev" "/home/jjb15109/Sync/ulmus#bc4efeb36419aad80da5ed484b99dfbc9469f716" ]
+  [ "ulmus.~dev" "git+https://github.com/bobatkey/ulmus#3bdfdeb6d94a176823d2559e41fb24157fcdb764" ]
+  [ "html_sig.~dev" "git+https://github.com/bobatkey/ulmus#3bdfdeb6d94a176823d2559e41fb24157fcdb764" ]
 ]
 build: [
   ["dune" "subst"] {dev}

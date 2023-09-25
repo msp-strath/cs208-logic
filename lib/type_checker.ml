@@ -234,11 +234,11 @@ let check_term env ctxt kind term =
              "Required JSON value(s), but this code represents a sequence of JSON fields.")
     | Assignments ->
        (match computed_kind with
-        | Symbol | Domain _ | Literal | Clause | Clauses | Assignments ->
+        | Assignments ->
            Ok ()
-        | Json | JsonSequence ->
+        | Symbol | Domain _ | Literal | Clause | Clauses | Json | JsonSequence ->
            errorf term.location
-             "Required JSON, but this code represents a sequence of JSON fields.")
+             "Required JSON, but this code represents a sequence of name : data pairs.")
   in
   check ~ctxt (kind, term)
 

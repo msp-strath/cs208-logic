@@ -1,0 +1,8 @@
+(executable
+ (name lmt)
+ (modes js)
+ (libraries ulmus lmt_widget))
+
+(alias
+ (name all)
+ (deps lmt.bc.js lmt.html))
