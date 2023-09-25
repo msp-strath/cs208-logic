@@ -36,19 +36,19 @@ structure:
   { items }
 
 item:
-| DEFINE; name=identifier; args=arg_specs; LBRACE; body=term; RBRACE
-  { Definition (name, args, body) }
+| DEFINE; name=identifier; param_spec=param_spec; LBRACE; body=term; RBRACE
+  { Definition (name, param_spec, body) }
 | DOMAIN; name=identifier; LBRACE; constructors=separated_list(COMMA, constructor); RBRACE
   { Domain_decl (name, constructors) }
-| ATOM; name=identifier; args=arg_specs
-  { Atom_decl (name, args) }
+| ATOM; name=identifier; param_spec=param_spec
+  { Atom_decl (name, param_spec) }
 | cmd=print_command; LPAREN; t=term; RPAREN
   { cmd t }
 | cmd=solve_command; LPAREN; t1=term; RPAREN; t2=base_term
   { cmd t1 t2 }
 
-arg_specs:
-| LPAREN; args=separated_list(COMMA, arg_spec); RPAREN
+param_spec:
+| LPAREN; args=separated_list(COMMA, binding); RPAREN
   { args }
 | (* empty *)
   { [] }
@@ -61,7 +61,7 @@ solve_command:
 | KW_IFSAT { fun t1 t2 -> IfSat (t1, t2) }
 | KW_ALLSAT { fun t1 t2 -> AllSat (t1, t2) }
 
-arg_spec:
+binding:
 | nm=identifier; COLON; domain=identifier
   { (nm, domain) }
 
@@ -81,16 +81,16 @@ term:
 
 quant_term:
 | q=quantifier; LPAREN; nm=IDENT; COLON; domain=identifier; RPAREN; body=quant_term
-  { { detail = q nm domain body; location = Location.mk $startpos $endpos } }
+  { { detail = q (nm, domain) body; location = Location.mk $startpos $endpos } }
 | KW_IF; LPAREN; t=term; RPAREN; body=quant_term
   { { detail = If (t, body); location = Location.mk $startpos $endpos } }
 | t=connected_term
   { t }
 
 quantifier:
-| FORALL { fun nm domain body -> BigAnd (nm, domain, body) }
-| SOME   { fun nm domain body -> BigOr (nm, domain, body) }
-| KW_FOR { fun nm domain body -> For (nm, domain, body) }
+| FORALL { fun (nm, domain) body -> BigAnd (nm, domain, body) }
+| SOME   { fun (nm, domain) body -> BigOr (nm, domain, body) }
+| KW_FOR { fun (nm, domain) body -> For (nm, domain, body) }
 
 connected_term:
 | t=eq_term; OP_AND; ts=separated_nonempty_list(OP_AND, eq_term)

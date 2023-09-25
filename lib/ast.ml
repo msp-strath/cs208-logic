@@ -1,17 +1,4 @@
-module Location = struct
-  type t =
-    | Source of { start : Lexing.position; endpos : Lexing.position }
-    | Internal
-  let mk start endpos = Source {start; endpos}
-  let internal = Internal
-  let to_string () = function
-    | Source { start; _ } ->
-       Printf.sprintf "line %d, column %d"
-         start.pos_lnum
-         (start.pos_cnum - start.pos_bol)
-    | Internal ->
-       "<internal>"
-end
+module Location = Parser_util.Location
 
 type 'a with_location =
   { detail : 'a
@@ -155,14 +142,14 @@ and pp_base_term fmt term =
   | _ ->
      Format.fprintf fmt "(%a)" pp_term term
 
-type arg_spec =
+type param_spec =
   (name with_location * name with_location) list
 
 (* Declarations that can appear at the top-level in a file *)
 type declaration =
-  | Definition  of name with_location * arg_spec * term
+  | Definition  of name with_location * param_spec * term
   | Domain_decl of name with_location * constructor_name with_location list
-  | Atom_decl of name with_location * arg_spec
+  | Atom_decl of name with_location * param_spec
   | Dump of term
   | IfSat of term * term
   | AllSat of term * term
