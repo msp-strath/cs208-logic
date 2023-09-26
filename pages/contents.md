@@ -12,9 +12,10 @@ In the first part of the course, we use logical modelling to describe and solve 
 4. [A fruity exercise](fruit-exercise.html) for you to do.
 5. [The Package Installation Problem](packages.html).
 6. [SAT solvers](sat.html), the underlying technology.
-7. Resource allocation problems.
-8. Circuit equivalence checking.
-9. Checking access control rules.
+7. TBD: More features of the tool.
+8. TBD: Resource allocation problems.
+9. TBD: Circuit equivalence checking.
+10. TBD: Checking access control rules.
 
 ## Deductive proof
 
