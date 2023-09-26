@@ -1,0 +1,23 @@
+domain timestep { T0, T1, T2, T3 }
+
+domain state { A, B, C }
+
+atom in_state(t : timestep, s : state)
+atom input(t : timestep)
+
+// Start in state 'A'
+definition initial {
+  in_state(T0, A) & ~in_state(T0, B) & ~in_state(T0, C)
+}
+
+domain action {
+  T1, T2, T3, T4
+}
+
+definition precondition(t : timestep,
+
+
+
+definition transition(t : timestep, t1 : timestep) {
+  ~in_state(t1, A) |
+}

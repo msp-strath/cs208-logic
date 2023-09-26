@@ -1,0 +1,48 @@
+atom snake
+atom mouse
+atom parrot
+
+define wizards_demand {
+  snake | mouse | parrot
+}
+
+print("Part 1")
+
+ifsat (wizards_demand)
+  { "snake" : snake, "mouse" : mouse, "parrot" : parrot }
+
+print("Part 2")
+
+allsat (wizards_demand)
+  { "snake" : snake, "mouse" : mouse, "parrot" : parrot }
+
+print("Part 3")
+
+define carefulness {
+  ~snake | ~mouse
+}
+
+allsat (wizards_demand & carefulness)
+  { "snake" : snake, "mouse" : mouse, "parrot" : parrot }
+
+print("Part 4")
+
+define mouse_wants_parrot {
+  ~mouse | parrot
+}
+
+allsat (wizards_demand & carefulness & mouse_wants_parrot)
+  { "snake" : snake, "mouse" : mouse, "parrot" : parrot }
+
+print("Part 5")
+
+define parrot_wants_mouse {
+  ~parrot | mouse
+  //what_goes_here
+}
+
+allsat (wizards_demand &
+        carefulness &
+	mouse_wants_parrot &
+	parrot_wants_mouse)
+  { "snake" : snake, "mouse" : mouse, "parrot" : parrot }

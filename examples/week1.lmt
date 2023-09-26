@@ -1,0 +1,17 @@
+atom a
+atom b
+atom c
+
+// allsat (a | b | c )
+//   { "a" : a, "b" : b, "c" : c }
+
+allsat ((a | b | c) & (~a | ~b) & (~b | ~c) & (~a | ~c))
+  { "a" : a, "b" : b, "c" : c }
+
+
+
+// ifsat a
+//   { "a" : a, "b" : false, "c" : c }
+
+// ifsat false
+//   { "a" :

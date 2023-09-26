@@ -1,0 +1,5 @@
+domain x { A, B }
+
+print (x )
+
+define abc { }

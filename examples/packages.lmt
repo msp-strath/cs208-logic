@@ -1,0 +1,47 @@
+atom progA1
+atom progA2
+atom progB
+atom libC1
+atom libC2
+atom libD
+
+definition incompatibilities {
+    (~progA1 | ~progA2)
+  & (~libC1 | ~libC2)
+}
+
+definition dependencies {
+    (~progA1 | libC1) // progA1 depends on libC1
+  & (~progA2 | libC2)
+  & (~progB  | libC2)
+  & (~libC2  | libD)
+}
+
+definition requirements {
+    (progA1 | progA2)
+  & progB
+}
+
+definition main {
+  incompatibilities & dependencies & requirements
+}
+
+// dump main
+
+ifsat main {
+  "progA1": progA1,
+  "progA2": progA2,
+  "progB": progB,
+  "libC1": libC1,
+  "libC2": libC2,
+  "libD": libD
+}
+
+ifsat (main & ~progA2) {
+  "progA1": progA1,
+  "progA2": progA2,
+  "progB": progB,
+  "libC1": libC1,
+  "libC2": libC2,
+  "libD": libD
+}

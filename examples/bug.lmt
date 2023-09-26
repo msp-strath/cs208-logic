@@ -1,0 +1,2 @@
+atom a atom b
+allsat(a | b | true) [a,b]

@@ -1,0 +1,48 @@
+domain timestep [0..5]
+
+domain action { A1, A2 }
+domain state_flag { A, B, C }
+
+atom state(var : state_flag, t : timestep)
+
+
+definition precondition(action : action, t : timestep) {
+    (action = A1 ==> state(A,t) & ~state(B,t))
+  & (action = A2 ==> state(A,t))
+}
+
+definition no_change(var : state_flag, t : timestep) {
+    (state(var, t) | ~state(var, tnext))
+  & (state(var, tnext) | ~state(var, t))
+}
+
+definition effect(action : action, t : timestep, tnext : timestep) {
+    (action = A1 ==> state(A, tnext) & state(B,tnext) & no_change(C, t, tnext))
+  & (action = A2 ==> state(A, tnext) & ~state(B,tnext) & no_change(C, t, tnext))
+}
+
+// for each action,
+//
+// if it is active, then its precondition holds and its effect holds
+
+atom active(t : timestep, a : action)
+
+definition action_conditions(t : timestep, tnext : timestep) {
+  forall(a : action)
+    (active(t, a) ==> precondition(a, t) & effect(a, t, tnext))
+}
+
+definition action_choice(t : timestep) {
+    (some(a : action) active(t, a)).
+  & (forall (a1 : action) forall (a2 : action) (a1 = a2 | ~active(t, a1) | ~active(t, a2))
+}
+
+definition timesteps {
+  for (t : timesteps)
+    action_choice(t) & action_conditions(t, t+1)
+}
+
+ifsat (timesteps & initial & final)
+{ for(t : timestep)
+    (t : [for (a : action) if (active(t,a)) a])
+}

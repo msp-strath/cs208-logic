@@ -1,0 +1,35 @@
+domain package {
+  ProgA1, ProgA2,
+  ProgB,
+  LibC1, LibC2,
+  LibD
+}
+
+atom installed(p : package)
+
+definition incompatible(p1 : package, p2 : package) {
+  ~installed(p1) | ~installed(p2)
+}
+
+definition depends(p1 : package, p2 : package) {
+  ~installed(p1) | installed(p2)
+}
+
+definition constraints {
+    incompatible(ProgA1, ProgA2)
+  & incompatible(LibC1, LibC2)
+  & depends(ProgA1, LibC1)
+  & depends(ProgA2, LibC2)
+  & depends(ProgB, LibC2)
+  & depends(LibC2, LibD)
+}
+
+definition requirements {
+    (installed(ProgA1) | installed(ProgA2))
+  & installed(ProgB)
+}
+
+ifsat (constraints & requirements)
+  { for(p : package)
+      (p : installed(p))
+  }
