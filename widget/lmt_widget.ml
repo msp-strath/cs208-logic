@@ -1,10 +1,12 @@
 module Ast = Traintor.Ast
+open Traintor.Environment
 
 type state = {
     input : string;
-    parse_result : (Ast.declaration list, string) result;
+    parse_result : (command list, string) result;
     fresh : bool;
     output: [`Nothing | `String of string ];
+    result_hidden : bool;
     initial : string;
     resetting : bool;
   }
@@ -12,23 +14,10 @@ type state = {
 type action =
   | Update of string
   | Run
+  | HideResult
   | Reset
   | ConfirmReset
   | CancelReset
-
-(*
-let render_output =
-  let open Ulmus.Dynamic_HTML in
-  function
-  | Exec_structure.Message msg -> text msg
-  | Exec_structure.Outcome (model_name, formula, outcome) ->
-      [%concat
-        text
-          (Printf.sprintf "checking %s |= \"%s\"" model_name
-             (Formula.to_string formula));
-        br ();
-        R.render_outcome outcome]
- *)
 
 let num_newlines =
   String.fold_left (fun i -> function '\n' -> i+1 | _ -> i) 0
@@ -50,8 +39,13 @@ let render state =
         div ~attrs:[ A.class_ "defnsat-parseresult" ] @@
           (match state.parse_result with
            | Error msg -> div ~attrs:[ A.class_ "errormsg" ] (text msg)
-           | Ok _ ->
-              div ~attrs:[ A.class_ "successmessage" ] (text "Input understood."));
+           | Ok commands ->
+              let num_commands = List.length commands in
+              let msg = Printf.sprintf "Input understood. %d command%s to run."
+                          num_commands (if num_commands = 1 then "" else "s")
+              in
+              div ~attrs:[ A.class_ "successmessage" ]
+                (text msg));
         div ~attrs:[ A.class_ "defnsat-button" ] @@
           concat_list [
               button
@@ -84,18 +78,8 @@ let render state =
                                ]
                        else empty
                          ];
-                  (text s)
+                  code (pre (text s))
                 ]);
-(*                   match state.output with *)
-(*               | `Nothing -> empty *)
-(* (\*              | `Output (Error (outputs, msg)) -> *)
-(*                  concat_list [ *)
-(*                      ol (outputs |> concat_map (fun o -> li (render_output o))); *)
-(*                      div ~attrs:[ A.class_ "errormsg" ] (text msg) *)
-(*                    ] *)
-(*               | `Output (Ok outputs) -> *)
-(*                  ol (outputs |> concat_map (fun o -> li (render_output o))) *\) *)
-(*             ]; *)
         if state.resetting then
           concat_list [
               div ~attrs:[
@@ -135,8 +119,8 @@ let parse input =
   match Traintor.Reader.parse input with
   | Ok decls ->
      (match Traintor.Type_checker.check_declarations decls with
-      | Ok _commands ->
-         Ok decls
+      | Ok commands ->
+         Ok commands
       | Error (`Type_error (location, msg)) ->
          Error (Printf.sprintf "Problem at %a: %s"
                  Ast.Location.to_string location
@@ -150,6 +134,7 @@ let initial_full initial input =
     parse_result = parse input;
     fresh = true;
     output = `Nothing;
+    result_hidden = false;
     initial;
     resetting = false;
   }
@@ -162,16 +147,18 @@ let update action state =
       let parse_result = parse input in
       { state with input; parse_result; fresh = false }
   | Run ->
+     (match state.parse_result with
+      | Ok commands ->
+         let b = Buffer.create 8192 in
+         let fmt = Format.formatter_of_buffer b in
+         List.iter (Traintor.Evaluator.execute_command fmt) commands;
+         Format.pp_print_flush fmt ();
+         { state with fresh = true; output = `String (Buffer.contents b) }
+      | Error _ ->
+         (* Button should be disabled to prevent this *)
+         state)
+  | HideResult ->
      state
- (*    (
-      match state.parse_result with
-      | Ok defns ->
-          {
-            state with
-            fresh = true;
-            output = `Output (Exec_structure.exec defns);
-          }
-      | Error _ -> state) *)
   | Reset -> { state with resetting = true }
   | ConfirmReset -> initial state.initial
   | CancelReset -> { state with resetting = false }

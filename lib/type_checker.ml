@@ -20,6 +20,12 @@ type kind =
 let errorf location fmt =
   Printf.ksprintf (fun msg -> Error (`Type_error (location, msg))) fmt
 
+let join_kind loc k1 k2 = match k1, k2 with
+  | None, k2 -> Ok (Some k2)
+  | Some JsonSequence, JsonSequence -> Ok (Some JsonSequence)
+  | Some Assignments, Assignments -> Ok (Some Assignments)
+  | Some _, _ -> errorf loc "type mismatch in sequence"
+
 let is_domain_type location = function
   | Domain d -> Ok d
   | _ ->
@@ -124,8 +130,17 @@ let check_term env ctxt kind term =
        let* () = check ~ctxt (Clauses, term1) in
        check_is_sequence ~ctxt term2
     | Sequence terms ->
-       let* () = traverse_ (fun tm -> check ~ctxt (Assignments, tm)) terms in
-       Ok Assignments (* FIXME: or json sequence, but must all be the same *)
+       (let* kind =
+         fold_left_err
+           (fun kind term ->
+             let* kind' = check_is_sequence ~ctxt term in
+             join_kind term.location kind kind')
+           None
+           terms
+        in
+        match kind with
+        | None -> errorf term.location "internal error: empty sequence"
+        | Some kind -> Ok kind)
     | Assign (t1, t2) ->
        let* () = check ~ctxt (Symbol, t1) in
        let* () = check ~ctxt (Json, t2) in
@@ -238,7 +253,7 @@ let check_term env ctxt kind term =
            Ok ()
         | Symbol | Domain _ | Literal | Clause | Clauses | Json | JsonSequence ->
            errorf term.location
-             "Required JSON, but this code represents a sequence of name : data pairs.")
+             "Required zero or more 'name : data 'pairs.")
   in
   check ~ctxt (kind, term)
 
@@ -351,3 +366,12 @@ let check_declarations decls =
       decls
   in
   Ok (List.rev commands_rev)
+
+let check_declarations_open env decls =
+  let* env, commands_rev =
+    fold_left_err
+      check_declaration
+      (env, [])
+      decls
+  in
+  Ok (env, List.rev commands_rev)

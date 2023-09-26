@@ -1,0 +1,3 @@
+(library
+ (name html_static)
+ (libraries html_sig))

@@ -1,0 +1,3 @@
+(library
+ (name html_of_omd)
+ (libraries omd))

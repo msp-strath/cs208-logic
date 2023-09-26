@@ -1,6 +1,6 @@
 
 let () =
-  Ulmus.attach
-    ~parent_id:"app"
-    ~initial:(Lmt_widget.initial "")
+  Ulmus.attach_all
+    "lmt"
+    Lmt_widget.initial
     (module Lmt_widget)

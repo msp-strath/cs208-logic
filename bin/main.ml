@@ -23,23 +23,9 @@ let execute filename =
   let contents  = In_channel.with_open_bin filename In_channel.input_all in
   let* decls    = Reader.parse contents in
   let* commands = Type_checker.check_declarations decls in
-  List.iter Evaluator.execute_command commands;
+  let fmt = Format.std_formatter in
+  List.iter (Evaluator.execute_command fmt) commands;
   Ok ()
-
-(*
-  let decls =
-    In_channel.with_open_text filename
-      (fun ch ->
-        let lexbuf = Lexing.from_channel ch in
-        Parser.structure Lexer.token lexbuf)
-  in
-  match Type_checker.check_declarations decls with
-  | Error (location, msg) ->
-
-  | Ok commands ->
-     List.iter Evaluator.execute_command commands;
-     exit 0
- *)
 
 let pretty_print filename =
   let contents = In_channel.with_open_bin filename In_channel.input_all in
@@ -48,14 +34,6 @@ let pretty_print filename =
     "@[<v0>%a@]"
     (Format.pp_print_list Ast.pp_declaration) decls;
   Ok ()
-(*
-  let decls =
-    In_channel.with_open_text filename
-      (fun ch ->
-        let lexbuf = Lexing.from_channel ch in
-        Parser.structure Lexer.token lexbuf)
-  in
- *)
 
 let () =
   handle_errors @@
