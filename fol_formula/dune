@@ -1,0 +1,37 @@
+(library
+ (name fol_formula)
+ (libraries menhirLib parser_util sexplib0)
+ (preprocess
+  (pps ppx_sexp_conv))
+ (flags
+  (:standard -w -49-9-27)))
+
+(ocamllex lexer)
+
+(menhir
+ (flags --table --unused-token UNKNOWN)
+ (modules grammar parser)
+ (merge_into parser))
+
+; (install
+;  (section lib)
+;  (package fol_formula)
+;  (files grammar.mly))
+
+(rule
+ (targets parser_messages.ml)
+ (deps parser.mly grammar.mly parser.messages)
+ (action
+  (with-stdout-to
+   parser_messages.ml
+   (run
+    %{bin:menhir}
+    --unused-token
+    UNKNOWN
+    --table
+    %{dep:parser.mly}
+    %{dep:grammar.mly}
+    --base
+    parser
+    --compile-errors
+    %{dep:parser.messages}))))

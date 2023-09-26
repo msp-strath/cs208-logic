@@ -1,0 +1,441 @@
+whole_term: IDENT LPAREN OR
+##
+## Ends in an error in state: 8.
+##
+## term -> IDENT LPAREN . loption(separated_nonempty_list(COMMA,term)) RPAREN [ RPAREN OR EOF COMMA ARROW AND ]
+##
+## The known suffix of the stack is as follows:
+## IDENT LPAREN
+##
+
+after $1-0, expecting a term or a ')'.
+
+whole_term: IDENT NOT
+##
+## Ends in an error in state: 7.
+##
+## term -> IDENT . [ RPAREN OR EOF COMMA ARROW AND ]
+## term -> IDENT . LPAREN loption(separated_nonempty_list(COMMA,term)) RPAREN [ RPAREN OR EOF COMMA ARROW AND ]
+##
+## The known suffix of the stack is as follows:
+## IDENT
+##
+
+unexpected input after $0.
+
+whole_term: IDENT RPAREN
+##
+## Ends in an error in state: 55.
+##
+## whole_term -> term . EOF [ # ]
+##
+## The known suffix of the stack is as follows:
+## term
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 7, spurious reduction of production term -> IDENT 
+##
+
+unexpected input after the term $0.
+
+whole_term: RPAREN
+##
+## Ends in an error in state: 53.
+##
+## whole_term' -> . whole_term [ # ]
+##
+## The known suffix of the stack is as follows:
+##
+##
+
+expecting a term, which always starts with an identifier.
+
+whole_formula: EXISTS IDENT DOT RPAREN
+##
+## Ends in an error in state: 23.
+##
+## formula -> EXISTS IDENT DOT . formula [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## EXISTS IDENT DOT
+##
+
+after $2-0, expecting to see a formula.
+
+whole_formula: EXISTS IDENT RPAREN
+##
+## Ends in an error in state: 22.
+##
+## formula -> EXISTS IDENT . DOT formula [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## EXISTS IDENT
+##
+
+after $1-0, expecting to see a '.'.
+
+whole_formula: EXISTS RPAREN
+##
+## Ends in an error in state: 21.
+##
+## formula -> EXISTS . IDENT DOT formula [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## EXISTS
+##
+
+after $0, expecting a variable name.
+
+whole_formula: FORALL IDENT DOT RPAREN
+##
+## Ends in an error in state: 19.
+##
+## formula -> FORALL IDENT DOT . formula [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## FORALL IDENT DOT
+##
+
+after $2-0, expecting a formula.
+
+whole_formula: FORALL IDENT RPAREN
+##
+## Ends in an error in state: 18.
+##
+## formula -> FORALL IDENT . DOT formula [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## FORALL IDENT
+##
+
+after $1-0, expecting a '.'.
+
+whole_formula: FORALL RPAREN
+##
+## Ends in an error in state: 17.
+##
+## formula -> FORALL . IDENT DOT formula [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## FORALL
+##
+
+after $0, expecting a variable name.
+
+whole_formula: IDENT AND IDENT AND RPAREN
+##
+## Ends in an error in state: 44.
+##
+## separated_nonempty_list(AND,base_formula) -> base_formula AND . separated_nonempty_list(AND,base_formula) [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## base_formula AND
+##
+
+after $0, expecting to see an atomic formula, a negation, or a '('.
+
+whole_formula: IDENT AND IDENT OR
+##
+## Ends in an error in state: 43.
+##
+## separated_nonempty_list(AND,base_formula) -> base_formula . [ RPAREN EOF ]
+## separated_nonempty_list(AND,base_formula) -> base_formula . AND separated_nonempty_list(AND,base_formula) [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## base_formula
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 5, spurious reduction of production base_formula -> IDENT 
+##
+
+after $0, expecting to see '/\'. Remember to use '(' and ')' to separate different connectives.
+
+whole_formula: IDENT AND RPAREN
+##
+## Ends in an error in state: 41.
+##
+## formula -> base_formula AND . separated_nonempty_list(AND,base_formula) [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## base_formula AND
+##
+
+after $0, expecting to see an atomic formula, a negation, or a '('.
+
+whole_formula: IDENT ARROW IDENT ARROW RPAREN
+##
+## Ends in an error in state: 38.
+##
+## arrow_formula -> base_formula ARROW . arrow_formula [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## base_formula ARROW
+##
+
+after $0, expecting to see an atomic formula, a negation, or a '('.
+
+whole_formula: IDENT ARROW IDENT OR
+##
+## Ends in an error in state: 37.
+##
+## arrow_formula -> base_formula . ARROW arrow_formula [ RPAREN EOF ]
+## arrow_formula -> base_formula . [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## base_formula
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 5, spurious reduction of production base_formula -> IDENT 
+##
+
+after $0, expecting to see '->'. Remember to use '(' and ')' to separate different connectives.
+
+whole_formula: IDENT ARROW RPAREN
+##
+## Ends in an error in state: 36.
+##
+## formula -> base_formula ARROW . arrow_formula [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## base_formula ARROW
+##
+
+after '$0', expecting to see an atomic formula, a negation, or a '('.
+
+whole_formula: IDENT LPAREN IDENT COMMA RPAREN
+##
+## Ends in an error in state: 10.
+##
+## separated_nonempty_list(COMMA,term) -> term COMMA . separated_nonempty_list(COMMA,term) [ RPAREN ]
+##
+## The known suffix of the stack is as follows:
+## term COMMA
+##
+
+after $0, expecting another term.
+
+whole_formula: IDENT LPAREN IDENT EOF
+##
+## Ends in an error in state: 9.
+##
+## separated_nonempty_list(COMMA,term) -> term . [ RPAREN ]
+## separated_nonempty_list(COMMA,term) -> term . COMMA separated_nonempty_list(COMMA,term) [ RPAREN ]
+##
+## The known suffix of the stack is as follows:
+## term
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 7, spurious reduction of production term -> IDENT 
+##
+
+after the term $0, expecting a ',' or a ')'.
+
+whole_formula: IDENT LPAREN OR
+##
+## Ends in an error in state: 6.
+##
+## base_formula -> IDENT LPAREN . loption(separated_nonempty_list(COMMA,term)) RPAREN [ RPAREN OR EOF ARROW AND ]
+## term -> IDENT LPAREN . loption(separated_nonempty_list(COMMA,term)) RPAREN [ NE EQ ]
+##
+## The known suffix of the stack is as follows:
+## IDENT LPAREN
+##
+
+after the start of a predicate $1-0, expecting a term.
+
+whole_formula: IDENT NOT
+##
+## Ends in an error in state: 5.
+##
+## base_formula -> IDENT . [ RPAREN OR EOF ARROW AND ]
+## base_formula -> IDENT . LPAREN loption(separated_nonempty_list(COMMA,term)) RPAREN [ RPAREN OR EOF ARROW AND ]
+## term -> IDENT . [ NE EQ ]
+## term -> IDENT . LPAREN loption(separated_nonempty_list(COMMA,term)) RPAREN [ NE EQ ]
+##
+## The known suffix of the stack is as follows:
+## IDENT
+##
+
+after $0, expecting to see a binary connective '/\', '\/', or '->', or a '(' followed by some terms.
+
+whole_formula: IDENT OR IDENT ARROW
+##
+## Ends in an error in state: 33.
+##
+## separated_nonempty_list(OR,base_formula) -> base_formula . [ RPAREN EOF ]
+## separated_nonempty_list(OR,base_formula) -> base_formula . OR separated_nonempty_list(OR,base_formula) [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## base_formula
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 5, spurious reduction of production base_formula -> IDENT 
+##
+
+after $0, expecting to see '\/'. Remember to use '(' and ')' to separate different connectives.
+
+whole_formula: IDENT OR IDENT OR RPAREN
+##
+## Ends in an error in state: 34.
+##
+## separated_nonempty_list(OR,base_formula) -> base_formula OR . separated_nonempty_list(OR,base_formula) [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## base_formula OR
+##
+
+after $0, expecting to see an atomic formula, a negation, or a '('.
+
+whole_formula: IDENT OR RPAREN
+##
+## Ends in an error in state: 31.
+##
+## formula -> base_formula OR . separated_nonempty_list(OR,base_formula) [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## base_formula OR
+##
+
+after $0, expecting to see an atomic formula, a negation, or a '('.
+
+whole_formula: IDENT RPAREN
+##
+## Ends in an error in state: 51.
+##
+## whole_formula -> formula . EOF [ # ]
+##
+## The known suffix of the stack is as follows:
+## formula
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 5, spurious reduction of production base_formula -> IDENT 
+## In state 30, spurious reduction of production formula -> base_formula 
+##
+
+no matching '(' earlier in the input.
+
+whole_formula: LPAREN IDENT EOF
+##
+## Ends in an error in state: 47.
+##
+## base_formula -> LPAREN formula . RPAREN [ RPAREN OR EOF ARROW AND ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN formula
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 5, spurious reduction of production base_formula -> IDENT 
+## In state 30, spurious reduction of production formula -> base_formula 
+##
+
+after a '(' and the formula $0, expecting either a ')' or more formula.
+
+whole_formula: LPAREN IDENT RPAREN NOT
+##
+## Ends in an error in state: 30.
+##
+## formula -> base_formula . AND separated_nonempty_list(AND,base_formula) [ RPAREN EOF ]
+## formula -> base_formula . OR separated_nonempty_list(OR,base_formula) [ RPAREN EOF ]
+## formula -> base_formula . ARROW arrow_formula [ RPAREN EOF ]
+## formula -> base_formula . [ RPAREN EOF ]
+##
+## The known suffix of the stack is as follows:
+## base_formula
+##
+
+after the formula $0 expecting a connective or ')' or end of input.
+
+whole_formula: LPAREN RPAREN
+##
+## Ends in an error in state: 3.
+##
+## base_formula -> LPAREN . formula RPAREN [ RPAREN OR EOF ARROW AND ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN
+##
+
+Expecting a formula to be written after a $0.
+
+whole_formula: NOT RPAREN
+##
+## Ends in an error in state: 2.
+##
+## base_formula -> NOT . base_formula [ RPAREN OR EOF ARROW AND ]
+##
+## The known suffix of the stack is as follows:
+## NOT
+##
+
+after '$0', expecting to see an atomic formula, another negation, or a '('.
+
+whole_formula: RPAREN
+##
+## Ends in an error in state: 0.
+##
+## whole_formula' -> . whole_formula [ # ]
+##
+## The known suffix of the stack is as follows:
+##
+##
+
+invalid start of a formula; expecting to see an atomic formula, a quantifier ('all' or 'ex'), a negation, or a '('.
+
+whole_formula: IDENT LPAREN RPAREN NOT
+##
+## Ends in an error in state: 16.
+##
+## base_formula -> IDENT LPAREN loption(separated_nonempty_list(COMMA,term)) RPAREN . [ RPAREN OR EOF ARROW AND ]
+## term -> IDENT LPAREN loption(separated_nonempty_list(COMMA,term)) RPAREN . [ NE EQ ]
+##
+## The known suffix of the stack is as follows:
+## IDENT LPAREN loption(separated_nonempty_list(COMMA,term)) RPAREN
+##
+
+after the term $3-0, expecting either an infix relation ('=' or '!='), or a connective.
+
+whole_formula: IDENT NE RPAREN
+##
+## Ends in an error in state: 27.
+##
+## base_formula -> term infix_rel . term [ RPAREN OR EOF ARROW AND ]
+##
+## The known suffix of the stack is as follows:
+## term infix_rel
+##
+
+after $1-0, expecting another term.
+
+whole_formula: INTLIT RPAREN
+##
+## Ends in an error in state: 24.
+##
+## base_formula -> term . infix_rel term [ RPAREN OR EOF ARROW AND ]
+##
+## The known suffix of the stack is as follows:
+## term
+##
+
+expecting a comparison operator after $0.
+
