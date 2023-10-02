@@ -75,7 +75,7 @@ Let's do the following example:
    }
    ```
 
-The computer's job is to find out whether or not
+The computer's job is to find out whether or not there is a set of packages to install that satisfies all the above constraints. It does this by finding out whether or not the formula `conflicts & dependencies & requirements` is satisfiable. If there it, then we know that there is a package installation plan such that (a) no conflicting packages will be installed; (b) all packages' dependencies will be met; and (c) all the required packages are installed.
 
 ### Putting it all together
 
