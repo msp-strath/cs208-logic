@@ -101,7 +101,7 @@
       <p>Here is an example instance of the Logical Modelling
       Tool:</p>
 
-      <div id="app" data-storagekey="wizard1" data-widget="lmt"
+      <div data-widget="lmt"
 	   >atom a
 atom b
 atom c
@@ -110,8 +110,16 @@ ifsat(a | b | c) [a,b,c]</div>
 
       <p>Some more explanatory text.</p>
 
-      <div data-widget="lmt" data-storagekey="wizard2" data-predecessor="wizard1"
->allsat((a | b | c) & ~a) [a,b,c]</div>
+      <div data-widget="lmt"
+	   >allsat((a | b | c) & ~a) [a,b,c]</div>
+
+      A tickbox:
+
+      <div data-widget="tickbox">Did you understand?</div>
+
+      <p>A text entry box:</p>
+
+      <div data-widget="textbox">Leave some comments here:</div>
 
       <p>Some concluding text.</p>
     </main>

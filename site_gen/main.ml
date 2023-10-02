@@ -28,14 +28,21 @@ let template ~title:title_text ~body:body_html ~script_url =
                   A.rel "stylesheet";
                   A.href "local.css"
                 ];
+              script ~attrs:[A.src script_url; raw_attr "defer" "yes"] "";
               title title_text
             ];
         body @@
           concat_list [
               header (h1 (text title_text));
               main body_html;
-              footer (text "Using SimpleCSS");
-              script ~attrs:[A.src script_url] ""
+              footer (text "Source code for these pages "
+                      ^^ a ~attrs:[A.href "https://github.com/bobatkey/interactive-logic-course"]
+                           (text "on GitHub")
+                      ^^ text ". "
+                      ^^ text "Styling provided by "
+                      ^^ a ~attrs:[A.href "https://simplecss.org/"]
+                           (text "SimpleCSS")
+                      ^^ text ".")
             ]
       ]
 

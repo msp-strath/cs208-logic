@@ -1,7 +1,7 @@
 (executable
  (name lmt)
  (modes js)
- (libraries ulmus lmt_widget))
+ (libraries ulmus lmt_widget widgets))
 
 (alias
  (name all)

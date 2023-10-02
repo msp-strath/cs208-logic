@@ -348,8 +348,6 @@ let assignment_of_solver : Solver.t -> (string,Solver.v) Hashtbl.t -> (module AS
   in
   (module A)
 
-(* FIXME: output to a symbolic format, so it can be output to a browser via ulmus *)
-(* FIXME: treat clauses as lists always, don't special case true and false *)
 (* FIXME: split these out into individual functions *)
 let execute_command fmt = function
   | Dump_Clauses (env, term) ->

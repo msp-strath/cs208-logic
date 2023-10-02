@@ -38,6 +38,19 @@ type term_detail =
 
 and term = term_detail with_location
 
+type param_spec =
+  (name with_location * name with_location) list
+
+(* Declarations that can appear at the top-level in a file *)
+type declaration =
+  | Definition  of name with_location * param_spec * term
+  | Domain_decl of name with_location * constructor_name with_location list
+  | Atom_decl of name with_location * param_spec
+  | Dump of term
+  | IfSat of term * term
+  | AllSat of term * term
+  | Print of term
+
 let pp_name fmt name =
   Format.fprintf fmt "%s" name.detail
 
@@ -141,19 +154,6 @@ and pp_base_term fmt term =
      Format.fprintf fmt "false"
   | _ ->
      Format.fprintf fmt "(%a)" pp_term term
-
-type param_spec =
-  (name with_location * name with_location) list
-
-(* Declarations that can appear at the top-level in a file *)
-type declaration =
-  | Definition  of name with_location * param_spec * term
-  | Domain_decl of name with_location * constructor_name with_location list
-  | Atom_decl of name with_location * param_spec
-  | Dump of term
-  | IfSat of term * term
-  | AllSat of term * term
-  | Print of term
 
 let pp_arg fmt (nm1, nm2) =
   Format.fprintf fmt "%a : %a"

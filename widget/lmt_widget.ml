@@ -115,7 +115,6 @@ let render state =
       ]
 
 let parse input =
-  (* FIXME: type check as well *)
   match Traintor.Reader.parse input with
   | Ok decls ->
      (match Traintor.Type_checker.check_declarations decls with
