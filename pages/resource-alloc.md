@@ -2,10 +2,6 @@
 
 # Resource Allocation Problems
 
-TODO: need a short tutorial on domains, parameters, and `forall`/`some`.
-
-TODO: just a placeholder for now...
-
 ```lmt
 domain colour { Red, Green, Blue }
 domain node { N1, N2, N3, N4, N5 }
