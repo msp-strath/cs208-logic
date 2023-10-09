@@ -2,6 +2,8 @@
 
 This page links to the interactive notes and exercises for Logic part of CS208 Logic & Algorithms.
 
+Comments and queries to [Robert Atkey](mailto:robert.atkey@strath.ac.uk) ([Web page](https://bentnib.org)).
+
 ## Part 1: Logical Modelling
 
 In Part 1, we use logical modelling to describe and solve problems.
