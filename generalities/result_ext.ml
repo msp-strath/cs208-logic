@@ -9,6 +9,10 @@ let ( and* ) : type a b e. (a, e) result -> (b, e) result -> (a * b, e) result =
   | Error _ as e, _ -> e
   | _, (Error _ as e) -> e
 
+let annotate_error annotation = function
+  | Ok _ as x -> x
+  | Error e -> Error (Annotated.add annotation e)
+
 let traverse : type a b e. (a -> (b, e) result) -> a list -> (b list, e) result =
   fun f xs ->
   let rec loop acc = function

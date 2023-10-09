@@ -1,6 +1,6 @@
 open Traintor
 
-open Result_syntax
+open Generalities.Result_ext
 
 let handle_errors = function
   | Ok () ->

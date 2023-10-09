@@ -1,6 +1,6 @@
 (library
  (name traintor)
- (libraries msat.sat fmt menhirLib parser_util))
+ (libraries msat.sat fmt menhirLib parser_util generalities))
 
 (menhir
  (flags --table --unused-token UNKNOWN)

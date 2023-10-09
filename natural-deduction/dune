@@ -1,6 +1,6 @@
 (library
  (name natural_deduction)
- (libraries ulmus fol_formula html_sig js_of_ocaml)
+ (libraries ulmus fol_formula html_sig js_of_ocaml generalities)
  (preprocess
   (pps ppx_monoid ppx_sexp_conv))
  (flags

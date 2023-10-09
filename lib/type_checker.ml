@@ -1,5 +1,5 @@
 open Ast
-open Result_syntax
+open Generalities.Result_ext
 open Environment
 
 let combine_opt xs ys =

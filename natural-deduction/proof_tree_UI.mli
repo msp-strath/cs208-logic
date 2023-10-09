@@ -60,7 +60,8 @@ end
 
 module Make
     (Goal : FORMULA)
-    (Assumption : FORMULA) (Calculus : sig
+    (Assumption : FORMULA)
+    (Calculus : sig
       include
         Proof_tree.CALCULUS
           with type goal = Goal.t
