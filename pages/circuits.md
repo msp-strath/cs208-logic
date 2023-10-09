@@ -32,7 +32,7 @@ allsat(or(X, Y, Z))
 print("Checking and...")
 
 allsat(and(X, Y, Z))
-  { for(n : node) if (n = X | n = Y | n = Z) n : activated(n) }
+  { for(n : node) n : activated(n) }
 ```
 
 ---

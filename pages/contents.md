@@ -13,9 +13,9 @@ In Part 1, we use logical modelling to describe and solve problems.
 5. [The Package Installation Problem](packages.html).
 6. [SAT solvers](sat.html), the underlying technology.
 7. [How to handle bigger problems](domains-and-parameters.html) with domains and parameters.
-8. [Resource allocation problems](resource-alloc.html), which are a kind of graph colouring problem.
-9. TBD: Circuits equivalence checking.
-10. TBD: Checking access control rules.
+8. [Resource allocation problems](resource-alloc.html), which are a kind of graph colouring problem. (*under construction*)
+9. [Converting to CNF](converting-to-cnf.html)
+10. [Circuits and equivalence checking](circuits.html) (*under construction*)
 
 ## Part 2: Deductive proof
 
