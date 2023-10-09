@@ -41,8 +41,8 @@ ifsat(main)
   { for (n : node)
       n:[for (c : colour)
            if (is_colour(n,c))
-	     c
-	]
+             c
+        ]
   }
 
 ```
