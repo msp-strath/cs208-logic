@@ -3,43 +3,54 @@ module type VALIDATOR = sig
 
   val read_config : string -> config option
 
+  val placeholder : config -> string
+
   val validate : config -> string -> (string, string) result
 end
 
-module Make (V : VALIDATOR) = struct
+let component (type config)
+      (module V : VALIDATOR with type config = config)
+      configuration_data =
+  match V.read_config configuration_data with
+  | None ->
+     Error_display.component "Bad configuration"
+  | Some config ->
+     let module C =
+       struct
+         type state =
+           { value  : string
+           ; result : (string, string) result
+           }
 
-  type state =
-    { value  : string
-    ; config : V.config
-    ; result : (string, string) result
-    }
+         type action = Update of string
 
-  type action = Update of string
+         let render { value; result } =
+           let module H = Ulmus.Html in
+           let module A = H.A in
+           let module E = H.E in
+           H.div ~attrs:[ A.class_ "defnsat" ] @@
+             H.concat_list [
+                 H.div ~attrs:[ A.class_ "defnsat-entry" ]
+                   (H.input
+                      ~attrs:[
+                        A.value value;
+                        E.onchange (fun str -> Update str)
+                   ]);
+                 H.div ~attrs: [ A.class_ "defnsat-parseresult" ]
+                   (match result with
+                    | Error msg ->
+                       H.div ~attrs:[ A.class_ "errormsg" ] (H.text msg)
+                    | Ok msg ->
+                       H.div ~attrs:[ A.class_ "successmsg" ] (H.text msg))
+               ]
 
-  let render { value; result; config = _ } =
-    let module H = Ulmus.Html in
-    let module A = H.A in
-    let module E = H.E in
-    H.div ~attrs:[ A.class_ "defnsat" ] @@
-      H.concat_list [
-          H.div ~attrs:[ A.class_ "defnsat-entry" ]
-            (H.input
-               ~attrs:[
-                 A.value value;
-                 E.onchange (fun str -> Update str)
-               ]);
-          H.div ~attrs: [ A.class_ "defnsat-parseresult" ]
-            (match result with
-             | Error msg ->
-                H.div ~attrs:[ A.class_ "errormsg" ] (H.text msg)
-             | Ok msg ->
-                H.div ~attrs:[ A.class_ "successmsg" ] (H.text msg))
-        ]
+         let update action _state =
+           match action with
+           | Update value ->
+              let result = V.validate config value in
+              {value; result}
 
-  let update action state =
-    match action with
-    | Update value ->
-       let result = V.validate state.config value in
-       {state with value; result}
-
-end
+         let initial =
+           { value = ""; result = V.validate config "" }
+       end
+     in (module C : Ulmus.COMPONENT)
