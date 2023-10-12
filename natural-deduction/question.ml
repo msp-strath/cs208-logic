@@ -1,9 +1,3 @@
-module type S = sig
-  include Ulmus.S
-
-  val initial : state
-end
-
 (* FIXME: make a general one for any Proof_tree_UI based instance *)
 let opsem formula =
   let module Component = struct
@@ -31,7 +25,7 @@ let opsem formula =
 
     let update = PTU.update
   end in
-  (module Component : S)
+  (module Component : Ulmus.COMPONENT)
 
 let focusing ?name ?assumps_name ?(assumptions = []) formula =
   let assumptions =
@@ -40,42 +34,43 @@ let focusing ?name ?assumps_name ?(assumptions = []) formula =
         | x, `V -> (x, Focused.A_Termvar) | x, `F f -> (x, Focused.A_Formula f))
       assumptions
   in
-  let module Component = struct
-    type state = { editor : Focused_UI.state; showtree : bool }
-    type action = ToggleShowtree | Edit of Focused_UI.action
+  let module Component =
+    struct
+      type state = { editor : Focused_UI.state; showtree : bool }
+      type action = ToggleShowtree | Edit of Focused_UI.action
 
-    let initial =
-      {
-        editor = Focused_UI.init ~assumptions (Checking formula);
-        showtree = false;
-      }
+      let initial =
+        {
+          editor = Focused_UI.init ~assumptions (Checking formula);
+          showtree = false;
+        }
 
-    let render { editor; showtree } =
-      let open Ulmus.Html in
-      div
-        ~attrs:[ A.class_ "vertical" ]
-        [%concat
-          div
-            ~attrs:[ A.class_ "horizontal" ]
-            [%concat
-              button
-                ~attrs:[ E.onclick ToggleShowtree ]
-                (text "Show / Hide proof tree")];
-          map
-            (fun a -> Edit a)
-            (Focused_UI.render ?name ?assumps_name ~showtree editor)]
+      let render { editor; showtree } =
+        let open Ulmus.Html in
+        div
+          ~attrs:[ A.class_ "vertical" ]
+          [%concat
+              div
+              ~attrs:[ A.class_ "horizontal" ]
+              [%concat
+                  button
+                  ~attrs:[ E.onclick ToggleShowtree ]
+                  (text "Show / Hide proof tree")];
+           map
+             (fun a -> Edit a)
+             (Focused_UI.render ?name ?assumps_name ~showtree editor)]
 
-    let update action ({ editor; showtree } as state) =
-      match action with
-      | ToggleShowtree -> { state with showtree = not showtree }
-      | Edit action -> { state with editor = Focused_UI.update action editor }
+      let update action ({ editor; showtree } as state) =
+        match action with
+        | ToggleShowtree -> { state with showtree = not showtree }
+        | Edit action -> { state with editor = Focused_UI.update action editor }
 
-    let sexp_of_state { editor; _ } = Focused_UI.sexp_of_state editor
+      let sexp_of_state { editor; _ } = Focused_UI.sexp_of_state editor
 
-    let state_of_sexp sexp =
-      {
-        editor = Focused_UI.state_of_sexp assumptions (Checking formula) sexp;
-        showtree = false;
-      }
-  end in
-  (module Component : S)
+      let state_of_sexp sexp =
+        {
+          editor = Focused_UI.state_of_sexp assumptions (Checking formula) sexp;
+          showtree = false;
+        }
+    end in
+  (module Component : Ulmus.COMPONENT)
