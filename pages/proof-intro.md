@@ -41,7 +41,7 @@ KxJ1uu73JSs
  (rule
   (name "A3")
   (premises)
-  (conclusion (has-fibrous-outer-layer coconut)))
+  (conclusion (is-covered-in-fibres coconut)))
 
  (rule
   (name "A4")
@@ -76,7 +76,7 @@ KxJ1uu73JSs
  (rule
   (name "A3")
   (premises)
-  (conclusion (has-fibrous-outer-layer coconut)))
+  (conclusion (is-covered-in-fibres coconut)))
 
  (rule
   (name "A4")
@@ -113,7 +113,7 @@ KxJ1uu73JSs
  (rule
   (name "A3")
   (premises)
-  (conclusion (has-fibrous-outer-layer coconut)))
+  (conclusion (is-covered-in-fibres coconut)))
 
  (rule
   (name "A4")
