@@ -3,7 +3,7 @@ module type UI_SPEC = sig
 
   val string_of_goal : Calculus.goal -> string
 
-  val string_of_assumption : Calculus.assumption -> string
+  val string_of_assumption : string -> Calculus.assumption -> string
 
   val string_of_error : Calculus.error -> string
 
@@ -13,11 +13,6 @@ module type UI_SPEC = sig
 end
 
 open Sexplib0.Sexp_conv
-
-type ('a, 'b) result = ('a, 'b) Stdlib.result =
-  | Ok of 'a
-  | Error of 'b
-[@@deriving sexp]
 
 module Make (Spec : UI_SPEC) (Goal : sig val goal : Spec.Calculus.goal end) : sig
   type state
@@ -104,7 +99,7 @@ end = struct
         let assumptions =
           concat_map
             (function
-              | (_, f), _ -> text (string_of_assumption f ^ ", "))
+              | (name, f), _ -> text (string_of_assumption name f ^ ", "))
             assumptions
         in
         assumption_box ~assumptions rendered_subtree

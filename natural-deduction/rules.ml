@@ -256,7 +256,7 @@ module UI (Rules : RULES) = struct
 
   let string_of_goal = Term.to_string of_void
 
-  let string_of_assumption = of_void
+  let string_of_assumption _ = of_void
 
   let string_of_error = Fun.id
 
