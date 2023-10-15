@@ -1,2 +1,3 @@
 (library
-  (name generalities))
+ (name generalities)
+ (libraries sexplib))

@@ -11,6 +11,9 @@ let ( and* ) : type a b e. (a, e) result -> (b, e) result -> (a * b, e) result =
   | Error _ as e, _ -> e
   | _, (Error _ as e) -> e
 
+let errorf fmt =
+  Printf.ksprintf (fun msg -> Error msg) fmt
+
 let annotate_error annotation = function
   | Ok _ as x -> x
   | Error e -> Error (Annotated.add annotation e)

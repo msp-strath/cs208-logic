@@ -22,8 +22,7 @@ module Term : sig
 
   val equal : ('a -> 'b -> bool) -> 'a t -> 'b t -> bool
 
-  val of_sexp : Sexplib0.Sexp.t ->
-                (string t, (string, Sexplib0.Sexp.t) Annotated.t) result
+  val of_sexp : string t Sexp_parser.parser
 
   val check_no_vars : 'var t -> (void t, [>`HasVar of 'var]) result
 
@@ -133,29 +132,6 @@ type rule_description =
   ; conclusion : meta Term.t
   }
 
-(*
-module ExampleRules = struct
-  let rules =
-    [ "R1",
-      { premises = [ Fun("furry", [Var "X"])
-                   ; Fun("makes-milk", [Var "X"])
-                   ]
-      ; conclusion = Fun("mammal", [Var "X"])
-      }
-
-    ; "A1",
-      { premises = []
-      ; conclusion = Fun("furry", [Fun("bear", [])])
-      }
-
-    ; "A2",
-      { premises = []
-      ; conclusion = Fun("makes-milk", [Fun("bear", [])])
-      }
-    ]
-end
- *)
-
 let eq_var (x : void) (y : void) = of_void y
 
 let rec match_term (pattern : meta Term.t) (term : void Term.t) subst =
@@ -192,7 +168,6 @@ module type RULES = sig
 end
 
 module OfSexp = struct
-  open Sexplib0.Sexp
   open Result_ext
 
   (* Check that every variable in the premises appears in the
@@ -206,70 +181,33 @@ module OfSexp = struct
       else
         Error (Printf.sprintf "Variable '%s' in premises does not appear in the conclusion" v)
     in
-    let* () = Result_ext.traverse_ (Term.traverse_ check_var) premises in
+    let* () = traverse_ (Term.traverse_ check_var) premises in
     ok { premises; conclusion }
 
-  let extract_all tag =
-    List.partition_map
-      (function
-       | List (Atom head::body) when String.equal head tag ->
-          Left body
-       | sexp ->
-          Right sexp)
+  open Sexp_parser
 
-  let expect_one parent tag f sexps =
-    match extract_all tag sexps with
-    | [tagged], other ->
-       let* result = f parent tagged in
-       Ok (result, other)
-    | [], _other ->
-       annotate_error parent @@ Error (Printf.sprintf "Expecting a '(%s ...)' entry" tag)
-    | _::_::_, _other ->
-       annotate_error parent @@ Error (Printf.sprintf "Multiple '(%s ...)' entries" tag)
+  let rule =
+    let* name       = consume_one "name" (singleton atom) in
+    let* premises   = consume_opt "premises" (list Term.of_sexp) in
+    let* conclusion = consume_one "conclusion" (singleton Term.of_sexp) in
+    let* ()         = assert_nothing_left in
+    let  premises   = Option.value ~default:[] premises in
+    let* rule       = lift @@ check_rule premises conclusion in
+    return (name, rule)
 
-  let expect_nil parent = function
-    | [] -> Ok ()
-    | _ -> annotate_error parent @@ Error (Printf.sprintf "Unneeded entries")
+  let config =
+    tagged "config"
+      (let* rules = consume_all "rule" rule in
+       let* goal  = consume_one "goal" (singleton Term.of_sexp) in
+       let* ()    = assert_nothing_left in
+       let* goal  = lift @@ Term.traverse (errorf "Goal has variable '%s'") goal in
+       return (rules, goal))
 
-  let atom parent = function
-    | [Atom atom] -> Ok atom
-    | _           -> annotate_error parent @@ Error "Expecting an atom"
-
-  let expect_head tag = function
-    | List (Atom head::items) when String.equal head tag -> Ok items
-    | sexp ->
-       annotate_error sexp @@ Error (Printf.sprintf "Expecting (%s ...)" tag)
-
-  let list_entry f _parent = traverse f
-  let single_entry f parent = function
-    | [sexp] -> f sexp
-    | _      -> annotate_error parent @@ Error (Printf.sprintf "Expecting single entry")
-
-  let rule_of_sexp sexp items =
-    let* name,       items = expect_one sexp "name" atom items in
-    let* premises,   items = expect_one sexp "premises" (list_entry Term.of_sexp) items in
-    let* conclusion, items = expect_one sexp "conclusion" (single_entry Term.of_sexp) items in
-    let* ()                = expect_nil sexp items in
-    let* rule = annotate_error sexp @@ check_rule premises conclusion in
-    Ok (name, rule)
-
-  let config sexp =
-    let* items        = expect_head "config" sexp in
-    let  rules, items = extract_all "rule" items in
-    let* goal,  items = expect_one sexp "goal" (single_entry Term.of_sexp) items in
-    let* ()           = expect_nil sexp items in
-    let* rules        = traverse (rule_of_sexp sexp) rules in
-    match Term.traverse (fun v -> Error (`HasVar v)) goal with
-    | Ok goal ->
-       Ok (rules, goal)
-    | Error (`HasVar _) ->
-       annotate_error sexp (Error "goal has variables")
-
-  let config_rules_only sexp =
-    let* items        = expect_head "config" sexp in
-    let  rules, items = extract_all "rule" items in
-    let* ()           = expect_nil sexp items in
-    traverse (rule_of_sexp sexp) rules
+  let config_rules_only =
+    tagged "config"
+      (let* rules = consume_all "rule" rule in
+       let* ()    = assert_nothing_left in
+       return rules)
 end
 
 module Calculus (Rules : RULES) : sig
