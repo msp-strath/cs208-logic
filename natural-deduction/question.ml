@@ -107,3 +107,15 @@ let focusing_component config =
      let detail = Generalities.Annotated.detail err in
      let message = "Configuration failure: " ^ detail in
      Widgets.Error_display.component message
+
+let tree_component config =
+  match config_p (Sexplib.Sexp.of_string config) with
+  | Ok (_assumptions, goal) ->
+     (module Proof_tree_UI2.Make
+               (Focused_ui2)
+               (struct let goal = Focused.Checking goal end)
+             : Ulmus.COMPONENT)
+  | Error err ->
+     let detail = Generalities.Annotated.detail err in
+     let message = "Configuration failure: " ^ detail in
+     Widgets.Error_display.component message

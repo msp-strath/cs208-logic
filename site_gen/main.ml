@@ -49,7 +49,8 @@ let template ~title:title_text ~body:body_html ~script_url =
 
 let code_render _attrs kind content =
   match kind with
-  | "lmt" | "tickbox" | "textbox" | "rules" | "rules-display" | "focused-nd" as kind ->
+  | "lmt" | "tickbox" | "textbox"
+  | "rules" | "rules-display" | "focused-nd" | "focused-tree" as kind ->
      let open Html_static in
      Some (div ~attrs:[ raw_attr "data-widget" kind ] (text content))
   | "youtube" ->
