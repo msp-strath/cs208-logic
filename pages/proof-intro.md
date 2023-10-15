@@ -2,49 +2,127 @@
 
 # Deductive Proof
 
-```rules-proof
-(rule
- (name "Rule1")
- (premises (furry X) (makes-milk X))
- (conclusion (mammal X)))
+We now look at the general idea of deductive systems, collections of inference rules that allow us to derive new facts from existing ones. This is a radically different approach to the “enumerate all possible truth values” approaches we have taken so far by writing out truth tables or by using a SAT solver. Instead, we construct chains (or, more generally, trees) of rules connected together that lead us step by step from some assumptions to a conclusion.
 
-(rule
- (name "Axiom1")
- (conclusion (furry bear)))
+## Video
 
-(rule
- (name "Axiom2")
- (conclusion (makes-milk bear)))
-
-(rule
- (name "Rule2")
- (premise (has-fibrous-outer-layer X))
- (conclusion (furry X)))
-
-(rule
- (name "Axiom3")
- (conclusion (has-fibrous-outer-layer coconut)))
-
-(rule
- (name "Axiom4")
- (conclusion (makes-milk coconut)))
-
-(goal (mammal bear))
+```youtube
+KxJ1uu73JSs
 ```
 
-```rules-proof
-(rule
- (name "OR-elim")
- (parameters P Q)
- (premises (or P Q) (|- P R) (|- Q R))
- (conclusion R))
+[Slides for the video](week04-slides.pdf)
+
+## Example
+
+### Rules
+
+```rules-display
+(config
+ (rule
+  (name "R1")
+  (premises (furry X) (makes-milk X))
+  (conclusion (mammal X)))
+
+ (rule
+  (name "A1")
+  (premises)
+  (conclusion (furry bear)))
+
+ (rule
+  (name "A2")
+  (premises)
+  (conclusion (makes-milk bear)))
+
+ (rule
+  (name "R2")
+  (premises (is-covered-in-fibres X))
+  (conclusion (furry X)))
+
+ (rule
+  (name "A3")
+  (premises)
+  (conclusion (has-fibrous-outer-layer coconut)))
+
+ (rule
+  (name "A4")
+  (premises)
+  (conclusion (makes-milk coconut))))
 ```
 
-```nd-proof
-(goal "A -> A")
-(assumptions
-  (a-is-true "A"))
+### Example 1
+
+```rules
+(config
+ (rule
+  (name "R1")
+  (premises (furry X) (makes-milk X))
+  (conclusion (mammal X)))
+
+ (rule
+  (name "A1")
+  (premises)
+  (conclusion (furry bear)))
+
+ (rule
+  (name "A2")
+  (premises)
+  (conclusion (makes-milk bear)))
+
+ (rule
+  (name "R2")
+  (premises (is-covered-in-fibres X))
+  (conclusion (furry X)))
+
+ (rule
+  (name "A3")
+  (premises)
+  (conclusion (has-fibrous-outer-layer coconut)))
+
+ (rule
+  (name "A4")
+  (premises)
+  (conclusion (makes-milk coconut)))
+
+ (goal (mammal bear)))
 ```
+
+### Example 2
+
+```rules
+(config
+ (rule
+  (name "R1")
+  (premises (furry X) (makes-milk X))
+  (conclusion (mammal X)))
+
+ (rule
+  (name "A1")
+  (premises)
+  (conclusion (furry bear)))
+
+ (rule
+  (name "A2")
+  (premises)
+  (conclusion (makes-milk bear)))
+
+ (rule
+  (name "R2")
+  (premises (is-covered-in-fibres X))
+  (conclusion (furry X)))
+
+ (rule
+  (name "A3")
+  (premises)
+  (conclusion (has-fibrous-outer-layer coconut)))
+
+ (rule
+  (name "A4")
+  (premises)
+  (conclusion (makes-milk coconut)))
+
+ (goal (mammal coconut)))
+```
+
 
 ---
 

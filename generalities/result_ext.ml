@@ -1,3 +1,5 @@
+let ok = Result.ok
+
 let ( let* ) x f = match x with
   | Ok a -> f a
   | Error _ as e -> e

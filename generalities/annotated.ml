@@ -8,3 +8,5 @@ let add annotation detail =
 
 let map f { detail; annotation } =
   { detail; annotation = f annotation }
+
+let detail {detail;_} = detail

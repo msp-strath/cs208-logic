@@ -4,13 +4,14 @@ type void = | [@@deriving sexp]
 let of_void : 'a. void -> 'a = function _ -> .
 type meta = string
 
-(* Heterogeneous list equal *)
+(* Heterogeneous list equality *)
 let rec list_equal elem_eq xs ys =
   match xs, ys with
   | [], [] -> true
   | x::xs, y::ys -> elem_eq x y && list_equal elem_eq xs ys
   | _ -> false
 
+(******************************************************************************)
 module VarSet = Set.Make (String)
 module VarMap = Map.Make (String)
 
@@ -21,7 +22,12 @@ module Term : sig
 
   val equal : ('a -> 'b -> bool) -> 'a t -> 'b t -> bool
 
-  val of_sexp : Sexplib0.Sexp.t -> (string t, (string, Sexplib0.Sexp.t) Annotated.t) result
+  val of_sexp : Sexplib0.Sexp.t ->
+                (string t, (string, Sexplib0.Sexp.t) Annotated.t) result
+
+  val check_no_vars : 'var t -> (void t, [>`HasVar of 'var]) result
+
+  val traverse : ('a -> ('b, 'e) result) -> 'a t -> ('b t, 'e) result
 
   val traverse_ : ('a -> (unit, 'b) result) -> 'a t -> (unit, 'b) result
 
@@ -30,10 +36,13 @@ module Term : sig
   val to_string : ('a -> string) -> 'a t -> string
 end = struct
   open Sexplib.Type
+  open Result_ext
 
   type 'a t =
     | Var of 'a
     | Fun of string * 'a t list
+
+  let var x = Var x
 
   let is_uppercase_ascii = function
     | 'A' .. 'Z' -> true
@@ -59,15 +68,13 @@ end = struct
     else
       Ok (`Symbol str)
 
-  let rec of_sexp sexp =
-    let open Result_ext in
-    match sexp with
-    | Atom str ->
+  let rec of_sexp = function
+    | Atom str as sexp ->
        (let* kind = annotate_error sexp @@ classify_atom str in
         match kind with
         | `Var vnm -> Ok (Var str)
         | `Symbol symb -> Ok (Fun (symb, [])))
-    | List (Atom str :: sexps) ->
+    | List (Atom str :: sexps) as sexp ->
        (let* kind = annotate_error sexp @@ classify_atom str in
         match kind with
         | `Var vnm ->
@@ -76,9 +83,21 @@ end = struct
         | `Symbol symb ->
            let* terms = traverse of_sexp sexps in
            Ok (Fun (symb, terms)))
-    | List _ ->
+    | List _ as sexp ->
        annotate_error sexp @@
          Error "Empty list"
+
+  let rec check_no_vars = function
+    | Var v -> Error (`HasVar v)
+    | Fun (fnm, args) ->
+       let* args = traverse check_no_vars args in
+       ok (Fun (fnm, args))
+
+  let rec traverse f = function
+    | Var v -> Result.map var (f v)
+    | Fun (fnm, args) ->
+       let* args = Result_ext.traverse (traverse f) args in
+       ok (Fun (fnm, args))
 
   let rec to_string string_of_var = function
     | Var vnm -> string_of_var vnm
@@ -114,6 +133,7 @@ type rule_description =
   ; conclusion : meta Term.t
   }
 
+(*
 module ExampleRules = struct
   let rules =
     [ "R1",
@@ -134,22 +154,9 @@ module ExampleRules = struct
       }
     ]
 end
+ *)
 
-(* Check that every variable in the premises appears in the
-   conclusion, so we will never need to prompt for variables'
-   values. *)
-let check_rule { premises; conclusion } =
-  let conclusion_vars = Term.vars conclusion VarSet.empty in
-  let check_var v =
-    if VarSet.mem v conclusion_vars then
-      Ok ()
-    else
-      Error (Printf.sprintf "Variable '%s' in premises does not appear in the conclusion" v)
-  in
-  Result_ext.traverse_ (Term.traverse_ check_var) premises
-
-let eq_var (x : void) (y : void) =
-  match y with _ -> .
+let eq_var (x : void) (y : void) = of_void y
 
 let rec match_term (pattern : meta Term.t) (term : void Term.t) subst =
   match pattern, term with
@@ -182,6 +189,87 @@ let rec apply_subst subst = function
 
 module type RULES = sig
   val rules : (string * rule_description) list
+end
+
+module OfSexp = struct
+  open Sexplib0.Sexp
+  open Result_ext
+
+  (* Check that every variable in the premises appears in the
+     conclusion, so we will never need to prompt for variables'
+     values. *)
+  let check_rule premises conclusion =
+    let conclusion_vars = Term.vars conclusion VarSet.empty in
+    let check_var v =
+      if VarSet.mem v conclusion_vars then
+        Ok ()
+      else
+        Error (Printf.sprintf "Variable '%s' in premises does not appear in the conclusion" v)
+    in
+    let* () = Result_ext.traverse_ (Term.traverse_ check_var) premises in
+    ok { premises; conclusion }
+
+  let extract_all tag =
+    List.partition_map
+      (function
+       | List (Atom head::body) when String.equal head tag ->
+          Left body
+       | sexp ->
+          Right sexp)
+
+  let expect_one parent tag f sexps =
+    match extract_all tag sexps with
+    | [tagged], other ->
+       let* result = f parent tagged in
+       Ok (result, other)
+    | [], _other ->
+       annotate_error parent @@ Error (Printf.sprintf "Expecting a '(%s ...)' entry" tag)
+    | _::_::_, _other ->
+       annotate_error parent @@ Error (Printf.sprintf "Multiple '(%s ...)' entries" tag)
+
+  let expect_nil parent = function
+    | [] -> Ok ()
+    | _ -> annotate_error parent @@ Error (Printf.sprintf "Unneeded entries")
+
+  let atom parent = function
+    | [Atom atom] -> Ok atom
+    | _           -> annotate_error parent @@ Error "Expecting an atom"
+
+  let expect_head tag = function
+    | List (Atom head::items) when String.equal head tag -> Ok items
+    | sexp ->
+       annotate_error sexp @@ Error (Printf.sprintf "Expecting (%s ...)" tag)
+
+  let list_entry f _parent = traverse f
+  let single_entry f parent = function
+    | [sexp] -> f sexp
+    | _      -> annotate_error parent @@ Error (Printf.sprintf "Expecting single entry")
+
+  let rule_of_sexp sexp items =
+    let* name,       items = expect_one sexp "name" atom items in
+    let* premises,   items = expect_one sexp "premises" (list_entry Term.of_sexp) items in
+    let* conclusion, items = expect_one sexp "conclusion" (single_entry Term.of_sexp) items in
+    let* ()                = expect_nil sexp items in
+    let* rule = annotate_error sexp @@ check_rule premises conclusion in
+    Ok (name, rule)
+
+  let config sexp =
+    let* items        = expect_head "config" sexp in
+    let  rules, items = extract_all "rule" items in
+    let* goal,  items = expect_one sexp "goal" (single_entry Term.of_sexp) items in
+    let* ()           = expect_nil sexp items in
+    let* rules        = traverse (rule_of_sexp sexp) rules in
+    match Term.traverse (fun v -> Error (`HasVar v)) goal with
+    | Ok goal ->
+       Ok (rules, goal)
+    | Error (`HasVar _) ->
+       annotate_error sexp (Error "goal has variables")
+
+  let config_rules_only sexp =
+    let* items        = expect_head "config" sexp in
+    let  rules, items = extract_all "rule" items in
+    let* ()           = expect_nil sexp items in
+    traverse (rule_of_sexp sexp) rules
 end
 
 module Calculus (Rules : RULES) : sig
@@ -222,10 +310,10 @@ end = struct
        let subgoals = List.map (fun t -> [], apply_subst subst t) premises in
        Ok (subgoals, ())
     | None ->
-       Error "rule does apply"
+       Error "rule conclusion does not match goal"
 end
 
-module UI (Rules : RULES) : Proof_tree_UI2.UI_SPEC = struct
+module UI (Rules : RULES) = struct
 
   module Calculus = Calculus (Rules)
 
@@ -238,9 +326,60 @@ module UI (Rules : RULES) : Proof_tree_UI2.UI_SPEC = struct
   let label_of_rule = Calculus.label_of_rule
 
   let parse_rule = Calculus.parse_rule
-
 end
 
+let inference_rule (name, {premises; conclusion}) =
+  let open Ulmus.Html in
+  let proofbox elements =
+    div ~attrs:[A.class_ "proofbox"] elements
+  and premisebox elements =
+    div ~attrs:[A.class_ "premisebox"] elements
+  and formulabox sequent =
+    div ~attrs:[ A.class_ "formulabox"]
+      (text (Term.to_string Fun.id sequent))
+  in
+  proofbox begin%concat
+    premisebox begin%concat
+      concat_map (fun s -> proofbox (formulabox s)) premises;
+      div ~attrs:[A.class_ "rulename"] (text name)
+    end;
+    formulabox conclusion
+  end
+
+let display_rules rules =
+  match OfSexp.config_rules_only (Sexplib.Sexp.of_string rules) with
+  | Ok rules ->
+     let module C = struct
+         type state = unit
+         type action = void
+
+         let render () =
+           let open Ulmus.Html in
+           div ~attrs:[A.style "display: flex; flex-wrap: wrap"]
+             (concat_map (fun h -> div ~attrs:[A.style "margin: 10px"] h)
+                (List.map inference_rule rules))
+         let update action () = of_void action
+         let initial = ()
+       end
+     in
+     (module C : Ulmus.COMPONENT)
+  | Error err ->
+      let msg = Annotated.detail err in
+      failwith msg
+
+let component_of_rules rules goal =
+  let module Rules = struct let rules = rules end in
+  let module Goal = struct let goal = goal end in
+  (module Proof_tree_UI2.Make (UI (Rules)) (Goal) : Ulmus.COMPONENT)
+
+let from_rules config =
+  match OfSexp.config (Sexplib.Sexp.of_string config) with
+  | Ok (rules, goal) ->
+     component_of_rules rules goal
+  | Error err ->
+     let msg = Annotated.detail err in
+     (* FIXME: display inline *)
+     failwith ("ERROR: " ^ msg)
 
 (*
   let module P =

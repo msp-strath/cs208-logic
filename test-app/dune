@@ -1,7 +1,7 @@
 (executable
  (name lmt)
  (modes js)
- (libraries ulmus lmt_widget widgets))
+ (libraries ulmus lmt_widget widgets natural_deduction))
 
 (alias
  (name all)

@@ -12,7 +12,6 @@ module type UI_SPEC = sig
   val parse_rule : string -> (Calculus.rule, string) result
 end
 
-
 open Sexplib0.Sexp_conv
 
 type ('a, 'b) result = ('a, 'b) Stdlib.result =
@@ -20,13 +19,13 @@ type ('a, 'b) result = ('a, 'b) Stdlib.result =
   | Error of 'b
 [@@deriving sexp]
 
-module Make (Spec : UI_SPEC) : sig
+module Make (Spec : UI_SPEC) (Goal : sig val goal : Spec.Calculus.goal end) : sig
   type state
   type action
 
   val render : state -> action Ulmus.html
   val update : action -> state -> state
-  val initial : Spec.Calculus.goal -> state
+  val initial : state
 end = struct
 
   open Spec
@@ -111,26 +110,30 @@ end = struct
         assumption_box ~assumptions rendered_subtree
 
   let render_hole point _ Hole.{ user_input; message } =
-    (match message with
-     | Some msg -> p (text msg)
-     | None -> empty)
-    ^^
-    input
-      ~attrs:[
-        A.class_ "proofcommand";
-        A.value user_input;
-        A.placeholder "<command>";
-        E.oninput (fun value -> Update (point, value));
-        E.onkeydown (fun _mods key ->
-            match key with
-            | Js_of_ocaml.Dom_html.Keyboard_code.Enter ->
-               Some (SendRule (point, user_input))
-            | _ ->
-               None)
-      ]
+    let conclusion = PT.goal point in
+    proofbox
+      (premisebox
+         (input
+            ~attrs:[
+              A.class_ "proofcommand";
+              A.value user_input;
+              A.placeholder "<command>";
+              E.oninput (fun value -> Update (point, value));
+              E.onkeydown (fun _mods key ->
+                  match key with
+                  | Js_of_ocaml.Dom_html.Keyboard_code.Enter ->
+                     Some (SendRule (point, user_input))
+                  | _ ->
+                     None)
+         ] ^^ (match message with
+               | Some msg -> p (text msg)
+               | None -> empty))
+       ^^
+         formulabox point conclusion)
 
   let render prooftree : action Ulmus.html =
-    PT.fold render_hole render_rule_application render_box prooftree
+    div ~attrs:[ A.class_ "worksheet" ]
+      (PT.fold render_hole render_rule_application render_box prooftree)
 
   let update action prooftree =
     match action with
@@ -151,6 +154,6 @@ end = struct
         | Error msg ->
            PT.set_hole { user_input; message = Some msg} point)
 
-  let initial goal =
-    PT.init goal
+  let initial =
+    PT.init Goal.goal
 end

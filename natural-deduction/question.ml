@@ -1,3 +1,4 @@
+(*
 (* FIXME: make a general one for any Proof_tree_UI based instance *)
 let opsem formula =
   let module Component = struct
@@ -26,6 +27,7 @@ let opsem formula =
     let update = PTU.update
   end in
   (module Component : Ulmus.COMPONENT)
+ *)
 
 let focusing ?name ?assumps_name ?(assumptions = []) formula =
   let assumptions =
@@ -74,3 +76,24 @@ let focusing ?name ?assumps_name ?(assumptions = []) formula =
         }
     end in
   (module Component : Ulmus.COMPONENT)
+
+let focusing_component config =
+  match Sexplib.Sexp.of_string config with
+  | Sexplib.Sexp.List [List assumptions; Atom goal] ->
+     (let assumptions =
+       List.map
+         (function
+          | Sexplib.Sexp.List [Atom nm; Atom f] ->
+             (match Fol_formula.Formula.of_string f with
+              | Ok f -> (nm, `F f)
+              | Error _ -> failwith "BAD ASSUMPTION")
+          | _ -> failwith "BAD")
+         assumptions
+     in
+     match Fol_formula.Formula.of_string goal with
+     | Ok goal ->
+        focusing ~assumptions goal
+     | Error _ ->
+        failwith "BAD FORMULA")
+  | _ ->
+     failwith "BAD CONFIG"

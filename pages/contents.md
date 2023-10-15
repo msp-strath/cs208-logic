@@ -23,4 +23,5 @@ In Part 1, we use logical modelling to describe and solve problems.
 
 In Part 2, we strive for truth through proof.
 
-1. TBD...
+1. [Introduction to Deductive Proof](proof-intro.html).
+2. [Natural Deduction](natural-deduction-intro.html).

@@ -22,7 +22,8 @@ let template ~title:title_text ~body:body_html ~script_url =
                 ];
               link ~attrs:[
                   A.rel "stylesheet";
-                  A.href "https://cdn.simplecss.org/simple.min.css"
+                  (* A.href "https://cdn.simplecss.org/simple.min.css" *)
+                  A.href "simple.min.css"
                 ];
               link ~attrs:[
                   A.rel "stylesheet";
@@ -48,9 +49,9 @@ let template ~title:title_text ~body:body_html ~script_url =
 
 let code_render _attrs kind content =
   match kind with
-  | "lmt" ->
+  | "lmt" | "tickbox" | "textbox" | "rules" | "rules-display" | "focused-nd" as kind ->
      let open Html_static in
-     Some (div ~attrs:[ raw_attr "data-widget" "lmt" ] (text content))
+     Some (div ~attrs:[ raw_attr "data-widget" kind ] (text content))
   | "youtube" ->
      let identifier = String.trim content in
      let open Html_static in
