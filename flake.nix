@@ -59,6 +59,7 @@
         devShells.default = pkgs.mkShell {
           inputsFrom = builtins.attrValues packages;
           buildInputs = devPackages ++ [
+            pkgs.pikchr
 #            pkgs.z3
             # You can add packages from nixpkgs here
           ];
