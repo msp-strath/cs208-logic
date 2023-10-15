@@ -2,7 +2,6 @@ open Generalities
 
 type void = | [@@deriving sexp]
 let of_void : 'a. void -> 'a = function _ -> .
-type meta = string
 
 (* Heterogeneous list equality *)
 let rec list_equal elem_eq xs ys =
@@ -128,13 +127,13 @@ end = struct
 end
 
 type rule_description =
-  { premises   : meta Term.t list
-  ; conclusion : meta Term.t
+  { premises   : string Term.t list
+  ; conclusion : string Term.t
   }
 
 let eq_var (x : void) (y : void) = of_void y
 
-let rec match_term (pattern : meta Term.t) (term : void Term.t) subst =
+let rec match_term (pattern : string Term.t) (term : void Term.t) subst =
   match pattern, term with
   | Var v, term ->
      (match VarMap.find_opt v subst with
@@ -142,7 +141,7 @@ let rec match_term (pattern : meta Term.t) (term : void Term.t) subst =
       | Some term' ->
          if Term.equal eq_var term term' then Some subst else None)
   | Fun (fnm1, terms1), Fun (fnm2, terms2) ->
-     if fnm1 = fnm2 then
+     if String.equal fnm1 fnm2 then
        match_terms terms1 terms2 subst
      else
        None
