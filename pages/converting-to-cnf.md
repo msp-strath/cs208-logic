@@ -16,8 +16,8 @@ The second technique is known as the "Tseytin" transformation. This works by tra
 
 ## Multiplying Out
 
-```
-VIDEO TO BE PLACED HERE
+```youtube
+GZMQSBfWd1c
 ```
 
 ### Summary
@@ -61,8 +61,8 @@ The "slow" way of converting to CNF consists of the following steps:
 
 ## Tseytin Transformation
 
-```
-VIDEO TO BE PLACED HERE
+```youtube
+tx3tgpzZPqo
 ```
 
 ### Summary
