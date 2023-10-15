@@ -1,4 +1,6 @@
+open Generalities
 open Focused
+open Command
 
 let valid_name str =
   let is_alpha = function 'A' .. 'Z' | 'a' .. 'z' | '_' -> true | _ -> false
@@ -8,80 +10,58 @@ let valid_name str =
   in
   String.length str > 0
   && is_alpha str.[0]
-  &&
-  try
-    String.iter (fun c -> if not (is_alphanum c) then failwith "") str;
-    true
-  with Failure _ -> false
+  && String.for_all is_alphanum str
 
-let of_string = function
-  | "true" -> Ok Truth
-  | "split" -> Ok Split
-  | "left" -> Ok Left
-  | "right" -> Ok Right
-  | "apply" -> Ok Implies_elim
-  | "first" -> Ok Conj_elim1
-  | "second" -> Ok Conj_elim2
-  | "false" -> Ok Absurd
-  | "not-elim" -> Ok NotElim
-  | "refl" | "reflexivity" -> Ok Refl
-  | "rewrite->" -> Ok (Rewrite `ltr)
-  | "rewrite<-" -> Ok (Rewrite `rtl)
-  | "done" -> Ok Close
-  | str -> (
-      (* FIXME: this is very shonky *)
-      try
-        Scanf.sscanf str "use %s" (fun i ->
-            if not (valid_name i) then Error "need a name" else Ok (Use i))
-      with _ -> (
-        try
-          Scanf.sscanf str "introduce %s" (fun s ->
-              if not (valid_name s) then Error "need a name"
-              else Ok (Introduce s))
-        with _ -> (
-          try
-            Scanf.sscanf str "cases %s %s" (fun x y ->
-                if not (valid_name x && valid_name y) then
-                  Error "need two names"
-                else Ok (Cases (x, y)))
-          with _ -> (
-            try
-              Scanf.sscanf str "inst %S" (fun x ->
-                  match Fol_formula.Term.of_string x with
-                  | None -> Error "term not parsable"
-                  | Some t -> Ok (Instantiate t))
-            with _ -> (
-              try
-                Scanf.sscanf str "exists %S" (fun x ->
-                    match Fol_formula.Term.of_string x with
-                    | None -> Error "term not parsable"
-                    | Some t -> Ok (Exists t))
-              with _ -> (
-                try
-                  Scanf.sscanf str "unpack %s %s" (fun x y ->
-                      if not (valid_name x && valid_name y) then
-                        Error "need a name"
-                      else Ok (ExElim (x, y)))
-                with _ -> (
-                  try
-                    Scanf.sscanf str "not-intro %s" (fun x ->
-                        if not (valid_name x) then Error "need a name"
-                        else Ok (NotIntro x))
-                  with _ -> (
-                    try
-                      Scanf.sscanf str "subst %s %S" (fun x y ->
-                          if not (valid_name x) then Error "need a name"
-                          else
-                            match Fol_formula.Formula.of_string y with
-                            | Error _ ->
-                                Error "pattern not parsable"
-                                (* FIXME: better error message *)
-                            | Ok f -> Ok (Subst (x, f)))
-                    with _ -> (
-                      try
-                        Scanf.sscanf str "induction %s" (fun s ->
-                            if not (valid_name s) then Error "need a name"
-                            else Ok (Induction s))
-                      with _ ->
-                        Error (Printf.sprintf "command '%s' not understood" str)))))))))
-      )
+let name_p =
+  Result_ext.of_predicate ~on_error:"not an alphanumeric identifier" valid_name
+
+let assump_nm =
+  "assumption name", name_p
+
+let var_nm =
+  "variable name", name_p
+
+let term =
+  let term_p s =
+    match Fol_formula.Term.of_string s with
+    | None -> Error "term not understood"
+    | Some t -> Ok t
+  in
+  ("term", term_p)
+
+let formula =
+  let formula_p s =
+    match Fol_formula.Formula.of_string s with
+    | Error _ -> Error "formula not understood"
+    | Ok t -> Ok t
+  in
+  ("formula", formula_p)
+
+let commands =
+  [ "true", cmd e Truth
+  ; "split", cmd e Split
+  ; "left", cmd e Left
+  ; "right", cmd e Right
+  ; "apply", cmd e Implies_elim
+  ; "first", cmd e Conj_elim1
+  ; "second", cmd e Conj_elim2
+  ; "false", cmd e Absurd
+  ; "not-elim", cmd e NotElim
+  ; "refl", cmd e Refl
+  ; "reflexivity", cmd e Refl
+  ; "rewrite->", cmd e (Rewrite `ltr)
+  ; "rewrite<-", cmd e (Rewrite `rtl)
+  ; "done", cmd e Close
+  ; "use", cmd (assump_nm @-> e) (fun nm -> Use nm)
+  ; "introduce", cmd (assump_nm @-> e) (fun nm -> Introduce nm)
+  ; "cases", cmd (assump_nm @-> assump_nm @-> e) (fun h1 h2 -> Cases (h1, h2))
+  ; "inst", cmd (term @-> e) (fun t -> Instantiate t)
+  ; "exists", cmd (term @-> e) (fun t -> Exists t)
+  ; "unpack", cmd (var_nm @-> assump_nm @-> e) (fun vnm hnm -> ExElim (vnm, hnm))
+  ; "not-intro", cmd (assump_nm @-> e) (fun hnm -> NotIntro hnm)
+  ; "subst", cmd (var_nm @-> formula @-> e) (fun vnm f -> Subst (vnm, f))
+  ; "induction", cmd (var_nm @-> e) (fun x -> Induction x)
+  ]
+
+let of_string str =
+  Result.map_error string_of_error (parse_command commands str)

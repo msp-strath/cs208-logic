@@ -12,11 +12,12 @@ val cmd : ('a, 'b) spec -> 'a -> 'b command_spec
 type error =
   [ `BadArg of string * string
   | `NoSuchCommand of string
-  | `No_commmand
+  | `No_command
   | `TooFewArguments
   | `TooManyArguments
-  | `TwoManyArguments
   | `Unfinished_quoted_arg of int
   | `Unrecognised_char of int * char ]
+
+val string_of_error : error -> string
 
 val parse_command : (string * 'c command_spec) list -> string -> ('c, [>error]) result

@@ -12,12 +12,29 @@ type ('a, 'b) spec =
 type error =
   [ `BadArg of string * string
   | `NoSuchCommand of string
-  | `No_commmand
+  | `No_command
   | `TooFewArguments
   | `TooManyArguments
-  | `TwoManyArguments
   | `Unfinished_quoted_arg of int
   | `Unrecognised_char of int * char ]
+
+let string_of_error : error -> string =
+  function
+  | `BadArg (arg_label, msg) ->
+     Printf.sprintf "Expecting a %s, but %s" arg_label msg
+  | `NoSuchCommand cmd ->
+     Printf.sprintf "No such command %s" cmd
+  | `No_command ->
+     Printf.sprintf "No command provided"
+  | `TooFewArguments ->
+     Printf.sprintf "Not enough arguments provided"
+  (* FIXME: say what command, and what is still expected *)
+  | `TooManyArguments ->
+     Printf.sprintf "Too many arguments provided"
+  | `Unfinished_quoted_arg _i ->
+     Printf.sprintf "Unfinished quoted argument"
+  | `Unrecognised_char (_, c) ->
+     Printf.sprintf "Unrecoginised character %C" c
 
 let rec match_spec : type a b. (a, b) spec -> string list -> a -> (b, [>error]) result =
   fun spec args func ->
@@ -65,7 +82,7 @@ module Parsing = struct
     let rec get_root i =
       if i = len then
         (if i = 0 then
-           Error `No_commmand
+           Error `No_command
          else
            Ok { root = string; args = [] })
       else if is_whitespace_char string.[i] then

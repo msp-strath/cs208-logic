@@ -1,5 +1,8 @@
 let ok = Result.ok
 
+let of_predicate ~on_error p x =
+  if p x then Ok x else Error on_error
+
 let ( let* ) x f = match x with
   | Ok a -> f a
   | Error _ as e -> e
