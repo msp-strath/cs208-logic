@@ -2,20 +2,48 @@
 
 # Natural Deduction: Implication
 
-### Example 1
+## Video
 
-```focused-tree
+```youtube
+WJVpoJpjOn0
+```
+
+[Slides](week04-slides.pdf)
+
+## Exercises
+
+### Exercise 1
+
+```focused-nd {id=implies-ex1}
 (config (goal "A -> A"))
 ```
 
-### Example 2
+### Exercise 2
 
-```focused-tree
-(config (goal "(A \/ B) -> (B \/ A)"))
+```focused-nd {id=implies-ex2}
+(config (goal "(A /\ B) -> (B /\ A)"))
 ```
 
-### Example 3
+### Exercise 3
 
-```focused-tree
-(config (goal "all x. x = 0 \/ (ex y. x = S(y))"))
+```focused-nd {id=implies-ex3}
+(config (goal "((A /\ B) -> C) -> A -> B -> C"))
+```
+
+### Exercise 4
+
+```focused-nd {id=implies-ex4}
+(config (goal "(A -> B -> C) -> (A /\ B) -> C"))
+```
+
+### Exercise 5
+
+```focused-nd {id=implies-ex5}
+(config (goal "(A -> B) -> (B -> C) -> (A -> C)"))
+```
+
+### Exercise 6
+
+```focused-nd {id=implies-ex6}
+(config (goal "(A /\ B /\ C) -> ((A /\ B) /\ C)"))
 ```
