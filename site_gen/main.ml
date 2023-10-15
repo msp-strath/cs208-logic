@@ -49,7 +49,7 @@ let template ~title:title_text ~body:body_html ~script_url =
 
 let code_render ids attributes kind content =
   match kind with
-  | "lmt" | "tickbox" | "textbox"
+  | "lmt" | "tickbox" | "textbox" | "entrybox"
   | "rules" | "rules-display" | "focused-nd" | "focused-tree" as kind ->
      let open Html_static in
      let id =
@@ -79,6 +79,15 @@ let code_render ids attributes kind content =
                raw_attr "allowfullscreen" ""
              ]
              empty)
+  | "download" ->
+     let filename = String.trim content in
+     let open Html_static in
+     Some (button
+             ~attrs:
+             [ A.id "download"
+             ; raw_attr "data-filename" filename
+             ]
+             (text "Download"))
   | _ ->
      None
 

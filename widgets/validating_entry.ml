@@ -8,6 +8,13 @@ module type VALIDATOR = sig
   val validate : config -> string -> (string, string) result
 end
 
+module Null_Validator = struct
+  type config = string
+  let read_config placeholder = Some placeholder
+  let placeholder placeholder = placeholder
+  let validate _ _ = Ok ""
+end
+
 let component (type config)
       (module V : VALIDATOR with type config = config)
       configuration_data =
@@ -34,12 +41,15 @@ let component (type config)
                    (H.input
                       ~attrs:[
                         A.value value;
+                        A.placeholder (V.placeholder config);
                         E.onchange (fun str -> Update str)
                    ]);
                  H.div ~attrs: [ A.class_ "defnsat-parseresult" ]
                    (match result with
                     | Error msg ->
                        H.div ~attrs:[ A.class_ "errormsg" ] (H.text msg)
+                    | Ok "" ->
+                       H.empty
                     | Ok msg ->
                        H.div ~attrs:[ A.class_ "successmsg" ] (H.text msg))
                ]
