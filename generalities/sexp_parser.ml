@@ -13,6 +13,13 @@ let atom = function
   | Atom str -> Ok str
   | sexp     -> annotate_error sexp @@ Error "Expecting a single atom"
 
+let list p = function
+  | List items as sexp ->
+     let* result, _others = p sexp items in
+     Ok result
+  | sexp ->
+     annotate_error sexp @@ Error "Expecting a list"
+
 let close p parent items =
   let* result, _others = p parent items in
   Ok result
@@ -32,11 +39,11 @@ let tagged tag k = function
 let fail msg parent _items =
   annotate_error parent @@ Error msg
 
-let singleton p parent = function
+let one p parent = function
   | [sexp] -> let* result = p sexp in Ok (result, [])
   | _      -> annotate_error parent @@ Error "Expecting a single entry"
 
-let list p _parent items =
+let many p _parent items =
   let* results = Result_ext.traverse p items in
   Ok (results, [])
 
@@ -74,6 +81,12 @@ let consume_opt tag k parent items =
      annotate_error parent @@
        Error (Printf.sprintf "Multiple '%s' entries" tag)
 
+let consume_next p parent = function
+  | [] -> annotate_error parent @@ Error "Unexpected end of entry"
+  | sexp::items ->
+     let* result = p sexp in
+     Ok (result, items)
+
 let assert_nothing_left parent = function
   | [] -> Ok ((), [])
   | _others -> annotate_error parent @@ Error "Additional unexpected entries"
@@ -90,3 +103,10 @@ let lift e parent items =
   match e with
   | Ok a -> Ok (a, items)
   | Error e -> Error Annotated.{ detail = e; annotation = parent }
+
+let ( let+? ) p k sexp =
+  match p sexp with
+  | Ok a ->
+     annotate_error sexp (k a)
+  | Error _ as e ->
+     e

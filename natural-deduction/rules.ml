@@ -187,9 +187,9 @@ module OfSexp = struct
   open Sexp_parser
 
   let rule =
-    let* name       = consume_one "name" (singleton atom) in
-    let* premises   = consume_opt "premises" (list Term.of_sexp) in
-    let* conclusion = consume_one "conclusion" (singleton Term.of_sexp) in
+    let* name       = consume_one "name" (one atom) in
+    let* premises   = consume_opt "premises" (many Term.of_sexp) in
+    let* conclusion = consume_one "conclusion" (one Term.of_sexp) in
     let* ()         = assert_nothing_left in
     let  premises   = Option.value ~default:[] premises in
     let* rule       = lift @@ check_rule premises conclusion in
@@ -198,7 +198,7 @@ module OfSexp = struct
   let config =
     tagged "config"
       (let* rules = consume_all "rule" rule in
-       let* goal  = consume_one "goal" (singleton Term.of_sexp) in
+       let* goal  = consume_one "goal" (one Term.of_sexp) in
        let* ()    = assert_nothing_left in
        let* goal  = lift @@ Term.traverse (errorf "Goal has variable '%s'") goal in
        return (rules, goal))
@@ -302,8 +302,8 @@ let display_rules rules =
      in
      (module C : Ulmus.COMPONENT)
   | Error err ->
-      let msg = Annotated.detail err in
-      failwith msg
+     let msg = Annotated.detail err in
+     Widgets.Error_display.component ("Configuration error: " ^ msg)
 
 let component_of_rules rules goal =
   let module Rules = struct let rules = rules end in
@@ -316,8 +316,7 @@ let from_rules config =
      component_of_rules rules goal
   | Error err ->
      let msg = Annotated.detail err in
-     (* FIXME: display inline *)
-     failwith ("ERROR: " ^ msg)
+     Widgets.Error_display.component ("Configuration error: " ^ msg)
 
 (*
   let module P =

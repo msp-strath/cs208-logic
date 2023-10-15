@@ -30,44 +30,51 @@ Writing out formal proofs on paper is extremely tedious, so I have written an on
 
 1. A entails A:
    ```focused-nd
-   (((H "A")) "A")
+   (config
+    (assumptions (H "A"))
+	(goal "A"))
    ```
 
 2. A and B entails `A /\ B`
    ```focused-nd
-    (((H1 A)
-      (H2 B))
-     "A /\ B")
+    (config
+	 (assumptions (H1 A) (H2 B))
+     (goal "A /\ B"))
     ```
 
 3. `A /\ B` entails `A /\ B`
    ```focused-nd
-   (((H "A /\ B"))
-    "A /\ B")
+   (config
+    (assumptions (H "A /\ B"))
+    (go "A /\ B"))
    ```
 
 4. `A /\ B` entails `B /\ A`
    ```focused-nd
-   (((H "A /\ B"))
-    "B /\ A")
+   (config
+    (assumptions (H "A /\ B"))
+    (goal "B /\ A"))
    ```
 
 5. Anything entails `T`
    ```focused-nd
-   (((H "A"))
-    "T")
+   (config
+    (assumptions (H "A"))
+    (goal "T"))
    ```
 
 6. True on the right:
    ```focused-nd
-   (((H "A"))
-    "A /\ T")
+   (config
+    (assumptions (H "A"))
+    (goal "A /\ T"))
    ```
 
 7. True on the left:
    ```focused-nd
-   (((H "A"))
-    "T /\ A")
+   (config
+    (assumptions (H "A"))
+    (goal "T /\ A"))
    ```
 
 ---

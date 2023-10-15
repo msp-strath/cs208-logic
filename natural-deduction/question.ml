@@ -77,23 +77,33 @@ let focusing ?name ?assumps_name ?(assumptions = []) formula =
     end in
   (module Component : Ulmus.COMPONENT)
 
+let config_p =
+  let open Generalities.Sexp_parser in
+  let formula =
+    let+? str = atom in
+    Result.map_error
+      (function `Parse e -> Parser_util.Driver.string_of_error e)
+      (Fol_formula.Formula.of_string str)
+  in
+  let assumption_p =
+    list
+      (let* name       = consume_next atom in
+       let* assumption = consume_next formula in
+       let* ()         = assert_nothing_left in
+       return (name, `F assumption))
+  in
+
+  tagged "config"
+    (let* assumptions = consume_opt "assumptions" (many assumption_p) in
+     let* goal        = consume_one "goal" (one formula) in
+     let  assumptions = Option.value ~default:[] assumptions in
+     return (assumptions, goal))
+
 let focusing_component config =
-  match Sexplib.Sexp.of_string config with
-  | Sexplib.Sexp.List [List assumptions; Atom goal] ->
-     (let assumptions =
-       List.map
-         (function
-          | Sexplib.Sexp.List [Atom nm; Atom f] ->
-             (match Fol_formula.Formula.of_string f with
-              | Ok f -> (nm, `F f)
-              | Error _ -> failwith "BAD ASSUMPTION")
-          | _ -> failwith "BAD")
-         assumptions
-     in
-     match Fol_formula.Formula.of_string goal with
-     | Ok goal ->
-        focusing ~assumptions goal
-     | Error _ ->
-        failwith "BAD FORMULA")
-  | _ ->
-     failwith "BAD CONFIG"
+  match config_p (Sexplib.Sexp.of_string config) with
+  | Ok (assumptions, goal) ->
+     focusing ~assumptions goal
+  | Error err ->
+     let detail = Generalities.Annotated.detail err in
+     let message = "Configuration failure: " ^ detail in
+     Widgets.Error_display.component message
