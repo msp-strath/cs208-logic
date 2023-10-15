@@ -1,5 +1,0 @@
-(library
- (name lmt_widget)
- ; (preprocess
- ;  (pps ppx_monoid))
- (libraries ulmus traintor))

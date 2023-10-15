@@ -1,0 +1,3 @@
+(library
+ (name lmt_widget)
+ (libraries ulmus slakemoth))

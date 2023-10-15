@@ -54,7 +54,7 @@
         # inherit packages;
 
         ## If you want to have a "default" package which will be built with just `nix build`, do this instead of `inherit packages;`:
-        packages = packages // { default = packages.traintor; };
+        packages = packages // { default = packages.slakemoth; };
 
         devShells.default = pkgs.mkShell {
           inputsFrom = builtins.attrValues packages;

@@ -1,5 +1,5 @@
 (library
- (name traintor)
+ (name slakemoth)
  (libraries msat.sat fmt menhirLib parser_util generalities))
 
 (menhir

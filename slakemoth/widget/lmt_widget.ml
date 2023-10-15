@@ -2,8 +2,8 @@ let component configuration =
   let module C =
     struct
 
-      module Ast = Traintor.Ast
-      open Traintor.Environment
+      module Ast = Slakemoth.Ast
+      open Slakemoth.Environment
 
       type state = {
           input : string;
@@ -118,9 +118,9 @@ let component configuration =
             ]
 
       let parse input =
-        match Traintor.Reader.parse input with
+        match Slakemoth.Reader.parse input with
         | Ok decls ->
-           (match Traintor.Type_checker.check_declarations decls with
+           (match Slakemoth.Type_checker.check_declarations decls with
             | Ok commands ->
                Ok commands
             | Error (`Type_error (location, msg)) ->
@@ -151,7 +151,7 @@ let component configuration =
             | Ok commands ->
                let b = Buffer.create 8192 in
                let fmt = Format.formatter_of_buffer b in
-               List.iter (Traintor.Evaluator.execute_command fmt) commands;
+               List.iter (Slakemoth.Evaluator.execute_command fmt) commands;
                Format.pp_print_flush fmt ();
                { state with fresh = true; output = `String (Buffer.contents b) }
             | Error _ ->
