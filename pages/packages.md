@@ -81,7 +81,7 @@ The computer's job is to find out whether or not there is a set of packages to i
 
 Let us put all the above constraints together in a script, and add a command to get the computer to check whether or not there is a solution to the above constraints:
 
-```lmt
+```lmt {id=packages-example}
 atom progA1
 atom progA2
 atom progB

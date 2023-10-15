@@ -16,5 +16,14 @@ let component label_text =
         | Toggle -> not state
 
       let initial = false
+
+      let serialise = function
+        | true -> "1"
+        | false -> "0"
+
+      let deserialise = function
+        | "1" -> Some true
+        | "0" -> Some false
+        | _   -> None
     end
-  in (module C : Ulmus.COMPONENT)
+  in (module C : Ulmus.PERSISTENT)

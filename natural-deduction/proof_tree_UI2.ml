@@ -14,14 +14,7 @@ end
 
 open Sexplib0.Sexp_conv
 
-module Make (Spec : UI_SPEC) (Goal : sig val goal : Spec.Calculus.goal end) : sig
-  type state
-  type action
-
-  val render : state -> action Ulmus.html
-  val update : action -> state -> state
-  val initial : state
-end = struct
+module Make (Spec : UI_SPEC) (Goal : sig val goal : Spec.Calculus.goal end) : Ulmus.PERSISTENT = struct
 
   open Spec
 
@@ -41,12 +34,14 @@ end = struct
 
   type state = PT.t
 
-  let sexp_of_state state = PT.sexp_of_tree (PT.to_tree state)
+  let serialise tree =
+    Sexplib.Sexp.to_string (PT.sexp_of_tree (PT.to_tree tree))
 
-  let state_of_sexp goal sexp =
-    match PT.of_tree [] goal (PT.tree_of_sexp sexp) with
-    | Ok state -> state
-    | Error _ -> failwith "invalid tree"
+  let deserialise string =
+    let sexp = Sexplib.Sexp.of_string string in
+    match PT.of_tree [] Goal.goal (PT.tree_of_sexp sexp) with
+    | Ok state -> Some state
+    | Error _ -> None
 
   type action =
     | Update of PT.point * string

@@ -203,7 +203,7 @@ We read this as, if the constraints are satisfiable:
 
 The following script puts everything above together to show how to use domains, parameters, and quantifiers to define larger scale problems with less repetition:
 
-```lmt
+```lmt {id=packages-with-domains}
 domain package { ProgA, ProgB, LibC, LibD, LibE }
 
 domain version { V1, V2 }

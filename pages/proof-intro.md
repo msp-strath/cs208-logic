@@ -51,7 +51,7 @@ KxJ1uu73JSs
 
 ### Example 1
 
-```rules
+```rules {id=rules-example1}
 (config
  (rule
   (name "R1")
@@ -88,7 +88,7 @@ KxJ1uu73JSs
 
 ### Example 2
 
-```rules
+```rules {id=rules-example2}
 (config
  (rule
   (name "R1")
@@ -122,7 +122,6 @@ KxJ1uu73JSs
 
  (goal (mammal coconut)))
 ```
-
 
 ---
 

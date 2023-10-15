@@ -47,12 +47,25 @@ let template ~title:title_text ~body:body_html ~script_url =
             ]
       ]
 
-let code_render _attrs kind content =
+let code_render ids attributes kind content =
   match kind with
   | "lmt" | "tickbox" | "textbox"
   | "rules" | "rules-display" | "focused-nd" | "focused-tree" as kind ->
      let open Html_static in
-     Some (div ~attrs:[ raw_attr "data-widget" kind ] (text content))
+     let id =
+       match List.assoc_opt "id" attributes with
+       | None -> None
+       | Some id when List.mem id !ids ->
+          failwith ("Duplicate id: " ^ id)
+       | Some id ->
+          ids := id :: !ids;
+          Some id
+     in
+     let attrs =
+       [ raw_attr "data-widget" kind ]
+       @ (match id with Some id -> [ raw_attr "data-key" id ] | None -> [])
+     in
+     Some (div ~attrs (text content))
   | "youtube" ->
      let identifier = String.trim content in
      let open Html_static in
@@ -77,11 +90,13 @@ let process_file input_dir output_dir filename =
     In_channel.with_open_text input_path
       Omd.of_channel
   in
+  let ids = ref [] in
   let html =
     template ~title:"CS208"
       ~script_url:"frontend.bc.js"
-      ~body:(Of_Omd.render code_render doc)
+      ~body:(Of_Omd.render (code_render ids) doc)
   in
+  Printf.printf "Page: %s; ids: [ %s ]\n" filename (String.concat ", " !ids);
   Out_channel.with_open_text
     output_path
     (fun ch -> Html_static.Render.to_channel ~doctype:true ch html)

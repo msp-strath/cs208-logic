@@ -160,16 +160,10 @@ let component configuration =
         | Reset -> { state with resetting = true }
         | ConfirmReset -> initial
         | CancelReset -> { state with resetting = false }
-(*
-      let sexp_of_state { input; _ } =
-        Sexplib0.Sexp.Atom input
 
-      let state_of_sexp = function
-        | Sexplib0.Sexp.Atom input -> initial_full input
-        | sexp ->
-           raise
-             (Sexplib0.Sexp_conv.Of_sexp_error
-             (Failure "defnsat_widget: expecting a single atom", sexp))
- *)
+      let serialise { input; _ } = input
+
+      let deserialise saved =
+        Some (initial_full saved)
     end
-  in (module C : Ulmus.COMPONENT)
+  in (module C : Ulmus.PERSISTENT)

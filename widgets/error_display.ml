@@ -12,5 +12,8 @@ let component errormsg =
       let update (action : action) _ = match action with _ -> .
 
       let initial = ()
+
+      let serialise _ = ""
+      let deserialise _ = Some ()
     end
-  in (module C : Ulmus.COMPONENT)
+  in (module C : Ulmus.PERSISTENT)

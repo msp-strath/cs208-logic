@@ -8,7 +8,7 @@ In the [Wizard's Pets](wizards-pets.html) example, we saw several ways of encodi
 
 We often want *at least one* thing to be true (e.g., we must take at least one pet from the Wizard). We can encode this constraint by using a logical OR, written in the logical modelling tool with a vertical bar `|`:
 
-```lmt
+```lmt {id=patterns-at-least-one-a}
 atom a
 atom b
 allsat (a | b) { "a": a, "b": b }
@@ -18,7 +18,7 @@ Clicking **Run** should give three solutions, excluding the case when both `a` a
 
 This pattern extends to any number of atoms, if we want at least one of `a`, `b`, or `c` to be true, then we OR them all together:
 
-```lmt
+```lmt {id=patterns-at-least-one-b}
 atom a
 atom b
 atom c
@@ -31,7 +31,7 @@ There should be seven solutions.
 
 Sometimes we want at most one of two atoms to be true, to express some kind of mutual exclusion. We encode this by saying that at least one them is not `true`:
 
-```lmt
+```lmt {id=patterns-not-both}
 atom a
 atom b
 allsat (~a | ~b) { "a": a, "b": b }
@@ -39,7 +39,7 @@ allsat (~a | ~b) { "a": a, "b": b }
 
 Unlike the previous pattern, we can't specify at most one is true of more than three atoms just by combining them with ORs. Try it with the following example:
 
-```lmt
+```lmt {id=patterns-not-both-wrong}
 atom a
 atom b
 atom c
@@ -49,7 +49,7 @@ allsat (~a | ~b | ~c)
 
 Instead, we must list each possible pair and say that in each pair at most one can be true:
 
-```lmt
+```lmt {id=patterns-at-most-one-of-three}
 atom a
 atom b
 atom c
@@ -63,7 +63,7 @@ Often, we want `b` to be true if `a` is, to express some form of dependency of `
 
 Try the following to check that whenever `a` is true, then so is `b`:
 
-```lmt
+```lmt {id=if-this-then-that}
 atom a
 atom b
 allsat (~a | b) { "a": a, "b": b }

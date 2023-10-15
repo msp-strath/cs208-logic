@@ -20,5 +20,7 @@ let component label =
 
       let initial = ""
 
+      let serialise content = content
+      let deserialise content = Some content
     end
-  in (module C : Ulmus.COMPONENT)
+  in (module C : Ulmus.PERSISTENT)

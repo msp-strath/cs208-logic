@@ -29,7 +29,7 @@ For this introduction, we will use a tool embedded in these pages to describe pr
 
 Here is a small example to play with. You can edit the code to see what happens.
 
-```lmt
+```lmt {id=lmt-intro}
 // Define two atoms
 atom a
 atom b

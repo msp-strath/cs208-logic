@@ -52,5 +52,9 @@ let component (type config)
 
          let initial =
            { value = ""; result = V.validate config "" }
+
+         let serialise { value; _ } = value
+         let deserialise value =
+           Some { value; result = V.validate config value }
        end
-     in (module C : Ulmus.COMPONENT)
+     in (module C : Ulmus.PERSISTENT)

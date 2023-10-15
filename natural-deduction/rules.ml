@@ -286,6 +286,7 @@ let inference_rule (name, {premises; conclusion}) =
 let display_rules rules =
   match OfSexp.config_rules_only (Sexplib.Sexp.of_string rules) with
   | Ok rules ->
+     (* FIXME: make widgets that just display fixed HTML *)
      let module C = struct
          type state = unit
          type action = void
@@ -297,9 +298,11 @@ let display_rules rules =
                 (List.map inference_rule rules))
          let update action () = of_void action
          let initial = ()
+         let serialise () = ""
+         let deserialise _ = Some ()
        end
      in
-     (module C : Ulmus.COMPONENT)
+     (module C : Ulmus.PERSISTENT)
   | Error err ->
      let msg = Annotated.detail err in
      Widgets.Error_display.component ("Configuration error: " ^ msg)
@@ -307,7 +310,7 @@ let display_rules rules =
 let component_of_rules rules goal =
   let module Rules = struct let rules = rules end in
   let module Goal = struct let goal = goal end in
-  (module Proof_tree_UI2.Make (UI (Rules)) (Goal) : Ulmus.COMPONENT)
+  (module Proof_tree_UI2.Make (UI (Rules)) (Goal) : Ulmus.PERSISTENT)
 
 let from_rules config =
   match OfSexp.config (Sexplib.Sexp.of_string config) with
