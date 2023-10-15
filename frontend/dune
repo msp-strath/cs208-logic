@@ -1,0 +1,8 @@
+(executable
+ (name frontend)
+ (modes js)
+ (libraries ulmus slakemoth_widget widgets natural_deduction))
+
+(alias
+ (name all)
+ (deps frontend.bc.js frontend-test.html))

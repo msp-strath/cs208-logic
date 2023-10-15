@@ -1,3 +1,3 @@
 (library
- (name lmt_widget)
+ (name slakemoth_widget)
  (libraries ulmus slakemoth))

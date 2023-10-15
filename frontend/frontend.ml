@@ -1,7 +1,7 @@
 open Widgets
 
 let () =
-  Ulmus.attach_all "lmt" Lmt_widget.component;
+  Ulmus.attach_all "lmt" Slakemoth_widget.component;
   Ulmus.attach_all "tickbox" Tickbox.component;
   Ulmus.attach_all "textbox" Textbox.component;
   Ulmus.attach_all "rules" Natural_deduction.Rules.from_rules;

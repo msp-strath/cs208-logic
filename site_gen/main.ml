@@ -78,7 +78,7 @@ let process_file input_dir output_dir filename =
   in
   let html =
     template ~title:"CS208"
-      ~script_url:"lmt.bc.js"
+      ~script_url:"frontend.bc.js"
       ~body:(Of_Omd.render code_render doc)
   in
   Out_channel.with_open_text
