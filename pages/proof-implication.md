@@ -47,3 +47,9 @@ WJVpoJpjOn0
 ```focused-nd {id=implies-ex6}
 (config (goal "(A /\ B /\ C) -> ((A /\ B) /\ C)"))
 ```
+
+### Exercise 7
+
+```focused-nd {id=implies-ex7}
+(config (goal "(A /\ B) -> (B -> C) -> (A /\ C)"))
+```
