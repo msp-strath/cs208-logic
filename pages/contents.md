@@ -17,7 +17,7 @@ In Part 1, we use logical modelling to describe and solve problems.
 7. [How to handle bigger problems](domains-and-parameters.html) with domains and parameters.
 8. [Resource allocation problems](resource-alloc.html), which are a kind of graph colouring problem. (*under construction*)
 9. [Converting to CNF](converting-to-cnf.html)
-10. [Circuits and equivalence checking](circuits.html) (*under construction*)
+10. [Circuits, Gates and Formulas](circuits.html), where we look at encoding logic gates as clauses, so we can get the solver to answer questions about circuits.
 
 ## Part 2: Deductive proof
 
