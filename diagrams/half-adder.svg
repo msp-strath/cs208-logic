@@ -1,0 +1,31 @@
+<svg xmlns='http://www.w3.org/2000/svg' class="pikchr" viewBox="0 0 333.677 96.2929">
+<circle cx="29.9808" cy="22.32" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="29.9808" y="12.24" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Input1</text>
+<circle cx="29.9808" cy="79.0129" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="29.9808" y="68.9329" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Input2</text>
+<path d="M215.18,37.44L233.554,37.44A15.12 15.12 0 0 0 248.674 22.32A15.12 15.12 0 0 0 233.554 7.2L215.18,7.2A15.12 15.12 0 0 0 200.06 22.32A15.12 15.12 0 0 0 215.18 37.44Z"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="224.367" y="22.32" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">XOR</text>
+<path d="M215.18,94.1329L235.858,94.1329A15.12 15.12 0 0 0 250.978 79.0129A15.12 15.12 0 0 0 235.858 63.8929L215.18,63.8929A15.12 15.12 0 0 0 200.06 79.0129A15.12 15.12 0 0 0 215.18 94.1329Z"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="225.519" y="79.0129" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">AND</text>
+<circle cx="58.3273" cy="22.32" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<path d="M29.9808,22.32L58.3273,22.32"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<polygon points="204.488,11.6285 192.968,15.9485 192.968,7.30855" style="fill:rgb(0,0,0)"/>
+<path d="M58.3273,22.32 L 58.3273,22.32 Q 58.3273,22.32 58.3273,16.9743 Q 58.3273,11.6285 101.527,11.6285 L 155.528,11.6285 L 198.728,11.6285"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<polygon points="204.488,68.3215 192.968,72.6415 192.968,64.0015" style="fill:rgb(0,0,0)"/>
+<path d="M58.3273,22.32 L 58.3273,22.32 Q 58.3273,22.32 58.3273,45.3207 Q 58.3273,68.3215 101.527,68.3215 L 155.528,68.3215 L 198.728,68.3215"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<circle cx="115.02" cy="79.0129" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<path d="M29.9808,79.0129L115.02,79.0129"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<polygon points="204.488,33.0115 192.968,37.3315 192.968,28.6915" style="fill:rgb(0,0,0)"/>
+<path d="M115.02,79.0129 L 115.02,79.0129 Q 115.02,79.0129 115.02,56.0122 Q 115.02,33.0115 156.874,33.0115 L 198.728,33.0115"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<polygon points="204.488,89.7044 192.968,94.0244 192.968,85.3844" style="fill:rgb(0,0,0)"/>
+<path d="M115.02,79.0129 L 115.02,79.0129 Q 115.02,79.0129 115.02,84.3586 Q 115.02,89.7044 156.874,89.7044 L 198.728,89.7044"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<polygon points="305.367,22.32 293.847,26.64 293.847,18" style="fill:rgb(0,0,0)"/>
+<path d="M248.674,22.32L299.607,22.32"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<circle cx="305.367" cy="22.32" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="305.367" y="12.24" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Sum</text>
+<polygon points="307.671,79.0129 296.151,83.3329 296.151,74.6929" style="fill:rgb(0,0,0)"/>
+<path d="M250.978,79.0129L301.911,79.0129"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<circle cx="307.671" cy="79.0129" r="2.16" style="fill:rgb(0,0,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="307.671" y="68.9329" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Carry</text>
+</svg>
+
