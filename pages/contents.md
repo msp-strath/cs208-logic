@@ -24,5 +24,18 @@ In Part 1, we use logical modelling to describe and solve problems.
 In Part 2, we strive for truth through proof.
 
 1. [Introduction to Deductive Proof](proof-intro.html).
-2. [Natural Deduction and the Rules for And](natural-deduction-intro.html).
+2. [Natural Deduction and the rules for And](natural-deduction-intro.html).
 3. [Proof rules for Implication](proof-implication.html).
+4. Proof rules for Or
+5. Proof rules for Negation
+6. Soundness and Completeness, and some Philosophy
+7. Predicate Logic syntax
+8. Saying what you mean
+9. Upgrading Natural Deduction for Predicate Logic
+10. Proof rules for Predicate Logic (tutorial questions)
+11. Predicate Logic Semantics
+12. Checking Models of Predicate Logic
+13. Equality
+14. Induction
+15. More Induction
+16. Metatheory and Gödel's Incompleteness Theorem
