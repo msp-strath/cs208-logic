@@ -1,3 +1,11 @@
+@media (prefers-color-scheme: dark) {
+    svg {
+	background-color: #ddd;
+	border-radius: 10px;
+    }
+}
+
+
 /* Code entry stuff */
 
 .defnsat {
@@ -142,6 +150,15 @@
     font-style: italic;
     white-space: nowrap;
     /* padding-left: 0.8em; */
+}
+
+@media (prefers-color-scheme: dark) {
+    .comment {
+	color: #9cf0cf;
+    }
+    .hole {
+	background-color: #55558c;
+    }
 }
 
 .worksheet {
