@@ -9,6 +9,17 @@ type 'a parser = sexp -> ('a, error) result
 type 'a seq_parser =
   sexp -> sexp list -> ('a * sexp list, error) result
 
+let to_conv f sexp =
+  match f sexp with
+  | Ok a -> a
+  | Error Annotated.{ detail; annotation } ->
+     raise (Sexplib.Conv.Of_sexp_error (Failure detail, annotation))
+
+let of_conv f sexp =
+  try Ok (f sexp) with
+  | Sexplib.Conv.Of_sexp_error (exn, sexp) ->
+     annotate_error sexp @@ Error (Printexc.to_string exn)
+
 let atom = function
   | Atom str -> Ok str
   | sexp     -> annotate_error sexp @@ Error "Expecting a single atom"

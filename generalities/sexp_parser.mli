@@ -21,6 +21,10 @@ val atom : string parser
 
 val list : 'a seq_parser -> 'a parser
 
+val of_conv : (sexp -> 'a) -> 'a parser
+
+val to_conv : 'a parser -> (sexp -> 'a)
+
 val match_tag : (string -> 'a seq_parser) -> 'a parser
 
 val tagged : string -> 'a seq_parser -> 'a parser
