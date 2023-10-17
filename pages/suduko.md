@@ -1,1 +1,0 @@
-<p>Another example of encoding a problem into a SAT solver is the paper "<a href="https://www.lri.fr/~conchon/mpri/weber.pdf">A SAT-based Sudoku Solver</a>" by Weber. The Pycosat repository gives a <a href="https://github.com/ContinuumIO/pycosat/blob/master/examples/sudoku.py">Python implementation</a> of this encoding.</p>
