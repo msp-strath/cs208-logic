@@ -88,6 +88,19 @@ let code_render ids attributes kind content =
              ; raw_attr "data-filename" filename
              ]
              (text "Download"))
+  | "pikchr" ->
+     let pikchr_output, pikchr_input =
+       Unix.open_process_args "pikchr" [|""; "--svg-only"; "-"|]
+     in
+     let svg =
+       Fun.protect
+         ~finally:(fun () -> ignore (Unix.close_process (pikchr_output, pikchr_input)))
+         (fun () ->
+           Out_channel.output_string pikchr_input content;
+           Out_channel.close pikchr_input;
+           In_channel.input_all pikchr_output)
+     in
+     Some (Html_static.raw_text svg)
   | _ ->
      None
 

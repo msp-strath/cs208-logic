@@ -247,7 +247,41 @@ allsat (xor(Output, Input1, Input2))
 
 A half adder circuit adds two binary digits `Input1` and `Input2` to produce a two bit output consisting of a `Sum` digit and a `Carry` digit. It can be constructed from an XOR and an AND:
 
-![Half adder](half-adder.svg "Half adder")
+```pikchr
+linerad=0.3
+linewid=0.1cm
+
+I1: dot rad 100% color black
+"Input1" above at last dot
+move down 1cm from I1.s
+I2: dot rad 100% color black
+"Input2" above at last dot
+
+move from I1.e right 3cm
+XOR: oval "XOR" fit
+move from I2.e right 3cm
+AND: oval "AND" fit
+
+X1: I1.e + (0.5cm,0)
+dot at X1
+line from I1 to X1
+arrow from X1 right 0cm then up until even with XOR.nw then to XOR.nw
+arrow from X1 right 0cm then down until even with AND.nw then to AND.nw
+
+X2: I2.e + (1.5cm,0)
+dot at X2
+line from I2 to X2
+arrow from X2 right 0cm then up until even with XOR.sw then to XOR.sw
+arrow from X2 right 0cm then down until even with AND.sw then to AND.sw
+
+arrow right 1cm from XOR.e
+dot rad 100% color black
+"Sum" above at last dot
+
+arrow right 1cm from AND.e
+dot rad 100% color black
+"Carry" above at last dot
+```
 
 As a truth table, a half adder acts as follows, where the first two columns are the input and the second two are the outputs.
 
