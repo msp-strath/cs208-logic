@@ -10,6 +10,8 @@ WJVpoJpjOn0
 
 [Slides](week04-slides.pdf)
 
+## Proof commands
+
 ## Exercises
 
 ### Exercise 1

@@ -2,11 +2,17 @@
 
 # Proof Rules for Or and Not
 
+So far, we have seen the [basic natural deduction system and the proof rules for and](natural-deduction-intro.html) and the [rules for implication](proof-implication.html). We now add the rules for the remaining two connectives of Propositional Logic: "or" and "not".
+
 ## Videos
+
+These videos describe the rules for "or":
 
 ```youtube
 VmDShN9HZd4
 ```
+
+and for "not":
 
 ```youtube
 BEAE1Xg0SYE
@@ -14,7 +20,7 @@ BEAE1Xg0SYE
 
 ## The Interactive Editor
 
-### Video
+The rules for "or" and "not" are also available in the proof editor. This video explains how to use them for some examples.
 
 ```youtube
 sqJxNGv3IZ0
