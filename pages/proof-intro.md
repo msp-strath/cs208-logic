@@ -6,15 +6,21 @@ We now look at the general idea of deductive systems, collections of inference r
 
 ## Video
 
+[Slides for the video (PDF)](week04-slides.pdf)
+
 ```youtube
 KxJ1uu73JSs
 ```
 
-[Slides for the video](week04-slides.pdf)
+```textbox {id=proof-intro-notes}
+Enter any notes to yourself here.
+```
 
 ## Example
 
 ### Rules
+
+Here are the proof rules used for the small mammalian biology proof system given in the video.
 
 ```rules-display
 (config
@@ -50,6 +56,8 @@ KxJ1uu73JSs
 ```
 
 ### Example 1
+
+Enter the name of the rule you want to apply in the input box and press enter. Continue until the proof has no more goals that need proving.
 
 ```rules {id=rules-example1}
 (config
@@ -87,6 +95,8 @@ KxJ1uu73JSs
 ```
 
 ### Example 2
+
+Enter the name of the rule you want to apply in the input box and press enter. Continue until the proof has no more goals that need proving.
 
 ```rules {id=rules-example2}
 (config

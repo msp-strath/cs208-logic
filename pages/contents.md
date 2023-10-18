@@ -21,21 +21,20 @@ In Part 1, we use logical modelling to describe and solve problems.
 
 **Coursework:** [Coursework 1 is here](coursework1.html).
 
-## Part 2: Deductive proof
+## Part 2: Deductive proof and Predicate Logic
 
 In Part 2, we strive for truth through proof. We will be primarily using an proof editor to construct natural deduction proofs. Exercises with fixed things to prove are embedded in each of the pages. You can also enter your own things to prove [on this page](prover.html).
 
 1. [Introduction to Deductive Proof](proof-intro.html), which describes the general idea of proof systems, and introduces a small example of a proof system inspired by biology.
 2. [Natural Deduction and the rules for And](natural-deduction-intro.html). Natural Deduction is a style of proof system that places a particular emphasis on how assumptions are used, and on how the rules for each connective come in introduction and elimination pairs.
 3. [Proof rules for Implication](proof-implication.html). Implication allows us to make conditional statements that we prove by temporarily making assumptions.
-4. [Proof rules for Or and Not](proof-or.html), which complete the rules for Propositional Logic.
+4. [Proof rules for Or and Not](proof-or.html), which complete the rules for the connectives of Propositional Logic.
 5. [Soundness and Completeness, and some Philosophy](sound-complete-meaning.html). The system so far is sound, but is it complete? Should it be complete?
-6. Introducing Predicate Logic
-7. Upgrading Natural Deduction for Predicate Logic
-8. Proof rules for Predicate Logic (tutorial questions)
-9. Predicate Logic Semantics
-10. Checking Models of Predicate Logic
-11. Equality
-12. Induction
-13. More Induction
-14. Metatheory and Gödel's Incompleteness Theorem
+6. [Introducing Predicate Logic] as an expressive language for making statements in a formalised way. By selecting our vocabulary carefully, we can use Predicate Logic as a modelling tool to describe many situations.
+7. [Upgrading Natural Deduction for Predicate Logic]. Before we look at proof for Predicate Logic, we need to upgrade our Natural Deduction system to handle assumptions about entities as well as propositions. This also brings to the matters of *scope* and *substitution*.
+8. [Proof rules for Predicate Logic]. Natural deduction rules for “for all” and “exists” allow us to construct proofs of Predicate Logic formulas.
+9. [Predicate Logic Semantics]. A break from proof for a bit to consider what Predicate Logic formulas are talking about. It is not just about true/false anymore, but about relationships between individuals.
+11. [Equality]. How do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
+12. [Induction] allows us to prove facts about infinitely many individuals, as long as those individuals are built up in a “well founded” way. We look specifically at induction on natural numbers, which will allow us to prove facts in the theory of arithmetic.
+13. [More equality and induction exercises].
+14. [Metatheory and Gödel's Incompleteness Theorem]. If we can construct proofs, then could we get a computer to do it? What are the limits of what we can prove?

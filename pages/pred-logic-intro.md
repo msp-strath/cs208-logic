@@ -14,6 +14,10 @@ In the first video, we look at the syntax of Predicate Logic and how Predicate L
 74exPHdSPuA
 ```
 
+```textbox {id=pred-notes1}
+Enter any notes to yourself here.
+```
+
 ## Formal Syntax and Vocabularies
 
 Predicate Logic formulas are built from predicate symbols and function symbols, collectively known as a vocabulary. In the second video this week, we look at some example vocabularies and the formal syntax of Predicate Logic. The key concept to understand when looking at the syntax is the ideas of free and bound variables, and the fact that we can rename bound variables without changing the meaning of a formula.
@@ -22,12 +26,20 @@ Predicate Logic formulas are built from predicate symbols and function symbols, 
 H0OdDzoCHtI
 ```
 
+```textbox {id=pred-notes2}
+Enter any notes to yourself here.
+```
+
 ## Saying what you mean
 
 Predicate Logic is a very expressive language for making complex statements. In video 3.3, we go through a collection of sample statements showing how to express various forms of relationship in Predicate Logic, and point out some common pitfalls.
 
 ```youtube
 2zwqVMWBtJw
+```
+
+```textbox {id=pred-notes3}
+Enter any notes to yourself here.
 ```
 
 ## Exercises
@@ -97,6 +109,10 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    both mean exactly the same thing. As far as Predicate Logic is concerned, variables are given meaning by how they are *used*, not by how they are *named*.
    ````
 
+   ```tickbox {id=saying-tick1}
+   I'm happy with this one.
+   ```
+
 2. Every tree is bare and dead.
 
    ```formulaentry {id=saying-ex2}
@@ -120,6 +136,10 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    all t. dead(t)
    ```
    ````
+
+   ```tickbox {id=saying-tick2}
+   I'm happy with this one.
+   ```
 
 3. There exists a tree that is green.
 
@@ -152,6 +172,10 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    purposes of this formula) what colour it is. Another example: “if your granny had wheels, she'd be a car”.
    ````
 
+   ```tickbox {id=saying-tick3}
+   I'm happy with this one.
+   ```
+
 4. All the leaves are brown, and the sky is grey
 
    ```formulaentry {id=saying-ex4}
@@ -166,6 +190,11 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    ```
    Note here I have used a 0-argument function sky() to talk about “the” sky, instead of saying “there exists a thing which is the sky, and it is grey”. When we talk about fixed objects (e.g., “socrates()”), we can use 0-argument function symbols.
    ````
+
+   ```tickbox {id=saying-tick4}
+   I'm happy with this one.
+   ```
+
 
 5. For every ‘x’ there is a ‘y’ that is greater than ‘x’. (You might want to use a predicate symbol like “greaterthan” for this.)
 
@@ -183,6 +212,11 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    all x. number(x) -> (ex y. number(y) /\ greaterthan(y,x))
    ```
    ````
+
+   ```tickbox {id=saying-tick5}
+   I'm happy with this one.
+   ```
+
 
 6. For every tree that is green, there is a tree that is blue.
 
@@ -210,6 +244,11 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    all t. (tree(t) /\ green(t)) -> (ex u. tree(u) /\ blue(u) /\ t != u)
    ```
    ````
+
+   ```tickbox {id=saying-tick6}
+   I'm happy with this one.
+   ```
+
 
 7. There is a bird that has sat in every tree.
 
@@ -252,6 +291,10 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    If you wanted to get way more complicated, then you could attempt to encode the precise meaning of “has” in terms of “there exists a point in time before the current time when the bird sat in the tree”. Whether you do this or just use a predicate like “satIn” depends on what you want to model.
    ````
 
+   ```tickbox {id=saying-tick7}
+   I'm happy with this one.
+   ```
+
 8. There is exactly one tree that is red.
 
    ```formulaentry {id=saying-ex8}
@@ -267,6 +310,10 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    every `u` that is a red tree is equal to `t`”. You can read the parts after the the ∃ as a list of requirements: t must be (i) a tree; (ii) red; and (iii) the only one.
    ````
 
+   ```tickbox {id=saying-tick8}
+   I'm happy with this one.
+   ```
+
 9. There is at most one red tree.
 
    ```formulaentry {id=saying-ex9}
@@ -280,6 +327,10 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    ```
    In words "for all t1 and t2, if they are both trees and both red, then they are equal". Note that this formula does not specify that a red tree actually exists, only that if we can find any red trees they are all equal.
    ````
+
+   ```tickbox {id=saying-tick9}
+   I'm happy with this one.
+   ```
 
 10. There exist at least two different green trees.
 
@@ -296,10 +347,126 @@ The rules for mixing connectives and parentheses were described Lecture 1.
 	In words "there exist a t1 and a t2 that are both trees, are both green, and are not equal". Without the extra “t1 != t2”, this formula would still be true when there was only one tree.
 	````
 
-### Equality of formulas
+	```tickbox {id=saying-tick10}
+	I'm happy with this one.
+	```
 
-FIXME
 
+### Same Formulas?
+
+1. Are these two formulas the same up to renaming of their bound variables?
+   ```formula
+   all x. P(x)
+   ```
+   and
+   ```formula
+   all y. P(y)
+   ```
+
+   ```selection {id=alphaeq-ex1}
+   (True False)
+   ```
+
+   ```details
+   Answer...
+
+   **True**: the bound variable “x” in the first one has been consistently renamed to “y” in the second.
+   ```
+
+2. Are these two formulas the same up to renaming of their bound variables?
+   ```formula
+   all x. P(x)
+   ```
+   and
+   ```formula
+   all y. P(x)
+   ```
+
+   ```selection {id=alphaeq-ex2}
+   (True False)
+   ```
+
+   ```details
+   Answer...
+
+   **False**: in the first one, “x” appears bound, but it is free in the second one.
+   ```
+
+3. Are these two formulas the same up to renaming of their bound variables?
+   ```formula
+   all x. P(x) -> (ex y. Q(x,y))
+   ```
+   and
+   ```formula
+   all y. P(y) -> (ex x. Q(y,x))
+   ```
+
+   ```selection {id=alphaeq-ex3}
+   (True False)
+   ```
+
+   ```details
+   Answer...
+
+   **True**: the bound variable “x” in the first one has been consistently renamed to “y” in the second, and the bound variable “y” has been consistently renamed to “x”.
+   ```
+
+4. Are these two formulas the same up to renaming of their bound variables?
+   ```formula
+   all x. P(x) -> (ex y. Q(x,y))
+   ```
+   and
+   ```formula
+   all y. P(y) -> (ex y. Q(x,y))
+   ```
+
+   ```selection {id=alphaeq-ex3}
+   (True False)
+   ```
+
+   ```details
+   Answer...
+
+   **False**: we can match up “x” in the first with “y” in the second, and “y” in the first with “x” in the second, but this pairing does not make “Q(x,y)” in the first and “Q(x,y)” in the second equal.
+   ```
+
+5. Are these two formulas the same up to renaming of their bound variables?
+   ```formula
+   all x. P(x) -> Q(x)
+   ```
+   and
+   ```formula
+   all y. Q(y) -> P(y)
+   ```
+
+   ```selection {id=alphaeq-ex3}
+   (True False)
+   ```
+
+   ```details
+   Answer...
+
+   **False**: the two formulas have different structure, because the predicate symbols “P” and “Q” are swapped.
+   ```
+
+6. Are these two formulas the same up to renaming of their bound variables?
+   ```formula
+   (all x. P(x)) /\ (all x. Q(x))
+   ```
+   and
+   ```formula
+   (all y. P(y)) /\ (all z. Q(z))
+   ```
+
+   ```selection {id=alphaeq-ex3}
+   (True False)
+   ```
+
+   ```details
+   Answer...
+
+   True: the two bound “x”s in the first formula are independent and can be renamed separately.
+   ```
 
 ---
 
