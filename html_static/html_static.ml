@@ -229,6 +229,9 @@ let figcaption ?attrs = normal_element "figcaption" ?attrs
 let div ?attrs = normal_element "div" ?attrs
 let main ?attrs = normal_element "main" ?attrs
 
+let details ?attrs = normal_element "details" ?attrs
+let summary ?attrs = normal_element "summary" ?attrs
+
 (* 4.5 Text level semantics *)
 let a ?attrs = normal_element "a" ?attrs
 let em ?attrs = normal_element "em" ?attrs

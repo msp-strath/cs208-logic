@@ -5,6 +5,17 @@
     }
 }
 
+/* Monospace is easier to read when entering lots of symbols */
+
+input {
+    font-family: monospace;
+}
+
+/* Displayed formulas are centred. */
+
+.displayedformula {
+    text-align: center;
+}
 
 /* Code entry stuff */
 
@@ -23,6 +34,9 @@
     font-family: var(--mono-font);
     overflow:hidden;
     resize:none;
+}
+.defnsat-entry input {
+    width: 100%
 }
 
 .defnsat-parseresult {
@@ -73,10 +87,6 @@
 }
 
 /* Natural deduction stuff */
-
-/* input { */
-/*     font-family: "DejaVu Sans Mono", "Linux Libertine O", "serif"; */
-/* } */
 
 .vertical {
     display:flex;
@@ -146,10 +156,9 @@
 }
 
 .comment {
-    color: #164; /* FIXME: dark mode? */
+    color: #164;
     font-style: italic;
     white-space: nowrap;
-    /* padding-left: 0.8em; */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -191,10 +200,11 @@
 
 .resetbutton {
     padding: 0;
-    border: solid #ddd 1px;
-    font-size: 50%;
-    border-radius: 3px;
+    /*border: solid #ddd 1px;*/
+    font-size: 60%;
+    border-radius: 2px;
     margin-right: 0.3em;
+    opacity: 0.7;
 }
 
 /* ------------------------ */
@@ -235,19 +245,19 @@
 }
 
 .assumptionbox {
-  border-radius: 0.4em 0.4em 0 0;
-  border-top: 1px solid #ddd;
-  border-left: 1px solid #ddd;
-  border-right: 1px solid #ddd;
-  display: flex;
-  flex-direction: column;
-  margin-left: 0.5em; margin-right: 0.5em
+    border-radius: 0.4em 0.4em 0 0;
+    border-top: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    margin-left: 0.5em; margin-right: 0.5em
 }
 
 .assumption {
-  border-bottom: 1px solid #ddd;
-  margin-bottom: 1.2em;
-  color: #555;
-  font-style: italic;
-  padding-left: 0.5em
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 1.2em;
+    color: #555;
+    font-style: italic;
+    padding-left: 0.5em
 }

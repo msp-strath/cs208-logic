@@ -42,7 +42,7 @@ let component (type config)
                       ~attrs:[
                         A.value value;
                         A.placeholder (V.placeholder config);
-                        E.onchange (fun str -> Update str)
+                        E.oninput (fun str -> Update str)
                    ]);
                  H.div ~attrs: [ A.class_ "defnsat-parseresult" ]
                    (match result with

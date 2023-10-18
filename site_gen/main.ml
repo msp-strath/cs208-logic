@@ -47,11 +47,12 @@ let template ~title:title_text ~body:body_html ~script_url =
             ]
       ]
 
-let code_render ids attributes kind content =
+let code_render renderer ids attributes kind content =
   match kind with
   | "lmt" | "tickbox" | "textbox" | "entrybox"
   | "rules" | "rules-display" | "focused-nd"
-  | "focused-tree" | "focused-freeentry" as kind ->
+  | "focused-tree" | "focused-freeentry"
+  | "formulaentry" as kind ->
      let open Html_static in
      let id =
        match List.assoc_opt "id" attributes with
@@ -102,6 +103,30 @@ let code_render ids attributes kind content =
            In_channel.input_all pikchr_output)
      in
      Some (Html_static.raw_text svg)
+  | "details" ->
+     let open Html_static in
+     let title, body =
+       match String.index_opt content '\n' with
+       | None ->
+          None,
+          Omd.of_string content
+       | Some i ->
+          Some (String.sub content 0 i),
+          Omd.of_string (String.sub content (i+1) (String.length content - i - 1))
+     in
+     Some (details
+             ((match title with None -> empty | Some t -> summary (text t))
+              ^^ renderer body))
+  | "formula" ->
+     let open Fol_formula in
+     (match Formula.of_string content with
+      | Ok fmla ->
+         let open Html_static in
+         Some (div ~attrs:[ A.class_ "displayedformula" ]
+                 (text (Formula.to_string fmla)))
+      | Error (`Parse err) ->
+         (* FIXME: just log the error? *)
+         failwith (Parser_util.Driver.string_of_error err))
   | _ ->
      None
 
@@ -114,10 +139,13 @@ let process_file input_dir output_dir filename =
       Omd.of_channel
   in
   let ids = ref [] in
+  let rec renderer doc =
+    Of_Omd.render (code_render renderer ids) doc
+  in
   let html =
     template ~title:"CS208"
       ~script_url:"frontend.bc.js"
-      ~body:(Of_Omd.render (code_render ids) doc)
+      ~body:(renderer doc)
   in
   Printf.printf "Page: %s; ids: [ %s ]\n" filename (String.concat ", " !ids);
   Out_channel.with_open_text

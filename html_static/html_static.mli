@@ -3,6 +3,9 @@
 include Html_sig.S
 (** Supports the generic HTML generation interface. *)
 
+val details : _ normal_element
+val summary : _ normal_element
+
 val raw_text : string -> _ t
 (** [raw_text str] produces a document consisting of [str] without
     escaping any of the HTML-sensitive characters. FIXME: better
