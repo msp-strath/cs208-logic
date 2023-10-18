@@ -10,4 +10,5 @@ let () =
   Ulmus.attach_all "rules-display" Natural_deduction.Rules.display_rules;
   Ulmus.attach_all "focused-nd" Natural_deduction.Question.focusing_component;
   Ulmus.attach_all "focused-tree" Natural_deduction.Question.tree_component;
+  Ulmus.attach_all "focused-freeentry" Nd_focusing_widget.component;
   Ulmus.attach_download_button "download"

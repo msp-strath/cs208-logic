@@ -50,7 +50,8 @@ let template ~title:title_text ~body:body_html ~script_url =
 let code_render ids attributes kind content =
   match kind with
   | "lmt" | "tickbox" | "textbox" | "entrybox"
-  | "rules" | "rules-display" | "focused-nd" | "focused-tree" as kind ->
+  | "rules" | "rules-display" | "focused-nd"
+  | "focused-tree" | "focused-freeentry" as kind ->
      let open Html_static in
      let id =
        match List.assoc_opt "id" attributes with

@@ -18,6 +18,8 @@ and for "not":
 BEAE1Xg0SYE
 ```
 
+[Slides](week05-slides.pdf)
+
 ## The Interactive Editor
 
 The rules for "or" and "not" are also available in the proof editor. This video explains how to use them for some examples.

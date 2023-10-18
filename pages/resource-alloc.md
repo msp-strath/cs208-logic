@@ -18,9 +18,6 @@ define one_colour(n : node) {
       (c1 = c2 | ~is_colour(n,c1) | ~is_colour(n,c2))
 }
 
-// dump(all_nodes_some_colour)
-// dump(one_colour(N1))
-
 define conflict(n1 : node, n2 : node) {
   forall(c : colour) ~is_colour(n1, c) | ~is_colour(n2,c)
 }
@@ -34,7 +31,7 @@ define main() {
   & conflict(N1,N3)
   & conflict(N1,N5)
   & conflict(N5,N3)
-//  & conflict(N5,N2)
+//  & conflict(N5,N2)  // Adding this line makes the problem unsolvable
 }
 
 ifsat(main)

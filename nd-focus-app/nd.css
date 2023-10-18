@@ -1,0 +1,151 @@
+input {
+    font-family: "DejaVu Sans Mono", "Linux Libertine O", "serif";
+}
+
+.vertical {
+    display:flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: left;
+    width: 100%;
+}
+
+.horizontal {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.casesplit {
+    width: 100%;
+    margin-top: 0em;
+    padding-left: 0em;
+    margin-bottom: 0em;
+    margin-left: 1em;
+}
+
+.indent {
+    padding-left: 1em
+}
+.grouped {
+    margin-left: 0.5em;
+    /*margin-right: 0.5em;*/
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+    border-radius: 10px 10px 10px 10px;
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+    flex-shrink: 0
+}
+.initialformulaentry {
+    width:100%
+}
+
+.hole {
+    border-radius: 5px;
+    background-color: #ddddff;
+    padding: 0.3em;
+}
+
+.focushole {
+    margin-left: 0.5em;
+    flex: 1;
+}
+
+.cases {
+    padding-left: 0em;
+    flex: 1;
+}
+
+.focus {
+    flex-shrink: 0;
+}
+
+.commandinput {
+    margin-top: 0.4em;
+    /* width: 25% */
+}
+.errormsg {
+    color: #f00;
+}
+.comment {
+    color: #164;
+    font-style: italic;
+    white-space: nowrap;
+    /* padding-left: 0.8em; */
+}
+.worksheet {
+    display: flex;
+    align-items: flex-start; width: 100%; height: 90%; justify-content: center
+}
+
+.assumpbutton {
+    border: none;
+    background-color: #dddddd;
+    border-radius: 5px 5px 0 0;
+    padding: 0.2em 1em 0em 1em;
+    margin-top: 0.2em;
+}
+
+.assumpbutton:hover {
+    background-color: #eeeeee;
+}
+
+.unfocusedgoal {
+    border: 1px solid #777;
+    padding: 0.5em 1em 0.5em 1em;
+    border-radius: 7px 7px 0px 0px;
+    background-color: #ddd;
+}
+
+.unfocusedgoal:hover {
+    background-color: #eeeeee;
+}
+
+.resetbutton {
+    padding: 0;
+    border: solid #ddd 1px;
+    font-size: 50%;
+    border-radius: 3px;
+    margin-right: 0.3em;
+}
+
+/* ------------------------ */
+/* Proof tree display */
+
+.proofbox {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    justify-content: center
+}
+
+.premisebox {
+    border-bottom: 2px solid;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    justify-content: flex-end
+}
+
+.formulabox {
+    text-align: center;
+    white-space: nowrap;
+    font-family: inherit;
+    font-size: 100%;
+    color: #000;
+    padding: 0.2em;
+}
+
+.rulename {
+    white-space: nowrap;
+    font-size: 75%;
+    color: #333;
+    align-self: flex-end;
+}
