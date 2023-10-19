@@ -51,13 +51,57 @@ The "slow" way of converting to CNF consists of the following steps:
 1. Convert the following formula to CNF by first converting to NNF
    and then to CNF.
 
-   ```
+   ```formula
       (a ∧ b ∧ c) ∨ ¬ (¬ d ∨ e)
    ```
 
+   ````details
+   Answer...
+
+   The steps go like this, with comments between `{` and `}`s:
+   ```
+       (a ∧ b ∧ c) ∨ ¬ (¬ d ∨ e) \\
+     ≡           { because ¬ (P ∨ Q) ≡ ¬ P ∧ ¬ Q }
+	   (a ∧ b ∧ c) ∨ (¬ ¬ d ∧ ¬ e)\\
+     ≡           { because ¬ ¬ P ≡ P }
+	   (a ∧ b ∧ c) ∨ (d ∧ ¬ e)                         (formula in NNF)
+     ≡           { multiply out brackets on the left }
+	   (a ∨ (d ∧ ¬ e)) ∧ (b ∨ (d ∧ ¬ e)) ∧ (c ∨ (d ∧ ¬ e))
+     ≡           {multiple out brackets on the right (twice)
+	   (a ∨ d) ∧ (a ∨ ¬ e) ∧ (b ∨ d) ∧ (b ∨ ¬ e) ∧ (c ∨ d) ∧ (c ∨ ¬ e)
+	                                                   (formula in CNF)
+   ```
+
+   Note how the duplication of formulas that happens in the “multiplying out” steps causes the number of clauses to increase from two in the original formula to six in the final formula.
+   ````
+
 2. Also convert the formula to DNF (*Disjunctive Normal Form*).
 
+   ```details
+   Answer...
+
+   The NNF version of the formula is already in DNF.
+   ```
+
 3. How would you make a linear time SAT solver that works on formulas in DNF?  Why is not in general a feasible approach?
+
+   ````details
+   Answer...
+
+   If the formula is in DNF, then for the whole formula to be satisifable, at least one of the clauses must be satisfiable. So the solver could check each clause in turn. In DNF a clause is a conjunction of literals, we need to check that they can all be true simultaneously, which is checking that we don't have `a` and `¬ a` in the same clause. The first DNF clause that is consistent (doesn't have both `a` and `¬ a`) gives the satisfying valuation. This check itakes time linearly proportional to the number of clauses, so is very fast.
+
+   For instance, the DNF formula above:
+   ```formula
+   (a ∧ b ∧ c) ∨ (d ∧ ¬ e)
+   ```
+   Has two solutions, one for each clause: `{a ↦ T, b ↦ T, c ↦ T}` and `{d ↦ T, e ↦ F}`.
+
+   Taking formulas in DNF is not a feasible approach to SAT solving in general because generating DNF formulas from arbitrary formulas can involve an exponential increase in the size of the formula in we use the “multiplying out the brackets approach”. So wouldn't, in the worst case, be able to do better than checking all possible `2^n` valuations of the atomic propositions.
+
+   Could there be a more efficient way of converting to DNF, similar to the Tseytin transformation for CNF? If there were, then we could combine it with the linear time SAT solver procedure for DNF described above to get an efficient SAT solver for any formula, including those in CNF. Since solving SAT for CNF is NP-complete, then this would mean that all NP problems would be efficiently solvable, and so P=NP. However no one has been able to prove one way or the other if P=NP, so currently it is unknown whether or not there is an efficient method for converting to DNF.
+
+   We can think of DNF as listing all the possible answers, whereas CNF lists all the things that must be true about the answer without giving it directly. Intuitively, being given the answer is a lot less work that having to find it. But no one has been able to conclusively prove that this is the case!
+   ````
 
 ## Tseytin Transformation
 
@@ -67,7 +111,7 @@ tx3tgpzZPqo
 
 ### Summary
 
-1. Convert all `P \to Q` to `¬ P ∨ Q`.
+1. Convert all `P → Q` to `¬ P ∨ Q`.
 
 2. Convert the formula into equations. This means that we take all the non-atomic subformulas of the original formula, name them all `x₁, x₂, ` etc. and then use the top level connective of the subformula and the names of the sub-subformulas to make each equation. Here is an example, for the formula `a ∨ ¬ (¬ b ∨ c)`, we have the following equations, where `x₁` is the name given to the whole formula:
 
