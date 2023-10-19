@@ -9,7 +9,7 @@
 
 module Of_Omd = Html_of_omd.Make (Html_static)
 
-let template ~title:title_text ~body:body_html ~script_url =
+let template ~title:title_text ?(sub_title="") ~script_url body_html =
   let open Html_static in
   html @@
     concat_list [
@@ -34,7 +34,7 @@ let template ~title:title_text ~body:body_html ~script_url =
             ];
         body @@
           concat_list [
-              header (h1 (text title_text));
+              header (h1 (text title_text) ^^ p (text sub_title));
               main body_html;
               footer (text "Source code for these pages "
                       ^^ a ~attrs:[A.href "https://github.com/bobatkey/interactive-logic-course"]
@@ -143,9 +143,11 @@ let process_file input_dir output_dir filename =
     Of_Omd.render (code_render renderer ids) doc
   in
   let html =
-    template ~title:"CS208"
+    template
+      ~title:"CS208 Logic & Algorithms"
+      ~sub_title:"Semester 1: Logic"
       ~script_url:"frontend.bc.js"
-      ~body:(renderer doc)
+      (renderer doc)
   in
   Printf.printf "Page: %s; ids: [ %s ]\n" filename (String.concat ", " !ids);
   Out_channel.with_open_text
