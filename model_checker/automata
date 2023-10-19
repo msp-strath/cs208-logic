@@ -1,0 +1,29 @@
+vocab V {
+  state/1,
+  transition/3,
+  initial/1, // the initial timestep
+  in-state/2, // at time 't', in state 's'
+  previous/2, // t is after t'
+  input/2, // the input at time t is i
+  initial-state/1 // this is a starting state
+}
+
+partial model Automaton for V {
+  state  = { s1, s2, s3, s4 },
+  inputs = { i0, i1 },
+  time   = { t0, t1, t2, t3, t4, t5 },
+  transition = {
+    (s1, i0, s2),
+    (s1, i1, s3),
+    (s2, i1, s4)
+  },
+  previous = { (t1,t0), (t2,t1), (t3,t2), (t4,t3), (t5,t4) },
+  initial  = { t0 },
+  initial-state = { s1 }
+}
+
+axioms Extend for V {
+  input : "all t. timestep(t) -> input(t,i0) \/ input(t,i1)",
+  input-unique : "all t. timestep(t) -> ¬(input(t,i0) /\ input(t,t1))",
+  next-step: "all t. all s. in-state(t,s) <-> ((ex t'. ex s'. ex inp. previous(t,t') /\ transition(s,inp,s') /\ in-state(t',s') /\ input(t',inp)) \/ (initial(t) /\ initial-state(s)))",
+}

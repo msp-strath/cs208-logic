@@ -1,0 +1,18 @@
+(library
+ (name model_checker)
+ (libraries fol_formula fmt menhirLib parser_util msat msat.sat)
+ (flags
+  (:standard -w -30)))
+
+(ocamllex lexer)
+
+(menhir
+ (modules grammar formula_grammar)
+ (flags --table --unused-token UNKNOWN)
+ (merge_into parser))
+
+(rule
+ (targets formula_grammar.mly)
+ (deps %{lib:fol_formula:grammar.mly})
+ (action
+  (copy %{lib:fol_formula:grammar.mly} formula_grammar.mly)))

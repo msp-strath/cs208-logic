@@ -1,0 +1,19 @@
+vocab V {
+  path/2
+}
+
+model I1 for V {
+  universe = { a, b, c },
+  path = { (a,b), (b,a), (a,a), (b,b) }
+}
+
+//axioms A for V {
+//  symmetry : "all x. all y. path(x,y) -> path(y,x)",
+//  transitivity : "all x. all y. all z. (path(x,y) /\ path(y,z)) -> path(x,z)"
+//}
+
+check I1 |= "ex x. ex y. ex z. x != y /\ x != z /\ y != z"
+
+check I1 |= "ex x. ex y. path(x, y) /\ x != y"
+
+check I1 |= "all x. all y. path(x,y) -> path(y,x)"

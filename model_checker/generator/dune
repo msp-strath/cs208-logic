@@ -1,0 +1,3 @@
+; (library
+;  (name generator)
+;  (libraries model_checker fol_formula msat.sat msat))

@@ -1,0 +1,32 @@
+vocab V {
+  path/2
+}
+
+axioms A1 for V {
+  symmetry    : "all x. all y. path(x,y) -> path(y,x)",
+  irreflexive : "all x. ¬(path(x,x))",
+//  trans       : "all x.all y. all z. path(x,y) -> path(y,z) -> path(x,z)",
+  step        : "all x. ex y. path(x,y)"
+}
+
+synth A1 size 2
+
+vocab V2 {
+  person/1,
+  resource/1,
+  uses/2
+}
+
+// this only has models that have even cardinality!
+axioms A for V2 {
+  person-or-resource : "all x. person(x) \/ resource(x)",
+  ax2        : "all x. ¬ (person(x) /\ resource(x))",
+  uses-types : "all p. all r. uses(p,r) -> (person(p) /\ resource(r))",
+  uses       : "all r. resource(r) -> (ex p. person(p) /\ uses(p,r) /\ (all p2. person(p2) -> uses(p2,r) -> p = p2))",
+  ax3        : "all p. person(p) -> (ex r. resource(r) /\ uses(p,r) /\ (all r2. resource(r2) -> uses(p,r2) -> r = r2))"
+
+// , symmetry-breaking: "all p. all r. person(p) -> resource(r) -> lt(p,r)"
+// , sb2 : "all p1. all p2. all r1. all r2. uses(p1,r1) -> uses(p2,r2) -> (lt(p1, p2) -> lt(r1, r2))"
+}
+
+synth A size 6

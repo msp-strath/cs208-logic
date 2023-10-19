@@ -1,4 +1,5 @@
 (executable
  (name main)
  (public_name slakemoth)
+ (package slakemoth)
  (libraries slakemoth))

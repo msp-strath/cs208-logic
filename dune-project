@@ -6,7 +6,7 @@
 ; (generate_opam_files true)
 
 (source
- (github bobatkey/sat-widget))
+ (github bobatkey/interactive-logic-course))
 
 (authors "Robert Atkey")
 
@@ -23,5 +23,11 @@
  ; (depends ocaml dune msat menhir fmt)
  ; (tags
  ;  (topics "to describe" your project)))
+
+(package
+  (name fol_formula))
+
+(package
+  (name parser_util))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project

@@ -1,5 +1,6 @@
 (library
  (name fol_formula)
+ (public_name fol_formula)
  (libraries menhirLib parser_util sexplib0)
  (preprocess
   (pps ppx_sexp_conv))
@@ -13,10 +14,10 @@
  (modules grammar parser)
  (merge_into parser))
 
-; (install
-;  (section lib)
-;  (package fol_formula)
-;  (files grammar.mly))
+(install
+ (section lib)
+ (package fol_formula)
+ (files grammar.mly))
 
 (rule
  (targets parser_messages.ml)
