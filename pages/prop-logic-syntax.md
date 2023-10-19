@@ -10,6 +10,8 @@ In this course, we will study Symbolic Logic, where we are primarily concerned w
 s_JkAMdFT8c
 ```
 
+[Slides (PDF)](week01-slides.pdf)
+
 ## Examples
 
 Here is an example of a formula of Propositional Logic:

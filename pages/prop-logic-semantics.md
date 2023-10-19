@@ -16,6 +16,8 @@ This video covers the material written in words and symbols below.
 xYxPxZe2n98
 ```
 
+[Slides (PDF)](week01-slides.pdf)
+
 ## Truth Values
 
 For the logic we are studying, we have two *truth values*:
@@ -49,7 +51,7 @@ Here are some example valuations for the atomic propositions `S` and `R`. If we 
 
 3. `v = { S ↦ T, R ↦ Y }`
 
-   "It is sunny (`v(S) = T`)$. It is raining (`v(R) = T`)"
+   "It is sunny (`v(S) = T`). It is raining (`v(R) = T`)"
 
 As you can see from the examples, I have written out valuations as lists of atomic propositions paired with their truth value, between curly braces (`{` and `}`). When writing out valuations, it is important to keep the following in mind:
 
@@ -119,25 +121,25 @@ Another way to remember this table is that `P → Q` is true when the value of `
 
 ## The meaning of formulas
 
-Given a formula `P` and a valuation `v`, we assign a truth value to `P` by working our way up the tree described by the formula `P` from the atoms at the leaves. I will write `[[P]]v` for "the truth value assigned to `P` with the valuation `v`". The `[[...]]` notation is used to stand for "the semantics of ...". Here I am using it to define the semantics of formulas in terms of their truth values, given a valuation of their atoms.
+Given a formula `P` and a valuation `v`, we assign a truth value to `P` by working our way up the tree described by the formula `P` from the atoms at the leaves. I will write `〚P〛v` for "the truth value assigned to `P` with the valuation `v`". The `〚...〛` notation is used to stand for "the semantics of ...". Here I am using it to define the semantics of formulas in terms of their truth values, given a valuation of their atoms.
 
 At the leaves, we have atoms that are given truth values by the
 valuation:
 
 ```
-   [[A]]v = v(A)
+   〚A〛v = v(A)
 ```
 
 For formulas built from connectives, we assign truth tables by taking the truth values assigned to their subformulas (i.e., subtrees) and combining them using the tables for each of the connectives. In symbols, we have:
 
 ```
- [[ P ∧ Q ]]v = [[ P ]]v ∧ [[ Q ]]v
- [[ P ∨ Q ]]v = [[ P ]]v ∨ [[ Q ]]v
- [[ ¬ P ]]v   = ¬ [[ P ]]v
- [[ P → Q ]]v = [[ P ]]v → [[ Q ]]v
+ 〚 P ∧ Q 〛v = 〚 P 〛v ∧ 〚 Q 〛v
+ 〚 P ∨ Q 〛v = 〚 P 〛v ∨ 〚 Q 〛v
+ 〚 ¬ P 〛v   = ¬ 〚 P 〛v
+ 〚 P → Q 〛v = 〚 P 〛v → 〚 Q 〛v
 ```
 
-This definition may look odd because it looks like we are defining `∧` to mean `∧`, `∨` to mean `∨` and so on. This is only a coincidence of notation though: the connectives inside the `[[...]]` brackets are the *syntax* of propositional logic, just symbols. The connectives outside the `[[...]]` refer to the *meanings* of the connectives as defined by the truth tables above.
+This definition may look odd because it looks like we are defining `∧` to mean `∧`, `∨` to mean `∨` and so on. This is only a coincidence of notation though: the connectives inside the `〚...〛` brackets are the *syntax* of propositional logic, just symbols. The connectives outside the `〚...〛` refer to the *meanings* of the connectives as defined by the truth tables above.
 
 ### Example
 
@@ -147,20 +149,20 @@ assigned to the formula `(A ∨ B) ∧ ¬ A` under the valuation
 work out the value of:
 
 ```
-  [[(A ∨ B) ∧ ¬ A]]({A ↦ F; B ↦ T})
+  〚(A ∨ B) ∧ ¬ A〛({A ↦ F; B ↦ T})
 ```
 
 Since the valuation `{A ↦ F; B ↦ T}` is quite long, I will just write it as `v` for short.
 
-We compute the value of `[[(A ∨ B) ∧ ¬ A]]v` by
+We compute the value of `〚(A ∨ B) ∧ ¬ A〛v` by
 repeatedly applying the equations above, working from the topmost
 connective to the leaves of the tree described by the formula. This
 gives the following steps:
 
 ```
-      [[(A ∨ B) ∧ ¬ A]]v
-    = [[A ∨ B]]v ∧ [[¬ A]]v
-    = ([[A]]v ∨ [[B]]v) ∧ ¬ [[A]]v
+      〚(A ∨ B) ∧ ¬ A〛v
+    = 〚A ∨ B〛v ∧ 〚¬ A〛v
+    = (〚A〛v ∨ 〚B〛v) ∧ ¬ 〚A〛v
     = (v(A) ∨ v(B)) ∧ ¬ v(A)
 ```
 
@@ -201,10 +203,10 @@ Finally, the "`∧`" (using `T ∧ T = T`):
 By all these steps, we have worked out that:
 
 ```
-  [[(A ∨ B) ∧ ¬ A}({A ↦ F; B ↦ T}) = T
+  〚(A ∨ B) ∧ ¬ A〛({A ↦ F; B ↦ T}) = T
 ```
 
-Of course, it is not always necessary to carry out all these steps explicitly by hand. However, it is important to notice that there is a difference between the symbols of formal logic and their meaning. Using the `[[...]]` brackets moves us from the syntax to the semantics. The special status of syntax will become more important when we look at deductive proof systems for logic.
+Of course, it is not always necessary to carry out all these steps explicitly by hand. However, it is important to notice that there is a difference between the symbols of formal logic and their meaning. Using the `〚...〛` brackets moves us from the syntax to the semantics. The special status of syntax will become more important when we look at deductive proof systems for logic.
 
 In the [next section](truth-tables.html), we look at using truth tables to compute the semantics of formulas systematically for all valuations of their atoms.
 

@@ -2,13 +2,15 @@
 
 # Truth Tables, Satisfiability and Validity
 
-Truth tables are a way of systematically working out the truth value assigned to a formula for each possible valuation (assignment of truth values to atoms). We work out the value of `[[P]]v` for every possible `v` in a single large table. The overall process for working out a truth table is similar to the above process for working out `[[P]]v` — we break the formula down into subformulas and compute the truth values assigned "bottom up" — but we arrange the work slightly differently. Truth tables are useful for working out truth value assignments for all possible assignments without missing any accidentally.
+Truth tables are a way of systematically working out the truth value assigned to a formula for each possible valuation (assignment of truth values to atoms). We work out the value of `〚P〛v` for every possible `v` in a single large table. The overall process for working out a truth table is similar to the above process for working out `〚P〛v` — we break the formula down into subformulas and compute the truth values assigned "bottom up" — but we arrange the work slightly differently. Truth tables are useful for working out truth value assignments for all possible assignments without missing any accidentally.
 
 ## Video
 
 ```youtube
 okddmJ1xVgg
 ```
+
+[Slides (PDF)](week01-slides.pdf)
 
 ## Truth Tables by Example
 
@@ -114,7 +116,7 @@ Steps for writing out a truth table for a formula `P`:
 
 ## Satisfiability
 
-A formula `P` is *satisfiable* if there exists at least one valuation `v` that makes it true. In other words, there is at least one valuation `v` such that `[[P]]v = T`. A valuation that makes a formula true is called a *satisfying valuation* (or *satisfying assignment*).
+A formula `P` is *satisfiable* if there exists at least one valuation `v` that makes it true. In other words, there is at least one valuation `v` such that `〚P〛v = T`. A valuation that makes a formula true is called a *satisfying valuation* (or *satisfying assignment*).
 
 If we think of valuations as "possible states of the world", then a formula `P` being satisfiable means that there is at least one state of the world where this formula is true. By encoding "real-world" problems as logical formulas, finding satisfying valuations amounts to finding solutions to those problems, as we shall see in [Part 1 : Logical Modelling](logical-modelling-intro.html).
 
@@ -122,7 +124,7 @@ If you are asked to show that a formula is satisfiable, then what you have to do
 
 One systematic way to check that a formula is satisfiable by hand is to write out its truth table. **If there is at least one line where the formula is given the truth value `T`, then the formula is satisfiable**.
 
-Let's see an example. Here is the truth table for the formula $(A ∨ B) ∧ ¬ A$ that we worked out in the previous section:
+Let's see an example. Here is the truth table for the formula `(A ∨ B) ∧ ¬ A` that we worked out in the previous section:
 
 | A  | B  | A ∨ B | ¬ A | (A ∨ B) ∧ ¬ A  |
 |----|----|-------|-----|----------------|
@@ -146,7 +148,7 @@ Now none of the rows has a `T` in the final column. Therefore we say that this f
 
 ## Validity
 
-A formula `P` is *valid* if **all valuations `v` make it true**. In other words, if for all valuations `v`, we have `[[P]]v = T`, then `P` is valid. Valid formulas are also called *tautologies*.
+A formula `P` is *valid* if **all valuations `v` make it true**. In other words, if for all valuations `v`, we have `〚P〛v = T`, then `P` is valid. Valid formulas are also called *tautologies*.
 
 We can think of a valid formula as something that is true no matter what state of the world we are in. Validity is therefore a kind of "dual" to satisfiability: valid formulas must always hold, satisfiable formulas must never not hold. We will exploit this relationship between validity and satisfiability below.
 
@@ -200,7 +202,7 @@ If add a column to represent `¬ P`, then it will always be `F`, by the definiti
 
 Since `¬ P` is false for all valuations it is *not* satisfiable. So `P` being valid implies that `¬ P` is not satisfiable.
 
-In the opposite direction, if `¬ P` were satisfiable, then there would be a row where `¬ P` is `T`. The same row would therefore have `P` being `F`, again because $¬ T = F$. Therefore, `P` would not be valid. So `¬ P` being satisfiable means `P` is not valid.
+In the opposite direction, if `¬ P` were satisfiable, then there would be a row where `¬ P` is `T`. The same row would therefore have `P` being `F`, again because `¬ T = F`. Therefore, `P` would not be valid. So `¬ P` being satisfiable means `P` is not valid.
 
 
 ---

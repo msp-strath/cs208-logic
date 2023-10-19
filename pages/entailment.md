@@ -16,7 +16,7 @@ The intuitive definition of entailment is the following:
 
 To make this formal, we must be explicit about valuations. So the full definition of entailment is:
 
->  Assumptions `P₁, P₂...` *entail* a conclusion `Q` (written `P₁, P₂, ... ⊧ Q`) if, for all valuations `v`, **whenever all the assumptions are true under `v` (i.e., for all `i`, `[[P_i]]v = T`), then the conclusion is true under `v` (i.e., `[[Q]]v = T`)**.
+>  Assumptions `P₁, P₂...` *entail* a conclusion `Q` (written `P₁, P₂, ... ⊧ Q`) if, for all valuations `v`, **whenever all the assumptions are true under `v` (i.e., for all `i`, `〚P_i〛v = T`), then the conclusion is true under `v` (i.e., `〚Q〛v = T`)**.
 
 The definition of entailment can be subtle and difficult to understand at first without working through a few examples, so I have written these up below.
 
@@ -27,6 +27,8 @@ The following video introduces the idea of entailment by examples.
 ```youtube
 70hVzDSQn08
 ```
+
+[Slides (PDF)](week01-slides.pdf)
 
 ## Example Entailments
 
