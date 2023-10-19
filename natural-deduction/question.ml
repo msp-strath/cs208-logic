@@ -55,7 +55,7 @@ let config_p =
       (Fol_formula.Formula.of_string str)
   in
   let assumption_p =
-    list
+    sequence
       (let* name       = consume_next atom in
        let* assumption = consume_next formula in
        let* ()         = assert_nothing_left in

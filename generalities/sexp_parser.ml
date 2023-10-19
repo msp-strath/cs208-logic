@@ -24,12 +24,16 @@ let atom = function
   | Atom str -> Ok str
   | sexp     -> annotate_error sexp @@ Error "Expecting a single atom"
 
-let list p = function
+let sequence p = function
   | List items as sexp ->
      let* result, _others = p sexp items in
      Ok result
   | sexp ->
      annotate_error sexp @@ Error "Expecting a list"
+
+let list p = function
+  | List items -> traverse p items
+  | Atom _ as sexp -> annotate_error sexp @@ Error "Expecting a list"
 
 let close p parent items =
   let* result, _others = p parent items in

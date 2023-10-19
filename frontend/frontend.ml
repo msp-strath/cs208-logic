@@ -19,6 +19,7 @@ let () =
   Ulmus.attach_all "lmt" Slakemoth_widget.component;
   Ulmus.attach_all "tickbox" Tickbox.component;
   Ulmus.attach_all "textbox" Textbox.component;
+  Ulmus.attach_all "selection" Selection.component;
   Ulmus.attach_all "entrybox"
     (Validating_entry.component (module Validating_entry.Null_Validator));
   Ulmus.attach_all "formulaentry"

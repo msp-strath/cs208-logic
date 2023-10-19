@@ -22,10 +22,10 @@ depends: [
 ]
 pin-depends: [
   [ "ulmus.~dev"
-    "git+https://github.com/bobatkey/ulmus#deaa0fb218a8ae4b2e59645d4b915f68864a0e5a"
+    "git+https://github.com/bobatkey/ulmus#57e1c963b456a59c7f0f2385c03f8155b7af67fc"
   ]
   [ "html_sig.~dev"
-    "git+https://github.com/bobatkey/ulmus#deaa0fb218a8ae4b2e59645d4b915f68864a0e5a"
+    "git+https://github.com/bobatkey/ulmus#57e1c963b456a59c7f0f2385c03f8155b7af67fc"
   ]
 ]
 build: [

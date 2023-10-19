@@ -19,7 +19,9 @@ type 'a seq_parser
 
 val atom : string parser
 
-val list : 'a seq_parser -> 'a parser
+val sequence : 'a seq_parser -> 'a parser
+
+val list : 'a parser -> 'a list parser
 
 val of_conv : (sexp -> 'a) -> 'a parser
 

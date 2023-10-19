@@ -74,7 +74,7 @@ Use equality “`x = y`” and disequality “`x != y`” (or “`¬ (x = y)`”
 The rules for mixing connectives and parentheses were described Lecture 1.
 ````
 
-1. Every tree is green.
+1. “Every tree is green”.
 
    ```formulaentry {id=saying-ex1}
    ```
@@ -113,7 +113,7 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    I'm happy with this one.
    ```
 
-2. Every tree is bare and dead.
+2. “Every tree is bare and dead”.
 
    ```formulaentry {id=saying-ex2}
    ```
@@ -141,7 +141,7 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    I'm happy with this one.
    ```
 
-3. There exists a tree that is green.
+3. “There exists a tree that is green”.
 
    ```formulaentry {id=saying-ex3}
    ```
@@ -176,7 +176,7 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    I'm happy with this one.
    ```
 
-4. All the leaves are brown, and the sky is grey
+4. “All the leaves are brown, and the sky is grey”.
 
    ```formulaentry {id=saying-ex4}
    ```
@@ -196,7 +196,7 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    ```
 
 
-5. For every ‘x’ there is a ‘y’ that is greater than ‘x’. (You might want to use a predicate symbol like “greaterthan” for this.)
+5. “For every ‘x’ there is a ‘y’ that is greater than ‘x’”. (You might want to use a predicate symbol like “greaterthan” for this.)
 
    ```formulaentry {id=saying=ex5}
    ```
@@ -218,7 +218,7 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    ```
 
 
-6. For every tree that is green, there is a tree that is blue.
+6. “For every tree that is green, there is a tree that is blue”.
 
    ```formulaentry {id=saying-ex6}
    ```
@@ -250,7 +250,7 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    ```
 
 
-7. There is a bird that has sat in every tree.
+7. “There is a bird that has sat in every tree”.
 
    ```formulaentry {id=saying-ex7}
    ```
@@ -295,7 +295,7 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    I'm happy with this one.
    ```
 
-8. There is exactly one tree that is red.
+8. “There is exactly one tree that is red”.
 
    ```formulaentry {id=saying-ex8}
    ```
@@ -314,7 +314,7 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    I'm happy with this one.
    ```
 
-9. There is at most one red tree.
+9. “There is at most one red tree”.
 
    ```formulaentry {id=saying-ex9}
    ```
@@ -332,7 +332,7 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    I'm happy with this one.
    ```
 
-10. There exist at least two different green trees.
+10. “There exist at least two different green trees”.
 
 	```formulaentry {id=saying-ex10}
 	<formula>
@@ -364,7 +364,7 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    ```
 
    ```selection {id=alphaeq-ex1}
-   (True False)
+   (config (options (True False)))
    ```
 
    ```details
@@ -383,7 +383,7 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    ```
 
    ```selection {id=alphaeq-ex2}
-   (True False)
+   (config (options (True False)))
    ```
 
    ```details
@@ -402,7 +402,7 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    ```
 
    ```selection {id=alphaeq-ex3}
-   (True False)
+   (config (options (True False)))
    ```
 
    ```details
@@ -420,8 +420,8 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    all y. P(y) -> (ex y. Q(x,y))
    ```
 
-   ```selection {id=alphaeq-ex3}
-   (True False)
+   ```selection {id=alphaeq-ex4}
+   (config (options (True False)))
    ```
 
    ```details
@@ -439,8 +439,8 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    all y. Q(y) -> P(y)
    ```
 
-   ```selection {id=alphaeq-ex3}
-   (True False)
+   ```selection {id=alphaeq-ex5}
+   (config (options (True False)))
    ```
 
    ```details
@@ -458,8 +458,8 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    (all y. P(y)) /\ (all z. Q(z))
    ```
 
-   ```selection {id=alphaeq-ex3}
-   (True False)
+   ```selection {id=alphaeq-ex6}
+   (config (options (True False)))
    ```
 
    ```details

@@ -49,7 +49,7 @@ let template ~title:title_text ~body:body_html ~script_url =
 
 let code_render renderer ids attributes kind content =
   match kind with
-  | "lmt" | "tickbox" | "textbox" | "entrybox"
+  | "lmt" | "tickbox" | "textbox" | "entrybox" | "selection"
   | "rules" | "rules-display" | "focused-nd"
   | "focused-tree" | "focused-freeentry"
   | "formulaentry" as kind ->
