@@ -157,22 +157,48 @@ tx3tgpzZPqo
    | `(x₄ ∨ c ∨ ¬ x₃) ∧ (¬ x₄ ∨ x₃) ∧ (¬ c ∨ x₃)` | (*for* `x₃ = x₄ ∨ c`) |
    | `(¬ b ∨ ¬ x₄) ∧ (b ∨ x₄)`                    | (*for* `x₄ = ¬ b`)    |
 
+4. To assert that the whole formula must be true, we also add the clause `x₁`.
+
 ### Exercises
 
 (to do on paper)
 
 1. Convert this formula to CNF using the Tseytin transformation:
 
-   ```
+   ```formula
    (a ∧ b) ∨ (c ∧ d)
    ```
 
+   ````details
+   Answer...
+
+   TBD
+   ````
+
 2. Explain what the relationship between the values of `x`, `y` and `z` are when we have a valuation that makes all the clauses for the Tseytin translation of `∧` satisfied. Similarly for `∨` and `¬`.
+
+   ````details
+   Answer...
+
+   TBD
+   ````
 
 3. What is the relationship between the Tseytin transformed formula
    and the original in terms of satisfiability?
 
+   ````details
+   Answer...
+
+   TBD
+   ````
+
 4. Let's say that we have an equation like `x = x₁ ∧ x₂ ∧ ... ∧ xₖ`. How could we convert this to fewer clauses than the approach described above?  Similarly for `x = x₁ ∨ ... ∨ xₖ`.
+
+   ````details
+   Answer...
+
+   TBD
+   ````
 
 ---
 

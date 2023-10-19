@@ -16,8 +16,8 @@ In Part 1, we use logical modelling to describe and solve problems.
 6. [SAT solvers](sat.html), the underlying technology.
 7. [How to handle bigger problems](domains-and-parameters.html) with domains and parameters.
 8. [Resource allocation problems](resource-alloc.html), which are a kind of graph colouring problem. (*under construction*)
-9. [Converting to CNF](converting-to-cnf.html)
-10. [Circuits, Gates and Formulas](circuits.html), where we look at encoding logic gates as clauses, so we can get the solver to answer questions about circuits.
+9. [Converting to CNF](converting-to-cnf.html). SAT solvers take their input in CNF. Some problems are naturally in CNF (like the Packages or Resource Allocation problems above), but sometimes we need to convert any formula to one in CNF.
+10. [Circuits, Gates and Formulas](circuits.html), where we look at encoding logic gates as clauses, using the Tseytin transformaion. We can then get the solver to answer questions about circuits.
 
 **Coursework:** [Coursework 1 is here](coursework1.html).
 
