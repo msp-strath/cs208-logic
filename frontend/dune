@@ -1,8 +1,9 @@
 (executable
  (name frontend)
  (modes js)
- (libraries ulmus slakemoth_widget widgets natural_deduction nd_focusing_widget))
-
-(alias
- (name all)
- (deps frontend.bc.js frontend-test.html))
+ (libraries ulmus
+            slakemoth_widget
+            widgets
+            natural_deduction
+            nd_focusing_widget
+            model_checker_widget))

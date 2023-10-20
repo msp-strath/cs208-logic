@@ -67,6 +67,8 @@ input {
     grid-column: 1 / 3;
     grid-row: 4;
     border-radius: 5px 5px 5px 5px;
+    background-color: var(--bg);
+    border: solid #ccc 1px;
 }
 
 .defnsat-results p:first-child {
@@ -74,7 +76,7 @@ input {
     color: var(--accent);
     background-color: var(--accent-bg);
     border-radius: 5px 5px 0px 0px;
-    border: solid #ccc 1px;
+    /* border: solid #ccc 1px; */
     border-bottom: none;
     padding: 0.2em;
     font-weight: bold;

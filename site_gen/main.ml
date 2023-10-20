@@ -52,6 +52,7 @@ let code_render renderer ids attributes kind content =
   | "lmt" | "tickbox" | "textbox" | "entrybox" | "selection"
   | "rules" | "rules-display" | "focused-nd"
   | "focused-tree" | "focused-freeentry"
+  | "model-checker"
   | "formulaentry" as kind ->
      let open Html_static in
      let id =

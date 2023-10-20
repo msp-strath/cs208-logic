@@ -30,4 +30,7 @@ let () =
   Ulmus.attach_all "focused-nd" Natural_deduction.Question.focusing_component;
   Ulmus.attach_all "focused-tree" Natural_deduction.Question.tree_component;
   Ulmus.attach_all "focused-freeentry" Nd_focusing_widget.component;
+
+  Ulmus.attach_all "model-checker" Model_checker_widget.component;
+
   Ulmus.attach_download_button "download"

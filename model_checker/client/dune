@@ -2,4 +2,4 @@
  (name model_checker_widget)
  (preprocess
   (pps ppx_monoid))
- (libraries ulmus model_checker fol_formula sexplib0))
+ (libraries ulmus model_checker fol_formula))
