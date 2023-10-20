@@ -1,5 +1,7 @@
 # Semantics of Predicate Logic
 
+[Slides for the videos below](week08-slides.pdf)
+
 ## Widget test:
 
 ### “Less than or equal to”

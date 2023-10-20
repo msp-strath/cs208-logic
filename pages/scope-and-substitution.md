@@ -1,10 +1,10 @@
 [Contents](contents.html)
 
-# Upgrading Natural Deduction for Predicate Logic
+# Scope and Substitution
 
-To use Natural Deduction we need to upgrade our ideas of judgement to track which variables are in scope during a proof. We also need to be able to correctly substitute terms into formulas with free variables.
+To use Natural Deduction for [Predicate Logic](pred-logic-intro.html) we need to upgrade our ideas of judgement to track which variables are in scope during a proof. We also need to be able to correctly substitute terms into formulas with free variables.
 
-[Slides](week07-slides.pdf)
+[Slides for the videos (PDF)](week07-slides.pdf)
 
 ## Managing which variables are in scope
 
