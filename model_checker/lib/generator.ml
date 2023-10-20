@@ -112,10 +112,15 @@ let rec translate_formula cardinality table clauses env = function
       let x1 = eval env tm1 in
       let x2 = eval env tm2 in
       if x1 = x2 then L.add_conj clauses [] else L.add_disj clauses []
+  | Atom ("!=", [ tm1; tm2 ]) ->
+      let x1 = eval env tm1 in
+      let x2 = eval env tm2 in
+      if x1 <> x2 then L.add_conj clauses [] else L.add_disj clauses []
+  (* FIXME
   | Atom ("lt", [ tm1; tm2 ]) ->
       let x1 = eval env tm1 in
       let x2 = eval env tm2 in
-      if x1 < x2 then L.add_conj clauses [] else L.add_disj clauses []
+      if x1 < x2 then L.add_conj clauses [] else L.add_disj clauses [] *)
   | Atom (r, tms) -> (
       let name = (r, List.map (eval env) tms) in
       match Hashtbl.find table name with

@@ -11,11 +11,15 @@ let pp_output fmt = function
 let () =
   let lexbuf = Lexing.from_channel stdin in
   match Reader.parse lexbuf with
-  | Ok structure -> (
-      (* Format.printf "%a" Structure.pp structure *)
-      match Exec_structure.exec structure with
+  | Ok structure ->
+     (* Format.printf "%a" Structure.pp structure *)
+     (match Exec_structure.exec structure with
+      | exception e ->
+         Printexc.print_backtrace stdout;
+         raise e
       | Error (outputs, msg) ->
-          Format.printf "@[<v>%a@]@\n" Fmt.(list pp_output) outputs;
-          Format.eprintf "ERROR: %s\n" msg
-      | Ok outputs -> Format.printf "%a@\n" Fmt.(list pp_output) outputs)
+         Format.printf "@[<v>%a@]@\n" Fmt.(list pp_output) outputs;
+         Format.eprintf "ERROR: %s\n" msg
+      | Ok outputs ->
+         Format.printf "%a@\n" Fmt.(list pp_output) outputs)
   | Error msg -> Format.eprintf "Parse error: %t@\n" msg
