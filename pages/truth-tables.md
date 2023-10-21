@@ -17,7 +17,7 @@ okddmJ1xVgg
 Let's see how truth tables work by example. Let's say we want to write
 a truth table for the formula:
 
-```
+```formula
    (A ∨ B) ∧ ¬ A
 ```
 
@@ -35,13 +35,13 @@ of the original formula. Subformulas of a formula are the subtrees of
 the formula when it is written out as a tree. For our formula
 `(A ∨ B) ∧ ¬ A`, the top-level connective is `∧` and the subformulas are
 
-```
+```formula
   A ∨ B
 ```
 
 and
 
-```
+```formula
   ¬ A
 ```
 
