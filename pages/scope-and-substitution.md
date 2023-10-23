@@ -13,12 +13,12 @@ The key difference between Propositional Logic and Predicate Logic is that the l
 ### Video
 
 ```
-FIXME: Video 1
+FIXME: CS208-W7P1.mp4
 ```
 
 ### Exercises
 
-FIXME: scope exercises
+FIXME: scope exercises: true/false questions
 
 ## Substitution
 
@@ -29,7 +29,7 @@ Substitution is not much more than simply “plugging in values”, like you may
 ### Video
 
 ```
-FIXME: Video 2
+FIXME: CS208-W7P2.mp4
 ```
 
 ### Exercises

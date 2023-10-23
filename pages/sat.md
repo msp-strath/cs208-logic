@@ -54,7 +54,7 @@ The blog post [Understanding SAT by Implementing a Simple SAT Solver in Python](
 
 An example industrial strength SAT solver is [Picosat](http://fmv.jku.at/picosat/). This is a "industrial strength" SAT solver that is also designed to have a small(ish) implementation in C.
 
-There is also a [Python interface](https://github.com/ContinuumIO/pycosat) to Picosat which means that you can build up collections of constraints in a Python program via the API, instead of using a logical modelling tool like we do here. The Pycosat repository gives a [Python implementation](https://github.com/ContinuumIO/pycosat/blob/master/examples/opium.py) of the [Package Installation Problem](packages.md).
+There is also a [Python interface](https://github.com/ContinuumIO/pycosat) to Picosat which means that you can build up collections of constraints in a Python program via the API, instead of using a logical modelling tool like we do here. The Pycosat repository gives a [Python implementation](https://github.com/ContinuumIO/pycosat/blob/master/examples/opium.py) of the [Package Installation Problem](packages.html).
 
 [SAT4j](http://sat4j.org/) is a SAT solver written in pure Java that is easy to use from a Java program.
 

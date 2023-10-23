@@ -4,7 +4,7 @@
 
 As we have seen, [SAT Solvers](sat-solvers.html) take their input in *Conjunctive Normal Form* (CNF).
 
-Some problems, like the [Package Installation Problem](packages.md), are naturally expressed in CNF, but others are not. Therefore, it is vital to be able to convert any Propositional Logic formula into one in CNF.
+Some problems, like the [Package Installation Problem](packages.html), are naturally expressed in CNF, but others are not. Therefore, it is vital to be able to convert any Propositional Logic formula into one in CNF.
 
 We look at two techniques.
 
