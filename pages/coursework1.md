@@ -178,7 +178,7 @@ define all_tasks_one_machine {
   forall(t : task)
     forall(m1: machine)
       forall(m2 : machine)
-        m1 = m1 | ~assign(t,m1) | ~assign(t,m2)
+        m1 = m2 | ~assign(t,m1) | ~assign(t,m2)
 }
 
 define separate_machines(task1 : task, task2 : task) {
