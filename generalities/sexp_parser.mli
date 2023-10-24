@@ -23,6 +23,8 @@ val sequence : 'a seq_parser -> 'a parser
 
 val list : 'a parser -> 'a list parser
 
+val of_opt : (sexp -> 'a option) -> 'a parser
+
 val of_conv : (sexp -> 'a) -> 'a parser
 
 val to_conv : 'a parser -> (sexp -> 'a)

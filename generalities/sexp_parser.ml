@@ -15,6 +15,11 @@ let to_conv f sexp =
   | Error Annotated.{ detail; annotation } ->
      raise (Sexplib.Conv.Of_sexp_error (Failure detail, annotation))
 
+let of_opt f sexp =
+  match f sexp with
+  | None -> annotate_error sexp @@ Error "failed"
+  | Some v -> Ok v
+
 let of_conv f sexp =
   try Ok (f sexp) with
   | Sexplib.Conv.Of_sexp_error (exn, sexp) ->
