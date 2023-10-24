@@ -2,6 +2,12 @@
 
 In this final week of new material, we take a quick look at the Metatheory of Predicate Logic. This material is not examinable, and is provided for information purposes only.
 
+```youtube
+YPjGFDUTK_8
+```
+
+[Slides for this video (PDF)](week10-slides.pdf)
+
 *Metatheory* is the study of properties of a system of logic as a whole, rather than doing individual proofs within the logic. The Predicate Logic proof system we have built up over the last few weeks has the following properties:
 
 - It is *sound*, meaning that if we can prove some judgement `Γ ⊢ P`, then the entailment `Γ ⊧ P` is valid. This gives us confidence to actually use the proof rules for reasoning.
@@ -30,5 +36,3 @@ Another approach is to restrict the kinds of formulas we can write down. One use
 
 A good introduction to automated theorem proving is the [Handbook of Practical Logic and Automated Reasoning](https://www.cl.cam.ac.uk/~jrh13/atp/index.html) which develops implementations of several automated proof systems. Since not all proofs can be
 automated, interactive theorem proving, like you have been doing in this course, is now a major area. The interactive proof system we have used in this course is only suitable for relatively small examples, but systems have been developed that can deal with much larger proofs, such as [Coq](https://coq.inria.fr/), [Isabelle](https://isabelle.in.tum.de/), [Lean](https://leanprover.github.io/) and [Agda](https://wiki.portal.chalmers.se/agda/pmwiki.php). If you do the [CS410 Advanced Functional Programming](https://github.com/fredrikNordvallForsberg/CS410-20/) course in fourth year, you will be using Agda to construct formal proofs that are much larger than the ones in this course.
-
-## Video

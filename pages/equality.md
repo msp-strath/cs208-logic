@@ -43,11 +43,11 @@ Equality and its proof rules are explained in more depth in this video:
 
 [Slides for the video (PDF)](week09-slides.pdf)
 
-```
-FIXME: CS208-W9P1
+```youtube
+9sy3j34bMvY
 ```
 
-```textbox
+```textbox {id=equality-notes1}
 Enter any notes to yourself here.
 ```
 
@@ -67,11 +67,11 @@ FIXME: do an exercise on this.
 
 The following video demonstrates the use of the proof rules for equality in the proof editor. Watch the video before attempting the exercises below.
 
-```
-FIXME: CS208-W9P3
+```youtube
+pTVnIz0TqsA
 ```
 
-```textbox
+```textbox {id=equality-notes2}
 Enter any notes to yourself here.
 ```
 
