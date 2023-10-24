@@ -10,11 +10,11 @@ The key difference between Propositional Logic and Predicate Logic is that the l
 
 Well-scopedness of terms and formulas means that all the *variables* mentioned in a term or formula are already declared to the left of them in a judgement. This is explained in the following video:
 
-```
-FIXME: CS208-W7P1.mp4
+```youtube
+uB5NtHCbuJc
 ```
 
-```textbox
+```textbox {id=scope-subst-note1}
 Enter any notes to yourself here.
 ```
 
@@ -112,11 +112,11 @@ Next is the important concept of subsitution. Substitution is how we go from a g
 
 Substitution is not much more than simply “plugging in values”, like you may be used to in formulas in mathematics, but gets a little more subtle when we have formulas that bind variables in them, as we see in this video:
 
-```
-FIXME: CS208-W7P2.mp4
+```youtube
+Ehan-g6-EVQ
 ```
 
-```textbox
+```textbox {id=scope-subst-note2}
 Enter any notes to yourself here.
 ```
 
