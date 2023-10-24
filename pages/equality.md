@@ -1,10 +1,8 @@
 # Equality
 
-## Introduction to Equality in Logic
+Equality (`s = t`) is a fundamental relationship between entities. When we state an equality `s = t`, we are saying that there is no way to tell the two individuals `s` and `t` apart from the point of view of the logical setting we are working in.
 
-Equality (`s = t`) is a fundamental relationship between entities. In logical terms, it expresses the fact that there is no way to tell two things apart *within the logic*. As we shall see below, if `s = t` in the logic, then there is no way write a property that is true for `s` but not true for `t` (and vice versa).
-
-## Syntax and proof rules for Equality
+## Syntax and Proof Rules for Equality
 
 In the syntax, equality is a binary predicate symbol that is usually written infix: `t1 = t2`.
 
@@ -19,6 +17,8 @@ These can be written as formulas to give three axioms of an equivalence relation
 1. ∀ x. x ≈ x
 2. ∀ x. ∀ y. x ≈ y → y ≈ x
 3. ∀ x. ∀ y. ∀ z. x ≈ y → y ≈ z → x ≈ z
+
+**FIXME: an exercise here?**
 
 These three axioms are the minimum for a relation `≈` to be considered some form of equivalence. However, they are not enough to properly define equality because they do not specify the effect that two things being equal has on everything else in the system.
 
@@ -59,7 +59,7 @@ Sentences involving quotation in Natural Language are a rich source of tricky ex
 
 The fundamental problem here is that the statement “‘X’ has N letters” states facts about individuals that are not preserved by our notion of equality. The relation “‘X’ has N letters” makes distinctions between individuals (in this case, it looks at their descriptive names) which are not preserved if we consider “Edinburgh” as just a different name for the capital of Scotland. To fix this example, we need to make sure that our predicates and our equalities are consistent, either by not admitting that “Edinburgh” and “The Capital of Scotland” are equal, or by not allowing statements of the form “‘X’ has N letters” in our vocabulary.
 
-This kind of example crops up in Computer Science whenever we have to make a distinction between the *description* of a process (i.e., the program that implements it) and the *observable behaviour* of a process. In some cases equality should track the implementation (e.g., a text editor application should treat different program texts differently), and in others it should track the behaviour (e.g., an optimising compiler is allowed to change the implementation if it preserves the behaviour).
+This kind of example crops up in Computer Science whenever we have to make a distinction between the *description* of a process (i.e., the program that implements it) and the *observable behaviour* of a process. In some cases equality should track the implementation (e.g., a text editor application should treat different program texts differently), and in others it should track the behaviour (e.g., an optimising compiler is allowed to change the implementation if it preserves the behaviour). In philosophical jargon, these two aspects are referred to the *intension* (how a thing is built) and *extension* (how a thing acts) of an object.
 
 FIXME: do an exercise on this.
 
