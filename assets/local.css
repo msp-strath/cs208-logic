@@ -98,6 +98,7 @@ input {
     width: 100%;
 }
 
+/*
 .horizontal {
     width: 100%;
     display: flex;
@@ -106,7 +107,7 @@ input {
     align-items: flex-start;
     justify-content: flex-start;
 }
-
+*/
 .casesplit {
     width: 100%;
     margin-top: 0em;
@@ -118,16 +119,17 @@ input {
 .indent {
     padding-left: 1em
 }
-.grouped {
-    margin-left: 0.5em;
-    /*margin-right: 0.5em;*/
-    padding-left: 0.3em;
-    padding-right: 0.3em;
-    border-radius: 10px 10px 10px 10px;
-    border-left: 2px solid black;
-    border-right: 2px solid black;
-    flex-shrink: 0
-}
+
+/* .grouped { */
+/*     margin-left: 0.5em; */
+/*     padding-left: 0.3em; */
+/*     padding-right: 0.3em; */
+/*     border-radius: 10px 10px 10px 10px; */
+/*     border-left: 2px solid black; */
+/*     border-right: 2px solid black; */
+/*     flex-shrink: 0 */
+/* } */
+
 .initialformulaentry {
     width:100%
 }
