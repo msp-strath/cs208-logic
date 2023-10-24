@@ -70,7 +70,7 @@ In Part 2, we strive for truth through proof. We will be primarily using an proo
 
 11. [Equality]. How do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
 
-12. [Induction] allows us to prove facts about infinitely many individuals, as long as those individuals are built up in a “well founded” way. We look specifically at induction on natural numbers, which will allow us to prove facts in the theory of arithmetic.
+12. [Arithmetic and Induction] allows us to prove facts about infinitely many individuals, as long as those individuals are built up in a “well founded” way. We look specifically at induction on natural numbers, which will allow us to prove facts in the theory of arithmetic.
 
 13. [More equality and induction exercises].
 
