@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # CS208 Coursework 1
 
 ## Logical Modelling
@@ -343,7 +341,3 @@ allsat (main)
     "Input2": active(Input2),
     "Input3": active(Input3) }
 ```
-
----
-
-[Contents](contents.html)

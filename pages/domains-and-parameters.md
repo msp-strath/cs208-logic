@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # How to handle bigger problems?
 
 So far, we have defined our logical modelling problems in terms of three parts:
@@ -242,7 +240,3 @@ ifsat(dependencies & requirements & incompatibilities)
        ]
   }
 ```
-
----
-
-[Contents](contents.html)

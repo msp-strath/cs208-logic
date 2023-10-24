@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Converting to CNF
 
 As we have seen, [SAT Solvers](sat-solvers.html) take their input in *Conjunctive Normal Form* (CNF).
@@ -199,7 +197,3 @@ tx3tgpzZPqo
 
    TBD
    ````
-
----
-
-[Contents](contents.html)

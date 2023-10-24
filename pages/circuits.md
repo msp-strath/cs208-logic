@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Circuits, Gates and Formulas
 
 In [Converting to CNF](converting-to-cnf.html), we saw that logical connectives can be translated into clauses by treating them as equations.
@@ -117,7 +115,3 @@ allsat (formula & active(Out))
 ```
 
 The results should say that `Out` is true exactly when `In1` is equal to `In2`.
-
----
-
-[Contents](contents.html)

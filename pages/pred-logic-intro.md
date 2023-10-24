@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Predicate Logic: Introduction
 
 Predicate Logic upgrades Propositional Logic by adding the ability to talk about the relationships between things, and whether they are true for all things or for some things.
@@ -467,7 +465,3 @@ The rules for mixing connectives and parentheses were described Lecture 1.
 
    True: the two bound “x”s in the first formula are independent and can be renamed separately.
    ```
-
----
-
-[Contents](contents.html)

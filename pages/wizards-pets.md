@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # The Wizard's Pets
 
 Let's start with a very simple problem, which we will gradually make more complex to demonstrate different ways of encoding constraints in a logical form.
@@ -161,7 +159,3 @@ allsat (wizards_demand &
 ```
 
 When `parrot_wants_mouse` is properly defined, you should get two possible solutions to all the constraints combined.
-
----
-
-[Contents](contents.html)

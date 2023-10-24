@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Proof rules for Predicate Logic
 
 [Slides for the videos below (PDF)](week07-slides.pdf)

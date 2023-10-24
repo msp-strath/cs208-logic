@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # A Fruit Exercise
 
 Let's use the logical modelling tool to choose some fruit.
@@ -79,7 +77,3 @@ The output should look like this, with 6 possible solutions:
   "bananas": false
 }
 ```
-
----
-
-[Contents](contents.html)

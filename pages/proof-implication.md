@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Natural Deduction: Implication
 
 ## Video

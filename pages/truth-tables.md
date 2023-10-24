@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Truth Tables, Satisfiability and Validity
 
 Truth tables are a way of systematically working out the truth value assigned to a formula for each possible valuation (assignment of truth values to atoms). We work out the value of `〚P〛v` for every possible `v` in a single large table. The overall process for working out a truth table is similar to the above process for working out `〚P〛v` — we break the formula down into subformulas and compute the truth values assigned "bottom up" — but we arrange the work slightly differently. Truth tables are useful for working out truth value assignments for all possible assignments without missing any accidentally.
@@ -203,8 +201,3 @@ If add a column to represent `¬ P`, then it will always be `F`, by the definiti
 Since `¬ P` is false for all valuations it is *not* satisfiable. So `P` being valid implies that `¬ P` is not satisfiable.
 
 In the opposite direction, if `¬ P` were satisfiable, then there would be a row where `¬ P` is `T`. The same row would therefore have `P` being `F`, again because `¬ T = F`. Therefore, `P` would not be valid. So `¬ P` being satisfiable means `P` is not valid.
-
-
----
-
-[Contents](contents.html)

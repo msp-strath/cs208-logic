@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Propositional Logic: Semantics
 
 In the [previous section](prop-logic-syntax.html) I described what logical formulas look like, but not their *semantics*: what the formulas *mean*.
@@ -209,7 +207,3 @@ By all these steps, we have worked out that:
 Of course, it is not always necessary to carry out all these steps explicitly by hand. However, it is important to notice that there is a difference between the symbols of formal logic and their meaning. Using the `〚...〛` brackets moves us from the syntax to the semantics. The special status of syntax will become more important when we look at deductive proof systems for logic.
 
 In the [next section](truth-tables.html), we look at using truth tables to compute the semantics of formulas systematically for all valuations of their atoms.
-
----
-
-[Contents](contents.html)

@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Package Installation Problem
 
 We now look at a more realistic example of logical modelling: using logic to solve the problem of computing correct installations of packages on a computer system.
@@ -126,7 +124,3 @@ Have a go at changing the above constraints to see whether or not it is possible
 1. The original source for logical modelling of the Package Installation Problem is the paper "[OPIUM: Optimal Package Install/Uninstall Manager](http://cseweb.ucsd.edu/~lerner/papers/opium.pdf)" by Tucker, Shuffelton, Jhala, and Lerner. The paper also describes some refinements, such as how to minimise solutions in terms of number of packages or size of downloads. Some experimental results are also given.
 
 2. The post [Version SAT](https://research.swtch.com/version-sat) by Russ Cox, a member of the Google Go team, explains how to encode *any* NP problem (see [SAT Solver](sat.html) for what NP means) into a package installation problem. This means that solving a package installation problem may be very hard indeed (for the computer) in the general case.
-
----
-
-[Contents](contents.html)

@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Introduction to Logical Modelling
 
 These pages are an introduction to Logical Modelling with SAT solvers, and the Logical Modelling tool that we will be using to experiment with the technique.
@@ -54,8 +52,3 @@ The example explained:
 Click on **Run** to run the example. There should be two answers, one with `a` true and `b` false, and one the other way round.
 
 For a longer introduction to the tool and how to use it see [The Wizard's Pets](wizards-pets.html).
-
-
----
-
-[Contents](contents.html)

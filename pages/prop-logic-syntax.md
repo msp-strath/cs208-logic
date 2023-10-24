@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Propositional Logic Syntax
 
 In this course, we will study Symbolic Logic, where we are primarily concerned with statements written out using formal symbols, rather than statements in natural language. In this page, we will introduce the syntax of the logical formulas that we will look at in the first half of the course.
@@ -183,7 +181,3 @@ However, in this course, I will be stricter about where parentheses can and cann
    |---------------|------|
    | `¬ (P ∧ Q)`   | good |
    | `(¬ (P ∧ Q))` | bad  |
-
----
-
-[Contents](contents.html)

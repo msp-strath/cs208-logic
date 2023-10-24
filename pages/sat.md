@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # SAT solvers
 
 As we saw in [the Package Installation Problem](packages.html), if we had a way of efficiently finding satisfying valuations for large logical formulas, we would have a way of efficiently computing working combinations of installed packages. We will see some further examples in later pages.
@@ -61,7 +59,3 @@ There is also a [Python interface](https://github.com/ContinuumIO/pycosat) to Pi
 The SAT solver used in the Logical Modelling Tool embedded in these pages is [mSat](https://github.com/Gbury/mSAT) which is written in [OCaml](https://ocaml.org) and compiled to JavaScript for these pages via [Js\_of\_ocaml](https://ocsigen.org/js_of_ocaml/latest/manual/overview).
 
 For more depth and breadth imaginable, this sub-sub-sub-section of The Art of Computer Programming covers SAT Solving algorithms in detail: [The Art of Computer Programming: 7.2.2.2 Satisfiability](https://cs.stanford.edu/~knuth/fasc6a.ps.gz) (You will need a program capable of hanlding PostScript files). Several different algorithms are given and compared on many examples, and their runtime characteristics are studied. *Caution:* reading this requires a lot of time and patience, it is rewarding but not easy read.
-
----
-
-[Contents](contents.html)

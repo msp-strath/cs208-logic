@@ -11,41 +11,48 @@ module Of_Omd = Html_of_omd.Make (Html_static)
 
 let template ~title:title_text ?(sub_title="") ~script_url body_html =
   let open Html_static in
-  html @@
-    concat_list [
-        head @@
-          concat_list [
-              meta ~attrs:[A.charset "utf8"];
-              meta ~attrs:[
-                  A.name "viewport";
-                  A.content "width=device-width, initial-scale=1.0"
-                ];
-              link ~attrs:[
-                  A.rel "stylesheet";
-                  (* A.href "https://cdn.simplecss.org/simple.min.css" *)
-                  A.href "simple.min.css"
-                ];
-              link ~attrs:[
-                  A.rel "stylesheet";
-                  A.href "local.css"
-                ];
-              script ~attrs:[A.src script_url; raw_attr "defer" "yes"] "";
-              title title_text
-            ];
-        body @@
-          concat_list [
-              header (h1 (text title_text) ^^ p (text sub_title));
-              main body_html;
-              footer (text "Source code for these pages "
-                      ^^ a ~attrs:[A.href "https://github.com/bobatkey/interactive-logic-course"]
-                           (text "on GitHub")
-                      ^^ text ". "
-                      ^^ text "Styling provided by "
-                      ^^ a ~attrs:[A.href "https://simplecss.org/"]
-                           (text "SimpleCSS")
-                      ^^ text ".")
+  let (@|) elem elems = elem (concat_list elems) in
+  html @| [
+      head @| [
+        meta ~attrs:[A.charset "utf8"];
+        meta ~attrs:[
+            A.name "viewport";
+            A.content "width=device-width, initial-scale=1.0"
+          ];
+        link ~attrs:[
+            A.rel "stylesheet";
+            (* A.href "https://cdn.simplecss.org/simple.min.css" *)
+            A.href "simple.min.css"
+          ];
+        link ~attrs:[
+            A.rel "stylesheet";
+            A.href "local.css"
+          ];
+        script ~attrs:[A.src script_url; raw_attr "defer" "yes"] "";
+        title title_text
+      ];
+      body @| [
+          header @| [
+            h1 (text title_text);
+            p (text sub_title);
+            nav @| [
+                a ~attrs:[A.href "contents.html"] (text "Contents");
+                a ~attrs:[A.href "coursework1.html"] (text "Coursework 1");
+              ]
+          ];
+          main body_html;
+          footer @| [
+              text "Source code for these pages ";
+              a ~attrs:[A.href "https://github.com/bobatkey/interactive-logic-course"]
+                (text "on GitHub");
+              text ". ";
+              text "Styling provided by ";
+              a ~attrs:[A.href "https://simplecss.org/"]
+                (text "SimpleCSS");
+              text "."
             ]
-      ]
+        ]
+    ]
 
 let code_render renderer ids attributes kind content =
   match kind with

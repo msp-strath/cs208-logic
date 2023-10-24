@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Use the Proof Tool on any formula
 
 See the following pages for video introductions to how to use this tool:

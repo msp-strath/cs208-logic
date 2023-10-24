@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Natural Deduction
 
 After we have [looked at the general idea of deductive systems](proof-intro.html), we focus on the particular system we will be using in this course: *(focused) Natural Deduction*.
@@ -119,7 +117,3 @@ Writing out formal proofs on paper is extremely tedious, so I have written an on
     (assumptions (H "A"))
     (goal "T /\ A"))
    ```
-
----
-
-[Contents](contents.html)

@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Proof Rules for Or and Not
 
 So far, we have seen the [basic natural deduction system and the proof rules for and](natural-deduction-intro.html) and the [rules for implication](proof-implication.html). We now add the rules for the remaining two connectives of Propositional Logic: "or" and "not".
@@ -152,8 +150,3 @@ and `¬A` implies `A → F`, which demonstrates the other direction.
 ```focused-nd {id=or-ex8b}
 (config (goal "¬A -> (A -> F)"))
 ```
-
-
----
-
-[Contents](contents.html)

@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Resource Allocation Problems
 
 ```lmt
@@ -43,7 +41,3 @@ ifsat(main)
   }
 
 ```
-
----
-
-[Contents](contents.html)

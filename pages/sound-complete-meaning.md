@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Soundness, Completeness, and some Philosophy
 
 ```youtube
@@ -10,7 +8,4 @@ Ip5e-fWEkbA
 Enter any notes to yourself here.
 ```
 
-
----
-
-[Contents](contents.html)
+TBD: some links to further reading.

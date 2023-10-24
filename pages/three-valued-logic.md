@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Beyond the binary: Three-valued Logic
 
 Propositional Logic, as we have studied it so far in this course, is *two valued*. It is also possible to consider logics with more than two truth values.  These “multi-valued” logics have practical uses in representing things like degrees of truth, or fuzzily defined concepts, or the absence of evidence.

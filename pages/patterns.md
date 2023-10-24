@@ -1,5 +1,3 @@
-[Contents](contents.html)
-
 # Logical Modelling Patterns
 
 In the [Wizard's Pets](wizards-pets.html) example, we saw several ways of encoding certain kinds of constraints. Here is a list of some common patterns that come up over and over again.
@@ -68,9 +66,3 @@ atom a
 atom b
 allsat (~a | b) { "a": a, "b": b }
 ```
-
-
-
----
-
-[Contents](contents.html)
