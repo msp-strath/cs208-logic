@@ -1,6 +1,6 @@
 This page links to the interactive notes and exercises for Logic part of [CS208 Logic & Algorithms](https://classes.myplace.strath.ac.uk/course/view.php?id=15121), part of the Undergraduate Computer Science degree at the [University of Strathclyde](https://www.strath.ac.uk/science/computerinformationsciences/).
 
-Please send any comments and queries to [Robert Atkey](mailto:robert.atkey@strath.ac.uk) ([Web page](https://bentnib.org)). The source code for these pages in publically available [on Github](https://github.com/bobatkey/interactive-logic-course).
+Please send any comments and queries to [Robert Atkey](mailto:robert.atkey@strath.ac.uk) ([Web page](https://bentnib.org)). The source code for these pages in available [on Github](https://github.com/bobatkey/interactive-logic-course).
 
 ## Introduction
 
