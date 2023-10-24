@@ -18,18 +18,17 @@ let focusing ?name ?assumps_name ?(assumptions = []) formula =
 
       let render { editor; showtree } =
         let open Ulmus.Html in
-        div
-          ~attrs:[ A.class_ "vertical" ]
-          [%concat
-              div
-              ~attrs:[ A.class_ "horizontal" ]
-              [%concat
-                  button
-                  ~attrs:[ E.onclick ToggleShowtree ]
-                  (text "Show / Hide proof tree")];
-           map
-             (fun a -> Edit a)
-             (Focused_UI.render ?name ?assumps_name ~showtree editor)]
+        let (@|) e es = e (concat_list es) in
+        div ~attrs:[ A.class_ "vertical" ] @| [
+            map
+              (fun a -> Edit a)
+              (Focused_UI.render ?name ?assumps_name ~showtree editor);
+            div
+              ~attrs:[ A.class_ "horizontal" ] @| [
+              button ~attrs:[ E.onclick ToggleShowtree ]
+                (text (if showtree then "Hide proof tree" else "Show proof tree"))
+            ]
+          ]
 
       let update action ({ editor; showtree } as state) =
         match action with
@@ -41,8 +40,10 @@ let focusing ?name ?assumps_name ?(assumptions = []) formula =
 
       let deserialise str =
         let sexp = Sexplib.Sexp.of_string str in
-        let editor = Focused_UI.state_of_sexp assumptions (Checking formula) sexp in
-        Some { editor; showtree = false }
+        match Focused_UI.state_of_sexp assumptions (Checking formula) sexp with
+        | None -> None
+        | Some editor ->
+           Some { editor; showtree = false }
     end in
   (module Component : Ulmus.PERSISTENT)
 

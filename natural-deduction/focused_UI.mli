@@ -3,7 +3,7 @@ type state
 val sexp_of_state : state -> Sexplib0.Sexp.t
 
 val state_of_sexp :
-  (string * Focused.assumption) list -> Focused.goal -> Sexplib0.Sexp.t -> state
+  (string * Focused.assumption) list -> Focused.goal -> Sexplib0.Sexp.t -> state option
 
 type action
 

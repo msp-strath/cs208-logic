@@ -15,8 +15,8 @@ let sexp_of_state state = PT.sexp_of_tree (PT.to_tree state)
 
 let state_of_sexp assumptions goal sexp =
   match PT.of_tree assumptions goal (PT.tree_of_sexp sexp) with
-  | Ok state -> state
-  | Error _ -> failwith "invalid tree"
+  | Ok state -> Some state
+  | Error _ -> None
 
 let init ?assumptions goal = PT.init ?assumptions goal
 

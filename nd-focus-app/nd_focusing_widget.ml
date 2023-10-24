@@ -39,7 +39,7 @@ module App = struct
       | "Proving" ->
          let* goal    = consume_next (of_conv Formula.t_of_sexp) in
          let* present =
-           consume_next (of_conv (Focused_UI.state_of_sexp [] (Focused.Checking goal))) in
+           consume_next (of_opt (Focused_UI.state_of_sexp [] (Focused.Checking goal))) in
          let* instructions = consume_next (of_conv bool_of_sexp) in
          let* () = assert_nothing_left in
          return (Proving { goal; present; instructions })
