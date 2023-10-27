@@ -20,91 +20,190 @@ Enter any notes to yourself here.
 
 ### Exercises
 
-Are these contexts of variables and assumptions well scoped?
-
-1. A
-
-2. B
-
-3. C
-
-```
-                    context_scope_qn F.[ `F (Atom ("P", [ Fun ("a", []) ])) ];
-                    context_scope_qn
-                      F.
-                        [
-                          `F
-                            (Atom
-                               ("Q", [ Var "z"; Fun ("s", [ Fun ("z", []) ]) ]));
-                        ];
-                    context_scope_qn
-                      F.
-                        [
-                          `V "x";
-                          `V "y";
-                          `F (Atom ("P", [ Var "x"; Var "y" ]));
-                          `F (Atom ("Q", [ Var "x" ]));
-                        ];
-                    context_scope_qn
-                      F.
-                        [
-                          `V "x";
-                          `V "y";
-                          `F (Atom ("P", [ Var "x"; Var "y" ]));
-                          `F (Atom ("Q", [ Var "x" ]));
-                          `F (Atom ("R", [ Var "z" ]));
-                        ];
-                    context_scope_qn
-                      F.
-                        [
-                          `V "x";
-                          `V "y";
-                          `F (Atom ("P", [ Var "x"; Var "y" ]));
-                          `F (all "z" (Atom ("Q", [ Var "z" ])));
-                          `F (Atom ("R", [ Var "z" ]));
-                        ];
-                    context_scope_qn
-                      F.
-                        [
-                          `V "x";
-                          `V "y";
-                          `F (Atom ("P", [ Var "x"; Var "y" ]));
-                          `F (Atom ("Q", [ Var "x" ]));
-                          `F (all "z" (Atom ("R", [ Var "z" ])));
-                        ];
-                    context_scope_qn
-                      F.
-                        [
-                          `V "x";
-                          `F (Atom ("P", [ Var "x"; Var "y" ]));
-                          `V "y";
-                          `F (Atom ("Q", [ Var "x" ]));
-                        ]]);
-```
-
 Are these judgements well scoped?
 
-1. A
+1. ```
+   P(a()) |- Q
+   ```
 
-2. B
+   ```selection {id=scope-ex1}
+   (config (options ("Well Scoped" "Not Well Scoped")))
+   ```
 
-3. C
+   ```details
+   Answer...
 
-```
-                    judgement_scope_qn [] F.(Atom ("P", [ Var "x" ]));
-                    judgement_scope_qn [] F.(all "x" (Atom ("P", [ Var "x" ])));
-                    judgement_scope_qn
-                      [ `V "x"; `V "y" ]
-                      F.(all "x" (Atom ("P", [ Var "x" ])));
-                    judgement_scope_qn
-                      [ `V "x" ]
-                      ~focus:F.(Atom ("Q", [ Var "y" ]))
-                      F.(all "y" (Atom ("P", [ Var "y" ])));
-                    judgement_scope_qn
-                      [ `V "x"; `F (Atom ("P", [ Var "y" ])) ]
-                      ~focus:F.(Atom ("Q", [ Var "y" ]))
-                      F.(all "y" (Atom ("P", [ Var "y" ])))])]
-```
+   **Well Scoped**. The a() names an individual from the vocabulary, and is not a variable.
+   ```
+
+2. ```
+   Q(z,s(z())) |- P
+   ```
+
+   ```selection {id=scope-ex2}
+   (config (options ("Well Scoped" "Not Well Scoped")))
+   ```
+
+   ```details
+   Answer...
+
+   **Not Well Scoped**. The variable “z” has not been declared to the left of where it is used.
+   ```
+
+3. ```
+   x, y, P(x,y), Q(x) |- R
+   ```
+
+   ```selection {id=scope-ex3}
+   (config (options ("Well Scoped" "Not Well Scoped")))
+   ```
+
+   ```details
+   Answer...
+
+   **Well Scoped**. The variables “x” and “y” have both been declared to the left of where they are used, and there are no other variables.
+   ```
+
+4. ```
+   x, y, P(x,y), Q(x), R(z) |- S
+   ```
+
+   ```selection {id=scope-ex4}
+   (config (options ("Well Scoped" "Not Well Scoped")))
+   ```
+
+   ```details
+   Answer...
+
+   **Not Well Scoped**. The variables “x” and “y” have been properly declared, but “z” has not.
+   ```
+
+5. ```
+   x, y, P(x,y), ∀z. Q(z), R(z) |- S
+   ```
+
+   ```selection {id=scope-ex5}
+   (config (options ("Well Scoped" "Not Well Scoped")))
+   ```
+
+   ```details
+   Answer...
+
+   **Not Well Scoped**. The “z” in “∀z. Q(z)” is bound by the quantifier, but the “z” in “R(z)” has not been declared.
+   ```
+
+6. ```
+   x, y, P(x,y), Q(x), ∀z. R(z) |- S
+   ```
+
+   ```selection {id=scope-ex6}
+   (config (options ("Well Scoped" "Not Well Scoped")))
+   ```
+
+   ```details
+   Answer...
+
+   **Well Scoped**. The “z” in “∀z. R(z)” is bound by the quantifier. The “x” and the “y” have been declared before (i.e., to the left of) use.
+   ```
+
+7. ```
+   x, P(x,y), y, Q(x) | -R
+   ```
+
+   ```selection {id=scope-ex7}
+   (config (options ("Well Scoped" "Not Well Scoped")))
+   ```
+
+   ```details
+   Answer...
+
+   **Not Well Scoped**. The “y” in “P(x,y)” is not in scope.
+   ```
+
+8. ```
+   |- P(x)
+   ```
+
+   ```selection {id=scope-ex8}
+   (config (options ("Well Scoped" "Not Well Scoped")))
+   ```
+
+   ```details
+   Answer...
+
+   **Not Well Scoped**. The variable “x” has not been declared.
+   ```
+
+9. ```
+   |- ∀x. P(x)
+   ```
+
+   ```selection {id=scope-ex9}
+   (config (options ("Well Scoped" "Not Well Scoped")))
+   ```
+
+   ```details
+   Answer...
+
+   **Well Scoped**. The quantifier “∀x.” binds the use of “x” in “P(x)”.
+   ```
+
+10. ```
+	x, y |- P(x)
+	```
+
+	```selection {id=scope-ex10}
+	(config (options ("Well Scoped" "Not Well Scoped")))
+	```
+
+	```details
+	Answer...
+
+	**Well Scoped**. The variable “x” is used in the conclusion, and has been declared in the context.
+	```
+
+11. ```
+	x [Q(y)] |- ∀y. P(y)
+	```
+
+	```selection {id=scope-ex11}
+	(config (options ("Well Scoped" "Not Well Scoped")))
+	```
+
+	```details
+	Answer...
+
+	**Not Well Scoped**. The formula in focus “Q(y)” uses the variable “y” which has not been declared.
+	```
+
+
+12. ```
+	x, P(y) [Q(y)] |- ∀y. P(y)
+	```
+
+	```selection {id=scope-ex12}
+	(config (options ("Well Scoped" "Not Well Scoped")))
+	```
+
+	```details
+	Answer...
+
+	**Not Well Scoped**. The assumption “P(y)” uses the variable “y” which has not been declared.
+	```
+
+13. ```
+	x, y, P(y) [Q(y)] |- ∀y. P(y)
+	```
+
+	```selection {id=scope-ex13}
+	(config (options ("Well Scoped" "Not Well Scoped")))
+	```
+
+	```details
+	Answer...
+
+	**Well Scoped**. The assumption “P(y)” uses the variable “y” which has not been declared.
+	```
 
 ## Substitution
 
@@ -124,24 +223,38 @@ Enter any notes to yourself here.
 
 Compute the results of the following substitutions, being careful with renaming to avoid variable capture.
 
-```
-      subst_question
-        ~f:F.(all "x" (p (Var "x") @-> q (Var "x", Var "y")))
-        ~x:"x"
-        ~tm:F.(Fun ("f", [ Var "x" ]));
+1.
+   ```
+   (∀x. P(x) -> Q(x,y))[x := f(x)]
+   ```
 
-      subst_question
-        ~f:F.(all "x" (p (Var "x") @-> q (Var "x", Var "y")))
-        ~x:"y"
-        ~tm:F.(Fun ("f", [ Var "x" ]));
+   ```formulaentry {id=subst-ex1}
+   Enter your formula here
+   ```
 
-      subst_question
-        ~f:F.(p (Var "x") @-> ex "x" (q (Var "x", Var "y")))
-        ~x:"x"
-        ~tm:(Fun ("g", [ Var "y" ]));
+2.
+   ```
+   (∀x. P(x) -> Q(x,y))[y := f(x)]
+   ```
 
-      subst_question
-        ~f:F.(p (Var "x") @-> ex "y" (q (Var "x", Var "y")))
-        ~x:"x"
-        ~tm:(Fun ("g", [ Var "y" ]))]
-```
+   ```formulaentry {id=subst-ex2}
+   Enter your formula here
+   ```
+
+3.
+   ```
+   (P(x) -> (∃x. q(x,y)))[x := g(y)]
+   ```
+
+   ```formulaentry {id=subst-ex3}
+   Enter your formula here
+   ```
+
+4.
+   ```
+   (p(x) -> (∃y. q(x,y)))[x := g(y)]
+   ```
+
+   ```formulaentry {id=subst-ex4}
+   Enter your formula here
+   ```

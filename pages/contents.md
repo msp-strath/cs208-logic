@@ -62,9 +62,9 @@ In Part 2, we strive for truth through proof. We will be primarily using an proo
 
 6. [Introducing Predicate Logic](pred-logic-intro.html) as an expressive language for making statements in a formalised way. By selecting our vocabulary carefully, we can use Predicate Logic as a modelling tool to describe many situations.
 
-7. [Scoping and Substitution]. Before we look at proof for Predicate Logic, we need to upgrade our Natural Deduction system to handle assumptions about entities as well as propositions. This brings us to the matters of *scope* and *substitution*.
+7. [Scoping and Substitution](scope-and-substitution.html). Before we look at proof for Predicate Logic, we need to upgrade our Natural Deduction system to handle assumptions about entities as well as propositions. This brings us to the matters of *scope* and *substitution*.
 
-8. [Proof rules for Predicate Logic]. Natural deduction rules for “for all” and “exists” allow us to construct proofs of Predicate Logic formulas.
+8. [Proof rules for Predicate Logic](pred-logic-rules.html). Natural deduction rules for “for all” and “exists” allow us to construct proofs of Predicate Logic formulas.
 
 9. [Predicate Logic Semantics]. A break from proof for a bit to consider what Predicate Logic formulas are talking about. It is not just about true/false anymore, but about relationships between individuals.
 

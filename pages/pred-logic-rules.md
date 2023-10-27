@@ -1,5 +1,7 @@
 # Proof rules for Predicate Logic
 
+With an understanding of [scope and substitution](scope-and-substitution.html), we can now look at the proof rules for Predicate Logic. The videos below introduce the rules and show how to use them in the interactive proof editor. There are exercises throughout the page to help you understand how the rules work, and so how the quantifiers work.
+
 [Slides for the videos below (PDF)](week07-slides.pdf)
 
 ## Proof rules for “for all”
@@ -88,32 +90,26 @@ FIXME: Proof commands
 
 These exercises combine “for all” and “exists”:
 
-1.
+1. If every `p` has something that is `r`-related to it, and `a()` is a `p`, then there is something `r`-related to `a()`.
 
-```
-          li
-            (nd
-               F.(
-                 all "x"
-                   (Atom ("p", [ Var "x" ])
-                   @-> ex "y" (Atom ("r", [ Var "x"; Var "y" ])))
-                 @-> Atom ("p", [ Fun ("a", []) ])
-                 @-> ex "z" (Atom ("r", [ Fun ("a", []); Var "z" ]))))]
-          li
-            (nd
-               F.(
-                 all "x" (Not (Atom ("P", [ Var "x" ])))
-                 @-> Not (ex "y" (Atom ("P", [ Var "y" ])))));
-          li
-            (nd
-               F.(
-                 ex "x" (Not (Atom ("P", [ Var "x" ])))
-                 @-> Not (all "y" (Atom ("P", [ Var "y" ])))));
-          li
-            (nd
-               F.(
-                 all "x" (all "y" (Atom ("R", [ Var "x"; Var "y" ])))
-                 @-> all "x" (all "y" (Atom ("R", [ Var "y"; Var "x" ])))))]
-```
+   ```focused-nd {id=pred-proof-allex1}
+   (config (goal "(all x. p(x) -> (ex y. r(x,y))) -> p(a()) -> (ex z. r(a(),z))"))
+   ```
 
-FIXME: some more interesting questions using a simple axiomatisation.
+2. If everything is not `p`, then there does not exist a `p`:
+
+   ```focused-nd {id=pred-proof-allex2}
+   (config (goal "(all x. ¬p(x)) -> ¬(ex y. p(y))"))
+   ```
+
+3. If there exists a non-`p`, then not everything is a `p`:
+
+   ```focused-nd {id=pred-proof-allex3}
+   (config (goal "(ex x. ¬p(x)) -> ¬(all y. p(y))"))
+   ```
+
+4. Quantifier order can be swapped, when they are the same quantifier:
+
+   ```focused-nd {id=pred-proof-allex4}
+   (config (goal "(all x. all y. R(x,y)) -> (all x. all y. R(y,x))"))
+   ```
