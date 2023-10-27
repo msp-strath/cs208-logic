@@ -205,7 +205,7 @@ allsat(main)
   }
 ```
 
-There should be four solutions.
+There should be two solutions.
 
 ### Question 4 (8 marks)
 
