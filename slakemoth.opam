@@ -18,6 +18,7 @@ depends: [
   "odoc" {with-doc}
   "ulmus"
   "omd"
+  "parser_util"
   "ppx_monoid"
 ]
 pin-depends: [
