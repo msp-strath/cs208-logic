@@ -31,7 +31,7 @@ Once we have a definition of model, we can interpret Predicate Logic formulas. W
 
 Armed with an interpretation of formulas, we can define *entailment* for Predicate Logic. As with Propositional Logic, entailment means that for all models, if all the assumptions are true then the conclusion is true. Now there are infinitely many models, and each model may itself be infinite; so checking them all is no longer feasible. This is why proof for Predicate Logic is more essential than for Propositional Logic.
 
-Interpretation of Predicate Logic formulas, and entailment are discussed in this video:
+The interpretation of Predicate Logic formulas in a model, and the definition of entailment in predicate logic, are discussed in this video:
 
 ```youtube
 NivY9vERSmA
@@ -42,6 +42,18 @@ Enter any notes to yourself here.
 ```
 
 ## Widget test:
+
+```model-checker
+vocab DocumentsVocab {
+  person/1,
+  book/1,
+  authorOf/2
+}
+
+axioms Documents for DocumentsVocab {
+
+}
+```
 
 ### Plan:
 
