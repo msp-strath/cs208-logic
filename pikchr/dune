@@ -1,0 +1,3 @@
+(library
+ (name pikchr)
+ (libraries ctypes ctypes-foreign))

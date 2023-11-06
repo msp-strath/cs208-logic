@@ -1,0 +1,25 @@
+opam-version: "2.0"
+synopsis: "OCaml bindings for Pikchr"
+description: "OCaml bindings for Pikchr"
+maintainer: ["robert.atkey@strath.ac.uk"]
+authors: ["Robert Atkey"]
+license: "GPL"
+depends: [
+  "dune" {>= "3.4"}
+  "ctypes"
+  "ctypes-foreign"
+]
+build: [
+  ["dune" "subst"] {dev}
+  [
+    "dune"
+    "build"
+    "-p"
+    name
+    "-j"
+    jobs
+    "@install"
+    "@runtest" {with-test}
+    "@doc" {with-doc}
+  ]
+]

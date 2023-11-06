@@ -30,4 +30,7 @@
 (package
   (name parser_util))
 
+(package
+  (name pikchr))
+
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
