@@ -99,18 +99,17 @@ let code_render renderer ids attributes kind content =
              ]
              (text "Download"))
   | "pikchr" ->
-     let pikchr_output, pikchr_input =
-       Unix.open_process_args "pikchr" [|""; "--svg-only"; "-"|]
-     in
-     let svg =
-       Fun.protect
-         ~finally:(fun () -> ignore (Unix.close_process (pikchr_output, pikchr_input)))
-         (fun () ->
-           Out_channel.output_string pikchr_input content;
-           Out_channel.close pikchr_input;
-           In_channel.input_all pikchr_output)
-     in
-     Some (Html_static.raw_text svg)
+     (match Opikchr.pikchr ~src:content () with
+      | Ok (svg, width, height) ->
+         let open Html_static in
+         Some (div ~attrs:[
+                   A.style (Printf.sprintf "width: %dpx; height: %dpx; margin: auto"
+                              width
+                              height)
+                 ]
+                 (raw_text svg))
+      | Error html ->
+         Some (Html_static.raw_text html))
   | "details" ->
      let open Html_static in
      let title, body =

@@ -1,3 +1,10 @@
 (library
- (name pikchr)
- (libraries ctypes ctypes-foreign))
+ (name opikchr)
+ (public_name pikchr)
+ (libraries ctypes ctypes-foreign)
+ (extra_objects pikchr))
+
+(rule
+ (targets pikchr.o)
+ (deps pikchr.c)
+ (action (run ocamlopt %{deps})))

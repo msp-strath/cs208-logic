@@ -1,3 +1,3 @@
 (executable
  (name main)
- (libraries omd html_of_omd html_static unix fol_formula))
+ (libraries omd html_of_omd html_static fol_formula opikchr))
