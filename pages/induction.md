@@ -20,6 +20,8 @@ Enter any notes to yourself here.
 
 ## Representing numbers
 
+FIXME: Zero and Successor
+
 ### Exercises
 
 ## Axioms of Addition
