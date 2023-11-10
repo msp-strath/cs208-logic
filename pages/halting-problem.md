@@ -1,5 +1,9 @@
 # The Undecidability of the Halting Problem
 
+**DRAFT**
+
+One of the foundational results of Computer Science is that there is no program which can reliably tell if another program will halt on a given input. This page goes through a formal proof of this fact.
+
 ## Vocabulary
 
 ### Ways of Building Programs and Data

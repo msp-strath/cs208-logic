@@ -1,6 +1,6 @@
 # Metatheory, Automation, and Incompleteness
 
-In this final week of new material, we take a quick look at the Metatheory of Predicate Logic. This material is not examinable, and is provided for information purposes only.
+In this final section, we take a quick look at the Metatheory of Predicate Logic. This material is not examinable, and is provided for information purposes only.
 
 ```youtube
 YPjGFDUTK_8

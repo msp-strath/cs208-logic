@@ -1,5 +1,7 @@
 # Arithmetic and Induction
 
+**DRAFT**
+
 Now we can talk about [equality](equality.html) in our proof system, we can start to talk about useful things like numbers and arithmetic, and make statements like the fact that addition is commutative (i.e., it doesn't matter which way round we add things):
 
 ```formula
