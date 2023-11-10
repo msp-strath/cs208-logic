@@ -188,7 +188,7 @@ The axioms of an abelian group are:
 
 The ‘combine-emp’ axiom works the other way round as well:
 
-```focused-nd {id-equality-abelian2}
+```focused-nd {id=equality-abelian2}
 (config
  (assumptions
   (combine-assoc "∀x. ∀y. ∀z. combine(x, combine(y, z)) = combine(combine(x, y), z)")
@@ -202,7 +202,7 @@ The ‘combine-emp’ axiom works the other way round as well:
 
 The ‘combine-inv’ axiom works the other way round as well:
 
-```focused-nd {id-equality-abelian3}
+```focused-nd {id=equality-abelian3}
 (config
  (assumptions
   (combine-assoc "∀x. ∀y. ∀z. combine(x, combine(y, z)) = combine(combine(x, y), z)")
@@ -214,4 +214,20 @@ The ‘combine-inv’ axiom works the other way round as well:
 
 ### Exercise 4
 
-FIXME...
+This example demonstrates what can go wrong if we have a mismatch between the properties we assume of things, and what things are equal. Two things can be equal only if we do not talk about any properties that may separate them. Here is the example with letter counts from above:
+
+```focused-nd {id=equality-intensional1}
+(config
+ (assumptions
+  (edinburgh-has-nine-letters           "has-nine-letters(edinburgh())")
+  (capital-of-scotland-not-nine-letters "¬has-nine-letters(capital-of-scotland())")
+  (edinburgh-is-capital-of-scotland     "edinburgh() = capital-of-scotland()"))
+ (goal "F"))
+```
+
+More generally, if we have two things that have different properties (one is `P` and one is not `P`), then they must be not equal:
+
+```focused-nd {id=equality-intensional2}
+(config
+ (goal "all x. all y. P(x) -> ¬P(y) -> ¬(x = y)"))
+```

@@ -68,7 +68,7 @@ In Part 2, we strive for truth through proof. We will be primarily using an proo
 
 9. [Predicate Logic Semantics](pred-logic-semantics.html). A break from proof for a bit to consider what Predicate Logic formulas are talking about. It is not just about true/false anymore, but about relationships between individuals.
 
-10. **Under construction** [Equality](equality.html). How do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
+10. [Equality](equality.html). How do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
 
 11. **Under construction** [Arithmetic and Induction](induction.html) allows us to prove facts about infinitely many individuals, as long as those individuals are built up in a “well founded” way. We look specifically at induction on natural numbers, which will allow us to prove facts in the theory of arithmetic.
 
