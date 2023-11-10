@@ -116,12 +116,12 @@ synth NothingEqual size 0
 synth NothingEqualAndThing size 3
 ```
 
-With this tool we can only check that individual sizes of model do not exist. To prove that there are *no* models (even infinite ones), we can do a proof that these axioms entail “false”:
+With this tool we can only check that individual sizes of model do not exist. To prove that there are *no* models (even infinite ones), we can do a proof that these axioms entail “false” (to do this proof you will need the `refl` command from [the proof rules for equality](equality.html)).
 
 ```focused-nd {id=predsem-allunequal-contra}
 (config
  (assumptions
-  (nothing-equal "all x. x != x")
+  (nothing-equal "all x. ¬(x = x)")
   (something-exists "ex x. T"))
  (goal "F"))
 ```
