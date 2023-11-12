@@ -65,14 +65,15 @@ let config_p =
 
   tagged "config"
     (let* assumptions = consume_opt "assumptions" (many assumption_p) in
+     let* assumps_nm  = consume_opt "assumptions-name" (one atom) in
      let* goal        = consume_one "goal" (one formula) in
      let  assumptions = Option.value ~default:[] assumptions in
-     return (assumptions, goal))
+     return (assumptions, assumps_nm, goal))
 
 let focusing_component config =
   match config_p (Sexplib.Sexp.of_string config) with
-  | Ok (assumptions, goal) ->
-     focusing ~assumptions goal
+  | Ok (assumptions, assumps_name, goal) ->
+     focusing ~assumptions ?assumps_name goal
   | Error err ->
      let detail = Generalities.Annotated.detail err in
      let message = "Configuration failure: " ^ detail in
@@ -80,7 +81,8 @@ let focusing_component config =
 
 let tree_component config =
   match config_p (Sexplib.Sexp.of_string config) with
-  | Ok (_assumptions, goal) ->
+  | Ok (_assumptions, _, goal) ->
+     (* FIXME: assumptions? *)
      (module Proof_tree_UI2.Make
                (Focused_ui2)
                (struct let goal = Focused.Checking goal end)

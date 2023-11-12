@@ -176,6 +176,7 @@ The axioms of an abelian group are:
 
 ```focused-nd {id=equality-abelian1}
 (config
+ (assumptions-name "abelian group")
  (assumptions
   (combine-assoc "∀x. ∀y. ∀z. combine(x, combine(y, z)) = combine(combine(x, y), z)")
   (combine-comm "∀x. ∀y. combine(x, y) = combine(y, x)")
@@ -190,6 +191,7 @@ The ‘combine-emp’ axiom works the other way round as well:
 
 ```focused-nd {id=equality-abelian2}
 (config
+ (assumptions-name "abelian group")
  (assumptions
   (combine-assoc "∀x. ∀y. ∀z. combine(x, combine(y, z)) = combine(combine(x, y), z)")
   (combine-comm "∀x. ∀y. combine(x, y) = combine(y, x)")
@@ -204,6 +206,7 @@ The ‘combine-inv’ axiom works the other way round as well:
 
 ```focused-nd {id=equality-abelian3}
 (config
+ (assumptions-name "abelian group")
  (assumptions
   (combine-assoc "∀x. ∀y. ∀z. combine(x, combine(y, z)) = combine(combine(x, y), z)")
   (combine-comm "∀x. ∀y. combine(x, y) = combine(y, x)")
@@ -218,6 +221,7 @@ This example demonstrates what can go wrong if we have a mismatch between the pr
 
 ```focused-nd {id=equality-intensional1}
 (config
+ (assumptions-name "Edinburgh Facts")
  (assumptions
   (edinburgh-has-nine-letters           "has-nine-letters(edinburgh())")
   (capital-of-scotland-not-nine-letters "¬has-nine-letters(capital-of-scotland())")
