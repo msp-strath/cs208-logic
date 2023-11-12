@@ -158,18 +158,18 @@ A [abelian group](https://en.wikipedia.org/wiki/Abelian_group) is a generalisati
 
 The axioms of an abelian group are:
 
-1. combine-assoc : ∀x. ∀y. ∀z. combine(x, combine(y, z)) = combine(combine(x, y), z)
+1. *combine-assoc* : ∀x. ∀y. ∀z. combine(x, combine(y, z)) = combine(combine(x, y), z)
 
    This axiom states that if you have three things to combine together, then it does matter which order you do the ‘combine’ operations in, the answers are always the same. Axioms like this are usually called *associativity*, or *assoc* for short.
-2. combine-comm : ∀x. ∀y. combine(x, y) = combine(y, x)
+2. *combine-comm* : ∀x. ∀y. combine(x, y) = combine(y, x)
 
    This axiom states that combining ‘x’ with ‘y’ is the same as combining ‘y’ with ‘x’, just as it is for normal addition and multiplication. Axioms like this are usually called *commutativity*, or *comm* for short.
-3. combine-inv : ∀x. combine(x, inv(x)) = emp
+3. *combine-inv* : ∀x. combine(x, inv(x)) = emp
 
    This axiom states that combining something with its inverse is equal to the empty thing. E.g., `x + (-x) = 0` for addition on numbers.
-4. combine-emp : ∀x. combine(x, emp) = x
+4. *combine-emp* : ∀x. combine(x, emp) = x
 
-   This axiom states that combining ‘x’ with ‘emp’ is the same as ‘x’.
+   This axiom states that combining ‘x’ with ‘emp’ is the same as ‘x’. We can think of ‘emp’ as being like ‘0’ for addition, or ‘1’ for multiplication.
 
 #### Exercise 3.1
 
