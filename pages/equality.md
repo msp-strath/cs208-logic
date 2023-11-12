@@ -24,6 +24,7 @@ There's not much one can prove directly from these axioms without making further
 
 ```focused-nd {id=equality-equivrelation}
 (config
+ (assumptions-name "symmetry + transitivity")
  (assumptions (symmetry "all x. all y. equiv(x,y) -> equiv(y,x)")
 			  (transitivity "all x. all y. all z. equiv(x,y) -> equiv(y,z) -> equiv(x,z)"))
  (goal "all x. (ex y. equiv(x,y)) -> equiv(x,x)"))
