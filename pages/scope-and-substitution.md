@@ -1,5 +1,9 @@
 # Scope and Substitution
 
+```aside
+This page assumes that you have understood the [judgements of natural deduction](natural-deduction-intro.html) for Propositional Logic, and the [syntax of Predicate Logic](pred-logic-intro.html).
+```
+
 To use Natural Deduction for [Predicate Logic](pred-logic-intro.html) we need to upgrade our ideas of judgement to track which variables are in scope during a proof. We also need to be able to correctly substitute terms into formulas with free variables.
 
 [Slides for the videos (PDF)](week07-slides.pdf)

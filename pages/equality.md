@@ -1,6 +1,8 @@
 # Equality
 
+```aside
 This page assumes that you have understood the [proof rules for quantifiers](pred-logic-rules.html) page and completed all the exercises there.
+```
 
 Equality (`s = t`) is a fundamental relationship between entities. When we state an equality `s = t`, we are saying that there is no way to tell the two individuals `s` and `t` apart from the point of view of the logical setting we are working in.
 

@@ -1,5 +1,9 @@
 # Propositional Logic: Semantics
 
+```aside
+This page assumes you have understood the [syntax](prop-logic-syntax.html) of Propositional Logic.
+```
+
 In the [previous section](prop-logic-syntax.html) I described what logical formulas look like, but not their *semantics*: what the formulas *mean*.
 
 For most of this course, we will define the meaning of a formula to be its *truth value*, assuming that we know truth values of its atoms (a *valuation*).

@@ -48,7 +48,7 @@ In Part 1, we use logical modelling to describe and solve problems.
 
 ## Part 2: Deductive proof and Predicate Logic
 
-In Part 2, we strive for truth through proof. We will be primarily using an proof editor to construct natural deduction proofs. Exercises with fixed things to prove are embedded in each of the pages. You can also enter your own things to prove [on this page](prover.html).
+In Part 2, we strive for truth through proof. We will be using an interactive proof editor to construct natural deduction proofs. Exercises with fixed things to prove are embedded in each of the pages. You can also enter your own things to prove [on this page](prover.html).
 
 1. [Introduction to Deductive Proof](proof-intro.html), which describes the general idea of proof systems, and introduces a small example of a proof system inspired by biology.
 

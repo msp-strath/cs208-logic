@@ -1,5 +1,9 @@
 # Proof rules for Predicate Logic
 
+```aside
+This page assumes that you have understood natural deduction for Propositional Logic ([introduction](natural-deduction-intro.html), [rules for implication](proof-implication.html), [rules for or and not](proof-or.html)), the [introduction to predicate logic](pred-logic-intro.html) and the rules on [scoping and substitution](scope-and-substitution.html).
+```
+
 With an understanding of [scope and substitution](scope-and-substitution.html), we can now look at the proof rules for Predicate Logic. The videos below introduce the rules and show how to use them in the interactive proof editor. There are exercises throughout the page to help you understand how the rules work, and so how the quantifiers work.
 
 [Slides for the videos below (PDF)](week07-slides.pdf)

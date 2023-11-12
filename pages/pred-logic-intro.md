@@ -1,5 +1,9 @@
 # Predicate Logic: Introduction
 
+```aside
+This page assumes you have understood the [syntax](prop-logic-syntax.html) and [semantics](prop-logic-semantics.html) of Propositional Logic.
+```
+
 Predicate Logic upgrades Propositional Logic by adding the ability to talk about the relationships between things, and whether they are true for all things or for some things.
 
 [Slides for the videos (PDF)](week06-slides.pdf).

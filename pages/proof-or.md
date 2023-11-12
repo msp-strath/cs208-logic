@@ -1,5 +1,10 @@
 # Proof Rules for Or and Not
 
+```aside
+This page assumes you have understood the [basics of natural deduction](natural-deduction-intro.html) for Propositional Logic and the proof rules for [implication](proof-implication.html).
+```
+
+
 So far, we have seen the [basic natural deduction system and the proof rules for and](natural-deduction-intro.html) and the [rules for implication](proof-implication.html). We now add the rules for the remaining two connectives of Propositional Logic: "or" and "not".
 
 ## Videos

@@ -1,6 +1,10 @@
 # Deductive Proof
 
-We now look at the general idea of deductive systems, collections of inference rules that allow us to derive new facts from existing ones. This is a radically different approach to the “enumerate all possible truth values” approaches we have taken so far by writing out truth tables or by using a SAT solver. Instead, we construct chains (or, more generally, trees) of rules connected together that lead us step by step from some assumptions to a conclusion.
+We now look at the general idea of deductive systems, collections of inference rules that allow us to derive new facts from existing ones.
+
+This is a radically different approach to the “enumerate all possible truth values” approaches we have taken so far by writing out [truth tables](truth-tables.html) or by using a [SAT solver](sat.html).
+
+Instead, we construct sequences (or, more generally, trees) of rules connected together that lead us step by step from some assumptions to a conclusion.
 
 ## Video
 

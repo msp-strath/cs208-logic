@@ -2,7 +2,9 @@
 
 **DRAFT**
 
+```aside
 This page assumes that you have understood the [proof rules for quantifiers](pred-logic-rules.html) and [proof rules for equality](equality.html) pages and completed all the exercises there.
+```
 
 Now we can talk about [equality](equality.html) in our proof system, we can start to talk about useful things like numbers and arithmetic, and make statements like the fact that addition is commutative (i.e., it doesn't matter which way round we add things):
 
@@ -61,7 +63,7 @@ Peano's axioms assume a function symbol “add(x,y)” intended to represent “
 
    Adding the successor of “x” to “y” is equal to the successor of adding “x” to “y”. In normal symbols, “(1 + x) + y = 1 + (x + y)”.
 
-   One way to visualise this axioms is as “pushing” the “S” symbol outside the addition. Most proofs proceed by using the equality in the axiom left-to-right, pushing the “add” symbol down into the term, usually in the hope that the “add-zero” axiom will apply and the addition will disappear altogether.
+   One way to visualise this axioms is as “pushing” the “S” symbol outside the addition. Most proofs proceed by using the equality in the axiom left-to-right, pushing the “add” symbol down into the term, usually in the hope that the *add-zero* axiom will apply and the addition will disappear altogether.
 
 ### Exercise
 
@@ -81,11 +83,11 @@ Multiplication is specified in a similar way to addition, by saying what it does
 
 1. *mul-zero*: “all x. mul(0,x) = 0”
 
-   FIXME: explain
+   Multiplying 0 by anything is always 0.
 
 2. *mul-succ*: “all x. all y. mul(S(x),y) = add(y,mul(x,y))”
 
-   FIXME: explain
+   In normal symbols, this axiom says: “(1 + x) * y = y + (x * y)”. As with the *add-succ* axiom above, we can think of it as pushing the “mul” operation through a layer of successor. Repeated use of this axiom should usually lead to the “mul” operation disappearing when the *mul-zero* axiom is used.
 
 ### Exercises
 

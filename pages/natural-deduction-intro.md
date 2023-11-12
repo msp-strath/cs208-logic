@@ -1,5 +1,9 @@
 # Natural Deduction
 
+```aside
+This page assumes that you are familiar with the syntax and semantics of Propositional Logic, and the [general ideas of deductive systems](proof-intro.html).
+```
+
 After we have [looked at the general idea of deductive systems](proof-intro.html), we focus on the particular system we will be using in this course: *(focused) Natural Deduction*.
 
 The Natural Deduction system was invented by the logician Gerhard Gentzen in 1934 as a way to formalise proofs in logic. We will be using a variant of Gentzen's system that is designed to be easy to use for building proofs interactively.

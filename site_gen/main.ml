@@ -124,6 +124,10 @@ let code_render renderer ids attributes kind content =
      Some (details
              ((match title with None -> empty | Some t -> summary (text t))
               ^^ renderer body))
+  | "aside" ->
+     let open Html_static in
+     let body = Omd.of_string content in
+     Some (aside (renderer body))
   | "formula" ->
      let open Fol_formula in
      (match Formula.of_string content with

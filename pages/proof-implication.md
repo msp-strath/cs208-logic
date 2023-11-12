@@ -1,5 +1,9 @@
 # Natural Deduction: Implication
 
+```aside
+This page assumes you have understood the [basics of natural deduction](natural-deduction-intro.html) for Propositional Logic.
+```
+
 ## Video
 
 ```youtube
