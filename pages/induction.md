@@ -106,11 +106,17 @@ With these axioms for multiplication (and the ones for addition), we can prove f
 
 ## Induction
 
-FIXME: we need induction to prove anything for all numbers.
+The final axiom of Peano's is really an axiom *schema*: a family of axioms, one for each formula.
 
-One of these axioms is the principle of induction, which states that to prove a property `P(x)` for all numbers `x`, we have to prove `P(0)` (the base case), and to prove `P(n+1)` assuming `P(n)` (the step case).
+The induction axiom schema states that if we want to prove a property *P(x)* for all numbers *x*, then we can do so by proving *P(0)* (the *base case*) and proving that, for all *n*, *P(n)* implies *P(S(n))* (the *step case*).
 
-### Proofs by Induction in the Proof Tool
+In symbols, we have an axiom of induction for every formula *P(-)*:
+
+```formula
+P(0) -> (all n. P(n) -> P(S(n))) -> (all x. P(x))
+```
+
+In order to make proofs by induction a bit easier (it can be difficult to select exactly the right formula *P* to prove), induction has been built into the proof system we are using. This is explained in the following video:
 
 ```youtube
 fwhu4C9E_7U
@@ -121,6 +127,8 @@ Enter any notes to yourself here.
 ```
 
 ### Exercises on Induction
+
+Details on how to do the first few of these are in the video above.
 
 ````details
 Proof commands...
@@ -180,7 +188,9 @@ These rules apply when there is a formula in focus. These rules either act upon 
 	(assumptions
 	 (add-zero "all x. add(0,x) = x")
 	 (add-succ "all x. all y. add(S(x),y) = S(add(x,y))"))
-    (goal "all x. add(x,0) = x"))
+    (goal "all x. add(x,0) = x")
+	(solution
+	(Rule(Introduce x)((Rule(Induction x)((Rule(Use add-zero)((Rule(Instantiate(Fun 0()))((Rule Close())))))(Rule(Use add-succ)((Rule(Instantiate(Var x1))((Rule(Instantiate(Fun 0()))((Rule(Rewrite ltr)((Rule(Use induction-hypothesis)((Rule(Rewrite ltr)((Rule Refl())))))))))))))))))))
    ```
 
 2. add-x-succ : x + S(y) = S(x + y)
@@ -194,7 +204,7 @@ These rules apply when there is a formula in focus. These rules either act upon 
     (goal "all x. all y. add(x,S(y)) = S(add(x,y))"))
    ```
 
-3. add-assoc : x + (y + z) = (x + y) + z
+3. Addition is associative:
 
    ```focused-nd {id=arith-proof-ind3}
    (config
@@ -205,7 +215,7 @@ These rules apply when there is a formula in focus. These rules either act upon 
     (goal "all x. all y. all z. add(x,add(y,z)) = add(add(x,y),z)"))
    ```
 
-4. add-comm : x + y = y + x
+4. Addition is commutative:
 
    ```focused-nd {id=arith-proof-ind4}
    (config
@@ -218,9 +228,7 @@ These rules apply when there is a formula in focus. These rules either act upon 
     (goal "all x. all y. add(x,y) = add(y,x)"))
    ```
 
-5. zero-or-successor : all x. x = 0 \/ ex y. x = S(y)
-
-   FIXME: the robinson arithmetic axiom is derivable from induction
+5. Every number is a zero or is a successor of some other number.
 
    ```focused-nd {id=arith-proof-ind5}
    (config
@@ -231,9 +239,7 @@ These rules apply when there is a formula in focus. These rules either act upon 
     (goal "all x. x = 0 \/ (ex y. x = S(y))"))
    ```
 
-6. all x. all y. (x = y) \/ ¬(x = y)
-
-   FIXME: equality is "deciable", just from the zero and successor axioms
+6. For all numbers *x* and *y*, either they are equal, or they are not. If we assume [excluded middle](soundness-complete-meaning.html), then this fact is immediate from the fact that every proposition is either true or false. If we do not however, we have to construct a proof. The proof proceeds very similarly to how one might construct a computer program to decide whether two numbers are equal: first check if the first number is zero or successor and then check the second; if they are both zero then they are equal, if one is zero and one is a successor then they are not equal, and they are both successors then check the two smaller numbers.
 
    ```focused-nd {id=arith-proof-ind6}
    (config
@@ -241,13 +247,11 @@ These rules apply when there is a formula in focus. These rules either act upon 
     (assumptions
      (zero-ne-succ "all x. ¬(0 = S(x))")
      (succ-injective "all x. all y. S(x) = S(y) -> x = y"))
-    (goal "all x. x = 0 \/ (ex y. x = S(y))"))
+    (goal "all x. all y. x = y \/ ¬(x = y)"))
    ```
 
 
-7. all x. all y. (ex k. x + k = y) \/ (ex k. y + k = x)
-
-   FIXME: either x is less than or equal to y, or y is less than or equal to x
+7. We can define “less than or equal” for numbers as *x <= y* is *∃k. add(x,k) = y*. The following proof proves that the numbers are totally ordered: for all pairs of numbers *x* and *y*, either *x <= y* or *y <= x*.
 
    ```focused-nd {id=arith-proof-ind7}
    (config
@@ -258,11 +262,7 @@ These rules apply when there is a formula in focus. These rules either act upon 
     (goal "all x. all y. (ex k. add(x,k) = y) \/ (ex k. add(y,k) = x)"))
    ```
 
-8. Multiplication distributes over addition:
-
-   ```
-   all x. all y. all z. x * (y + z) = (x * y) + (x * z)
-   ```
+8. Multiplication distributes over addition.
 
    The proof of this fact depends on the associativity and commutativity properties of addition that we proved above. There is a tricky bit of rewriting at the end. It is best to work it out on paper first.
 
