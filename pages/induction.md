@@ -1,7 +1,5 @@
 # Arithmetic and Induction
 
-**DRAFT**
-
 ```aside
 This page assumes that you have understood the [proof rules for quantifiers](pred-logic-rules.html) and [proof rules for equality](equality.html) pages and completed all the exercises there.
 ```
