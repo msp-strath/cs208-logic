@@ -77,7 +77,7 @@ This kind of example crops up in Computer Science whenever we have to make a dis
 
 ## Using Equality in the Proof Editor
 
-The following video demonstrates the use of the proof rules for equality in the proof editor. Watch the video before attempting the exercises below.
+The following video demonstrates the use of the proof rules for equality in the proof editor. Watch the video before attempting the exercises below. **Warning:** the question about addition has been moved to the next page on [Arithmetic and Induction](induction.html).
 
 ```youtube
 pTVnIz0TqsA
@@ -154,7 +154,7 @@ These rules apply when there is a formula in focus. These rules either act upon 
 
 ### Exercise 3 : Abelian Groups
 
-A [abelian group](https://en.wikipedia.org/wiki/Abelian_group) is a generalisation of the ideas of addition and multiplication of numbers. We assume there is an operation ‘combine’ that combines two things (e.g., adding or multiplying), an operation ‘inv’ that takes the inverse of a thing (e.g., negation or reciprocal), and a value ‘emp’ that has no effect when combined with something else (e.g., zero for addition, or one for multiplication). What makes an abelian group *abelian* and not just a group is that it does not matter what order things are combined in: ‘combine(x,y) = combine(y,x)’.
+An [abelian group](https://en.wikipedia.org/wiki/Abelian_group) is a generalisation of the ideas of addition and multiplication of numbers. We assume there is an operation ‘combine’ that combines two things (e.g., adding or multiplying), an operation ‘inv’ that takes the inverse of a thing (e.g., negation or reciprocal), and a value ‘emp()’ that has no effect when combined with something else (e.g., zero for addition, or one for multiplication). What makes an abelian group *abelian* and not just a group is that it does not matter what order things are combined in: ‘combine(x,y) = combine(y,x)’.
 
 The axioms of an abelian group are:
 
@@ -164,16 +164,16 @@ The axioms of an abelian group are:
 2. *combine-comm* : ∀x. ∀y. combine(x, y) = combine(y, x)
 
    This axiom states that combining ‘x’ with ‘y’ is the same as combining ‘y’ with ‘x’, just as it is for normal addition and multiplication. Axioms like this are usually called *commutativity*, or *comm* for short.
-3. *combine-inv* : ∀x. combine(x, inv(x)) = emp
+3. *combine-inv* : ∀x. combine(x, inv(x)) = emp()
 
    This axiom states that combining something with its inverse is equal to the empty thing. E.g., `x + (-x) = 0` for addition on numbers.
-4. *combine-emp* : ∀x. combine(x, emp) = x
+4. *combine-emp* : ∀x. combine(x, emp()) = x
 
-   This axiom states that combining ‘x’ with ‘emp’ is the same as ‘x’. We can think of ‘emp’ as being like ‘0’ for addition, or ‘1’ for multiplication.
+   This axiom states that combining ‘x’ with ‘emp()’ is the same as ‘x’. We can think of ‘emp()’ as being like ‘0’ for addition, or ‘1’ for multiplication.
 
 #### Exercise 3.1
 
-‘emp’s in the middle of a combination can always be removed:
+‘emp()’s in the middle of a combination can always be removed:
 
 ```focused-nd {id=equality-abelian1}
 (config
@@ -181,9 +181,9 @@ The axioms of an abelian group are:
  (assumptions
   (combine-assoc "∀x. ∀y. ∀z. combine(x, combine(y, z)) = combine(combine(x, y), z)")
   (combine-comm "∀x. ∀y. combine(x, y) = combine(y, x)")
-  (combine-inv "∀x. combine(x, inv(x)) = emp")
-  (combine-emp "∀x. combine(x, emp) = x"))
- (goal "all x. all y. combine(x, combine(emp, y)) = combine(x,y)"))
+  (combine-inv "∀x. combine(x, inv(x)) = emp()")
+  (combine-emp "∀x. combine(x, emp()) = x"))
+ (goal "all x. all y. combine(x, combine(emp(), y)) = combine(x,y)"))
 ```
 
 #### Exercise 3.2
@@ -196,9 +196,9 @@ The ‘combine-emp’ axiom works the other way round as well:
  (assumptions
   (combine-assoc "∀x. ∀y. ∀z. combine(x, combine(y, z)) = combine(combine(x, y), z)")
   (combine-comm "∀x. ∀y. combine(x, y) = combine(y, x)")
-  (combine-inv "∀x. combine(x, inv(x)) = emp")
-  (combine-emp "∀x. combine(x, emp) = x"))
- (goal "all x. combine(emp, x) = x"))
+  (combine-inv "∀x. combine(x, inv(x)) = emp()")
+  (combine-emp "∀x. combine(x, emp()) = x"))
+ (goal "all x. combine(emp(), x) = x"))
 ```
 
 #### Exercise 3.3
@@ -211,9 +211,9 @@ The ‘combine-inv’ axiom works the other way round as well:
  (assumptions
   (combine-assoc "∀x. ∀y. ∀z. combine(x, combine(y, z)) = combine(combine(x, y), z)")
   (combine-comm "∀x. ∀y. combine(x, y) = combine(y, x)")
-  (combine-inv "∀x. combine(x, inv(x)) = emp")
-  (combine-emp "∀x. combine(x, emp) = x"))
- (goal "all x. combine(inv(x), x) = emp"))
+  (combine-inv "∀x. combine(x, inv(x)) = emp()")
+  (combine-emp "∀x. combine(x, emp()) = x"))
+ (goal "all x. combine(inv(x), x) = emp()"))
 ```
 
 ### Exercise 4
