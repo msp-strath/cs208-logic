@@ -109,6 +109,122 @@ FIXME: Prove that some programs halt
 
 `solution(p)`
 
+1. all p. solution p -> (all q. all x. exec(p,pair(q,x),true()) \/ exec(p,pair(q,x),false()))
+
+2. ...
+
 ## What if we had a solution to the Halting Problem?
 
+If we had a solution to the halting problem, then we could use it to make larger programs.
+
+
+
+```focused-nd {id=haltingproblem-1}
+(config
+ (assumptions-name "Axioms")
+ (assumptions
+  ; execution axioms
+;  (exec-true1 "all x. exec(true(), x, true())")
+;  (exec-true2 "all x. all y. exec(true(), x, y) -> y = true()")
+  (exec-loop "all x. all y. ¬exec(loop(), x, y)")
+;  (exec-dup1 "all p. all x. all y. exec(p,pair(x,x),y) -> exec(duplicate(p),x,y)")
+  (exec-dup2 "all p. all x. all y. exec(duplicate(p),x,y) -> exec(p,pair(x,x),y)")
+;  (exec-if1true
+;   "all p1. all p2. all p3. all x. all y.
+;    exec(p1,x,true()) ->
+;	exec(p2,x,y) ->
+;	exec(if(p1,p2,p3),x,y)")
+;  (exec-if1false
+;   "all p1. all p2. all p3. all x. all y.
+;    exec(p1,x,false()) ->
+;	exec(p3,x,y) ->
+;	exec(if(p1,p2,p3),x,y)")
+  (exec-if2
+   "all p1. all p2. all p3. all x. all y.
+    exec(if(p1,p2,p3), x, y) ->
+	((exec(p1,x,true()) /\ exec(p2,x,y)) \/ (exec(p1,x,false()) /\ exec(p3,x,y)))")
+
+  ; What does being a solution mean?
+;  (solution-says-true-or-false
+;   "all p. solution(p) -> (all q. all x. exec(p,pair(q,x),true()) \/ exec(p,pair(q,x),false()))")
+  (solution-never-says-true-and-false
+   "all p. solution(p) -> (all q. all x. exec(p,pair(q,x),true()) -> exec(p,pair(q,x),false()) -> F)")
+;  (solution-true-means-halts
+;   "all p. solution(p) -> (all q. all x. exec(p,pair(q,x),true()) -> halts(q,x))")
+;  (solution-false-means-doesnt-halt
+;   "all p. solution(p) -> (all q. all x. exec(p,pair(q,x),false()) -> ¬halts(q,x))")
+)
+ (goal
+  "all p. all x. solution(p) -> exec(p,pair(x,x),true()) ->
+    ¬(ex y. exec(if(duplicate(p),loop(),true()),x, y))"))
+```
+
+```focused-nd {id=haltingproblem-2}
+(config
+ (assumptions-name "Axioms")
+ (assumptions
+  ; execution axioms
+  (exec-true1 "all x. exec(true(), x, true())")
+;  (exec-true2 "all x. all y. exec(true(), x, y) -> y = true()")
+;  (exec-loop "all x. all y. ¬exec(loop(), x, y)")
+  (exec-dup1 "all p. all x. all y. exec(p,pair(x,x),y) -> exec(duplicate(p),x,y)")
+;  (exec-dup2 "all p. all x. all y. exec(duplicate(p),x,y) -> exec(p,pair(x,x),y)")
+;  (exec-if1true
+;   "all p1. all p2. all p3. all x. all y.
+;    exec(p1,x,true()) ->
+;	exec(p2,x,y) ->
+;	exec(if(p1,p2,p3),x,y)")
+  (exec-if1false
+   "all p1. all p2. all p3. all x. all y.
+    exec(p1,x,false()) ->
+	exec(p3,x,y) ->
+	exec(if(p1,p2,p3),x,y)")
+;  (exec-if2
+;   "all p1. all p2. all p3. all x. all y.
+;    exec(if(p1,p2,p3), x, y) ->
+;	((exec(p1,x,true()) /\ exec(p2,x,y)) \/ (exec(p1,x,false()) /\ exec(p3,x,y)))")
+
+  ; What does being a solution mean?
+;  (solution-says-true-or-false
+;   "all p. solution(p) ->
+;    (all q. all x. exec(p,pair(q,x),true()) \/ exec(p,pair(q,x),false()))")
+;  (solution-never-says-true-and-false
+;   "all p. solution(p) -> (all q. all x. exec(p,pair(q,x),true()) -> exec(p,pair(q,x),false()) -> F)")
+;  (solution-true-means-halts
+;   "all p. solution(p) -> (all q. all x. exec(p,pair(q,x),true()) -> halts(q,x))")
+;  (solution-false-means-doesnt-halt
+;   "all p. solution(p) -> (all q. all x. exec(p,pair(q,x),false()) -> ¬halts(q,x))")
+)
+ (goal
+  "all p. all x. solution(p) -> exec(p,pair(x,x),false()) ->
+    (ex y. exec(if(duplicate(p),loop(),true()),x, y))"))
+```
+
+
 ## Undecidability of the Halting Problem
+
+```focused-nd {id=haltingproblem-3}
+(config
+ (assumptions-name "Axioms")
+ (assumptions
+  ; What does being a solution mean?
+  (solution-says-true-or-false
+   "all p. solution(p) ->
+    (all q. all x. exec(p,pair(q,x),true()) \/ exec(p,pair(q,x),false()))")
+  (solution-never-says-true-and-false
+   "all p. solution(p) -> (all q. all x. exec(p,pair(q,x),true()) -> exec(p,pair(q,x),false()) -> F)")
+  (solution-true-means-halts
+   "all p. solution(p) -> (all q. all x. exec(p,pair(q,x),true()) -> (ex y. exec(q,x,y)))")
+  (solution-false-means-doesnt-halt
+   "all p. solution(p) ->
+     (all q. all x. exec(p,pair(q,x),false()) -> ¬(ex y. exec(q,x,y)))")
+
+  ; Two properties of the spoiler from above
+  (spoiler1
+   "all p. all x. solution(p) -> exec(p,pair(x,x),true()) ->
+                  ¬(ex y. exec(if(duplicate(p),loop(),true()),x, y))")
+  (spoiler2
+   "all p. all x. solution(p) -> exec(p,pair(x,x),false()) ->
+                  (ex y. exec(if(duplicate(p),loop(),true()),x, y))"))
+ (goal "¬(ex p. solution(p))"))
+```
