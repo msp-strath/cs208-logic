@@ -6,7 +6,11 @@
 This page assumes that you have understood the [proof rules for quantifiers](pred-logic-rules.html) and [proof rules for equality](equality.html) pages and completed all the exercises there.
 ```
 
-One of the foundational results of Computer Science is that there is no program which can reliably tell if another program will halt on a given input. This page goes through a formal proof of this fact.
+One of the foundational results of Computer Science is that there is no program which can reliably tell if another program will halt on a given input.
+
+This page presents a formal proof of this fact.
+
+
 
 ## Vocabulary
 
@@ -39,38 +43,38 @@ These axioms are meant to establish some basic properties of computation that an
 
 The program `true()` outputs `true()` for any input:
 ```formula
-all x. exec(true(), x, true())
+   all x. exec(true(), x, true())
 ```
 and if it outputs anything, then that thing is equal to `true()`:
 ```formula
-all x. all y. exec(true(), x, y) -> y = true()
+   all x. all y. exec(true(), x, y) -> y = true()
 ```
 
 Similarly, `false()` outputs `false()` for any input:
 ```formula
-all x. exec(false(), x, false())
+   all x. exec(false(), x, false())
 ```
 and if it outputs anything, then that thing is equal to `false()`:
 ```formula
-all x. all y. exec(false(), x, y) -> y = false()
+   all x. all y. exec(false(), x, y) -> y = false()
 ```
 
 ### The `loop` program
 
 The program `loop` never outputs anything:
 ```formula
-all x. all y. ¬exec(loop(), x, y)
+   all x. all y. ¬exec(loop(), x, y)
 ```
 
 ### The `duplicate` program
 
 The program `duplicate(p)` acts like I said above:
 ```formula
-all p. all x. all y. exec(p,pair(x,x),y) -> exec(duplicate(p),x,y)
+   all p. all x. all y. exec(p,pair(x,x),y) -> exec(duplicate(p),x,y)
 ```
 and this is the only way it acts:
 ```formula
-all p. all x. all y. exec(duplicate(p),x,y) -> exec(p,pair(x,x),y)
+   all p. all x. all y. exec(duplicate(p),x,y) -> exec(p,pair(x,x),y)
 ```
 
 ### The `if` program
