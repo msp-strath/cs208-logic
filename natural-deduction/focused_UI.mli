@@ -18,6 +18,14 @@ val render :
   state ->
   action Ulmus.html
 
+val render_solution :
+  showtree:bool ->
+  ?name:string ->
+  ?assumps_name:string ->
+  ?showlatex:bool ->
+  state ->
+  'a Ulmus.html
+
 val update : action -> state -> state
 
 val instructions :

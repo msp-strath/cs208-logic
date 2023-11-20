@@ -46,7 +46,8 @@ With these axioms, we can prove that numbers that are written differently are un
  (assumptions
   (zero-ne-succ "all x. ¬(0 = S(x))")
   (succ-injective "all x. all y. S(x) = S(y) -> x = y"))
- (goal "¬(S(0) = S(S(0)))"))
+ (goal "¬(S(0) = S(S(0)))")
+ (solution (Rule(NotIntro one-eq-two)((Rule(Use zero-ne-succ)((Rule(Instantiate(Fun 0()))((Rule NotElim((Rule(Use succ-injective)((Rule(Instantiate(Fun 0()))((Rule(Instantiate(Fun S((Fun 0()))))((Rule Implies_elim((Rule(Use one-eq-two)((Rule Close())))(Rule Close())))))))))))))))))))
 ```
 
 ## Axioms of Addition
@@ -72,7 +73,8 @@ With these axioms, we can prove simple facts like 2 + 2 = 4:
  (assumptions
   (add-zero "all x. add(0,x) = x")
   (add-succ "all x. all y. add(S(x),y) = S(add(x,y))"))
- (goal "add(S(S(0)),S(S(0))) = S(S(S(S(0))))"))
+ (goal "add(S(S(0)),S(S(0))) = S(S(S(S(0))))")
+ (solution (Rule(Use add-succ)((Rule(Instantiate(Fun S((Fun 0()))))((Rule(Instantiate(Fun S((Fun S((Fun 0()))))))((Rule(Rewrite ltr)((Rule(Use add-succ)((Rule(Instantiate(Fun 0()))((Rule(Instantiate(Fun S((Fun S((Fun 0()))))))((Rule(Rewrite ltr)((Rule(Use add-zero)((Rule(Instantiate(Fun S((Fun S((Fun 0()))))))((Rule(Rewrite ltr)((Rule Refl())))))))))))))))))))))))))
 ```
 
 ## Axioms of Multiplication
@@ -99,7 +101,8 @@ With these axioms for multiplication (and the ones for addition), we can prove f
   (add-succ "all x. all y. add(S(x),y) = S(add(x,y))")
   (mul-zero "all x. mul(0,x) = 0")
   (mul-succ "all x. all y. mul(S(x),y) = add(y,mul(x,y))"))
- (goal "mul(S(S(0)),S(S(0))) = S(S(S(S(0))))"))
+ (goal "mul(S(S(0)),S(S(0))) = S(S(S(S(0))))")
+ (solution (Rule(Use mul-succ)((Rule(Instantiate(Fun S((Fun 0()))))((Rule(Instantiate(Fun S((Fun S((Fun 0()))))))((Rule(Rewrite ltr)((Rule(Use mul-succ)((Rule(Instantiate(Fun 0()))((Rule(Instantiate(Fun S((Fun S((Fun 0()))))))((Rule(Rewrite ltr)((Rule(Use mul-zero)((Rule(Instantiate(Fun S((Fun S((Fun 0()))))))((Rule(Rewrite ltr)((Rule(Use add-succ)((Rule(Instantiate(Fun S((Fun 0()))))((Rule(Instantiate(Fun add((Fun S((Fun S((Fun 0())))))(Fun 0()))))((Rule(Rewrite ltr)((Rule(Use add-succ)((Rule(Instantiate(Fun 0()))((Rule(Instantiate(Fun add((Fun S((Fun S((Fun 0())))))(Fun 0()))))((Rule(Rewrite ltr)((Rule(Use add-zero)((Rule(Instantiate(Fun add((Fun S((Fun S((Fun 0())))))(Fun 0()))))((Rule(Rewrite ltr)((Rule(Use add-succ)((Rule(Instantiate(Fun S((Fun 0()))))((Rule(Instantiate(Fun 0()))((Rule(Rewrite ltr)((Rule(Use add-succ)((Rule(Instantiate(Fun 0()))((Rule(Instantiate(Fun 0()))((Rule(Rewrite ltr)((Rule(Use add-zero)((Rule(Instantiate(Fun 0()))((Rule(Rewrite ltr)((Rule Refl())))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 ```
 
 ## Induction
@@ -199,7 +202,8 @@ These rules apply when there is a formula in focus. These rules either act upon 
 	(assumptions
 	 (add-zero "all x. add(0,x) = x")
 	 (add-succ "all x. all y. add(S(x),y) = S(add(x,y))"))
-    (goal "all x. all y. add(x,S(y)) = S(add(x,y))"))
+    (goal "all x. all y. add(x,S(y)) = S(add(x,y))")
+	(solution (Rule(Introduce x)((Rule(Introduce y)((Rule(Induction x)((Rule(Use add-zero)((Rule(Instantiate(Fun S((Var y))))((Rule(Rewrite ltr)((Rule(Use add-zero)((Rule(Instantiate(Var y))((Rule(Rewrite ltr)((Rule Refl())))))))))))))(Rule(Use add-succ)((Rule(Instantiate(Var x1))((Rule(Instantiate(Fun S((Var y))))((Rule(Rewrite ltr)((Rule(Use induction-hypothesis)((Rule(Rewrite ltr)((Rule(Use add-succ)((Rule(Instantiate(Var x1))((Rule(Instantiate(Var y))((Rule(Rewrite ltr)((Rule Refl())))))))))))))))))))))))))))))
    ```
 
 3. Addition is associative:
@@ -210,7 +214,8 @@ These rules apply when there is a formula in focus. These rules either act upon 
 	(assumptions
 	 (add-zero "all x. add(0,x) = x")
 	 (add-succ "all x. all y. add(S(x),y) = S(add(x,y))"))
-    (goal "all x. all y. all z. add(x,add(y,z)) = add(add(x,y),z)"))
+    (goal "all x. all y. all z. add(x,add(y,z)) = add(add(x,y),z)")
+	(solution (Rule(Introduce x)((Rule(Introduce y)((Rule(Introduce z)((Rule(Induction x)((Rule(Use add-zero)((Rule(Instantiate(Fun add((Var y)(Var z))))((Rule(Rewrite ltr)((Rule(Use add-zero)((Rule(Instantiate(Var y))((Rule(Rewrite ltr)((Rule Refl())))))))))))))(Rule(Use add-succ)((Rule(Instantiate(Var x1))((Rule(Instantiate(Fun add((Var y)(Var z))))((Rule(Rewrite ltr)((Rule(Use add-succ)((Rule(Instantiate(Var x1))((Rule(Instantiate(Var y))((Rule(Rewrite ltr)((Rule(Use add-succ)((Rule(Instantiate(Fun add((Var x1)(Var y))))((Rule(Instantiate(Var z))((Rule(Rewrite ltr)((Rule(Use induction-hypothesis)((Rule(Rewrite ltr)((Rule Refl())))))))))))))))))))))))))))))))))))))))
    ```
 
 4. Addition is commutative:
@@ -223,7 +228,8 @@ These rules apply when there is a formula in focus. These rules either act upon 
 	 (add-succ "all x. all y. add(S(x),y) = S(add(x,y))")
 	 (add-x-zero "all x. add(x,0) = x")
 	 (add-x-succ "all x. all y. add(x,S(y)) = S(add(x,y))"))
-    (goal "all x. all y. add(x,y) = add(y,x)"))
+    (goal "all x. all y. add(x,y) = add(y,x)")
+	(solution (Rule(Introduce x)((Rule(Introduce y)((Rule(Induction x)((Rule(Use add-zero)((Rule(Instantiate(Var y))((Rule(Rewrite ltr)((Rule(Use add-x-zero)((Rule(Instantiate(Var y))((Rule(Rewrite ltr)((Rule Refl())))))))))))))(Rule(Use add-succ)((Rule(Instantiate(Var x1))((Rule(Instantiate(Var y))((Rule(Rewrite ltr)((Rule(Use add-x-succ)((Rule(Instantiate(Var y))((Rule(Instantiate(Var x1))((Rule(Rewrite ltr)((Rule(Use induction-hypothesis)((Rule(Rewrite ltr)((Rule Refl())))))))))))))))))))))))))))))
    ```
 
 5. Every number is a zero or is a successor of some other number.
@@ -234,7 +240,8 @@ These rules apply when there is a formula in focus. These rules either act upon 
     (assumptions
      (zero-ne-succ "all x. ¬(0 = S(x))")
      (succ-injective "all x. all y. S(x) = S(y) -> x = y"))
-    (goal "all x. x = 0 \/ (ex y. x = S(y))"))
+    (goal "all x. x = 0 \/ (ex y. x = S(y))")
+	(solution (Rule(Introduce x)((Rule(Induction x)((Rule Left((Rule Refl())))(Rule Right((Rule(Exists(Var x1))((Rule Refl())))))))))))
    ```
 
 6. For all numbers *x* and *y*, either they are equal, or they are not. If we assume [excluded middle](soundness-complete-meaning.html), then this fact is immediate from the fact that every proposition is either true or false. If we do not however, we have to construct a proof. The proof proceeds very similarly to how one might construct a computer program to decide whether two numbers are equal: first check if the first number is zero or successor and then check the second; if they are both zero then they are equal, if one is zero and one is a successor then they are not equal, and they are both successors then check the two smaller numbers.
@@ -245,7 +252,8 @@ These rules apply when there is a formula in focus. These rules either act upon 
     (assumptions
      (zero-ne-succ "all x. ¬(0 = S(x))")
      (succ-injective "all x. all y. S(x) = S(y) -> x = y"))
-    (goal "all x. all y. x = y \/ ¬(x = y)"))
+    (goal "all x. all y. x = y \/ ¬(x = y)")
+	(solution (Rule(Introduce x)((Rule(Induction x)((Rule(Introduce y)((Rule(Induction y)((Rule Left((Rule Refl())))(Rule Right((Rule(Use zero-ne-succ)((Rule(Instantiate(Var y1))((Rule Close())))))))))))(Rule(Introduce y)((Rule(Induction y)((Rule Right((Rule(NotIntro succ-eq-zero)((Rule(Use zero-ne-succ)((Rule(Instantiate(Var x1))((Rule NotElim((Rule(Use succ-eq-zero)((Rule(Rewrite ltr)((Rule Refl())))))))))))))))(Rule(Use induction-hypothesis)((Rule(Instantiate(Var y1))((Rule(Cases x1-eq-y1 x1-ne-y1)((Rule Left((Rule(Use x1-eq-y1)((Rule(Rewrite ltr)((Rule Refl())))))))(Rule Right((Rule(NotIntro Sx1-eq-Sy1)((Rule(Use x1-ne-y1)((Rule NotElim((Rule(Use succ-injective)((Rule(Instantiate(Var x1))((Rule(Instantiate(Var y1))((Rule Implies_elim((Rule(Use Sx1-eq-Sy1)((Rule Close())))(Rule Close())))))))))))))))))))))))))))))))))
    ```
 
 
@@ -257,7 +265,8 @@ These rules apply when there is a formula in focus. These rules either act upon 
 	(assumptions
 	 (add-zero "all x. add(0,x) = x")
 	 (add-succ "all x. all y. add(S(x),y) = S(add(x,y))"))
-    (goal "all x. all y. (ex k. add(x,k) = y) \/ (ex k. add(y,k) = x)"))
+    (goal "all x. all y. (ex k. add(x,k) = y) \/ (ex k. add(y,k) = x)")
+	(solution (Rule(Introduce x)((Rule(Induction x)((Rule(Introduce y)((Rule Left((Rule(Exists(Var y))((Rule(Use add-zero)((Rule(Instantiate(Var y))((Rule Close())))))))))))(Rule(Introduce y)((Rule(Induction y)((Rule Right((Rule(Exists(Fun S((Var x1))))((Rule(Use add-zero)((Rule(Instantiate(Fun S((Var x1))))((Rule Close())))))))))(Rule(Use induction-hypothesis)((Rule(Instantiate(Var y1))((Rule(Cases x1-le-y1 y1-le-x1)((Rule Left((Rule(Use x1-le-y1)((Rule(ExElim k add-x1-k-y1)((Rule(Exists(Var k))((Rule(Use add-succ)((Rule(Instantiate(Var x1))((Rule(Instantiate(Var k))((Rule(Rewrite ltr)((Rule(Use add-x1-k-y1)((Rule(Rewrite ltr)((Rule Refl())))))))))))))))))))))(Rule Right((Rule(Use y1-le-x1)((Rule(ExElim k add-y1-k-x1)((Rule(Exists(Var k))((Rule(Use add-succ)((Rule(Instantiate(Var y1))((Rule(Instantiate(Var k))((Rule(Rewrite ltr)((Rule(Use add-y1-k-x1)((Rule(Rewrite ltr)((Rule Refl())))))))))))))))))))))))))))))))))))))
    ```
 
 8. Multiplication distributes over addition.
@@ -274,5 +283,6 @@ These rules apply when there is a formula in focus. These rules either act upon 
 	 (mul-succ "all x. all y. mul(S(x),y) = add(y,mul(x,y))")
 	 (add-assoc "all x. all y. all z. add(x,add(y,z)) = add(add(x,y),z)")
 	 (add-comm "all x. all y. add(x,y) = add(y,x)"))
-	(goal "all x. all y. all z. mul(x,add(y,z)) = add(mul(x,y),mul(x,z))"))
+	(goal "all x. all y. all z. mul(x,add(y,z)) = add(mul(x,y),mul(x,z))")
+	(solution (Rule(Introduce x)((Rule(Introduce y)((Rule(Introduce z)((Rule(Induction x)((Rule(Use mul-zero)((Rule(Instantiate(Fun add((Var y)(Var z))))((Rule(Rewrite ltr)((Rule(Use mul-zero)((Rule(Instantiate(Var y))((Rule(Rewrite ltr)((Rule(Use mul-zero)((Rule(Instantiate(Var z))((Rule(Rewrite ltr)((Rule(Use add-zero)((Rule(Instantiate(Fun 0()))((Rule(Rewrite ltr)((Rule Refl())))))))))))))))))))))))))(Rule(Use mul-succ)((Rule(Instantiate(Var x1))((Rule(Instantiate(Fun add((Var y)(Var z))))((Rule(Rewrite ltr)((Rule(Use mul-succ)((Rule(Instantiate(Var x1))((Rule(Instantiate(Var y))((Rule(Rewrite ltr)((Rule(Use mul-succ)((Rule(Instantiate(Var x1))((Rule(Instantiate(Var z))((Rule(Rewrite ltr)((Rule(Use induction-hypothesis)((Rule(Rewrite ltr)((Rule(Use add-assoc)((Rule(Instantiate(Var y))((Rule(Instantiate(Var z))((Rule(Instantiate(Fun add((Fun mul((Var x1)(Var y)))(Fun mul((Var x1)(Var z))))))((Rule(Rewrite rtl)((Rule(Use add-assoc)((Rule(Instantiate(Var z))((Rule(Instantiate(Fun mul((Var x1)(Var y))))((Rule(Instantiate(Fun mul((Var x1)(Var z))))((Rule(Rewrite ltr)((Rule(Use add-comm)((Rule(Instantiate(Var z))((Rule(Instantiate(Fun mul((Var x1)(Var y))))((Rule(Rewrite ltr)((Rule(Use add-assoc)((Rule(Instantiate(Fun mul((Var x1)(Var y))))((Rule(Instantiate(Var z))((Rule(Instantiate(Fun mul((Var x1)(Var z))))((Rule(Rewrite rtl)((Rule(Use add-assoc)((Rule(Instantiate(Var y))((Rule(Instantiate(Fun mul((Var x1)(Var y))))((Rule(Instantiate(Fun add((Var z)(Fun mul((Var x1)(Var z))))))((Rule Close())))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
    ```

@@ -17,6 +17,8 @@ type 'a seq_parser
 
 (** {2 Direct Sexp parsers} *)
 
+val sexp : sexp parser
+
 val atom : string parser
 
 val sequence : 'a seq_parser -> 'a parser

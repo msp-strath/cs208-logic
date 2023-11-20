@@ -79,6 +79,13 @@ module Renderer = struct
       (fun pt rule children ->
         render_rule ~resetbutton:(resetbutton pt) ~rule ~children)
       render_box
+
+  let render_solution =
+    PT.fold
+      (fun _ _ _ -> Ulmus.Html.empty)
+      (fun _pt rule children ->
+        render_rule ~resetbutton:Ulmus.Html.empty ~rule ~children)
+      render_box
 end
 
 let num_holes prooftree =
@@ -88,47 +95,59 @@ let num_holes prooftree =
     (fun _ x -> x)
     prooftree
 
-let render ~showtree ?name ?assumps_name ?(showlatex = false) prooftree =
+let (@|) e es = Ulmus.Html.(e (concat_list es))
+
+let render_heading name assumps goal =
   let open Ulmus.Html in
-  let open H in
-  vertical
-    [%concat
-      div
-        [%concat
-          (match name with
-          | None -> strong (text "Theorem: ")
-          | Some name ->
+  div @| [
+      (match name with
+       | None ->
+          strong (text "Theorem: ")
+       | Some name ->
+          concat_list [
               strong (text "Theorem ");
               text name;
-              strong (text " : "));
-          match assumps_name with
-          | None ->
-              text
-                (Focused_proof_renderer.string_of_sequent
-                   (PT.root_assumptions prooftree, PT.root_goal prooftree))
-          | Some name ->
-              let open Fol_formula in
-              text
-                (match PT.root_goal prooftree with
-                | Checking goal -> name ^ " ⊢ " ^ Formula.to_string goal
-                | Synthesis (focus, goal) ->
-                    name ^ " [" ^ Formula.to_string focus ^ "] ⊢ "
-                    ^ Formula.to_string goal)];
+              strong (text " : ")
+      ]);
+      (match assumps with
+       | Either.Left formulas ->
+          text (Focused_proof_renderer.string_of_sequent (formulas, goal))
+       | Right name ->
+          let open Fol_formula in
+          text
+            (match goal with
+             | Checking goal -> name ^ " ⊢ " ^ Formula.to_string goal
+             | Synthesis (focus, goal) ->
+                name ^ " [" ^ Formula.to_string focus ^ "] ⊢ "
+                ^ Formula.to_string goal))
+    ]
+
+let render renderer ~showtree ?name ?assumps_name ?(showlatex = false) prooftree =
+  let open Ulmus.Html in
+  let open H in
+  let assumps = match assumps_name with
+    | None -> Either.Left (PT.root_assumptions prooftree)
+    | Some name -> Either.Right name
+  in
+  let goal = PT.root_goal prooftree in
+  vertical @| [
+      render_heading name assumps goal;
 
       div (strong (text "Proof"));
-      indent_box (Renderer.render prooftree);
-
+      indent_box (renderer prooftree);
       (match num_holes prooftree with
-      | 0 -> div (strong (text "Proof Complete."))
-      | 1 -> div (em (strong (textf "Proof incomplete (1 subgoal open).")))
-      | n -> div (em (strong (textf "Proof incomplete (%d subgoals open)." n))));
+       | 0 -> div (strong (text "Proof Complete."))
+       | 1 -> div (em (strong (textf "Proof incomplete (1 subgoal open).")))
+       | n -> div (em (strong (textf "Proof incomplete (%d subgoals open)." n))));
 
       if showtree then
-        [%concat
-          text "Proof tree:";
-          div
-            ~attrs:[ A.style "display: flex; overflow-x: auto" ]
-            (SequentTreeRenderer.render prooftree)];
+        concat_list [
+            text "Proof tree:";
+            div
+              ~attrs:[ A.style "display: flex; overflow-x: auto" ]
+              (SequentTreeRenderer.render prooftree)
+          ]
+      else empty;
 
       if showlatex then
         div
@@ -137,7 +156,12 @@ let render ~showtree ?name ?assumps_name ?(showlatex = false) prooftree =
               let fmt = Format.formatter_of_buffer buffer in
               LaTeXRenderer.render fmt prooftree;
               Format.pp_print_flush fmt ();
-              text (Buffer.contents buffer)))]
+              text (Buffer.contents buffer)))
+      else empty
+    ]
+
+let render_solution ~showtree = render Renderer.render_solution ~showtree
+let render ~showtree = render Renderer.render ~showtree
 
 let update action _prooftree =
   match action with

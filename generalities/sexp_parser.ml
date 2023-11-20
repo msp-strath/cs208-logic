@@ -25,6 +25,8 @@ let of_conv f sexp =
   | Sexplib.Conv.Of_sexp_error (exn, sexp) ->
      annotate_error sexp @@ Error (Printexc.to_string exn)
 
+let sexp sexp = Ok sexp
+
 let atom = function
   | Atom str -> Ok str
   | sexp     -> annotate_error sexp @@ Error "Expecting a single atom"

@@ -31,7 +31,8 @@ There's not much one can prove directly from these axioms without making further
  (assumptions-name "symmetry + transitivity")
  (assumptions (symmetry "all x. all y. equiv(x,y) -> equiv(y,x)")
 			  (transitivity "all x. all y. all z. equiv(x,y) -> equiv(y,z) -> equiv(x,z)"))
- (goal "all x. (ex y. equiv(x,y)) -> equiv(x,x)"))
+ (goal "all x. (ex y. equiv(x,y)) -> equiv(x,x)")
+ (solution (Rule(Introduce x)((Rule(Introduce x-equal-to-something)((Rule(Use x-equal-to-something)((Rule(ExElim y x-equiv-y)((Rule(Use transitivity)((Rule(Instantiate(Var x))((Rule(Instantiate(Var y))((Rule(Instantiate(Var x))((Rule Implies_elim((Rule(Use x-equiv-y)((Rule Close())))(Rule Implies_elim((Rule(Use symmetry)((Rule(Instantiate(Var x))((Rule(Instantiate(Var y))((Rule Implies_elim((Rule(Use x-equiv-y)((Rule Close())))(Rule Close())))))))))(Rule Close())))))))))))))))))))))))
 ```
 
 (A binary relation that only has symmetry and transitivity is called a *partial equivalence relation*. They are useful for describing the semantics of programming languages.)
@@ -146,14 +147,16 @@ These rules apply when there is a formula in focus. These rules either act upon 
 
 ```focused-nd {id=equality-symmetry}
 (config
- (goal "all x. all y. x = y -> y = x"))
+ (goal "all x. all y. x = y -> y = x")
+ (solution (Rule(Introduce x)((Rule(Introduce y)((Rule(Introduce x-eq-y)((Rule(Use x-eq-y)((Rule(Rewrite ltr)((Rule Refl())))))))))))))
 ```
 
 ### Exercise 2 : Transitivity
 
 ```focused-nd {id=equality-transitivity}
 (config
- (goal "all x. all y. all z. x = y -> y = z -> x = z"))
+ (goal "all x. all y. all z. x = y -> y = z -> x = z")
+ (solution (Rule(Introduce x)((Rule(Introduce y)((Rule(Introduce z)((Rule(Introduce x-eq-y)((Rule(Introduce y-eq-z)((Rule(Use x-eq-y)((Rule(Rewrite ltr)((Rule(Use y-eq-z)((Rule Close())))))))))))))))))))
 ```
 
 ### Exercise 3 : Abelian Groups
@@ -187,7 +190,8 @@ The axioms of an abelian group are:
   (combine-comm "∀x. ∀y. combine(x, y) = combine(y, x)")
   (combine-inv "∀x. combine(x, inv(x)) = emp()")
   (combine-emp "∀x. combine(x, emp()) = x"))
- (goal "all x. all y. combine(x, combine(emp(), y)) = combine(x,y)"))
+ (goal "all x. all y. combine(x, combine(emp(), y)) = combine(x,y)")
+ (solution (Rule(Introduce x)((Rule(Introduce y)((Rule(Use combine-comm)((Rule(Instantiate(Fun emp()))((Rule(Instantiate(Var y))((Rule(Rewrite ltr)((Rule(Use combine-emp)((Rule(Instantiate(Var y))((Rule(Rewrite ltr)((Rule Refl())))))))))))))))))))))
 ```
 
 #### Exercise 3.2
@@ -202,7 +206,8 @@ The ‘combine-emp’ axiom works the other way round as well:
   (combine-comm "∀x. ∀y. combine(x, y) = combine(y, x)")
   (combine-inv "∀x. combine(x, inv(x)) = emp()")
   (combine-emp "∀x. combine(x, emp()) = x"))
- (goal "all x. combine(emp(), x) = x"))
+ (goal "all x. combine(emp(), x) = x")
+ (solution (Rule(Introduce x)((Rule(Use combine-comm)((Rule(Instantiate(Fun emp()))((Rule(Instantiate(Var x))((Rule(Rewrite ltr)((Rule(Use combine-emp)((Rule(Instantiate(Var x))((Rule Close())))))))))))))))))
 ```
 
 #### Exercise 3.3
@@ -217,7 +222,8 @@ The ‘combine-inv’ axiom works the other way round as well:
   (combine-comm "∀x. ∀y. combine(x, y) = combine(y, x)")
   (combine-inv "∀x. combine(x, inv(x)) = emp()")
   (combine-emp "∀x. combine(x, emp()) = x"))
- (goal "all x. combine(inv(x), x) = emp()"))
+ (goal "all x. combine(inv(x), x) = emp()")
+ (solution (Rule(Introduce x)((Rule(Use combine-comm)((Rule(Instantiate(Fun inv((Var x))))((Rule(Instantiate(Var x))((Rule(Rewrite ltr)((Rule(Use combine-inv)((Rule(Instantiate(Var x))((Rule Close())))))))))))))))))
 ```
 
 ### Exercise 4
@@ -231,12 +237,14 @@ This example demonstrates what can go wrong if we have a mismatch between the pr
   (edinburgh-has-nine-letters           "has-nine-letters(edinburgh())")
   (capital-of-scotland-not-nine-letters "¬has-nine-letters(capital-of-scotland())")
   (edinburgh-is-capital-of-scotland     "edinburgh() = capital-of-scotland()"))
- (goal "F"))
+ (goal "F")
+ (solution (Rule(Use capital-of-scotland-not-nine-letters)((Rule NotElim((Rule(Use edinburgh-is-capital-of-scotland)((Rule(Rewrite rtl)((Rule(Use edinburgh-has-nine-letters)((Rule Close())))))))))))))
 ```
 
 More generally, if we have two things that have different properties (one is `P` and one is not `P`), then they must be not equal:
 
 ```focused-nd {id=equality-intensional2}
 (config
- (goal "all x. all y. P(x) -> ¬P(y) -> ¬(x = y)"))
+ (goal "all x. all y. P(x) -> ¬P(y) -> ¬(x = y)")
+ (solution (Rule(Introduce x)((Rule(Introduce y)((Rule(Introduce x-is-p)((Rule(Introduce y-is-not-p)((Rule(NotIntro x-eq-y)((Rule(Use y-is-not-p)((Rule NotElim((Rule(Use x-eq-y)((Rule(Rewrite rtl)((Rule(Use x-is-p)((Rule Close())))))))))))))))))))))))
 ```

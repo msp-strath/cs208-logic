@@ -78,17 +78,23 @@ These rules apply when there is a formula in focus. These rules either act upon 
 
 1. For all things, if `p` and `q` are true, then `p` is true:
    ```focused-nd {id=pred-proof-all1}
-   (config (goal "all x. (p(x) /\ q(x)) -> p(x)"))
+   (config
+    (solution (Rule(Introduce x)((Rule(Introduce x-is-p-and-q)((Rule(Use x-is-p-and-q)((Rule Conj_elim1((Rule Close()))))))))))
+    (goal "all x. (p(x) /\ q(x)) -> p(x)"))
    ```
 
 2. If `p` is true for all things, then it is true for the specific individual `a()`.
    ```focused-nd {id=pred-proof-all2}
-   (config (goal "(all x. p(x)) -> p(a())"))
+   (config
+    (solution (Rule(Introduce everything-is-p)((Rule(Use everything-is-p)((Rule(Instantiate(Fun a()))((Rule Close()))))))))
+    (goal "(all x. p(x)) -> p(a())"))
    ```
 
 3. If `p` and `q` are true for all things, then `p` is true for all things.
-   ```focused-nd {id-pred-proof-all3}
-   (config (goal "(all x. p(x) /\ q(x)) -> (all y. p(y))"))
+   ```focused-nd {id=pred-proof-all3}
+   (config
+    (solution (Rule(Introduce all-p-and-q)((Rule(Introduce y)((Rule(Use all-p-and-q)((Rule(Instantiate(Var y))((Rule Conj_elim1((Rule Close()))))))))))))
+    (goal "(all x. p(x) /\ q(x)) -> (all y. p(y))"))
    ```
 
 ## Proof rules for “exists”
@@ -163,17 +169,23 @@ These rules apply when there is a formula in focus. These rules either act upon 
 
 1. If `p` is true for `a()`, then there exists a thing for which `p` is true:
    ```focused-nd {id=pred-proof-ex1}
-   (config (goal "p(a()) -> (ex x. p(x))"))
+   (config
+    (solution (Rule(Introduce a-is-p)((Rule(Exists(Fun a()))((Rule(Use a-is-p)((Rule Close()))))))))
+    (goal "p(a()) -> (ex x. p(x))"))
    ```
 
 1. If something exists that has two properties, then something exists that has one of those properties:
    ```focused-nd {id=pred-proof-ex2}
-   (config (goal "(ex x. p(x) /\ q(x)) -> (ex z. p(z))"))
+   (config
+    (solution (Rule(Introduce exists-a-p-and-q)((Rule(Use exists-a-p-and-q)((Rule(ExElim x x-is-p-and-q)((Rule(Exists(Var x))((Rule(Use x-is-p-and-q)((Rule Conj_elim1((Rule Close()))))))))))))))
+    (goal "(ex x. p(x) /\ q(x)) -> (ex z. p(z))"))
    ```
 
 2. If something exists that has one of two properties, then either there exists something that has the first property, or one that has the second:
    ```focused-nd {id=pred-proof-ex3}
-   (config (goal "(ex x. p(x) \/ q(x)) -> ((ex z. p(z)) \/ (ex z. q(z)))"))
+   (config
+    (solution (Rule(Introduce exists-a-p-or-q)((Rule(Use exists-a-p-or-q)((Rule(ExElim x x-is-p-or-q)((Rule(Use x-is-p-or-q)((Rule(Cases x-is-p x-is-q)((Rule Left((Rule(Exists(Var x))((Rule(Use x-is-p)((Rule Close())))))))(Rule Right((Rule(Exists(Var x))((Rule(Use x-is-q)((Rule Close()))))))))))))))))))
+    (goal "(ex x. p(x) \/ q(x)) -> ((ex z. p(z)) \/ (ex z. q(z)))"))
    ```
 
 ## Exercises combining ∀ and ∃
@@ -229,23 +241,31 @@ These rules apply when there is a formula in focus. These rules either act upon 
 1. If every `p` has something that is `r`-related to it, and `a()` is a `p`, then there is something `r`-related to `a()`.
 
    ```focused-nd {id=pred-proof-allex1}
-   (config (goal "(all x. p(x) -> (ex y. r(x,y))) -> p(a()) -> (ex z. r(a(),z))"))
+   (config
+    (solution (Rule(Introduce H)((Rule(Introduce a-is-p)((Rule(Use H)((Rule(Instantiate(Fun a()))((Rule Implies_elim((Rule(Use a-is-p)((Rule Close())))(Rule Close()))))))))))))
+    (goal "(all x. p(x) -> (ex y. r(x,y))) -> p(a()) -> (ex z. r(a(),z))"))
    ```
 
 2. If everything is not `p`, then there does not exist a `p`:
 
    ```focused-nd {id=pred-proof-allex2}
-   (config (goal "(all x. ¬p(x)) -> ¬(ex y. p(y))"))
+   (config
+    (solution (Rule(Introduce H)((Rule(NotIntro exists-p)((Rule(Use exists-p)((Rule(ExElim y y-is-p)((Rule(Use H)((Rule(Instantiate(Var y))((Rule NotElim((Rule(Use y-is-p)((Rule Close()))))))))))))))))))
+    (goal "(all x. ¬p(x)) -> ¬(ex y. p(y))"))
    ```
 
 3. If there exists a non-`p`, then not everything is a `p`:
 
    ```focused-nd {id=pred-proof-allex3}
-   (config (goal "(ex x. ¬p(x)) -> ¬(all y. p(y))"))
+   (config
+    (solution (Rule(Introduce H)((Rule(NotIntro all-are-p)((Rule(Use H)((Rule(ExElim x x-is-not-p)((Rule(Use x-is-not-p)((Rule NotElim((Rule(Use all-are-p)((Rule(Instantiate(Var x))((Rule Close()))))))))))))))))))
+    (goal "(ex x. ¬p(x)) -> ¬(all y. p(y))"))
    ```
 
 4. Quantifier order can be swapped, when they are the same quantifier:
 
    ```focused-nd {id=pred-proof-allex4}
-   (config (goal "(all x. all y. R(x,y)) -> (all x. all y. R(y,x))"))
+   (config
+    (solution (Rule(Introduce H)((Rule(Introduce x)((Rule(Introduce y)((Rule(Use H)((Rule(Instantiate(Var y))((Rule(Instantiate(Var x))((Rule Close()))))))))))))))
+    (goal "(all x. all y. R(x,y)) -> (all x. all y. R(y,x))"))
    ```
