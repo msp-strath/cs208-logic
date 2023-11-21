@@ -88,7 +88,8 @@ These rules apply when there is a formula in focus. These rules either act upon 
 If we have `A` or `B`, and both imply `C`, then we have `C`.
 
 ```focused-nd {id=or-ex1}
-(config (goal "(A \/ B) -> (A -> C) -> (B -> C) -> C"))
+(config (goal "(A \/ B) -> (A -> C) -> (B -> C) -> C")
+ (solution (Rule(Introduce a-or-b)((Rule(Introduce a-implies-c)((Rule(Introduce b-implies-c)((Rule(Use a-or-b)((Rule(Cases a b)((Rule(Use a-implies-c)((Rule Implies_elim((Rule(Use a)((Rule Close())))(Rule Close())))))(Rule(Use b-implies-c)((Rule Implies_elim((Rule(Use b)((Rule Close())))(Rule Close())))))))))))))))))
 ```
 
 #### Exercise 2
@@ -96,7 +97,8 @@ If we have `A` or `B`, and both imply `C`, then we have `C`.
 If we have `A` or `B`, and `A` implies `C` and `B` implies `D`, then we have `C` or `D`.
 
 ```focused-nd {id=or-ex2}
-(config (goal "(A \/ B) -> (A -> C) -> (B -> D) -> (C \/ D)"))
+(config (goal "(A \/ B) -> (A -> C) -> (B -> D) -> (C \/ D)")
+ (solution (Rule(Introduce a-or-b)((Rule(Introduce a-implies-c)((Rule(Introduce b-implies-d)((Rule(Use a-or-b)((Rule(Cases a b)((Rule Left((Rule(Use a-implies-c)((Rule Implies_elim((Rule(Use a)((Rule Close())))(Rule Close())))))))(Rule Right((Rule(Use b-implies-d)((Rule Implies_elim((Rule(Use b)((Rule Close())))(Rule Close())))))))))))))))))))
 ```
 
 #### Exercise 3
@@ -104,7 +106,8 @@ If we have `A` or `B`, and `A` implies `C` and `B` implies `D`, then we have `C`
 If `A` or `B` implies `C`, then we know that both `A` implies `C` and `B` implies `C`.
 
 ```focused-nd {id=or-ex3}
-(config (goal "((A \/ B) -> C) -> ((A -> C) /\ (B -> C))"))
+(config (goal "((A \/ B) -> C) -> ((A -> C) /\ (B -> C))")
+ (solution (Rule(Introduce a-or-b-implies-c)((Rule Split((Rule(Introduce a)((Rule(Use a-or-b-implies-c)((Rule Implies_elim((Rule Left((Rule(Use a)((Rule Close())))))(Rule Close())))))))(Rule(Introduce b)((Rule(Use a-or-b-implies-c)((Rule Implies_elim((Rule Right((Rule(Use b)((Rule Close())))))(Rule Close())))))))))))))
 ```
 
 #### Exercise 4
@@ -113,7 +116,8 @@ If `A` or `B` implies `C`, then we know that both `A` implies `C` and `B` implie
 
 ```focused-nd {id=or-ex4}
 (config (assumptions (H "A \/ (B /\ C)"))
-        (goal "(A \/ B) /\ (A \/ C)"))
+        (goal "(A \/ B) /\ (A \/ C)")
+		(solution (Rule Split((Rule(Use H)((Rule(Cases a b-and-c)((Rule Left((Rule(Use a)((Rule Close())))))(Rule Right((Rule(Use b-and-c)((Rule Conj_elim1((Rule Close())))))))))))(Rule(Use H)((Rule(Cases a b-and-c)((Rule Left((Rule(Use a)((Rule Close())))))(Rule Right((Rule(Use b-and-c)((Rule Conj_elim2((Rule Close())))))))))))))))
 ```
 
 #### Exercise 5
@@ -122,7 +126,8 @@ If `A` or `B` implies `C`, then we know that both `A` implies `C` and `B` implie
 
 ```focused-nd {id=or-ex5}
 (config (assumptions (H "(A \/ B) /\ (A \/ C)"))
-        (goal "A \/ (B /\ C)"))
+        (goal "A \/ (B /\ C)")
+		(solution (Rule(Use H)((Rule Conj_elim1((Rule(Cases a b)((Rule Left((Rule(Use a)((Rule Close())))))(Rule(Use H)((Rule Conj_elim2((Rule(Cases a c)((Rule Left((Rule(Use a)((Rule Close())))))(Rule Right((Rule Split((Rule(Use b)((Rule Close())))(Rule(Use c)((Rule Close())))))))))))))))))))))
 ```
 
 #### Exercise 6
@@ -130,7 +135,8 @@ If `A` or `B` implies `C`, then we know that both `A` implies `C` and `B` implie
 `A` implies `¬¬A`:
 
 ```focused-nd {id=or-ex6}
-(config (goal "A -> ¬ ¬ A"))
+(config (goal "A -> ¬ ¬ A")
+ (solution (Rule(Introduce not-not-a)((Rule(Use excluded-middle)((Rule(Cases a not-a)((Rule(Use a)((Rule Close())))(Rule(Use not-not-a)((Rule NotElim((Rule(Use not-a)((Rule Close())))))))))))))))
 ```
 
 #### Exercise 7
@@ -139,7 +145,8 @@ If we assume `A` or `¬A`, then `¬¬A` implies `A`. (We can't prove `¬¬A → 
 
 ```focused-nd {id=or-ex7}
 (config (assumptions ("excluded-middle" "A \/ ¬A"))
-        (goal "¬¬A -> A"))
+        (goal "¬¬A -> A")
+		(solution (Rule(Introduce not-not-a)((Rule(Use excluded-middle)((Rule(Cases a not-a)((Rule(Use a)((Rule Close())))(Rule(Use not-not-a)((Rule NotElim((Rule(Use not-a)((Rule Close())))))))))))))))
 ```
 
 #### Exercise 8
@@ -147,11 +154,13 @@ If we assume `A` or `¬A`, then `¬¬A` implies `A`. (We can't prove `¬¬A → 
 `A → F` implies `¬A`, which demonstrates one direction of the equivalence between them.
 
 ```focused-nd {id=or-ex8a}
-(config (goal "(A -> F) -> ¬A"))
+(config (goal "(A -> F) -> ¬A")
+ (solution (Rule(Introduce a-implies-F)((Rule(NotIntro H)((Rule(Use a-implies-F)((Rule Implies_elim((Rule(Use H)((Rule Close())))(Rule Close())))))))))))
 ```
 
 and `¬A` implies `A → F`, which demonstrates the other direction.
 
 ```focused-nd {id=or-ex8b}
-(config (goal "¬A -> (A -> F)"))
+(config (goal "¬A -> (A -> F)")
+ (solution (Rule(Introduce not-a)((Rule(Introduce a)((Rule(Use not-a)((Rule NotElim((Rule(Use a)((Rule Close())))))))))))))
 ```

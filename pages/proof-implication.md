@@ -57,41 +57,48 @@ These rules apply when there is a formula in focus. These rules either act upon 
 ### Exercise 1
 
 ```focused-nd {id=implies-ex1}
-(config (goal "A -> A"))
+(config (goal "A -> A")
+ (solution (Rule(Introduce a)((Rule(Use a)((Rule Close())))))))
 ```
 
 ### Exercise 2
 
 ```focused-nd {id=implies-ex2}
-(config (goal "(A /\ B) -> (B /\ A)"))
+(config (goal "(A /\ B) -> (B /\ A)")
+ (solution (Rule(Introduce a-and-b)((Rule Split((Rule(Use a-and-b)((Rule Conj_elim2((Rule Close())))))(Rule(Use a-and-b)((Rule Conj_elim1((Rule Close())))))))))))
 ```
 
 ### Exercise 3
 
 ```focused-nd {id=implies-ex3}
-(config (goal "((A /\ B) -> C) -> A -> B -> C"))
+(config (goal "((A /\ B) -> C) -> A -> B -> C")
+ (solution (Rule(Introduce ab-implies-c)((Rule(Introduce a)((Rule(Introduce b)((Rule(Use ab-implies-c)((Rule Implies_elim((Rule Split((Rule(Use a)((Rule Close())))(Rule(Use b)((Rule Close())))))(Rule Close())))))))))))))
 ```
 
 ### Exercise 4
 
 ```focused-nd {id=implies-ex4}
-(config (goal "(A -> B -> C) -> (A /\ B) -> C"))
+(config (goal "(A -> B -> C) -> (A /\ B) -> C")
+ (solution (Rule(Introduce a-implies-b-implies-c)((Rule(Introduce a-and-b)((Rule(Use a-implies-b-implies-c)((Rule Implies_elim((Rule(Use a-and-b)((Rule Conj_elim1((Rule Close())))))(Rule Implies_elim((Rule(Use a-and-b)((Rule Conj_elim2((Rule Close())))))(Rule Close())))))))))))))
 ```
 
 ### Exercise 5
 
 ```focused-nd {id=implies-ex5}
-(config (goal "(A -> B) -> (B -> C) -> (A -> C)"))
+(config (goal "(A -> B) -> (B -> C) -> (A -> C)")
+ (solution (Rule(Introduce a-implies-b)((Rule(Introduce b-implies-c)((Rule(Introduce a)((Rule(Use b-implies-c)((Rule Implies_elim((Rule(Use a-implies-b)((Rule Implies_elim((Rule(Use a)((Rule Close())))(Rule Close())))))(Rule Close())))))))))))))
 ```
 
 ### Exercise 6
 
 ```focused-nd {id=implies-ex6}
-(config (goal "(A /\ B /\ C) -> ((A /\ B) /\ C)"))
+(config (goal "(A /\ B /\ C) -> ((A /\ B) /\ C)")
+ (solution (Rule(Introduce a-and-b-and-c)((Rule Split((Rule Split((Rule(Use a-and-b-and-c)((Rule Conj_elim1((Rule Close())))))(Rule(Use a-and-b-and-c)((Rule Conj_elim2((Rule Conj_elim1((Rule Close())))))))))(Rule(Use a-and-b-and-c)((Rule Conj_elim2((Rule Conj_elim2((Rule Close())))))))))))))
 ```
 
 ### Exercise 7
 
 ```focused-nd {id=implies-ex7}
-(config (goal "(A /\ B) -> (B -> C) -> (A /\ C)"))
+(config (goal "(A /\ B) -> (B -> C) -> (A /\ C)")
+ (solution (Rule(Introduce a-and-b)((Rule(Introduce b-implies-c)((Rule Split((Rule(Use a-and-b)((Rule Conj_elim1((Rule Close())))))(Rule(Use b-implies-c)((Rule Implies_elim((Rule(Use a-and-b)((Rule Conj_elim2((Rule Close())))))(Rule Close())))))))))))))
 ```

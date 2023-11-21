@@ -77,47 +77,54 @@ Writing out formal proofs on paper is extremely tedious, so I have written an on
    ```focused-nd {id=nd-intro-1}
    (config
     (assumptions (H "A"))
-	(goal "A"))
+	(goal "A")
+	(solution (Rule(Use H)((Rule Close())))))
    ```
 
 2. A and B entails `A /\ B`
    ```focused-nd {id=nd-intro-2}
     (config
 	 (assumptions (H1 A) (H2 B))
-     (goal "A /\ B"))
+     (goal "A /\ B")
+	 (solution (Rule Split((Rule(Use H1)((Rule Close())))(Rule(Use H2)((Rule Close())))))))
     ```
 
 3. `A /\ B` entails `A /\ B`
    ```focused-nd {id=nd-intro-3}
    (config
     (assumptions (H "A /\ B"))
-    (goal "A /\ B"))
+    (goal "A /\ B")
+	(solution (Rule Split((Rule(Use H)((Rule Conj_elim1((Rule Close())))))(Rule(Use H)((Rule Conj_elim2((Rule Close())))))))))
    ```
 
 4. `A /\ B` entails `B /\ A`
    ```focused-nd {id=nd-intro-4}
    (config
     (assumptions (H "A /\ B"))
-    (goal "B /\ A"))
+    (goal "B /\ A")
+	(solution (Rule Split((Rule(Use H)((Rule Conj_elim2((Rule Close())))))(Rule(Use H)((Rule Conj_elim1((Rule Close())))))))))
    ```
 
 5. Anything entails `T`
    ```focused-nd {id=nd-intro-5}
    (config
     (assumptions (H "A"))
-    (goal "T"))
+    (goal "T")
+	(solution (Rule Truth())))
    ```
 
 6. True on the right:
    ```focused-nd {id=nd-intro-6}
    (config
     (assumptions (H "A"))
-    (goal "A /\ T"))
+    (goal "A /\ T")
+	(solution (Rule Split((Rule(Use H)((Rule Close())))(Rule Truth())))))
    ```
 
 7. True on the left:
    ```focused-nd {id=nd-intro-7}
    (config
     (assumptions (H "A"))
-    (goal "T /\ A"))
+    (goal "T /\ A")
+	(solution (Rule Split((Rule Truth())(Rule(Use H)((Rule Close())))))))
    ```
