@@ -20,6 +20,7 @@ depends: [
   "omd"
   "parser_util"
   "ppx_monoid"
+  "ppx_deriving"
 ]
 pin-depends: [
   [ "ulmus.~dev"

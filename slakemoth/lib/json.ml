@@ -5,6 +5,7 @@ type json =
   | JArray of json list
   | JNull
   | JObject of (string * json) list
+[@@deriving compare]
 
 module Printing = struct
   let pp_comma = Fmt.(styled `Bold comma)

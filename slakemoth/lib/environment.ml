@@ -3,6 +3,11 @@ open Ast
 type domain_info =
   { constructors : string list }
 
+module DomainInfo = struct
+  let equal di1 di2 =
+    List.equal String.equal di1.constructors di2.constructors
+end
+
 type defn =
   | Defined of
       { args : (name * name) list

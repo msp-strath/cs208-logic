@@ -348,7 +348,43 @@ let assignment_of_solver : Solver.t -> (string,Solver.v) Hashtbl.t -> (module AS
   in
   (module A)
 
-(* FIXME: split these out into individual functions *)
+let all_sat env term json_term =
+  let solver = Solver.create () in
+  let atom_table = Hashtbl.create 1024 in
+  let module E = Eval (val (assignment_of_solver solver atom_table)) in
+  let clauses = E.to_clauses (E.eval env E.empty_local_env term) in
+  List.iter (Solver.add_clause solver) clauses;
+  let rec loop jsons =
+    match Solver.solve solver with
+    | `UNSAT -> List.rev jsons
+    | `SAT vals ->
+       let vals x = match vals x with
+         | true -> true
+         | false -> false
+         | exception Msat_sat.UndecidedLit -> true
+       in
+       let module A = struct
+           type atom
+           let eval_atom nm args =
+             let str = mk_atom_str nm args in
+             match Hashtbl.find atom_table str with
+             | exception Not_found -> True (* FIXME: warn arbitrary *)
+             | a -> if vals a then True else False
+         end
+       in
+       let module E2 = Eval (A) in
+       let json = E2.to_json (E2.eval env E2.empty_local_env json_term) in
+       let anti_clause =
+         Hashtbl.fold (fun _ v -> List.cons (not (vals v), v)) atom_table []
+       in
+       Solver.add_clause solver anti_clause;
+       loop (json::jsons)
+  in
+  loop []
+
+
+(* FIXME: split these out into individual functions, and make them
+   return the *)
 let execute_command fmt = function
   | Dump_Clauses (env, term) ->
      (let clauses = EvalSymb.(to_clauses (eval env empty_local_env term)) in
@@ -385,40 +421,8 @@ let execute_command fmt = function
          Format.fprintf fmt "@[<v0>%a@]@\n"
            Json.Printing.pp json)
   | AllSat (env, term, json_term) ->
-     let solver = Solver.create () in
-     let atom_table = Hashtbl.create 1024 in
-     let module E = Eval (val (assignment_of_solver solver atom_table)) in
-     let clauses = E.to_clauses (E.eval env E.empty_local_env term) in
-     List.iter (Solver.add_clause solver) clauses;
-     let rec loop () =
-       match Solver.solve solver with
-       | `UNSAT -> ()
-       | `SAT vals ->
-          let vals x = match vals x with
-            | true -> true
-            | false -> false
-            | exception Msat_sat.UndecidedLit -> true
-          in
-          let module A = struct
-                type atom
-                let eval_atom nm args =
-                  let str = mk_atom_str nm args in
-                  match Hashtbl.find atom_table str with
-                  | exception Not_found -> True (* FIXME: warn arbitrary *)
-                  | a -> if vals a then True else False
-            end
-          in
-          let module E2 = Eval (A) in
-          let json = E2.to_json (E2.eval env E2.empty_local_env json_term) in
-          Format.fprintf fmt "@[<v0>%a@]@\n"
-            Json.Printing.pp json;
-          let anti_clause =
-            Hashtbl.fold (fun _ v -> List.cons (not (vals v), v)) atom_table []
-          in
-          Solver.add_clause solver anti_clause;
-          loop ()
-     in
-     loop ()
+     let jsons = all_sat env term json_term in
+     List.iter (Format.fprintf fmt "@[<v0>%a@]@\n" Json.Printing.pp) jsons
   | Print (env, term) ->
      let json = EvalSymb.(to_json (eval env empty_local_env term)) in
      Format.fprintf fmt "@[<v0>%a@]@\n"
