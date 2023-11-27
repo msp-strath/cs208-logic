@@ -136,12 +136,46 @@ A ∨ B ∧ ¬ A
 Depending on how we group the connectives, we could have either:
 1. This tree:
    ```pikchr
-   box "FIXME"
+   X1: circle "∨" fit
+   move down left 0.5cm from X1.sw
+   A1: box "A" fit
+   move down right 0.5cm from X1.se
+   X2: circle "∧" fit
+   move down left 0.5cm from X2.sw
+   B: box "B" fit
+   move down right 0.5cm from X2.se
+   X3: circle "¬" fit
+   move down from X3.s
+   A2: box "A" fit
+   arrow from X1.sw to A1.n
+   arrow from X1.se to X2.n
+   arrow from X2.sw to B.n
+   arrow from X2.se to X3.n
+   arrow from X3.s to A2.n
    ```
+   Corresponding to the grouping A ∨ (B ∧ (¬ A)).
+
 2. Or this tree:
    ```pikchr
-   box "FIXME2"
+   X2: circle "∧" fit
+   move down left 0.5cm from X2.sw
+   X1: circle "∨" fit
+   move down left 0.5cm from X1.sw
+   A1: box "A" fit
+   move down right 0.5cm from X1.se
+   B: box "B" fit
+   move down right 0.5cm from X2.se
+   X3: circle "¬" fit
+   move down from X3.s
+   A2: box "A" fit
+   arrow from X2.sw to X1.n
+   arrow from X1.se to B.n
+   arrow from X1.sw to A1.n
+   arrow from X2.se to X3.n
+   arrow from X3.s to A2.n
    ```
+
+   Corresponding to the grouping (A ∨ B) ∧ (¬ A).
 
 We could always put in parentheses around every connective to disambiguate which one we mean.  The first tree can be written `((A ∨ B) ∧ (¬ A))` and the second can be written `(A ∨ (B ∧ (¬ A)))`. However, writing lots of parentheses is messy, and you spend a lot of time counting to make sure you've got enough.
 
