@@ -1,5 +1,7 @@
 # Resource Allocation Problems
 
+TBD: Some commentary
+
 ```lmt
 domain colour { Red, Green, Blue }
 domain node { N1, N2, N3, N4, N5 }
