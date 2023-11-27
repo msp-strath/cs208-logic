@@ -74,4 +74,4 @@ In Part 2, we strive for truth through proof. We will be using an interactive pr
 
 12. **Under construction** [Undecidability of the Halting Problem](halting-problem.html). One of the foundational results of Computer Science is that there is no program which can reliably tell if another program will halt on a given input. This page goes through a formal proof of this fact.
 
-13. **Under construction** [Metatheory and Gödel's Incompleteness Theorem](metatheory-automation.html). If we as humans can construct proofs, then could we get a computer to do it? What are the limits of what we can prove?
+13. [Metatheory and Gödel's Incompleteness Theorem](metatheory-automation.html). If we as humans can construct proofs, then could we get a computer to do it? What are the limits of what we can prove?
