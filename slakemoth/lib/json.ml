@@ -1,14 +1,27 @@
-type json =
+type t =
   | JString of string
   | JBool of bool
   | JInt of int
-  | JArray of json list
+  | JArray of t list
   | JNull
-  | JObject of (string * json) list
-[@@deriving compare]
+  | JObject of (string * t) list
+[@@deriving ord]
 
 module Printing = struct
   let pp_comma = Fmt.(styled `Bold comma)
+
+  let rec to_string = function
+    | JString str -> Printf.sprintf "%S" str
+    | JBool b -> Printf.sprintf "%b" b
+    | JInt i -> string_of_int i
+    | JArray jsons ->
+       "[" ^ String.concat ", " (List.map to_string jsons) ^ "]"
+    | JNull -> "null"
+    | JObject obj ->
+       let field_to_string (nm, json) =
+         Printf.sprintf "%S: %s" nm (to_string json)
+       in
+       "{" ^ String.concat ", " (List.map field_to_string obj) ^ "}"
 
   (* FIXME: move to a Utf8_string module *)
   let json_escape fmt s =

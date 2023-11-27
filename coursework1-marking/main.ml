@@ -128,6 +128,15 @@ let check_contains (env1, constraints1) (env2, constraints2) =
 
 (* FIXME: for question4c, check that the answer produced matches the spec *)
 
+let q4c_filter =
+  let open Slakemoth.Json in
+  function
+  | JObject fields ->
+     JObject (List.filter
+                (fun (nm, _) -> nm = "Input1" || nm = "Input2" || nm = "Input3")
+                fields)
+  | json -> json
+
 let do_question specimen submission question_id =
   let* expected =
     List.assoc_opt question_id specimen
@@ -147,7 +156,7 @@ let do_question specimen submission question_id =
      let expected = Evaluator.all_sat expected_env expected_constraints expected_json in
      let submitted = Evaluator.all_sat sub_env sub_constraints sub_json in
      if expected = submitted then Ok ()
-     else Error `Solution_mismatch
+     else Error (`Solution_mismatch (expected, submitted))
      (* let expected = (expected_env, expected_constraints) in *)
      (* let submitted = (submitted_env, submitted_constraints) in *)
      (* (\* FIXME: Check that the environments agree on the domain *)
@@ -163,6 +172,9 @@ let do_question specimen submission question_id =
      Error `Missing_allsat
   | _ ->
      Error `Dont_match
+
+let list_to_string p l =
+  String.concat " " (List.map p l)
 
 let () =
   let specimen = Sys.argv.(1) in
@@ -189,7 +201,9 @@ let () =
          Printf.printf "%s: NOT ENOUGH SOLUTIONS\n" question_id
       | Error `Too_many_solutions ->
          Printf.printf "%s: TOO MANY SOLUTIONS\n" question_id
-      | Error `Solution_mismatch ->
-         Printf.printf "%s: SOLUTION_MISMATCH\n" question_id
+      | Error `Solution_mismatch (expected, submitted) ->
+         Printf.printf "%s: SOLUTION_MISMATCH\n Expected:  %s\n Submitted: %s\n" question_id
+           (list_to_string Slakemoth.Json.Printing.to_string expected)
+           (list_to_string Slakemoth.Json.Printing.to_string submitted)
     )
     questions

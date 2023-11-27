@@ -1,5 +1,4 @@
 open Ast
-open Json
 open Environment
 
 type 'a assignment =
@@ -28,9 +27,9 @@ module Eval (Assignment : ASSIGNMENT) = struct
     | VLiteral of literal
     | VClause  of literal list
     | VClauses of literal list list
-    | VJson of json
-    | VJsons of json list
-    | VAssignments of (string * json) list
+    | VJson of Json.t
+    | VJsons of Json.t list
+    | VAssignments of (string * Json.t) list
     | VEmptySequence
 
   exception Evaluation_error of string
@@ -111,8 +110,8 @@ module Eval (Assignment : ASSIGNMENT) = struct
 
   let to_json v =
     match v.detail with
-    | VTrue -> JBool true
-    | VFalse -> JBool false
+    | VTrue -> Json.JBool true
+    | VFalse -> Json.JBool false
     | VLiteral _ | VClause _ | VClauses _ -> raise (Evaluation_error "undetermined result")
     | VJson j -> j
     | VString s -> JString s
