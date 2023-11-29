@@ -1,5 +1,5 @@
 (executable
  (name main)
- (libraries generalities slakemoth)
+ (libraries generalities slakemoth omd)
  (flags
   (:standard -w -32)))

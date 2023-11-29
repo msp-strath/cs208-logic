@@ -347,6 +347,22 @@ let assignment_of_solver : Solver.t -> (string,Solver.v) Hashtbl.t -> (module AS
   in
   (module A)
 
+let assignment_of_vals atom_table vals =
+  let module A = struct
+      type atom = unit
+      let eval_atom nm args =
+        let str = mk_atom_str nm args in
+        match Hashtbl.find atom_table str with
+        | exception Not_found -> True (* FIXME: warn arbitrary *)
+        | a ->
+           (match vals a with
+            | true -> True
+            | false -> False
+            | exception Msat_sat.UndecidedLit -> True (* FIXME: warn arbitrary *))
+    end
+  in
+  (module A : ASSIGNMENT with type atom = unit)
+
 let all_sat env term json_term =
   let solver = Solver.create () in
   let atom_table = Hashtbl.create 1024 in
@@ -357,21 +373,7 @@ let all_sat env term json_term =
     match Solver.solve solver with
     | `UNSAT -> List.rev jsons
     | `SAT vals ->
-       let vals x = match vals x with
-         | true -> true
-         | false -> false
-         | exception Msat_sat.UndecidedLit -> true
-       in
-       let module A = struct
-           type atom
-           let eval_atom nm args =
-             let str = mk_atom_str nm args in
-             match Hashtbl.find atom_table str with
-             | exception Not_found -> True (* FIXME: warn arbitrary *)
-             | a -> if vals a then True else False
-         end
-       in
-       let module E2 = Eval (A) in
+       let module E2 = Eval (val (assignment_of_vals atom_table vals)) in
        let json = E2.to_json (E2.eval env E2.empty_local_env json_term) in
        let anti_clause =
          Hashtbl.fold (fun _ v -> List.cons (not (vals v), v)) atom_table []
@@ -401,21 +403,7 @@ let execute_command fmt = function
       | `UNSAT ->
          Format.fprintf fmt "null@\n"
       | `SAT vals ->
-         let vals x = match vals x with
-           | true -> true
-           | false -> false
-           | exception Msat_sat.UndecidedLit -> true (* FIXME: warn arbitrary *)
-         in
-         let module A = struct
-             type atom
-             let eval_atom nm args =
-               let str = mk_atom_str nm args in
-               match Hashtbl.find atom_table str with
-               | exception Not_found -> True (* FIXME: warn arbitrary *)
-               | a -> if vals a then True else False
-           end
-         in
-         let module E2 = Eval (A) in
+         let module E2 = Eval (val (assignment_of_vals atom_table vals)) in
          let json = E2.to_json (E2.eval env E2.empty_local_env json_term) in
          Format.fprintf fmt "@[<v0>%a@]@\n"
            Json.Printing.pp json)

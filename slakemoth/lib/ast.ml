@@ -7,6 +7,7 @@ type 'a with_location =
 
 type constructor_name = string
 type name = string
+[@@deriving eq]
 
 module NameMap = Map.Make (String)
 
@@ -37,6 +38,16 @@ type term_detail =
   | Assign of term * term
 
 and term = term_detail with_location
+
+module Gen = struct
+  let or_ terms =
+    { detail = Or terms; location = Location.generated }
+  let atom nm =
+    { detail = Apply ({ detail = nm; location = Location.generated }, [])
+    ; location = Location.generated
+    }
+end
+
 
 type param_spec =
   (name with_location * name with_location) list
