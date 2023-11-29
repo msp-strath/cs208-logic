@@ -45,7 +45,7 @@ For each of the questions, please read it carefully and then fill in the part th
 
 Replace `you_fill_this_in` with the necessary constraints to express that *at least one* of `a`, `b`, `c`, or `d` is true.
 
-```lmt {id=cw1-question1a}
+```lmt {id=sol-cw1-question1a}
 atom a
 atom b
 atom c
@@ -59,7 +59,7 @@ allsat (a | b | c | d)
 
 Replace `you_fill_this_in` with the necessary constraints to express that *exactly one* of `a`, `b`, `c`, or `d` is true.
 
-```lmt {id=cw1-question1b}
+```lmt {id=sol-cw1-question1b}
 atom a
 atom b
 atom c
@@ -79,7 +79,7 @@ allsat ((a | b | c | d) &
 
 Replace `you_fill_this_in` with the necessary constraints to express that *exactly two* of `a`, `b`, and `c` are true.
 
-```lmt {id=cw1-question1c}
+```lmt {id=sol-cw1-question1c}
 atom a
 atom b
 atom c
@@ -113,7 +113,7 @@ Fill in the parts marked `fill_this_in` as follows:
    5. `GitServer` depends on `Database2`
 5. Complete `requirements` to express that `ChatServer` and `GitServer` must be installed.
 
-```lmt {id=cw1-question2}
+```lmt {id=sol-cw1-question2}
 domain package {
   ChatServer, MailServer1, MailServer2,
   Database1, Database2, GitServer
@@ -181,7 +181,7 @@ This question is about resource allocation using logical modelling, as described
 
 Edit the code below to add constraints to encode these additional properties, so that the computer finds a satisfying valuation. The `all_tasks_some_machine`, `all_tasks_one_machine` and `separate_machines` parts have already been filled in. You will need to fill in all the bits that say `fill_this_in`.
 
-```lmt {id=cw1-question3}
+```lmt {id=sol-cw1-question3}
 domain machine { M1, M2, M3 }
 domain task { T1, T2, T3, T4, T5 }
 
@@ -197,7 +197,7 @@ define all_tasks_one_machine {
   forall(t : task)
     forall(m1: machine)
       forall(m2 : machine)
-        m1 = m1 | ~assign(t,m1) | ~assign(t,m2)
+        m1 = m2 | ~assign(t,m1) | ~assign(t,m2)
 }
 
 define separate_machines(task1 : task, task2 : task) {
@@ -236,7 +236,7 @@ allsat(main)
   }
 ```
 
-There should be four solutions.
+There should be two solutions.
 
 ### Question 4 (8 marks)
 
@@ -257,7 +257,7 @@ Encode the XOR operation has a collection of constraints. The satisfying valuati
 
 *Hint:* Try writing calculating how to represent the equation `Output = Input1 XOR Input2` as clauses, as we did for the `AND`, `OR`, and `NOT` in the Tseytin transformation. You'll need to have a formula that expresses `XOR` in terms of `&`, `|` and `¬` before you can simplify.
 
-```lmt {id=cw1-question4a}
+```lmt {id=sol-cw1-question4a}
 domain node { Input1, Input2, Output }
 
 atom active(n : node)
@@ -291,7 +291,7 @@ As a truth table, a half adder acts as follows, where the first two columns are 
 
 Using your `xor` circuit and an `and`, write a definition that encodes a half adder circuit. The output from this problem should be exactly the truth table for the half-adder (again, in some order).
 
-```lmt {id=cw1-question4b}
+```lmt {id=sol-cw1-question4b}
 domain node { I1, I2, S, Cout }
 
 atom active(n : node)
@@ -327,7 +327,7 @@ Using two half adders and an `OR` to create a full adder, create a circuit with 
 
 By adding additional constraints on the output nodes of the circuit, constrain the problem so that the solutions are all those for which 2 of the 3 inputs are true.
 
-```lmt {id=cw1-question4c}
+```lmt {id=sol-cw1-question4c}
 // You will have to add extra nodes for your circuit
 domain node { Input1, Input2, Input3, X, Y, Z, Out1, Out2 }
 
