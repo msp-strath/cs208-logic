@@ -1,6 +1,6 @@
 [Contents](contents.html)
 
-# CS208 Coursework 1
+# CS208 Coursework 1 (SOLUTION)
 
 ## Logical Modelling
 
