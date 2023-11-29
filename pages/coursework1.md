@@ -1,5 +1,7 @@
 # CS208 Coursework 1
 
+[Link to specimen solution](coursework1_solution.html)
+
 ## Logical Modelling
 
 This is the first coursework for semester one of CS208 *Logic and
