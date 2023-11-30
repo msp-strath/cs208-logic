@@ -170,7 +170,22 @@ tx3tgpzZPqo
    ````details
    Answer...
 
-   TBD
+   In terms of equations, we get:
+
+   ```
+   x₁ = x₂ ∨ x₃
+   x₂ = a ∧ b
+   x₃ = c ∧ d
+   ```
+
+   Applying the translations from equations to clauses, we get:
+
+   ```
+     (x₂ ∨ x₃ ∨ ¬x₁) ∧ (¬x₂ ∨ x₁) ∧ (¬x₃ ∨ x₁)   { equation 1 }
+   ∧ (¬a ∨ ¬b ∨ x₂) ∧ (a ∨ ¬x₂) ∧ (b ∨ ¬x₂)      { equation 2 }
+   ∧ (¬c ∨ ¬d ∨ x₃) ∧ (c ∨ ¬x₃) ∧ (d ∨ ¬x₃)      { equation 3 }
+   ∧ x₁                                          { to assert that the whole formula is true }
+   ```
    ````
 
 2. Explain what the relationship between the values of `x`, `y` and `z` are when we have a valuation that makes all the clauses for the Tseytin translation of `∧` satisfied. Similarly for `∨` and `¬`.
@@ -178,7 +193,13 @@ tx3tgpzZPqo
    ````details
    Answer...
 
-   TBD
+   If we have a valuation `v` that makes
+   ```
+   (¬ y ∨ ¬ z ∨ x) ∧ (y ∨ ¬ x) ∧ (z ∨ ¬ x)
+   ```
+   satisfied, then it is the case that `〚y ∧ z〛v = 〚x〛v`. In other words, the clauses are satisified whenever the value of `x` is equal to the value of `y ∧ z`. The reverse is also true: if we have a `v` such that `〚y ∧ z〛v = 〚x〛v`, then the clauses above are satisfied.
+
+   Similarly, the clauses for `∨` are satisfied exactly when the value of `x` is equal to the value of `y ∨ z`, and the clauses for `¬` are satisified exactly when `x = ¬ y`.
    ````
 
 3. What is the relationship between the Tseytin transformed formula
@@ -187,13 +208,58 @@ tx3tgpzZPqo
    ````details
    Answer...
 
-   TBD
+   If we convert a formula `P` to a collection of clauses `C₁, ..., Cₖ`, with `x₁` as the name of the top-level part of `P`, then the formula
+   ```
+	 C₁ ∧ ... ∧ Cₖ
+   ```
+   is satisfied by a valuation `v` exactly when `〚P〛v = 〚x₁〛v`.
+
+   Therefore, if the formula
+   ```
+   C₁ ∧ ... ∧ Cₖ ∧ x₁
+   ```
+   is satisfied by a valuation `v`, then `〚P〛v = ⊤`.
+
+   In the other direction, if we have a valuation `v` such that `〚P〛v = ⊤`, then *there exists* a valuation `v₂` such that `〚 C₁ ∧ ... ∧ Cₖ ∧ x₁〛v₂ = ⊤`. The valuation `v₂` extends `v` by adding the truth values for the extra atoms generated during the Tseytin translation.
+
+   Because the original formula `P` and its Tseytin translation are not satisfied by exactly the same valuations, they are not *equivalent*. But because we can translate satisfying valuations in both directions, we can say that they are *equi-satisfiable*.
    ````
 
-4. Let's say that we have an equation like `x = x₁ ∧ x₂ ∧ ... ∧ xₖ`. How could we convert this to fewer clauses than the approach described above?  Similarly for `x = x₁ ∨ ... ∨ xₖ`.
+4. Let's say that we have an equation like `x = x₁ ∧ x₂ ∧ ... ∧ xₖ`. How could we convert this to fewer clauses than the approach described above?  Similarly for `x = x₁ ∨ ... ∨ xₖ`?
 
    ````details
    Answer...
 
-   TBD
+   For the equation `x = x₁ ∧ x₂ ∧ ... ∧ xₖ`, we could write:
+   ```
+   (¬ x₁ ∨ ¬ x₂ ∨ ... ¬ xₖ ∨ x) ∧ (x₁ ∨ ¬ x) ∧ ... ∧ (xₖ ∨ ¬ x)
+   ```
+   Why? We can compute this in the same way as we did in the videos for the binary equations.
+
+   The equation `x = x₁ ∧ x₂ ∧ ... ∧ xₖ` can be written as an AND of two implications:
+   ```
+   ((x₁ ∧ x₂ ∧ ... ∧ xₖ) → x) ∧ (x → (x₁ ∧ x₂ ∧ ... ∧ xₖ))
+   ```
+   We use the equivalence `P → Q ≡ ¬P ∨ Q` to get:
+   ```
+   (¬(x₁ ∧ x₂ ∧ ... ∧ xₖ) ∨ x) ∧ (¬x ∨ (x₁ ∧ x₂ ∧ ... ∧ xₖ))
+   ```
+   In the first half, we use the de Morgan law to push the `¬` down through the `∧`s to get:
+   ```
+   (¬x₁ ∨ ¬x₂ ∨ ... ∨ ¬xₖ ∨ x) ∧ (¬x ∨ (x₁ ∧ x₂ ∧ ... ∧ xₖ))
+   ```
+   In the second half, we have to “multiply out the brackets” to get:
+   ```
+   (¬x₁ ∨ ¬x₂ ∨ ... ∨ ¬xₖ ∨ x) ∧ (¬x ∨ x₁) ∧ (¬x ∨ x₂) ∧ ... ∧ (¬x ∨ xₖ)
+   ```
+   as above.
+
+   Note that this gives us `1+k` clauses. If we did the conversion naively using just binary equations as above, we would end up with many more clauses.
+
+   By similar reasoning, we get the following clauses for `x = x₁ ∨ ... xₖ`:
+   ```
+   (x₁ ∨ ... ∨ xₖ ∨ ¬ x) ∧ (¬ x₁ ∨ x) ∧ ... ∧ (¬ xₖ ∨ x)
+   ```
+
+   In fact, we can take any equation `x = E` and convert it directly to clauses and then use that in the Tseytin conversion. In some cases, this will be more efficient than doing each connective individually.
    ````
