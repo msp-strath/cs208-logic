@@ -78,33 +78,9 @@ let focusing ?name ?assumps_name ?(assumptions = []) ?solution formula =
     end in
   (module Component : Ulmus.PERSISTENT)
 
-let config_p =
-  let open Generalities.Sexp_parser in
-  let formula =
-    let+? str = atom in
-    Result.map_error
-      (function `Parse e -> Parser_util.Driver.string_of_error e)
-      (Fol_formula.Formula.of_string str)
-  in
-  let assumption_p =
-    sequence
-      (let* name       = consume_next atom in
-       let* assumption = consume_next formula in
-       let* ()         = assert_nothing_left in
-       return (name, `F assumption))
-  in
-
-  tagged "config"
-    (let* assumptions = consume_opt "assumptions" (many assumption_p) in
-     let* assumps_nm  = consume_opt "assumptions-name" (one atom) in
-     let* goal        = consume_one "goal" (one formula) in
-     let* solution    = consume_opt "solution" (one sexp) in
-     let  assumptions = Option.value ~default:[] assumptions in
-     return (assumptions, assumps_nm, goal, solution))
-
 let focusing_component config =
-  match config_p (Sexplib.Sexp.of_string config) with
-  | Ok (assumptions, assumps_name, goal, solution) ->
+  match Focused_config.config_p (Sexplib.Sexp.of_string config) with
+  | Ok (_, assumptions, assumps_name, goal, solution) ->
      focusing ~assumptions ?assumps_name ?solution goal
   | Error err ->
      let detail = Generalities.Annotated.detail err in
@@ -112,8 +88,8 @@ let focusing_component config =
      Widgets.Error_display.component message
 
 let tree_component config =
-  match config_p (Sexplib.Sexp.of_string config) with
-  | Ok (_assumptions, _, goal, _) ->
+  match Focused_config.config_p (Sexplib.Sexp.of_string config) with
+  | Ok (_, _assumptions, _, goal, _) ->
      (* FIXME: assumptions? *)
      (module Proof_tree_UI2.Make
                (Focused_ui2)

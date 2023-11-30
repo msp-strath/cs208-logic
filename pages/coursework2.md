@@ -41,8 +41,9 @@ The following questions all use the rules for [“for all” and “exists”](p
 
 “If every time there is a path from x to y, there is a path from y to x, and there is no path from a() to b(), then there is no path from b() to a().”
 
-```focused-nd {id=cw2-1a}
+```focused-nd {id=cw2-1a marks=1}
 (config
+ (name "Question 1(a)")
  (assumptions
   (symmetry "all x. all y. path(x,y) -> path(y,x)"))
  (goal "¬path(a(),b()) -> ¬path(b(),a())"))
@@ -52,8 +53,9 @@ The following questions all use the rules for [“for all” and “exists”](p
 
 “If every time there is a path from x to y, there is a path from y to x, and every x has a path to somewhere, then every x has a path to it.”
 
-```focused-nd {id=cw2-1b}
+```focused-nd {id=cw2-1b marks=1}
 (config
+ (name "Question 1(b)")
  (assumptions
   (symmetry "all x. all y. path(x,y) -> path(y,x)"))
  (goal "(all x. ex y. path(x,y)) -> (all x. ex y. path(y,x))"))
@@ -63,8 +65,9 @@ The following questions all use the rules for [“for all” and “exists”](p
 
 “If every time there is path from x to y and a path from y to z, there is a path from x to z, then if there is a path from a() to b() and a path from b() to c(), there is a path from a() to c().”
 
-```focused-nd {id=cw2-1c}
+```focused-nd {id=cw2-1c marks=1}
 (config
+ (name "Question 1(c)")
  (assumptions
   (transitivity "all x. all y. all z. path(x,y) -> path(y,z) -> path(x,z)"))
  (goal "path(a(),b()) -> path(b(),c()) -> path(a(),c())"))
@@ -74,8 +77,9 @@ The following questions all use the rules for [“for all” and “exists”](p
 
 “If every time there is path from x to y and a path from y to z, there is a path from x to z, and if every time there is a path from x to y there is a path from y to x, and every x has a path to some y, then for all z, there is a path from z to z.”
 
-```focused-nd {id=cw2-1d}
+```focused-nd {id=cw2-1d marks=1}
 (config
+ (name "Question 1(d)")
  (assumptions
   (transitivity "all x. all y. all z. path(x,y) -> path(y,z) -> path(x,z)")
   (symmetry "all x. all y. path(x,y) -> path(y,x)"))
@@ -86,8 +90,9 @@ The following questions all use the rules for [“for all” and “exists”](p
 
 “If, for all x and y there is either a path from x to y or a path from y to x, and there is no path from a() to b(), then there is a path from b() to a().”
 
-```focused-nd {id=cw2-1e}
+```focused-nd {id=cw2-1e marks=1}
 (config
+ (name "Question 1(e)")
  (assumptions
   (either-path "∀x. ∀y. path(x, y) ∨ path(y, x)"))
  (goal "¬path(a(), b()) → path(b(), a())"))
@@ -97,8 +102,9 @@ The following questions all use the rules for [“for all” and “exists”](p
 
 “If, for all x and y there is either a path from x to y or a path from y to x, and for every x and y, if there is a path from x to y there is a path from y to x, then for all x and y, there is a path from x to y.”
 
-```focused-nd {id=cw2-1f}
+```focused-nd {id=cw2-1f marks=1}
 (config
+ (name "Question 1(f)")
  (assumptions
   (either-path "∀x. ∀y. path(x, y) ∨ path(y, x)")
   (symmetry "all x. all y. path(x,y) -> path(y,x)"))
@@ -111,8 +117,9 @@ The following questions all use the rules for [“for all” and “exists”](p
 
 “If every invoice has a related customer, and there exists an invoice, then there exists a customer.”
 
-```focused-nd {id=cw2-2a}
+```focused-nd {id=cw2-2a marks=1}
 (config
+ (name "Question 2(a)")
  (assumptions
   (every-invoice-has-a-customer "∀i. invoice(i) → (∃c. customer(c) ∧ custInvoice(c, i))")
   (exists-an-invoice "∃i. invoice(i)"))
@@ -123,8 +130,9 @@ The following questions all use the rules for [“for all” and “exists”](p
 
 “If every customer has an invoice, and there is a customer without an invoice, then the Loch Ness Monster exists.”
 
-```focused-nd {id=cw2-2b}
+```focused-nd {id=cw2-2b marks=1}
 (config
+ (name "Question 2(b)")
  (assumptions
   (every-customer-has-an-invoice "∀c. customer(c) → (∃i. invoice(i) ∧ custInvoice(c, i))")
   (exists-customer-without-invoice "∃c. customer(c) ∧ (∀i. invoice(i) → ¬custInvoice(c, i))"))
@@ -137,8 +145,9 @@ The following proofs all use the rules for [equality](equality.md).
 
 ### Question 3(a) (1 mark)
 
-```focused-nd {id=cw2-3a}
+```focused-nd {id=cw2-3a marks=1}
 (config
+ (name "Question 3(a)")
  (goal "∀x. ∀y. ∀z. x = y → y = z → P(x) → P(z)"))
 ```
 
@@ -146,8 +155,9 @@ The following proofs all use the rules for [equality](equality.md).
 
 This question asks you to prove that a mirroring function mirrors a specific input, using the following axioms describing the mirror function:
 
-```focused-nd {id=cw2-3b}
+```focused-nd {id=cw2-3b marks=1}
 (config
+ (name "Question 3(b)")
  (assumptions
   (mirror-leaf "mirror(leaf()) = leaf()")
   (mirror-node "∀x. ∀y. mirror(node(x, y)) = node(mirror(y), mirror(x))"))
@@ -164,8 +174,9 @@ This question and the two following are about a definition of “less than or eq
 
 The first theorem to prove is that everything is less than or equal to itself:
 
-```focused-nd {id=cw2-4a}
+```focused-nd {id=cw2-4a marks=1}
 (config
+ (name "Question 4(a)")
  (assumptions
   (add-zero "∀x. add(x, 0) = x")
   (add-comm "∀x. ∀y. add(x, y) = add(y, x)")
@@ -177,8 +188,9 @@ The first theorem to prove is that everything is less than or equal to itself:
 
 Next, zero is less than or equal to everything:
 
-```focused-nd {id=cw2-4b}
+```focused-nd {id=cw2-4b marks=1}
 (config
+ (name "Question 4(b)")
  (assumptions
   (add-zero "∀x. add(x, 0) = x")
   (add-comm "∀x. ∀y. add(x, y) = add(y, x)")
@@ -190,8 +202,9 @@ Next, zero is less than or equal to everything:
 
 And if x <= y and y <= z, then x <= z (transitivity):
 
-```focused-nd {id=cw2-4c}
+```focused-nd {id=cw2-4c marks=1}
 (config
+ (name "Question 4(c)")
  (assumptions
   (add-zero "∀x. add(x, 0) = x")
   (add-comm "∀x. ∀y. add(x, y) = add(y, x)")
@@ -207,8 +220,9 @@ The following questions all require proofs by [induction using the Peano axioms 
 
 “Every number is even or odd”.
 
-```focused-nd {id=cw2-5a}
+```focused-nd {id=cw2-5a marks=1}
 (config
+ (name "Question 5(a)")
  (assumptions
   (add-zero "∀x. add(0, x) = x")
   (add-succ "∀x. ∀y. add(S(x), y) = S(add(x, y))")
@@ -221,8 +235,9 @@ The following questions all require proofs by [induction using the Peano axioms 
 
 “x*0 = 0”.
 
-```focused-nd {id=cw2-5b}
+```focused-nd {id=cw2-5b marks=1}
 (config
+ (name "Question 5(b)")
  (assumptions
   (add-zero "∀x. add(0, x) = x")
   (add-succ "∀x. ∀y. add(S(x), y) = S(add(x, y))")
@@ -235,8 +250,9 @@ The following questions all require proofs by [induction using the Peano axioms 
 
 “x * (1 + y) = x + (x * y)”.
 
-```focused-nd {id=cw2-5c}
+```focused-nd {id=cw2-5c marks=1}
 (config
+ (name "Question 5(c)")
  (assumptions
   (add-zero "∀x. add(0, x) = x")
   (add-succ "∀x. ∀y. add(S(x), y) = S(add(x, y))")
@@ -251,8 +267,9 @@ The following questions all require proofs by [induction using the Peano axioms 
 
 “if x + y = 0, then x = 0”.
 
-```focused-nd {id=cw2-5d}
+```focused-nd {id=cw2-5d marks=2}
 (config
+ (name "Question 5(d)")
  (assumptions
   (zero-ne-succ "∀x. ¬0 = S(x)")
   (add-zero "∀x. add(0, x) = x")
@@ -264,8 +281,9 @@ The following questions all require proofs by [induction using the Peano axioms 
 
 “if x + y = x, then y = 0”.
 
-```focused-nd {id=cw2-5e}
+```focused-nd {id=cw2-5e marks=2}
 (config
+ (name "Question 5(e)")
  (assumptions
   (succ-injective "∀x. ∀y. S(x) = S(y) → x = y")
   (add-zero "∀x. add(0, x) = x")
