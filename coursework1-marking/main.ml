@@ -385,23 +385,35 @@ module To_markdown = struct
     Buffer.contents b
 end
 
+let do_submission dirname outdir entry =
+  let sub_dir = Filename.concat dirname entry in
+  let filename = get_file_of_dir sub_dir in
+  let filename = Filename.concat sub_dir filename in
+  try
+    let submission = read_answers_file filename in
+    let doc = List.concat_map (mark_question submission) questions in
+    Sys.mkdir Filename.(concat outdir entry) 0o700;
+    Out_channel.with_open_bin
+      Filename.(concat (concat outdir entry) "feedback.md")
+      (fun ch -> Out_channel.output_string ch (To_markdown.string_of_doc doc))
+  with exn ->
+    Printf.printf "FAILED: %s; %s\n" entry (Printexc.to_string exn)
+
 let () =
   let dir = Sys.argv.(1) in
   let dirname = Filename.concat dir "submissions" in
-  Sys.mkdir Filename.(concat dir "feedback") 0o700;
-  Sys.readdir dirname
-  |> Array.to_seq
-  |> Seq.filter (fun entry -> not (String.starts_with ~prefix:"." entry))
-  |> Seq.iter (fun entry ->
-         let sub_dir = Filename.concat dirname entry in
-         let filename = get_file_of_dir sub_dir in
-         let filename = Filename.concat sub_dir filename in
-         try
-           let submission = read_answers_file filename in
-           let doc = List.concat_map (mark_question submission) questions in
-           Sys.mkdir Filename.(concat (concat dir "feedback") entry) 0o700;
-           Out_channel.with_open_bin
-             Filename.(concat (concat (concat dir "feedback") entry) "feedback.md")
-             (fun ch -> Out_channel.output_string ch (To_markdown.string_of_doc doc))
-         with exn ->
-           Printf.printf "FAILED: %s; %s\n" entry (Printexc.to_string exn))
+  let outdir  = Filename.(concat dir "feedback") in
+  if not (Sys.file_exists outdir) then
+    Sys.mkdir outdir 0o700;
+  let partnum = if Array.length Sys.argv = 3 then Some Sys.argv.(2) else None in
+  match partnum with
+  | None ->
+     (* do all of them *)
+     Sys.readdir dirname
+     |> Array.to_seq
+     |> Seq.filter (fun entry -> not (String.starts_with ~prefix:"." entry))
+     |> Seq.iter (do_submission dirname outdir)
+  | Some partnum ->
+     (* Just do this one *)
+     let entry = "Participant_" ^ partnum ^ "_assignsubmission_file" in
+     do_submission dirname outdir entry
