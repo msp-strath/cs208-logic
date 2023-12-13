@@ -166,21 +166,6 @@ let rec subst x tm = function
         else Exists (y, subst x tm f)
 
 let alpha_equal f1 f2 =
-  let rec vars_eq x1 x2 = function
-    | [] -> x1 = x2
-    | (y1, y2) :: pairs ->
-        (x1 = y1 && x2 = y2) || (x1 <> y1 && x2 <> y2 && vars_eq x1 x2 pairs)
-  in
-  (* FIXME: move this to Term *)
-  let rec eq_tm pairs t1 t2 =
-    match (t1, t2) with
-    | Term.Var x1, Term.Var x2 -> vars_eq x1 x2 pairs
-    | Term.Fun (f1, tms1), Term.Fun (f2, tms2) ->
-        f1 = f2
-        && List.length tms1 = List.length tms2
-        && List.for_all2 (eq_tm pairs) tms1 tms2
-    | _, _ -> false
-  in
   let rec eq pairs f1 f2 =
     match (f1, f2) with
     | True, True -> true
@@ -188,7 +173,7 @@ let alpha_equal f1 f2 =
     | Atom (r1, tms1), Atom (r2, tms2) ->
         r1 = r2
         && List.length tms1 = List.length tms2
-        && List.for_all2 (eq_tm pairs) tms1 tms2
+        && List.for_all2 (Term.equal_open pairs) tms1 tms2
     | Imp (f1a, f1b), Imp (f2a, f2b)
     | And (f1a, f1b), And (f2a, f2b)
     | Or (f1a, f1b), Or (f2a, f2b) ->

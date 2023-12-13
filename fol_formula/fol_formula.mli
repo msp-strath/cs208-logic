@@ -1,5 +1,3 @@
-open Sexplib0.Sexp_conv
-
 type term = Term.t =
   | Var of string
   | Fun of string * term list
@@ -17,16 +15,20 @@ type formula = Formula.t =
   | Exists of string * formula
 [@@deriving sexp]
 
-module NameSet = NameSet
+module NameSet : sig
+  include Set.S with type elt = string and type t = NameSet.t
 
-module Term = struct
-  include Term
-
-  let of_string = Reader.term_of_string
+  val fresh_for : t -> string -> string
 end
 
-module Formula = struct
-  include Formula
+module Term : sig
+  include module type of Term
 
-  let of_string = Reader.of_string
+  val of_string : string -> t option
+end
+
+module Formula : sig
+  include module type of Formula
+
+  val of_string : string -> (t, [>`Parse of Parser_util.Driver.error ]) result
 end
