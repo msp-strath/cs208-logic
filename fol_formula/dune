@@ -3,7 +3,7 @@
  (public_name fol_formula)
  (libraries menhirLib parser_util sexplib0)
  (preprocess
-  (pps ppx_sexp_conv))
+  (pps ppx_sexp_conv ppx_inline_test))
  (flags
   (:standard -w -49-9-27)))
 
