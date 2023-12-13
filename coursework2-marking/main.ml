@@ -226,36 +226,40 @@ let do_submission css questions dirname outdir entry =
   let partnum = String.sub entry 12 7 in
   let entry_dir = Filename.concat dirname entry in
   let submission_filename = Filename.concat entry_dir (get_file_of_dir entry_dir) in
-  let answers = read_answers_file submission_filename in
-  let given_marks, html_feedback =
-    List.fold_left
-      (fun (total_marks, html) (question_id, question_config) ->
-        match List.assoc_opt question_id answers with
-        | None ->
-           Printf.eprintf "%s: missing\n" question_id;
-           (total_marks, html)
-        | Some answer ->
-           match check_proof question_config answer with
-           | Error msg ->
-              Printf.eprintf "%s: ERROR: %s\n" question_id msg;
-              (total_marks, html)
-           | Ok (given_marks, qn_html) ->
-              (total_marks+given_marks, Html_static.(^^) html qn_html))
-      (0, Html_static.empty)
-      questions
-  in
-  let html_feedback =
-    let open Html_static in
-    h1 (text (Printf.sprintf "Coursework 2 (%d/20)" given_marks)) ^^ html_feedback
-  in
-  let doc = template ~css ~title:"Coursework 2 Results" html_feedback in
-  let outdir = Filename.concat outdir entry in
-  if not (Sys.file_exists outdir) then
-    Sys.mkdir outdir 0o700;
-  let outfile = Filename.concat outdir "feedback.html" in
-  Out_channel.with_open_text outfile
-    (fun ch -> Html_static.Render.to_channel ~doctype:true ch doc);
-  Printf.printf "Participant %s,%d\n" partnum given_marks
+  try
+    let answers = read_answers_file submission_filename in
+    let given_marks, html_feedback =
+      List.fold_left
+        (fun (total_marks, html) (question_id, question_config) ->
+          match List.assoc_opt question_id answers with
+          | None ->
+             Printf.eprintf "%s: missing\n" question_id;
+             (total_marks, html)
+          | Some answer ->
+             match check_proof question_config answer with
+             | Error msg ->
+                Printf.eprintf "%s: ERROR: %s\n" question_id msg;
+                (total_marks, html)
+             | Ok (given_marks, qn_html) ->
+                (total_marks+given_marks, Html_static.(^^) html qn_html))
+        (0, Html_static.empty)
+        questions
+    in
+    let html_feedback =
+      let open Html_static in
+      h1 (text (Printf.sprintf "Coursework 2 (%d/20)" given_marks)) ^^ html_feedback
+    in
+    let doc = template ~css ~title:"Coursework 2 Results" html_feedback in
+    let outdir = Filename.concat outdir entry in
+    if not (Sys.file_exists outdir) then
+      Sys.mkdir outdir 0o700;
+    let outfile = Filename.concat outdir "feedback.html" in
+    Out_channel.with_open_text outfile
+      (fun ch -> Html_static.Render.to_channel ~doctype:true ch doc);
+    Printf.printf "Participant %s,%d\n" partnum given_marks
+  with exn ->
+    Printf.eprintf "PROBLEM: %s: %s\n" partnum (Printexc.to_string exn)
+
 
 let () =
   let css =
