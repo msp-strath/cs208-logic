@@ -4,6 +4,7 @@
  (libraries menhirLib parser_util sexplib0)
  (preprocess
   (pps ppx_sexp_conv ppx_inline_test))
+ (inline_tests)
  (flags
   (:standard -w -49-9-27)))
 
