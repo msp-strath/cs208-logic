@@ -1,3 +1,5 @@
 (library
  (name generalities)
- (libraries sexplib))
+ (libraries sexplib)
+ (preprocess (pps ppx_inline_test))
+ (inline_tests))

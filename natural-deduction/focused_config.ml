@@ -9,17 +9,17 @@ let config_p =
   in
   let assumption_p =
     sequence
-      (let* name       = consume_next atom in
-       let* assumption = consume_next formula in
-       let* ()         = assert_nothing_left in
-       return (name, `F assumption))
+      (let+ name       = consume_next atom
+       and+ assumption = consume_next formula
+       and+ ()         = assert_nothing_left in
+       (name, `F assumption))
   in
 
   tagged "config"
-    (let* assumptions = consume_opt "assumptions" (many assumption_p) in
-     let* assumps_nm  = consume_opt "assumptions-name" (one atom) in
-     let* goal        = consume_one "goal" (one formula) in
-     let* name        = consume_opt "name" (one atom) in
-     let* solution    = consume_opt "solution" (one sexp) in
+    (let+ assumptions = consume_opt "assumptions" (many assumption_p)
+     and+ assumps_nm  = consume_opt "assumptions-name" (one atom)
+     and+ goal        = consume_one "goal" (one formula)
+     and+ name        = consume_opt "name" (one atom)
+     and+ solution    = consume_opt "solution" (one sexp) in
      let  assumptions = Option.value ~default:[] assumptions in
-     return (name, assumptions, assumps_nm, goal, solution))
+     (name, assumptions, assumps_nm, goal, solution))

@@ -31,6 +31,12 @@ let atom = function
   | Atom str -> Ok str
   | sexp     -> annotate_error sexp @@ Error "Expecting a single atom"
 
+let%test "atom1" =
+  Result.is_ok (atom (Atom "atom"))
+
+let%test "atom2" =
+  Result.is_error (atom (List []))
+
 let sequence p = function
   | List items as sexp ->
      let* result, _others = p sexp items in
@@ -42,9 +48,19 @@ let list p = function
   | List items -> traverse p items
   | Atom _ as sexp -> annotate_error sexp @@ Error "Expecting a list"
 
+let fix f =
+  let rec p input = f p input in
+  p
+
 let close p parent items =
   let* result, _others = p parent items in
   Ok result
+
+let on_kind ~atom ~list = function
+  | Atom str as sexp ->
+     annotate_error sexp @@ atom str
+  | List items as sexp ->
+     close list sexp items
 
 let match_tag k = function
   | List (Atom tag::entry_items) as sexp ->
@@ -88,9 +104,11 @@ let consume_one tag k parent items =
      let* result = close k parent items in
      Ok (result, others)
   | [], _others ->
-     annotate_error parent @@ Error (Printf.sprintf "Missing '%s' entry" tag)
+     annotate_error parent @@
+       Error (Printf.sprintf "Missing '%s' entry" tag)
   | _::_::_, _others ->
-     annotate_error parent @@ Error (Printf.sprintf "Multiple '%s' entries" tag)
+     annotate_error parent @@
+       Error (Printf.sprintf "Multiple '%s' entries" tag)
 
 let consume_opt tag k parent items =
   match extract_tagged_items tag items with
@@ -111,17 +129,32 @@ let consume_next p parent = function
 
 let assert_nothing_left parent = function
   | [] -> Ok ((), [])
-  | _others -> annotate_error parent @@ Error "Additional unexpected entries"
+  | _others ->
+     annotate_error parent @@
+       Error "Additional unexpected entries"
 
 let ( let* ) c k parent items =
   match c parent items with
   | Ok (a, items) -> k a parent items
   | Error _ as r  -> r
 
+let ( let+ ) c f parent items =
+  match c parent items with
+  | Ok (a, items) -> Ok (f a, items)
+  | Error _ as r -> r
+
+let ( and+ ) c1 c2 parent items =
+  match c1 parent items with
+  | Ok (a, items) ->
+     (match c2 parent items with
+      | Ok (b, items) -> Ok ((a, b), items)
+      | Error _ as r -> r)
+  | Error _ as r -> r
+
 let return x _parent items =
   Ok (x, items)
 
-let lift e parent items =
+let result e parent items =
   match e with
   | Ok a -> Ok (a, items)
   | Error e -> Error Annotated.{ detail = e; annotation = parent }

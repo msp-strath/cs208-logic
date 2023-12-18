@@ -1,9 +1,6 @@
 open Generalities
 
-type void = | [@@deriving sexp]
-let of_void : 'a. void -> 'a = function _ -> .
-
-(* Heterogeneous list equality *)
+(* Heterogeneous list comparison *)
 let rec list_equal elem_eq xs ys =
   match xs, ys with
   | [], [] -> true
@@ -23,7 +20,7 @@ module Term : sig
 
   val of_sexp : string t Sexp_parser.parser
 
-  val check_no_vars : 'var t -> (void t, [>`HasVar of 'var]) result
+  val check_no_vars : 'var t -> (Impossible.t t, [>`HasVar of 'var]) result
 
   val traverse : ('a -> ('b, 'e) result) -> 'a t -> ('b t, 'e) result
 
@@ -33,7 +30,6 @@ module Term : sig
 
   val to_string : ('a -> string) -> 'a t -> string
 end = struct
-  open Sexplib.Type
   open Result_ext
 
   type 'a t =
@@ -66,24 +62,41 @@ end = struct
     else
       Ok (`Symbol str)
 
-  let rec of_sexp = function
-    | Atom str as sexp ->
-       (let* kind = annotate_error sexp @@ classify_atom str in
-        match kind with
-        | `Var vnm -> Ok (Var str)
-        | `Symbol symb -> Ok (Fun (symb, [])))
-    | List (Atom str :: sexps) as sexp ->
-       (let* kind = annotate_error sexp @@ classify_atom str in
-        match kind with
-        | `Var vnm ->
-           annotate_error sexp @@
-             Error "Variable in head position"
-        | `Symbol symb ->
-           let* terms = traverse of_sexp sexps in
-           Ok (Fun (symb, terms)))
-    | List _ as sexp ->
-       annotate_error sexp @@
-         Error "Empty list"
+  let of_sexp =
+    let open Sexp_parser in
+    fix @@
+      fun p_term ->
+      on_kind
+        ~atom:(fun str ->
+          match classify_atom str with
+          | Ok (`Var vnm) -> Ok (Var vnm)
+          | Ok (`Symbol symb) -> Ok (Fun (symb, []))
+          | Error _ as e -> e)
+        ~list:(let* head = consume_next atom in
+               let* args = many p_term in
+               match classify_atom head with
+               | Error _ as e -> result e
+               | Ok (`Var _) -> fail "Variable in head position"
+               | Ok (`Symbol head) -> return (Fun (head, args)))
+
+  (* let rec of_sexp = function *)
+  (*   | Atom str as sexp -> *)
+  (*      (let* kind = annotate_error sexp @@ classify_atom str in *)
+  (*       match kind with *)
+  (*       | `Var vnm -> Ok (Var str) *)
+  (*       | `Symbol symb -> Ok (Fun (symb, []))) *)
+  (*   | List (Atom str :: sexps) as sexp -> *)
+  (*      (let* kind = annotate_error sexp @@ classify_atom str in *)
+  (*       match kind with *)
+  (*       | `Var vnm -> *)
+  (*          annotate_error sexp @@ *)
+  (*            Error "Variable in head position" *)
+  (*       | `Symbol symb -> *)
+  (*          let* terms = traverse of_sexp sexps in *)
+  (*          Ok (Fun (symb, terms))) *)
+  (*   | List _ as sexp -> *)
+  (*      annotate_error sexp @@ *)
+  (*        Error "Empty list" *)
 
   let rec check_no_vars = function
     | Var v -> Error (`HasVar v)
@@ -126,14 +139,16 @@ end = struct
     | Fun (_, terms) -> Result_ext.traverse_ (traverse_ p) terms
 end
 
+(* FIXME: Allow for arguments that must be supplied by a
+   command. Arguments are positional. *)
 type rule_description =
   { premises   : string Term.t list
   ; conclusion : string Term.t
   }
 
-let eq_var (x : void) (y : void) = of_void y
+let eq_var (x : Impossible.t) (y : Impossible.t) = Impossible.elim y
 
-let rec match_term (pattern : string Term.t) (term : void Term.t) subst =
+let rec match_term (pattern : string Term.t) (term : Impossible.t Term.t) subst =
   match pattern, term with
   | Var v, term ->
      (match VarMap.find_opt v subst with
@@ -191,7 +206,7 @@ module OfSexp = struct
     let* conclusion = consume_one "conclusion" (one Term.of_sexp) in
     let* ()         = assert_nothing_left in
     let  premises   = Option.value ~default:[] premises in
-    let* rule       = lift @@ check_rule premises conclusion in
+    let* rule       = result @@ check_rule premises conclusion in
     return (name, rule)
 
   let config =
@@ -199,7 +214,7 @@ module OfSexp = struct
       (let* rules = consume_all "rule" rule in
        let* goal  = consume_one "goal" (one Term.of_sexp) in
        let* ()    = assert_nothing_left in
-       let* goal  = lift @@ Term.traverse (errorf "Goal has variable '%s'") goal in
+       let* goal  = result @@ Term.traverse (errorf "Goal has variable '%s'") goal in
        return (rules, goal))
 
   let config_rules_only =
@@ -211,8 +226,8 @@ end
 
 module Calculus (Rules : RULES) : sig
   include Proof_tree.CALCULUS
-          with type goal = void Term.t
-           and type assumption = void
+          with type goal = Impossible.t Term.t
+           and type assumption = Impossible.t
            and type error = string
 
   val label_of_rule : rule -> string
@@ -220,8 +235,8 @@ module Calculus (Rules : RULES) : sig
 end = struct
   open Sexplib0.Sexp_conv
 
-  type goal = void Term.t
-  type assumption = void
+  type goal = Impossible.t Term.t
+  type assumption = Impossible.t
   type update = unit
 
   let empty_update = ()
@@ -254,9 +269,9 @@ module UI (Rules : RULES) = struct
 
   module Calculus = Calculus (Rules)
 
-  let string_of_goal = Term.to_string of_void
+  let string_of_goal = Term.to_string Impossible.elim
 
-  let string_of_assumption _ = of_void
+  let string_of_assumption _ = Impossible.elim
 
   let string_of_error = Fun.id
 
@@ -289,14 +304,14 @@ let display_rules rules =
      (* FIXME: make widgets that just display fixed HTML *)
      let module C = struct
          type state = unit
-         type action = void
+         type action = Impossible.t
 
          let render () =
            let open Ulmus.Html in
            div ~attrs:[A.style "display: flex; flex-wrap: wrap"]
              (concat_map (fun h -> div ~attrs:[A.style "margin: 10px"] h)
                 (List.map inference_rule rules))
-         let update action () = of_void action
+         let update action () = Impossible.elim action
          let initial = ()
          let serialise () = ""
          let deserialise _ = Some ()
@@ -319,68 +334,3 @@ let from_rules config =
   | Error err ->
      let msg = Annotated.detail err in
      Widgets.Error_display.component ("Configuration error: " ^ msg)
-
-(*
-  let module P =
-    struct
-      module Calculus = C
-
-      let name_of_rule rule_name = rule_name
-      let left_label_of_rule rule_name = None (* FIXME: what is this for? *)
-
-      type partial = void [@@deriving sexp]
-
-      let name_of_partial = of_void
-
-      type rule_selector =
-        | Immediate of C.rule
-        | Disabled of string
-        | Partial of partial
-
-      type selector_group =
-        { group_name : string; rules : rule_selector list }
-
-      let rule_selection _assumps goal =
-        let check_rule (rule_name, { conclusion; _ }) =
-          match match_term conclusion goal VarMap.empty with
-          | None -> Disabled rule_name
-          | Some _ -> Immediate rule_name
-        in
-        [{ group_name = "Rule"; rules = List.map check_rule rules }]
-
-      let elim_assumption : conclusion:Calculus.goal ->
-                            assumption:Calculus.assumption ->
-                            idx:int ->
-                            (string * [ `ByAssumption
-                                      | `Rule of Calculus.rule
-                                      | `Partial of partial ]) list
-        = fun ~conclusion ~assumption ~idx ->
-        of_void assumption
-
-      module Part_type = struct
-        type t = void
-        let placeholder = of_void
-        let class_ = of_void
-      end
-
-      type partial_formula_part =
-        | T of string
-        | I of { value : string; typ : Part_type.t; update : string -> partial }
-        | F of Calculus.goal
-
-      type partial_premise = {
-          premise_formula : partial_formula_part list;
-          premise_assumption : string option;
-        }
-
-      type partial_presentation = {
-          premises : partial_premise list;
-          apply : Calculus.rule option;
-        }
-
-      let present_partial : Calculus.goal -> partial -> partial_presentation =
-        fun _ -> of_void
-
-    end
-  in (module P : Proof_tree_UI.PARTIALS)
- *)
