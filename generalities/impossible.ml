@@ -1,4 +1,3 @@
-type t = { impossible : 'a. 'a }
+type t = |
 
-let impossible x =
-  x.impossible
+let elim : t -> _ = function _ -> .
