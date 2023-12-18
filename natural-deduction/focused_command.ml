@@ -24,8 +24,8 @@ let var_nm =
 let term =
   let term_p s =
     match Fol_formula.Term.of_string s with
-    | None -> Error "term not understood"
-    | Some t -> Ok t
+    | Error _ -> Error "term not understood"
+    | Ok t -> Ok t
   in
   ("term", term_p)
 

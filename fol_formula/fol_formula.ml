@@ -28,5 +28,5 @@ end
 module Formula = struct
   include Formula
 
-  let of_string = Reader.of_string
+  let of_string = Reader.formula_of_string
 end

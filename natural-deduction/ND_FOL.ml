@@ -419,8 +419,8 @@ module Partials = struct
     | Partial_Forall_elim ({ idx; variable; body; term } as x) ->
         let bits =
           match Fol_formula.Term.of_string term with
-          | Some t -> Some (t, Formula.subst variable t body)
-          | None -> None
+          | Ok t -> Some (t, Formula.subst variable t body)
+          | Error _ -> None
         in
         {
           premises =
@@ -458,8 +458,8 @@ module Partials = struct
     | Partial_exists_intro ({ variable; body; term } as x) ->
         let bits =
           match Fol_formula.Term.of_string term with
-          | Some t -> Some t
-          | None -> None
+          | Ok t -> Some t
+          | Error _ -> None
         in
         {
           premises =

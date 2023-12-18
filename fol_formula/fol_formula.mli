@@ -24,7 +24,7 @@ end
 module Term : sig
   include module type of Term
 
-  val of_string : string -> t option
+  val of_string : string -> (t, [> `Parse of Parser_util.Driver.error]) result
 end
 
 module Formula : sig
