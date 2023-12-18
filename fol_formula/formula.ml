@@ -45,6 +45,11 @@ let to_string f =
   in
   formula f
 
+let%test "to_string1" =
+  String.equal
+    (to_string (And (Atom ("A", []), Or (Atom ("B",[]), Atom ("C",[])))))
+    "A ∧ (B ∨ C)"
+
 (* FIXME: merge with 'to_string' *)
 let to_latex f =
   let rec formula = function
@@ -78,42 +83,7 @@ let to_latex f =
   in
   formula f
 
-let pp fmt fm =
-  let rec terms fmt = function
-    | [] -> ()
-    | [ t ] -> Term.pp fmt t
-    | t :: ts -> Format.fprintf fmt "%a, %a" Term.pp t terms ts
-  in
-  let rec formula fmt = function
-    | Forall (x, f) -> Format.fprintf fmt "all %s. %a" x formula f
-    | Exists (x, f) -> Format.fprintf fmt "ex %s. %a" x formula f
-    | Imp _ as f -> Format.fprintf fmt "@[<hv>@;<0 3>%a@]" imps f
-    | And _ as f -> Format.fprintf fmt "@[<hv>@;<0 3>%a@]" ands f
-    | Or _ as f -> Format.fprintf fmt "@[<hv>@;<0 3>%a@]" ors f
-    | f -> base fmt f
-  and imps fmt = function
-    | Imp (f1, f2) -> Format.fprintf fmt "%a@ -> %a" base f1 imps f2
-    | f -> base fmt f
-  and ands fmt = function
-    | And (f1, f2) -> Format.fprintf fmt "%a@ /\\ %a" base f1 ands f2
-    | f -> base fmt f
-  and ors fmt = function
-    | Or (f1, f2) -> Format.fprintf fmt "%a@ \\/ %a" base f1 ors f2
-    | f -> base fmt f
-  and base fmt = function
-    | Atom ("=", [ t1; t2 ]) ->
-        Format.fprintf fmt "%a = %a" Term.pp t1 Term.pp t2
-    | Atom ("!=", [ t1; t2 ]) ->
-        Format.fprintf fmt "%a != %a" Term.pp t1 Term.pp t2
-    | Atom (a, []) -> Format.fprintf fmt "%s" a
-    | Atom (a, tms) -> Format.fprintf fmt "%s(%a)" a terms tms
-    | Not f -> Format.fprintf fmt "¬%a" base f
-    | True -> Format.fprintf fmt "T"
-    | False -> Format.fprintf fmt "F"
-    | (Imp _ | And _ | Or _ | Forall _ | Exists _) as f ->
-        Format.fprintf fmt "@[<hv 1>(%a)@]" formula f
-  in
-  Format.fprintf fmt "%a" formula fm
+(******************************************************************************)
 
 let ( <.> ) f g x = f (g x)
 
@@ -125,7 +95,15 @@ let rec fv = function
   | Forall (v, f) | Exists (v, f) ->
       NameSet.union (NameSet.remove v (fv f NameSet.empty))
 
+let%test "fv1" =
+  NameSet.equal
+    (fv (Forall ("x", Atom ("f", [Var "x"]))) NameSet.empty)
+    NameSet.empty
+
 let closed f = NameSet.is_empty (fv f NameSet.empty)
+
+let%test "closed1" =
+  closed (Forall ("x", Atom ("f", [Var "x"])))
 
 let rec bound_and_free = function
   | Atom (_, tms) -> List.fold_right Term.fv tms

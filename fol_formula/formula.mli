@@ -28,8 +28,6 @@ val to_string : t -> string
 
 val to_latex : t -> string
 
-val pp : Format.formatter -> t -> unit
-
 (** {2 Queries} *)
 
 val fv : t -> NameSet.t -> NameSet.t
