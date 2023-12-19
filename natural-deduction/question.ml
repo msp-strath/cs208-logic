@@ -1,15 +1,11 @@
-let focusing ?name ?assumps_name ?(assumptions = []) ?solution formula =
-  let assumptions =
-    List.map
-      (function
-        | x, `V -> (x, Focused.A_Termvar) | x, `F f -> (x, Focused.A_Formula f))
-      assumptions
-  in
+open Focused_config
+
+let focusing { name; assumptions; assumptions_name = assumps_name; goal; solution } =
   let solution =
     match solution with
     | None -> None
     | Some sexp ->
-       Focused_UI.state_of_sexp assumptions (Checking formula) sexp
+       Focused_UI.state_of_sexp assumptions (Checking goal) sexp
   in
   let module Component =
     struct
@@ -26,7 +22,7 @@ let focusing ?name ?assumps_name ?(assumptions = []) ?solution formula =
 
       let initial =
         {
-          editor = Focused_UI.init ~assumptions (Checking formula);
+          editor = Focused_UI.init ~assumptions (Checking goal);
           showtree = false;
           showsolution = false
         }
@@ -71,7 +67,7 @@ let focusing ?name ?assumps_name ?(assumptions = []) ?solution formula =
 
       let deserialise str =
         let sexp = Sexplib.Sexp.of_string str in
-        match Focused_UI.state_of_sexp assumptions (Checking formula) sexp with
+        match Focused_UI.state_of_sexp assumptions (Checking goal) sexp with
         | None -> None
         | Some editor ->
            Some { editor; showtree = false; showsolution = false }
@@ -80,8 +76,8 @@ let focusing ?name ?assumps_name ?(assumptions = []) ?solution formula =
 
 let focusing_component config =
   match Focused_config.config_p (Sexplib.Sexp.of_string config) with
-  | Ok (_, assumptions, assumps_name, goal, solution) ->
-     focusing ~assumptions ?assumps_name ?solution goal
+  | Ok config ->
+     focusing config
   | Error err ->
      let detail = Generalities.Annotated.detail err in
      let message = "Configuration failure: " ^ detail in
@@ -89,11 +85,11 @@ let focusing_component config =
 
 let tree_component config =
   match Focused_config.config_p (Sexplib.Sexp.of_string config) with
-  | Ok (_, _assumptions, _, goal, _) ->
+  | Ok config ->
      (* FIXME: assumptions? *)
      (module Proof_tree_UI2.Make
                (Focused_ui2)
-               (struct let goal = Focused.Checking goal end)
+               (struct let goal = Focused.Checking config.goal end)
              : Ulmus.PERSISTENT)
   | Error err ->
      let detail = Generalities.Annotated.detail err in

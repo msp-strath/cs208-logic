@@ -14,7 +14,11 @@ end
 
 open Sexplib0.Sexp_conv
 
-module Make (Spec : UI_SPEC) (Goal : sig val goal : Spec.Calculus.goal end) : Ulmus.PERSISTENT = struct
+module Make
+         (Spec : UI_SPEC)
+         (Goal : sig val goal : Spec.Calculus.goal end)
+       : Ulmus.PERSISTENT
+  = struct
 
   open Spec
 
@@ -27,6 +31,7 @@ module Make (Spec : UI_SPEC) (Goal : sig val goal : Spec.Calculus.goal end) : Ul
 
     let void =
       { user_input = ""; message = None }
+
     let empty _ = void
   end
 
@@ -93,13 +98,12 @@ module Make (Spec : UI_SPEC) (Goal : sig val goal : Spec.Calculus.goal end) : Ul
     | assumptions ->
         let assumptions =
           concat_map
-            (function
-              | (name, f), _ -> text (string_of_assumption name f ^ ", "))
+            (fun (name, f) -> text (string_of_assumption name f ^ ", "))
             assumptions
         in
         assumption_box ~assumptions rendered_subtree
 
-  let render_hole point _ Hole.{ user_input; message } =
+  let render_hole point Hole.{ user_input; message } =
     let conclusion = PT.goal point in
     proofbox
       (premisebox

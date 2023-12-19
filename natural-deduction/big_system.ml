@@ -290,7 +290,7 @@ struct
 
   module H = Focused_proof_renderer.HTML_Bits (Ulmus.Html)
 
-  let render_hole pt _focus hole =
+  let render_hole pt hole =
     let open Ulmus.Html in
     match (PT.goal pt, hole) with
     | Doc, Hole.DocExtn ->
@@ -481,7 +481,7 @@ struct
         | assumps ->
             H.vertical
               [%concat
-                concat_map (fun (x, _) -> R.render_assumption x) assumps;
+                concat_map R.render_assumption assumps;
                 (* FIXME: put the goal here? *)
                 content])
     | `Document -> content

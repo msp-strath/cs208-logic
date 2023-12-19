@@ -1,5 +1,13 @@
 open Generalities.Sexp_parser
 
+type config = {
+    name : string option;
+    assumptions : (string * Focused.assumption) list;
+    assumptions_name : string option;
+    goal : Fol_formula.formula;
+    solution : sexp option
+  }
+
 let config_p =
   let formula =
     let+? str = atom in
@@ -12,14 +20,14 @@ let config_p =
       (let+ name       = consume_next atom
        and+ assumption = consume_next formula
        and+ ()         = assert_nothing_left in
-       (name, `F assumption))
+       (name, Focused.A_Formula assumption))
   in
 
   tagged "config"
     (let+ assumptions = consume_opt "assumptions" (many assumption_p)
-     and+ assumps_nm  = consume_opt "assumptions-name" (one atom)
+     and+ assumptions_name= consume_opt "assumptions-name" (one atom)
      and+ goal        = consume_one "goal" (one formula)
      and+ name        = consume_opt "name" (one atom)
      and+ solution    = consume_opt "solution" (one sexp) in
      let  assumptions = Option.value ~default:[] assumptions in
-     (name, assumptions, assumps_nm, goal, solution))
+     { name; assumptions; assumptions_name; goal; solution })

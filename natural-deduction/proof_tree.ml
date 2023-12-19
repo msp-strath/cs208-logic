@@ -1,4 +1,5 @@
 open Sexplib0.Sexp_conv
+
 include Proof_tree_intf
 
 module Make (Calculus : CALCULUS) (Hole : HOLE with type goal = Calculus.goal) =
@@ -8,28 +9,31 @@ struct
   module Calculus = Calculus
   module Hole = Hole
 
-  type prooftree = { formula : Calculus.goal; status : status }
+  type prooftree = {
+      formula : Calculus.goal;
+      status : status;
+    }
 
   and status =
-    | Hole of { content : Hole.t; focus : bool }
+    | Hole of { content : Hole.t }
     | Rule of { rule : Calculus.rule; children : proofbox list }
 
   and proofbox = {
-    subtree : prooftree;
-    assumptions : (string * Calculus.assumption) list;
-  }
+      subtree : prooftree;
+      assumptions : (string * Calculus.assumption) list;
+    }
 
   type t = proofbox
 
   let init ?content ?(assumptions = []) goal =
     let content = match content with None -> Hole.empty goal | Some h -> h in
     {
-      subtree = { formula = goal; status = Hole { content; focus = true } };
-      assumptions;
+      subtree = { formula = goal; status = Hole { content } };
+      assumptions = assumptions;
     }
 
   let root_goal { subtree = { formula } } = formula
-  let root_assumptions { assumptions } = assumptions
+  let root_assumptions { assumptions } = List.rev assumptions
 
   (* A tree 'turned inside out' to expose a particular point *)
   type steps =
@@ -76,22 +80,8 @@ struct
           }
 
   let goal { pt_formula } = pt_formula
+
   let assumptions { pt_assumptions } = pt_assumptions
-
-  (* FIXME: does this reverse in the 'Some' case but not the other? *)
-  let number_assumptions assumptions = function
-    | None -> (List.map (fun a -> (a, None)) assumptions, None)
-    | Some (idx, point) ->
-        let assumptions, idx =
-          List.fold_right
-            (fun a (assumps, idx) ->
-              ((a, Some (idx, point)) :: assumps, idx + 1))
-            assumptions ([], idx)
-        in
-        (assumptions, Some (idx, point))
-
-  let ( ++ ) x y =
-    match (x, y) with None, x | x, None -> x | Some x, _ -> Some x
 
   let fold f_hole f_rule f_box t =
     let rec fold context hered_assumps { formula; status } =
@@ -104,54 +94,52 @@ struct
         }
       in
       match status with
-      | Hole { content; focus } ->
-          (f_hole here focus content, if focus then Some (0, here) else None)
+      | Hole { content } ->
+         f_hole here content
       | Rule { rule; children } ->
-          let rec fold_children before after accum focus_accum =
-            match after with
-            | [] -> (List.rev accum, focus_accum)
-            | ({ assumptions; subtree } as box) :: after ->
-                let steps =
-                  Step
-                    {
-                      formula;
-                      rule;
-                      before;
-                      assumptions;
-                      after;
-                      rest = context;
-                    }
-                in
-                let hered_assumps = List.rev_append assumptions hered_assumps in
-                let result, focus = fold steps hered_assumps subtree in
-                let assumptions, focus = number_assumptions assumptions focus in
-                let result = f_box assumptions result in
-                let focus_accum = focus_accum ++ focus in
-                fold_children (box :: before) after (result :: accum)
-                  focus_accum
-          in
-          let sub_results, focus = fold_children [] children [] None in
-          (f_rule here rule sub_results, focus)
+         let rec fold_children before after accum =
+           match after with
+           | [] -> List.rev accum
+           | ({ assumptions; subtree } as box) :: after ->
+              let steps =
+                Step
+                  {
+                    formula;
+                    rule;
+                    before;
+                    assumptions;
+                    after;
+                    rest = context;
+                  }
+              in
+              let hered_assumps = List.rev_append assumptions hered_assumps in
+              let result = fold steps hered_assumps subtree in
+              let result = f_box assumptions result in
+              fold_children (box :: before) after (result :: accum)
+         in
+         let sub_results = fold_children [] children [] in
+         f_rule here rule sub_results
     in
     let { assumptions; subtree } = t in
     let steps = End { assumptions } in
-    let result, focus = fold steps (List.rev assumptions) subtree in
-    let assumptions, _ = number_assumptions assumptions focus in
+    let result = fold steps (List.rev assumptions) subtree in
     f_box assumptions result
 
   (**********************************************************************)
   (* unchecked trees *)
 
-  type tree = Hole of Hole.t | Rule of Calculus.rule * tree list
+  type tree =
+    | Hole of Hole.t
+    | Rule of Calculus.rule * tree list
   [@@deriving sexp]
 
   let rec tree_of_status : status -> tree = function
     | Hole { content } -> Hole content
     | Rule { rule; children } ->
-        Rule
-          ( rule,
-            List.map (fun { subtree } -> tree_of_status subtree.status) children
-          )
+       Rule
+         ( rule,
+           List.map (fun { subtree } -> tree_of_status subtree.status) children
+         )
 
   let subtree_of_point { pt_status; _ } = tree_of_status pt_status
 
@@ -163,23 +151,23 @@ struct
 
   let rec of_tree context goal = function
     | Hole h ->
-        Ok { formula = goal; status = Hole { content = h; focus = false } }
+       Ok { formula = goal; status = Hole { content = h } }
     | Rule (rule, children) ->
-        let* subgoals, _update = lift_err (Calculus.apply context rule goal) in
-        let* children = of_trees context subgoals children in
-        Ok { formula = goal; status = Rule { rule; children } }
+       let* subgoals, _update = lift_err (Calculus.apply context rule goal) in
+       let* children = of_trees context subgoals children in
+       Ok { formula = goal; status = Rule { rule; children } }
 
   and of_trees context goals trees =
     match (goals, trees) with
     | [], [] -> Ok []
     | (assumptions, goal) :: goals, tree :: trees ->
-        let* subtree = of_tree (List.rev assumptions @ context) goal tree in
-        let* boxes = of_trees context goals trees in
-        Ok ({ subtree; assumptions } :: boxes)
+       let* subtree = of_tree (List.rev_append assumptions context) goal tree in
+       let* boxes = of_trees context goals trees in
+       Ok ({ subtree; assumptions } :: boxes)
     | _, [] | [], _ -> Error `LengthMismatch
 
   let of_tree assumptions goal tree =
-    let* prooftree = of_tree assumptions goal tree in
+    let* prooftree = of_tree (List.rev assumptions) goal tree in
     Ok { assumptions; subtree = prooftree }
 
   (**********************************************************************)
@@ -200,10 +188,10 @@ struct
       formula = Calculus.update_goal update formula;
       status =
         (match status with
-        | Hole { content; focus } ->
+         | Hole { content } ->
             (* FIXME: update the hole's content too *)
-            Hole { content; focus = false }
-        | Rule { rule; children } ->
+            Hole { content }
+         | Rule { rule; children } ->
             Rule { rule; children = List.map (update_proofbox update) children });
     }
 
@@ -216,16 +204,16 @@ struct
   let reconstruct formula status update context =
     let rec reconstruct_steps subtree = function
       | Step { formula; rule; before; assumptions; after; rest } ->
-          let formula = Calculus.update_goal update formula in
-          let before = List.map (update_proofbox update) before in
-          let assumptions =
-            List.map (on_snd (Calculus.update_assumption update)) assumptions
-          in
-          let after = List.map (update_proofbox update) after in
-          let box = { assumptions; subtree } in
-          let children = List.rev_append before (box :: after) in
-          let status : status = Rule { rule; children } in
-          reconstruct_steps { formula; status } rest
+         let formula = Calculus.update_goal update formula in
+         let before = List.map (update_proofbox update) before in
+         let assumptions =
+           List.map (on_snd (Calculus.update_assumption update)) assumptions
+         in
+         let after = List.map (update_proofbox update) after in
+         let box = { assumptions; subtree } in
+         let children = List.rev_append before (box :: after) in
+         let status : status = Rule { rule; children } in
+         reconstruct_steps { formula; status } rest
       | End { assumptions } -> { subtree; assumptions }
     in
     reconstruct_steps { formula; status } context
@@ -234,28 +222,27 @@ struct
   let apply rule { pt_formula; pt_status; pt_context; pt_assumptions } =
     match Calculus.apply pt_assumptions rule pt_formula with
     | Ok (premises, update) ->
-        let formula = Calculus.update_goal update pt_formula in
-        let children =
-          List.mapi
-            (fun i (assumptions, goal) ->
-              let status : status =
-                Hole { content = Hole.empty goal; focus = i = 0 }
-              in
-              { assumptions; subtree = { formula = goal; status } })
-            premises
-        in
-        Ok (reconstruct formula (Rule { rule; children }) update pt_context)
+       let formula = Calculus.update_goal update pt_formula in
+       let children =
+         List.mapi
+           (fun i (assumptions, goal) ->
+             let status : status =
+               Hole { content = Hole.empty goal }
+             in
+             { assumptions; subtree = { formula = goal; status } })
+           premises
+       in
+       Ok (reconstruct formula (Rule { rule; children }) update pt_context)
     | Error err -> Error (`RuleError err)
 
   (* FIXME: this doesn't do anything with updates *)
   let insert_tree tree { pt_formula; pt_status; pt_context; pt_assumptions } =
     match of_tree pt_assumptions pt_formula tree with
     | Ok { assumptions = _; subtree = { formula = _; status } } ->
-        Ok (reconstruct pt_formula status Calculus.empty_update pt_context)
+       Ok (reconstruct pt_formula status Calculus.empty_update pt_context)
     | Error err -> Error err
 
-  (* this ought to reset all other holes to 'unfocused' *)
   let set_hole content { pt_formula; pt_context } =
-    let status : status = Hole { content; focus = true } in
+    let status : status = Hole { content } in
     reconstruct pt_formula status Calculus.empty_update pt_context
 end

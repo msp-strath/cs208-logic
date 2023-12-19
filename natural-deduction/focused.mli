@@ -1,8 +1,13 @@
 open Fol_formula
 
-type assumption = A_Termvar | A_Formula of formula [@@deriving sexp]
+type assumption =
+  | A_Termvar
+  | A_Formula of formula
+[@@deriving sexp]
 
-type goal = Checking of formula | Synthesis of formula * formula
+type goal =
+  | Checking of formula
+  | Synthesis of formula * formula
 [@@deriving sexp]
 
 type rule =

@@ -1,13 +1,15 @@
 module Make
-    (PT : Proof_tree.PROOF_TREE) (Presentation : sig
-      val latex_of_sequent :
-        (string * PT.Calculus.assumption) list * PT.Calculus.goal -> string
+         (PT : Proof_tree.PROOF_TREE)
+         (Presentation : sig
+            val latex_of_sequent :
+              (string * PT.Calculus.assumption) list * PT.Calculus.goal -> string
 
-      val name_of_rule : PT.Calculus.rule -> string
-    end) : sig
+            val name_of_rule : PT.Calculus.rule -> string
+          end) :
+sig
   val render : Format.formatter -> PT.t -> unit
 end = struct
-  let render_hole point _focus _hole _last fmt =
+  let render_hole point _hole _last fmt =
     let assumps = PT.assumptions point in
     let formula = PT.goal point in
     Format.fprintf fmt "@[<h>%s@]"

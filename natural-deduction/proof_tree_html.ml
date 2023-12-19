@@ -115,13 +115,7 @@ struct
            | P.I { value; typ; update } -> formula_input point value typ update
            | P.F formula -> text (Goal.to_string formula)))
 
-  let render_partial point focus = function
-    | None when focus ->
-        let assumptions = PT.assumptions point and formula = PT.goal point in
-        proofbox
-          [%concat
-            premisebox (rule_selector assumptions point formula);
-            formulabox point formula]
+  let render_partial point = function
     | None ->
         let formula = PT.goal point in
         proofbox
@@ -185,10 +179,7 @@ struct
     | assumptions ->
         let assumptions =
           concat_map
-            (function
-              | (_, f), None -> text (Assumption.to_string f ^ ", ")
-              | (_, f), Some (idx, point) ->
-                  render_active_assumption f idx point ^^ text ", ")
+            (fun (_, f) -> text (Assumption.to_string f ^ ", "))
             assumptions
         in
         assumption_box ~assumptions rendered_subtree

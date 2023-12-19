@@ -40,8 +40,8 @@ let rec questions_of_block = function
       | "focused-nd", Some id, Some marks ->
          (let sexp = Sexplib.Sexp.of_string content in
           match Natural_deduction.Focused_config.config_p sexp with
-          | Ok (name, assumps, assumps_name, goal, _) ->
-             [ id, (name, assumps, assumps_name, goal, int_of_string marks) ]
+          | Ok config ->
+             [ id, (config, int_of_string marks) ]
           | Error err ->
              let msg = Generalities.Annotated.detail err in
              failwith ("QUESTION FILE ERROR: " ^ msg))
@@ -69,7 +69,7 @@ module Focused = struct
 
   let num_holes prooftree =
     PT.fold
-      (fun _ _ _ -> 1)
+      (fun _ _ -> 1)
       (fun _ _ l -> List.fold_left ( + ) 0 l)
       (fun _ x -> x)
       prooftree
@@ -85,13 +85,13 @@ module Focused = struct
       | assumps ->
           vertical
             [%concat
-              concat_map (fun (x, _) -> render_assumption x) assumps;
+              concat_map render_assumption assumps;
               (* FIXME: put the goal here? *)
               content]
 
     let render =
       PT.fold
-        (fun pt _focus (content, msg) ->
+        (fun pt (content, msg) ->
           let open Html_static in
           let command_entry =
             input
@@ -144,19 +144,19 @@ module Focused = struct
         | n ->
             div (em (strong (textf "Proof incomplete (%d subgoals open)." n)))]
 
-  let qn ~marks:max ?(assumptions = []) ?name ?assumps_name goal sexp =
-    let assumptions =
-      List.map (function x, `F f -> (x, Focused.A_Formula f)) assumptions
-    in
+  let qn ~marks:max config sexp =
+    let open Natural_deduction.Focused_config in
     match
-      PT.of_tree assumptions (Focused.Checking goal) (PT.tree_of_sexp sexp)
+      PT.of_tree config.assumptions (Focused.Checking config.goal) (PT.tree_of_sexp sexp)
     with
     | Error `LengthMismatch ->
         Error (`Msg "Natural Deduction decode error: Length mismatch")
     | Error (`RuleError e) ->
         Error (`Msg (Printf.sprintf "Natural Deduction decode error: %s" e))
     | Ok state ->
-       (let proof_tree = render ?name ?assumps_name state in
+       (let name = config.name in
+        let assumps_name = config.assumptions_name in
+        let proof_tree = render ?name ?assumps_name state in
         if num_holes state = 0 then
           Ok (max, proof_tree)
         else
@@ -164,11 +164,16 @@ module Focused = struct
 end
 
 
-let check_proof (name, assumptions, assumps_name, goal, max_marks) str_proof =
+let check_proof (config, max_marks) str_proof =
+  let open Natural_deduction.Focused_config in
   let wrap given_marks html_proof =
     let open Html_static in
     (given_marks,
-     h2 (text (Printf.sprintf "%s (%d/%d)" (Option.value ~default:"" name) given_marks max_marks))
+     h2 (text (Printf.sprintf
+                 "%s (%d/%d)"
+                 (Option.value ~default:"" config.name)
+                 given_marks
+                 max_marks))
      ^^
        html_proof)
   in
@@ -177,7 +182,7 @@ let check_proof (name, assumptions, assumps_name, goal, max_marks) str_proof =
      Ok (wrap 0 (Html_static.text "Not attempted"))
   | str_proof ->
      let proof_tree = Sexplib.Sexp.of_string str_proof in
-     match Focused.qn ~marks:max_marks ~assumptions ?assumps_name ?name goal proof_tree with
+     match Focused.qn ~marks:max_marks config proof_tree with
      | Error (`Msg msg) ->
         Error msg
      | Ok (given_marks, html_proof) ->

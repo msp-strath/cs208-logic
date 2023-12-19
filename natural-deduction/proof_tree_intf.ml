@@ -1,13 +1,18 @@
 module type CALCULUS = sig
   type goal
+
   type assumption
+
   type update
 
   val empty_update : update
+
   val update_goal : update -> goal -> goal
+
   val update_assumption : update -> assumption -> assumption
 
   type rule [@@deriving sexp]
+
   type error
 
   val apply :
@@ -42,18 +47,27 @@ module type PROOF_TREE = sig
   (**{2 Traversal of a proof tree} *)
 
   val fold :
-    (point -> bool -> Hole.t -> 'a) ->
+    (point -> Hole.t -> 'a) ->
     (point -> Calculus.rule -> 'b list -> 'a) ->
-    (((string * Calculus.assumption) * (int * point) option) list -> 'a -> 'b) ->
+    ((string * Calculus.assumption) list -> 'a -> 'b) ->
     t ->
     'b
+  (** [fold f_hole f_rule f_box tree] folds over the proof tree
+      [tree], using [f_hole] for each hole (providing the point and
+      hole information), [f_rule] for each rule application, and
+      [f_box] for each assumption box. The whole proof is within an
+      assumption box. *)
 
   (**{2 Inspection of points in a proof tree} *)
 
   val up : point -> point option
+
   val root_goal : t -> Calculus.goal
+
   val root_assumptions : t -> (string * Calculus.assumption) list
+
   val goal : point -> Calculus.goal
+
   val assumptions : point -> (string * Calculus.assumption) list
 
   (**{2 Updating a point in a proof tree} *)

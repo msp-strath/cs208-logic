@@ -48,32 +48,28 @@ module Renderer = struct
   let render_box assumps content =
     let open Ulmus.Html in
     match assumps with
-    | [] -> content
+    | [] ->
+       content
     | assumps ->
-        vertical
-          [%concat
-            concat_map (fun (x, _) -> render_assumption x) assumps;
-            (* FIXME: put the goal here? *)
-            content]
+       vertical (concat_map render_assumption assumps ^^ content)
 
   let render =
     PT.fold
-      (fun pt focus (content, msg) ->
+      (fun pt (content, msg) ->
         let open Ulmus.Html in
         let command_entry =
           input
-            ~attrs:
-              [
-                A.class_ "commandinput";
-                A.value content;
-                A.placeholder "<command>";
-                E.oninput (fun value -> UpdateHole (pt, (value, msg)));
-                E.onkeydown (fun mods key ->
-                    match key with
-                    | Js_of_ocaml.Dom_html.Keyboard_code.Enter ->
-                        Some (SendHole (pt, content))
-                    | _ -> None);
-              ]
+            ~attrs:[
+              A.class_ "commandinput";
+              A.value content;
+              A.placeholder "<command>";
+              E.oninput (fun value -> UpdateHole (pt, (value, msg)));
+              E.onkeydown (fun mods key ->
+                  match key with
+                  | Js_of_ocaml.Dom_html.Keyboard_code.Enter ->
+                     Some (SendHole (pt, content))
+                  | _ -> None);
+            ]
         in
         render_hole ~goal:(PT.goal pt) ~command_entry ~msg)
       (fun pt rule children ->
@@ -82,7 +78,7 @@ module Renderer = struct
 
   let render_solution =
     PT.fold
-      (fun _ _ _ -> Ulmus.Html.empty)
+      (fun _ _ -> Ulmus.Html.empty)
       (fun _pt rule children ->
         render_rule ~resetbutton:Ulmus.Html.empty ~rule ~children)
       render_box
@@ -90,7 +86,7 @@ end
 
 let num_holes prooftree =
   PT.fold
-    (fun _ _ _ -> 1)
+    (fun _ _ -> 1)
     (fun _ _ l -> List.fold_left ( + ) 0 l)
     (fun _ x -> x)
     prooftree

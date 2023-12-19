@@ -19,7 +19,7 @@ end = struct
       ~attrs:[ A.class_ "formulabox" ]
       (text (Presentation.string_of_sequent sequent))
 
-  let render_hole point _focus _hole =
+  let render_hole point _hole =
     let assumps = Proof.assumptions point in
     let formula = Proof.goal point in
     proofbox
