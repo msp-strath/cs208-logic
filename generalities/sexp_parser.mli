@@ -36,7 +36,7 @@ val match_tag : (string -> 'a seq_parser) -> 'a parser
 
 val tagged : string -> 'a seq_parser -> 'a parser
 
-val on_kind : atom:(string -> ('a, string) result) ->
+val on_kind : atom:'a String_parser.t ->
               list:'a seq_parser ->
               'a parser
 

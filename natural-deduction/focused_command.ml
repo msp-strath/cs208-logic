@@ -1,25 +1,11 @@
 open Generalities
 open Focused
-open Command
-
-let valid_name str =
-  let is_alpha = function 'A' .. 'Z' | 'a' .. 'z' | '_' -> true | _ -> false
-  and is_alphanum = function
-    | 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '-' | '_' -> true
-    | _ -> false
-  in
-  String.length str > 0
-  && is_alpha str.[0]
-  && String.for_all is_alphanum str
-
-let name_p =
-  Result_ext.of_predicate ~on_error:"not an alphanumeric identifier" valid_name
 
 let assump_nm =
-  "assumption name", name_p
+  Command.item "assumption name" String_parser.name
 
 let var_nm =
-  "variable name", name_p
+  Command.item "variable name" String_parser.name
 
 let term =
   let term_p s =
@@ -27,7 +13,7 @@ let term =
     | Error _ -> Error "term not understood"
     | Ok t -> Ok t
   in
-  ("term", term_p)
+  Command.item "term" term_p
 
 let formula =
   let formula_p s =
@@ -35,33 +21,79 @@ let formula =
     | Error _ -> Error "formula not understood"
     | Ok t -> Ok t
   in
-  ("formula", formula_p)
+  Command.item "formula" formula_p
 
 let commands =
-  [ "true", cmd e Truth
-  ; "split", cmd e Split
-  ; "left", cmd e Left
-  ; "right", cmd e Right
-  ; "apply", cmd e Implies_elim
-  ; "first", cmd e Conj_elim1
-  ; "second", cmd e Conj_elim2
-  ; "false", cmd e Absurd
-  ; "not-elim", cmd e NotElim
-  ; "refl", cmd e Refl
-  ; "reflexivity", cmd e Refl
-  ; "rewrite->", cmd e (Rewrite `ltr)
-  ; "rewrite<-", cmd e (Rewrite `rtl)
-  ; "done", cmd e Close
-  ; "use", cmd (assump_nm @-> e) (fun nm -> Use nm)
-  ; "introduce", cmd (assump_nm @-> e) (fun nm -> Introduce nm)
-  ; "cases", cmd (assump_nm @-> assump_nm @-> e) (fun h1 h2 -> Cases (h1, h2))
-  ; "inst", cmd (term @-> e) (fun t -> Instantiate t)
-  ; "exists", cmd (term @-> e) (fun t -> Exists t)
-  ; "unpack", cmd (var_nm @-> assump_nm @-> e) (fun vnm hnm -> ExElim (vnm, hnm))
-  ; "not-intro", cmd (assump_nm @-> e) (fun hnm -> NotIntro hnm)
-  ; "subst", cmd (var_nm @-> formula @-> e) (fun vnm f -> Subst (vnm, f))
-  ; "induction", cmd (var_nm @-> e) (fun x -> Induction x)
+  let open Command in
+  [ "true",
+    plain Truth
+
+  ; "split",
+    plain Split
+
+  ; "left",
+    plain Left
+
+  ; "right",
+    plain Right
+
+  ; "apply",
+    plain Implies_elim
+
+  ; "first",
+    plain Conj_elim1
+
+  ; "second",
+    plain Conj_elim2
+
+  ; "false",
+    plain Absurd
+
+  ; "not-elim",
+    plain NotElim
+
+  ; "refl",
+    plain Refl
+
+  ; "reflexivity",
+    plain Refl
+
+  ; "rewrite->",
+    plain (Rewrite `ltr)
+
+  ; "rewrite<-",
+    plain (Rewrite `rtl)
+
+  ; "done",
+    plain Close
+
+  ; "use",
+    (let+ nm = assump_nm in Use nm)
+
+  ; "introduce",
+    (let+ nm = assump_nm in Introduce nm)
+
+  ; "cases",
+    (let+ nm1 = assump_nm and+ nm2 = assump_nm in Cases (nm1, nm2))
+
+  ; "inst",
+    (let+ t = term in Instantiate t)
+
+  ; "exists",
+    (let+ t = term in Exists t)
+
+  ; "unpack",
+    (let+ v = var_nm and+ h = assump_nm in ExElim (v, h))
+
+  ; "not-intro",
+    (let+ h = assump_nm in NotIntro h)
+
+  ; "subst",
+    (let+ v = var_nm and+ f = formula in Subst (v, f))
+
+  ; "induction",
+    (let+ v = var_nm in Induction v)
   ]
 
-let of_string str =
-  Result.map_error string_of_error (parse_command commands str)
+let of_string =
+  Command.of_string commands
