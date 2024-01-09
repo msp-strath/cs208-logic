@@ -18,8 +18,8 @@ let () =
          Printexc.print_backtrace stdout;
          raise e
       | Error (outputs, msg) ->
-         Format.printf "@[<v>%a@]@\n" Fmt.(list pp_output) outputs;
+         Format.printf "@[<v>%a@]@\n" (Format.pp_print_list pp_output) outputs;
          Format.eprintf "ERROR: %s\n" msg
       | Ok outputs ->
-         Format.printf "%a@\n" Fmt.(list pp_output) outputs)
+         Format.printf "%a@\n" (Format.pp_print_list pp_output) outputs)
   | Error msg -> Format.eprintf "Parse error: %t@\n" msg

@@ -20,7 +20,7 @@
  (name slakemoth))
  ; (synopsis "A tool for exploring logical modelling.")
  ; (description "A tools for exploting logical modelling.")
- ; (depends ocaml dune msat menhir fmt)
+ ; (depends ocaml dune msat menhir)
  ; (tags
  ;  (topics "to describe" your project)))
 

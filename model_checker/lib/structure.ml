@@ -17,27 +17,33 @@ type item =
 
 type t = item list
 
+let pp_comma_brk fmt () = Format.fprintf fmt ",@ "
+let pp_comma_spc fmt () = Format.fprintf fmt ", "
+let pp_tuple fmt =
+  Format.fprintf fmt "(%a)"
+    (Format.pp_print_list ~pp_sep:pp_comma_spc Format.pp_print_string)
+
 let pp_item fmt = function
   | Vocab { name; arities } ->
       let pp_arity_decl fmt (nm, arity) = Format.fprintf fmt "%s/%d" nm arity in
       Format.fprintf fmt "@[<v2>vocab %s {@,%a@]@,}@," name
-        Fmt.(list ~sep:(any ",@,") pp_arity_decl)
+        (Format.pp_print_list ~pp_sep:pp_comma_brk pp_arity_decl)
         arities
   | Model { name; vocab_name; defns } ->
       let pp_set_decl fmt (nm, elements) =
         Format.fprintf fmt "%s = {@[<hv>%a@]}" nm
-          Fmt.(list ~sep:(any ",@ ") (parens (list ~sep:(any ", ") string)))
+          (Format.pp_print_list ~pp_sep:pp_comma_brk pp_tuple)
           elements
       in
       Format.fprintf fmt "@[<v2>model %s for %s {@,%a@]@,}@," name vocab_name
-        Fmt.(list ~sep:(any ",@,") pp_set_decl)
+        (Format.pp_print_list ~pp_sep:pp_comma_brk pp_set_decl)
         defns
   | Axioms { name; vocab; formulas } ->
       let pp_named_formula fmt (nm, formula) =
         Format.fprintf fmt "%s : \"%s\"" nm (Formula.to_string formula)
       in
       Format.fprintf fmt "@[<v2>axioms %s for %s {@,%a@]@,}@," name vocab
-        Fmt.(list ~sep:(any ",@,") pp_named_formula)
+        (Format.pp_print_list ~pp_sep:pp_comma_brk pp_named_formula)
         formulas
   | Check { model_name; formula } ->
       Format.fprintf fmt "check %s |= \"%s\"@," model_name
@@ -45,4 +51,6 @@ let pp_item fmt = function
   | Synth { axioms; cardinality } ->
       Format.fprintf fmt "synth %s size %d@," axioms cardinality
 
-let pp = Fmt.(vbox (list ~sep:(any "@,") pp_item))
+let pp fmt =
+  Format.fprintf fmt "@[<v>%a@]"
+    (Format.pp_print_list ~pp_sep:Format.pp_print_cut pp_item)

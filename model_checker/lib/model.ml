@@ -1,3 +1,5 @@
+open Format_util
+
 module Entity = struct
   type t = string
 
@@ -20,7 +22,10 @@ module Tuple = struct
     | x :: xs, y :: ys -> (
         match Entity.compare x y with 0 -> compare xs ys | c -> c)
 
-  let pp = Fmt.(hbox (parens (list ~sep:(any ", ") Entity.pp)))
+  let pp fmt =
+    Format.fprintf fmt "(%a)"
+      (Format.pp_print_list ~pp_sep:pp_comma_spc Entity.pp)
+
   let to_string e = "(" ^ String.concat "," (List.map Entity.to_string e) ^ ")"
 end
 
@@ -35,16 +40,19 @@ let contains r tuple interp =
 
 let pp fmt { universe; relations } =
   let pp_tuple fmt = function
-    | [ x ] -> Fmt.string fmt x
-    | xs -> Fmt.(parens (list ~sep:(any ", ") string)) fmt xs
+    | [ x ] -> Format.pp_print_string fmt x
+    | xs ->
+       Format.fprintf fmt "(%a)"
+         (Format.pp_print_list ~pp_sep:pp_comma_spc Format.pp_print_string)
+         xs
   in
   let pp_rel_defn fmt (nm, tuples) =
-    Format.fprintf fmt "%s = %a" nm
-      Fmt.(braces (hovbox (iter ~sep:(any ",@ ") TupleSet.iter pp_tuple)))
-      tuples
+    Format.fprintf fmt "%s = {[@<hov>%a@]}" nm
+      (Format.pp_print_seq ~pp_sep:pp_comma_brk pp_tuple)
+      (TupleSet.to_seq tuples)
   in
-  Format.fprintf fmt "@[<v2>model {@,universe = %a,@,%a@]@,}@,"
-    Fmt.(braces (hbox (list ~sep:(any ",@ ") string)))
+  Format.fprintf fmt "@[<v2>model {@,universe = {@[<h>%a@]},@,%a@]@,}@,"
+    (Format.pp_print_list ~pp_sep:pp_comma_brk Format.pp_print_string)
     universe
-    Fmt.(iter_bindings ~sep:(any ",@,") PredicateMap.iter pp_rel_defn)
-    relations
+    (Format.pp_print_seq ~pp_sep:pp_comma_cut pp_rel_defn)
+    (PredicateMap.to_seq relations)
