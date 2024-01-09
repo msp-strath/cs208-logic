@@ -21,6 +21,7 @@ depends: [
   "parser_util"
   "ppx_monoid"
   "ppx_deriving"
+  "ppx_inline_test"
 ]
 pin-depends: [
   [ "ulmus.~dev"
