@@ -5,10 +5,9 @@ type t =
   | JArray of t list
   | JNull
   | JObject of (string * t) list
-[@@deriving ord]
 
 module Printing = struct
-  let pp_comma = Fmt.(styled `Bold comma)
+  let pp_comma fmt () = Format.pp_print_string fmt ","
 
   let rec to_string = function
     | JString str -> Printf.sprintf "%S" str
@@ -39,10 +38,12 @@ module Printing = struct
       else Buffer.add_utf_8_uchar b c
     in
     Utf8_string.iter escape_char s;
-    Fmt.buffer fmt b
+    Format.pp_print_string fmt (Buffer.contents b)
 
-  let pp_string = Fmt.(styled (`Fg `Blue) @@ styled `Bold @@ quote json_escape)
-  let pp_delim = Fmt.(styled `Bold string)
+  let pp_string fmt s =
+    Format.fprintf fmt "\"%a\"" json_escape s
+  let pp_delim =
+    Format.pp_print_string
 
   let rec pp fmt = function
     | JString s -> pp_string fmt s
@@ -51,13 +52,15 @@ module Printing = struct
     | JInt i -> Format.pp_print_int fmt i
     (*  | Float f -> Format.pp_print_float fmt f (* FIXME: proper format *) *)
     | JNull -> Format.pp_print_string fmt "null"
-    | JArray [] -> Fmt.(styled `Bold (any "[]")) fmt ()
+    | JArray [] ->
+       Format.pp_print_string fmt "[]"
     | JArray elems ->
        Format.fprintf fmt "%a@,@[<v2>  %a@]@,%a"
          pp_delim "["
          (Format.pp_print_list ~pp_sep:pp_comma pp) elems
          pp_delim "]"
-    | JObject [] -> Fmt.(styled `Bold (any "{}")) fmt ()
+    | JObject [] ->
+       Format.pp_print_string fmt "{}"
     | JObject fields ->
         Format.fprintf fmt "%a@,@[<v2>  %a@]@,%a" pp_delim "{"
           (Format.pp_print_list ~pp_sep:pp_comma pp_field)
