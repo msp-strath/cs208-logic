@@ -226,9 +226,12 @@ let get_file_of_dir dirname =
   |> Seq.filter (fun entry -> not (String.starts_with ~prefix:"." entry))
   |> seq_head
 
+let get_partnum string =
+  let idx = String.index string '_' in
+  String.sub string (idx+1) 7
 
 let do_submission css questions dirname outdir entry =
-  let partnum = String.sub entry 12 7 in
+  let partnum = get_partnum entry in
   let entry_dir = Filename.concat dirname entry in
   let submission_filename = Filename.concat entry_dir (get_file_of_dir entry_dir) in
   try
