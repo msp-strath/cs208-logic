@@ -92,12 +92,13 @@ cp slides/week*.pdf $out/;
           site = pkgs.stdenvNoCC.mkDerivation rec {
             name = "site";
             src = self;
-            buildInputs = [ packages.site_gen ];
+            buildInputs = [ packages.site_gen packages.frontend ];
             phases = ["unpackPhase" "installPhase"];
             installPhase = ''
 mkdir -p $out;
 site_gen pages $out;
 cp assets/* $out;
+cp ${packages.frontend}/share/frontend/frontend.bc.js $out;
 '';
           };
         };
