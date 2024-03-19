@@ -31,9 +31,9 @@
   (name parser_util))
 
 (package
-  (name pikchr))
+  (name site_gen))
 
 (package
-  (name site_gen))
+  (name frontend))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project

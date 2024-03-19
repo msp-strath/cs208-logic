@@ -4,10 +4,10 @@
  (libraries ctypes ctypes-foreign)
  (extra_objects pikchr))
 
-(install
- (files pikchr.o)
- (section lib)
- (package pikchr))
+; (install
+;  (files pikchr.o)
+;  (section lib)
+;  (package pikchr))
 
 (rule
  (targets pikchr.o)

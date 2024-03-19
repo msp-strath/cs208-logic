@@ -1,0 +1,36 @@
+opam-version: "2.0"
+synopsis: "Frontend component of CS208 Logic"
+depends: [
+  "ocaml"
+  "dune" {>= "3.7"}
+  "msat"
+  "menhir"
+  "ulmus"
+  "parser_util"
+  "ppx_monoid"
+  "ppx_deriving"
+  "ppx_inline_test"
+  "fol_formula"
+]
+pin-depends: [
+  [ "ulmus.~dev"
+    "git+https://github.com/bobatkey/ulmus#57e1c963b456a59c7f0f2385c03f8155b7af67fc"
+  ]
+  [ "html_sig.~dev"
+    "git+https://github.com/bobatkey/ulmus#57e1c963b456a59c7f0f2385c03f8155b7af67fc"
+  ]
+]
+build: [
+  ["dune" "subst"] {dev}
+  [
+    "dune"
+    "build"
+    "-p"
+    name
+    "-j"
+    jobs
+    "@install"
+    "@runtest" {with-test}
+    "@doc" {with-doc}
+  ]
+]

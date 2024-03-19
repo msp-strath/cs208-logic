@@ -21,14 +21,6 @@ depends: [
   "ppx_deriving"
   "ppx_inline_test"
 ]
-pin-depends: [
-  [ "ulmus.~dev"
-    "git+https://github.com/bobatkey/ulmus#57e1c963b456a59c7f0f2385c03f8155b7af67fc"
-  ]
-  [ "html_sig.~dev"
-    "git+https://github.com/bobatkey/ulmus#57e1c963b456a59c7f0f2385c03f8155b7af67fc"
-  ]
-]
 build: [
   ["dune" "subst"] {dev}
   [

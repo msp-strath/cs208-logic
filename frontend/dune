@@ -7,3 +7,8 @@
             natural_deduction
             nd_focusing_widget
             model_checker_widget))
+
+(install
+ (files frontend.bc.js)
+ (section share)
+ (package frontend))
