@@ -71,26 +71,38 @@
 
         #inherit packages;
 
-        packages = packages // { slides = pkgs.stdenvNoCC.mkDerivation rec {
-          name = "slides";
-          src = self;
-          buildInputs = [ pkgs.coreutils pkgs.bash tex pkgs.libertine pkgs.gnumake ];
-          phases = ["unpackPhase" "buildPhase" "installPhase"];
-          buildPhase = ''
+        packages = packages // {
+          slides = pkgs.stdenvNoCC.mkDerivation rec {
+            name = "slides";
+            src = self;
+            buildInputs = [ pkgs.coreutils pkgs.bash tex pkgs.libertine pkgs.gnumake ];
+            phases = ["unpackPhase" "buildPhase" "installPhase"];
+            buildPhase = ''
 export PATH="${pkgs.lib.makeBinPath buildInputs}";
 mkdir -p .cache/texmf-var;
 export TEXMFHOME=.cache;
 export TEXMFVAR=.cache/texmf-var;
 make -C slides -j 8 all
 '';
-          installPhase = ''
+            installPhase = ''
 mkdir -p $out;
 cp slides/week*.pdf $out/;
 '';
-        }; };
+          };
+          site = pkgs.stdenvNoCC.mkDerivation rec {
+            name = "site";
+            src = self;
+            buildInputs = [ packages.site_gen ];
+            phases = ["unpackPhase" "installPhase"];
+            installPhase = ''
+mkdir -p $out;
+site_gen pages $out;
+cp assets/* $out;
+'';
+          };
+        };
 
-
-                   # // { default = packages.slakemoth; };
+        # // { default = packages.slakemoth; };
 
         devShells.default = pkgs.mkShell {
           inputsFrom = builtins.attrValues packages;

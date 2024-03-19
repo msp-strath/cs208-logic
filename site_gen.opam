@@ -1,30 +1,24 @@
 opam-version: "2.0"
-synopsis: "A tool for exploring logical modelling."
-description: "A tools for exploring logical modelling."
+synopsis: "A site generation tool"
+description: "A site generation tool"
 maintainer: ["Robert Atkey"]
 authors: ["Robert Atkey"]
 license: "GPL3"
-tags: ["topics" "to describe" "your" "project"]
-homepage: "https://github.com/bobatkey/sat-widget"
-doc: "https://url/to/documentation"
-bug-reports: "https://github.com/bobatkey/sat-widget/issues"
+homepage: "https://github.com/bobatkey/interactive-logic-course"
+doc: ""
+bug-reports: ""
 depends: [
   "ocaml"
   "dune" {>= "3.7"}
-  "msat"
   "menhir"
-  "odoc" {with-doc}
-  "ulmus"
-  "omd"
+  "fol_formula"
   "parser_util"
-  "ppx_monoid"
-  "ppx_deriving"
-  "ppx_inline_test"
+  "omd"
+  "html_sig"
+  "ctypes"
+  "ctypes-foreign"
 ]
 pin-depends: [
-  [ "ulmus.~dev"
-    "git+https://github.com/bobatkey/ulmus#57e1c963b456a59c7f0f2385c03f8155b7af67fc"
-  ]
   [ "html_sig.~dev"
     "git+https://github.com/bobatkey/ulmus#57e1c963b456a59c7f0f2385c03f8155b7af67fc"
   ]

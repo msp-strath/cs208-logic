@@ -1,3 +1,5 @@
 (executable
  (name main)
+ (public_name site_gen)
+ (package site_gen)
  (libraries omd html_of_omd html_static fol_formula opikchr))

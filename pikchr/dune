@@ -1,8 +1,13 @@
 (library
  (name opikchr)
- (public_name pikchr)
+; (public_name pikchr)
  (libraries ctypes ctypes-foreign)
  (extra_objects pikchr))
+
+(install
+ (files pikchr.o)
+ (section lib)
+ (package pikchr))
 
 (rule
  (targets pikchr.o)
