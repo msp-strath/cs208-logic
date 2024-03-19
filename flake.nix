@@ -75,7 +75,7 @@
           slides = pkgs.stdenvNoCC.mkDerivation rec {
             name = "slides";
             src = self;
-            buildInputs = [ pkgs.coreutils pkgs.bash tex pkgs.libertine pkgs.gnumake ];
+            buildInputs = [ pkgs.coreutils pkgs.bash tex pkgs.gnumake ];
             phases = ["unpackPhase" "buildPhase" "installPhase"];
             buildPhase = ''
 export PATH="${pkgs.lib.makeBinPath buildInputs}";
