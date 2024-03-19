@@ -1,0 +1,1104 @@
+% -*- TeX-engine: xetex -*-
+
+\documentclass[xetex,aspectratio=169,14pt,hyperref={pdfpagelabels=true,pdflang={en-GB}}]{beamer}
+
+\input{macros}
+
+\weektitle{1}{Propositional Logic}
+
+%\title[CS208 - Week 1]{CS208 (Semester 1) Week 1 : Propositional Logic}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\weeksection{Syntax}
+
+\begin{frame}
+  {Atomic Statements}
+
+  \emph{Propositional Logic} is concerned with statements that make
+  assertions (about the world, or about some ``situation''):
+  \begin{enumerate}
+  \item ``It is raining''
+  \item ``I am in Glasgow''
+  \item ``Version 2.1 of \emph{libfoo} is installed''
+  \item ``The number in cell $(3,3)$ is $7$''
+  \end{enumerate}
+  usually, we abbreviate these: $R$, $G$, $\mathit{foo}_{2.1}$, $C^{3,3}_7$
+
+  \medskip
+
+  These are called \emph{atomic statements} or \emph{atoms}.
+
+\end{frame}
+
+\begin{frame}
+  {Compound Statements}
+
+  \begin{enumerate}
+  \item $R \to G$ \\ \qquad{\it if it is raining, I am in Glasgow} \\
+    \medskip
+  \item $\lnot R \to \lnot G$ \\ \qquad{\it if it is not raining, then I am not in Glasgow} \\
+    \medskip
+  \item $\lnot\mathit{foo}_{2.1} \lor \lnot\mathit{foo}_{2.0}$\\
+    \qquad {\it
+      either version 2.1 or 2.0 of $\mathit{libfoo}$ is not installed} \\
+    \medskip
+  \item $C^{3,3}_7 \land C^{3,4}_8$\\
+    \qquad {\it cell $(3,3)$ contains $7$, and cell $(3,4)$ contains $8$}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Formulas}
+
+  ... are built from \emph{atomic propositions} $A, B, C, \cdots$, and
+  the \emph{connectives} $\land$ (``and''), $\lor$ (``or''), $\lnot$
+  (``not''), and $\to$ (``implies'').
+
+  \medskip
+
+  As a grammar:
+  \begin{displaymath}
+    P, Q ::= A \mid P \land Q \mid P \lor Q \mid \lnot P \mid P \to Q
+  \end{displaymath}
+  where $A$ stands for any atomic proposition.
+
+  \bigskip
+
+  Typically, formulas are written done in a ``linear'' notation, like
+  in algebra. This is because it is more compact...
+
+\end{frame}
+
+\begin{frame}
+  \centering
+  \begin{tikzpicture}
+    \tikzstyle{op}=[draw,circle,text width=0.7em,text height=0.7em]
+    \tikzstyle{atom}=[draw,rectangle,text width=0.7em,text height=0.7em]
+    \path
+    node[op] {$\land$}
+    child {
+      node[op] {$\lor$}
+      child { node[atom] {S} }
+      child { node[atom] {R} }
+    }
+    child {
+      node[op] {$\lnot$}
+      child { node[atom] {S} }
+    };
+  \end{tikzpicture}
+
+  \pause
+  \begin{displaymath}
+    (S \lor R) \land \lnot S
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  \centering
+  \begin{tikzpicture}
+    \tikzstyle{op}=[draw,circle,text width=0.7em,text height=0.7em]
+    \tikzstyle{atom}=[draw,rectangle,text width=0.7em,text height=0.7em]
+    \path
+    node[op] {$\to$}
+    child {
+      node[op] {$\land$}
+      child {
+        node[op] {$\lor$}
+        child { node[atom] {$S$} }
+        child { node[atom] {$R$} }
+      }
+      child {
+        node[op] {$\lnot$}
+        child { node[atom] {$S$} }
+      }
+    }
+    child {
+      node[atom] {$R$}
+    };
+  \end{tikzpicture}
+
+  \pause
+  \begin{displaymath}
+    ((S \lor R) \land \lnot S) \to R
+  \end{displaymath}
+\end{frame}
+
+
+\begin{frame}
+  {Ambiguity}
+
+  For compactness, we write out formulas ``linearly'':
+  \begin{displaymath}
+    \begin{array}{ll}
+      (S \lor R) \land \lnot S &
+      ((S \lor R) \land \lnot S) \to R
+    \end{array}
+  \end{displaymath}
+
+  \medskip
+
+  However, this is ambiguous. What tree does this represent?
+  \begin{displaymath}
+    S \lor R \land \lnot S \to R
+  \end{displaymath}
+  we disambiguate with parentheses:
+  \begin{displaymath}
+    ((S \lor R) \land \lnot S) \to R
+  \end{displaymath}
+  Could put parentheses around every connective, but this is messy.
+\end{frame}
+
+\begin{frame}
+  {Disambiguation}
+  \begin{enumerate}
+  \item Runs of $\land$, $\lor$, $\to$ associate to the right:
+    \begin{displaymath}
+      P_1 \land P_2 \land P_3 \land P_4 \quad \textrm{ is same as }\quad P_1 \land (P_2 \land (P_3 \land P_4))
+    \end{displaymath}
+  \item For any binary connective inside another, require parentheses:
+    \begin{displaymath}
+      \begin{array}{ll@{\hspace{3em}}ll}
+        (P_1 \lor P_2) \land P_3&\textrm{good} &
+        P_1 \lor P_2 \land P_3&\textrm{bad}
+      \end{array}
+    \end{displaymath}
+  \item For a binary connective under a $\lnot$, require parentheses:
+    \begin{displaymath}
+        \lnot P \land Q \quad \textrm{ is not the same as } \quad \lnot (P \land Q)
+    \end{displaymath}
+  \item We don't put parentheses around a $\lnot$:
+    \begin{displaymath}
+      \begin{array}{ll@{\hspace{3em}}ll}
+        \lnot (P \land Q) &\textrm{good} &
+        (\lnot (P \land Q)) &\textrm{bad}
+      \end{array}
+    \end{displaymath}
+  \end{enumerate}
+
+\end{frame}
+
+\def\hiddenuntil<#1>#2{{\temporal<#1>{\color{black!0}}{\color{black}}{\color{black}} #2}}
+
+\begin{frame}
+  \frametitle{Decomposing Formulas}
+
+  Split into: \emph{a)} toplevel connective;\emph{b)} immediate subformulas
+
+  \bigskip
+
+  \begin{tabular}{l|l|l}
+    Formula & Connective & Subformulas\\
+    \hline
+    $A \land B$ & \hiddenuntil<2>{$\land$} & \hiddenuntil<2>{$A$ and $B$} \\
+    $A \land B \land C$ & \hiddenuntil<3>{$\land$} & \hiddenuntil<3>{$A$ and $B \land C$} \\
+    $\lnot(A \land B)$ & \hiddenuntil<4>{$\lnot$} & \hiddenuntil<4>{$A \land B$} \\
+    $A \to B \to C \to D$ & \hiddenuntil<5>{$\to$} & \hiddenuntil<5>{$A$ and $B \to C \to D$} \\
+    $B \to C \to D$ & \hiddenuntil<6>{$\to$} & \hiddenuntil<6>{$B$ and $C \to D$} \\
+  \end{tabular}
+\end{frame}
+\begin{frame}
+  \frametitle{Decomposing Formulas}
+
+  Split into: \emph{a)} toplevel connective;\emph{b)} immediate subformulas
+
+  \begin{tabular}{l|l|l}
+    Formula & Connective & Subformulas\\
+    \hline
+    $(A \land B) \to (A \lor B)$ & \hiddenuntil<2>{$\to$} & \hiddenuntil<2>{$(A \land B)$ and $(A \lor B)$} \\
+    $(A \land B) \lor (B \land C)$ & \hiddenuntil<3>{$\lor$} & \hiddenuntil<3>{$(A \land B)$ and $(B \land C)$} \\
+    $A \lor B \lor C$ & \hiddenuntil<4>{$\lor$} & \hiddenuntil<4>{$A$ and $B \lor C$} \\
+    $A \lor B \land C$ & \hiddenuntil<5>{?} & \hiddenuntil<5>{?}
+  \end{tabular}
+
+  \bigskip
+
+  \hiddenuntil<5>{Last one is ambiguous! $A \lor (B \land C)$ or $(A \lor B) \land C$?}
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  Propositional Logic formulas comprise:
+  \begin{enumerate}
+  \item Atomic propositions
+  \item Compound formulas built from $\land$, $\lor$, $\to$, $\lnot$
+  \end{enumerate}
+
+  \bigskip
+
+  Formulas are ``really'' trees, but we write them linearly.
+
+  \bigskip
+
+  We use parentheses to disambiguate.
+\end{frame}
+
+\weeksection{Semantics}
+
+\begin{frame}
+  {Truth Values}
+
+  We define the semantics of formulas in terms of \rhighlight{truth values}:
+
+  \begin{itemize}
+  \item $\true$ --- meaning ``true'', also written $1$, $\top$, $\mathsf{t}$, $\mathsf{true}$;
+  \item $\false$ --- meaning ``false'', also written $0$, $\bot$, $\mathsf{f}$, $\mathsf{false}$.
+  \end{itemize}
+
+  \bigskip
+  \pause
+
+  \begin{itemize}
+  \item Other collections of truth values are possible \\
+    \qquad\textcolor{black!60}{(e.g., ``unknown'', or values between $0$ and $1$)}
+  \item The truth values mean whatever we want them to mean:
+    \begin{itemize}
+    \item Current or no current on a wire
+    \item Package is installed or not installed
+    \item Grid cell is filled or not
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Meaning is Compositional}
+
+  \vspace{0.75em}
+
+  \quad \rhighlight{The Meaning of a Formula is Defined In Terms of its Parts}
+
+  \pause
+  \bigskip
+
+  To work out the meaning of $P \land Q$:
+  \begin{enumerate}
+  \item Work out the meaning of $P$
+  \item Work out the meaning of $Q$
+  \item Combine using the meaning of $\land$ \textcolor{black!60}{and similar for $\to$, $\lor$, $\lnot$.}
+  \end{enumerate}
+
+
+  \pause
+  \bigskip
+
+  This recipe leaves us to determine:
+  \begin{enumerate}
+  \item What is the meaning of an atom $A$?
+  \item What is the meaning of $\to$, $\land$, $\lor$, $\lnot$?
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Valuations}
+
+  An assignment of truth values to atomic propositions is called a
+  \rhighlight{valuation}. We use the letter $v$ to stand for
+  valuations.
+
+  \medskip
+
+  For an atom $A$, we write $v(A)$ for the value assigned
+  to $A$ by $v$.
+
+  \bigskip
+  \pause
+
+  \textbf{Example}
+  \begin{displaymath}
+    v = \{ A \assigned \true, B \assigned \false, C \assigned \true \}
+  \end{displaymath}
+  So: $\begin{array}[t]{l@{\hspace{0.2em}}c@{\hspace{0.2em}}c}
+         v(A) &=& \true \\
+         v(B) &=& \false \\
+         v(C) &=& \true
+       \end{array}$
+
+\end{frame}
+
+\begin{frame}
+  {Example Valuations}
+
+  \begin{enumerate}
+  \item $v = \{ S \assigned \true, R \assigned \false \}$ \\
+    \quad \textcolor{black!60}{``It is sunny $(v(S) = \true\hspace{0.1em})$. It is not raining $(v(R) = \false\hspace{0.1em})$''}
+  \item $v = \{ S \assigned \false, R \assigned \true \}$ \\
+    \quad \textcolor{black!60}{``It is not sunny $(v(S) = \false\hspace{0.1em})$. It is raining $(v(R) = \true\hspace{0.1em})$''}
+  \item $v = \{ S \assigned \true, R \assigned \true \}$ \\
+    \quad \textcolor{black!60}{``It is sunny $(v(S) = \true\hspace{0.1em})$. It is raining $(v(R) = \true\hspace{0.1em})$''}
+  \end{enumerate}
+
+  \pause
+  \bigskip
+
+  \textcolor{black!60}{Intuition: }Valuations describe ``states of the world''
+\end{frame}
+
+\begin{frame}
+  {Notes on Writing Valuations}
+
+  \begin{enumerate}
+  \item Two valuations are equal if they assign the same truth values
+    to the same atoms.\\
+    \quad \textcolor{black!60}{Order of writing them down doesn't matter.}
+  \item Each atom can only be assigned one truth value.
+  \item Every relevant atom must be assigned some truth value.
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+  {Semantics of the Connectives}
+
+  \begin{center}
+    \begin{tabular}{ll}
+      Formula & {\it is true when ...} \\
+      \hline
+      $P \land Q$ & both $P$ and $Q$ are true\\
+      $P \lor Q$ & at least one of $P$ or $Q$ is true\\
+      $\lnot P$ & $P$ isn't true\\
+      $P \to Q$ & if $P$ is true, then $Q$ is true\\
+      & {\it otherwise it is false.}
+    \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  {Semantics of the Connectives I}
+
+  \begin{mathpar}
+    \begin{array}{cc|c}
+      P&Q&P \land Q \\
+      \hline
+      \false&\false&\false\\
+      \false&\true&\false\\
+      \true&\false&\false\\
+      \true&\true&\true\\
+    \end{array}
+
+    \begin{array}{cc|c}
+      P&Q&P \lor Q \\
+      \hline
+      \false&\false&\false\\
+      \false&\true&\true\\
+      \true&\false&\true\\
+      \true&\true&\true\\
+    \end{array}
+  \end{mathpar}
+\end{frame}
+
+\begin{frame}
+  {Semantics of the Connectives II}
+
+  \begin{mathpar}
+    \begin{array}{c|c}
+      P&\lnot P \\
+      \hline
+      \false&\true \\
+      \true&\false
+    \end{array}
+
+    \begin{array}{cc|c}
+      P&Q&P \to Q \\
+      \hline
+      \false&\false&\true\\
+      \false&\true&\true\\
+      \true&\false&\false\\
+      \true&\true&\true\\
+    \end{array}
+  \end{mathpar}
+
+\end{frame}
+
+\begin{frame}
+  {Truth Assignment}
+
+  For a formula $P$ and a valuation $v$, we write
+  \begin{displaymath}
+    \sem{P}v
+  \end{displaymath}
+  to mean ``the truth value of $P$ at the valuation $v$''.\\
+%  \sidenote{The brackets $\sem{\cdot}$ usually mean ``meaning of''.}
+
+  \pause
+
+  \begin{displaymath}
+    \begin{array}{lcl}
+      \sem{A}v&=&v(A)\\
+      \sem{P \land Q}v&=&\sem{P}v \land \sem{Q}v \\
+      \sem{P \lor Q}v&=&\sem{P}v \lor \sem{Q}v \\
+      \sem{\lnot P}v&=&\lnot \sem{P}v \\
+      \sem{P \to Q}v&=&\sem{P}v \to \sem{Q}v \\
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Example}
+
+  $(A \lor B) \land \lnot A$ with the valuation
+  $v = \{A \assigned \false, B \assigned \true\}$:
+
+%  FIXME: highlight the bit that changes
+
+  \begin{displaymath}
+    \begin{array}{cl}
+      ~~~&\sem{(A \lor B) \land \lnot A}v \hspace{3cm}\\
+%      \\
+      \only<2->{=&\sem{A \lor B}v \land \sem{\lnot A}v} \\
+%      \\
+      \only<3->{=&(\sem{A}v \lor \sem{B}v) \land \sem{\lnot A}v} \\
+%      \\
+      \only<4->{=&(\sem{A}v \lor \sem{B}v) \land \lnot \sem{A}v} \\
+%      \\
+      \only<5->{=&(v(A) \lor v(B)) \land \lnot v(A)} \\
+%      \\
+      \only<6->{=&(\false \lor \true) \land \lnot \false} \\
+%      \\
+      \only<7->{=&\true \land \lnot \false} \\
+%      \\
+      \only<8->{=&\true \land \true}
+      \only<9->{=\true}
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Semantics of a Formula}
+
+  For a formula $P$, its \emph{meaning} is the collection of all
+  valuations $v$ that make $\sem{P}v = \true$.
+
+  \bigskip
+
+  For example,
+  \begin{displaymath}
+    \sem{(A \lor B) \land \lnot A} = \left\{
+      \begin{array}[t]{@{}l}
+        \{A \assigned \false, B \assigned \true\}
+      \end{array}\right\}
+  \end{displaymath}
+
+  To compute sets of valuations, we will use truth tables.
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{enumerate}
+  \item Semantics defines the \emph{meaning} of formulas.
+  \item We use \emph{truth values} $\true$ and $\false$.
+  \item A valuation $v$ assigns truth values to atoms.
+  \item We extend that assignment to whole formulas: $\sem{P}v$.
+  \item The meaning of $P$ is the set of valuations that make it true.
+  \end{enumerate}
+\end{frame}
+
+\weeksection{Truth Tables, Satisfiability, and Validity}
+
+% \section{Propositional Logic 3 : Truth Tables, Satisfiability and Validity}
+
+% \begin{frame}
+%   \begin{center}
+%     {\Huge \textcolor{black!60}{Part 3 : }Truth Tables, \\ Satisfiability and Validity}
+%   \end{center}
+% \end{frame}
+
+\begin{frame}
+  \frametitle{Truth table for $(A \lor B) \land \lnot A$}
+
+  Name the parts: $\textcircled{1} = A \lor B$; $\textcircled{2} = \lnot A$
+
+  \begin{center}
+    \begin{tabular}{cc||cc|c}
+      \multirow{2}{*}{$A$} &
+      \multirow{2}{*}{$B$} &
+      \textcircled{1} & \textcircled{2} &
+      $\text{\textcircled{1}} \land \text{\textcircled{2}}$
+      \\
+      &&
+      $A \lor B$&
+      $\lnot A$&
+      $(A \lor B) \land \lnot A$
+      \\ \hline
+      $\false$ & $\false$ & \only<2->{$\false$} & \only<6->{$\true$}  & \only<10->{$\false$} \\
+      $\false$ & $\true$  & \only<3->{$\true$}  & \only<7->{$\true$}  & \only<11->{$\true$}  \\
+      $\true$  & $\false$ & \only<4->{$\true$}  & \only<8->{$\false$} & \only<12->{$\false$}  \\
+      $\true$  & $\true$  & \only<5->{$\true$}  & \only<9->{$\false$} & \only<13->{$\false$}  \\
+    \end{tabular}
+  \end{center}
+
+  \pause\pause\pause\pause\pause\pause\pause\pause\pause\pause\pause\pause%\pause
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Truth table for $(A \lor B) \land \lnot A$}
+  {\scriptsize \begin{displaymath}
+    \begin{array}{cc|cc|c}
+      A&B&A \lor B&\lnot A& (A \lor B) \land \lnot A\\
+      \hline
+      \false&\false&\false&\true&\false\\
+      \false&\true &\true &\true&\true\\
+      \true &\false&\true &\false&\false\\
+      \true &\true &\true &\false&\false\\
+    \end{array}
+  \end{displaymath}}
+
+  \begin{enumerate}
+  \item Row for every valuation
+  \item Intermediate columns for the subformulas
+  \item Final column for the whole formula
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Truth table for $(A \lor B) \land \lnot A$}
+  {\scriptsize \begin{displaymath}
+      \begin{array}{cc|cc|c}
+        A&B&A \lor B&\lnot A& (A \lor B) \land \lnot A\\
+        \hline
+        \false&\false&\false&\true&\false\\
+        \false&\true &\true &\true&\true\\
+        \true &\false&\true &\false&\false\\
+        \true &\true &\true &\false&\false\\
+      \end{array}
+    \end{displaymath}}
+
+  Read off the truth value assignments:
+  \begin{enumerate}
+  \item For $v = \{A \assigned \false; B \assigned \false\}$: $\sem{(S \lor R) \land \lnot S}v = \false$.
+  \item For $v = \{A \assigned \false; B \assigned \true\}$: $\sem{(S \lor R) \land \lnot S}v = \true$.
+  \item For $v = \{A \assigned \true; B \assigned \false\}$: $\sem{(S \lor R) \land \lnot S}v = \false$.
+  \item For $v = \{A \assigned \true; B \assigned \true\}$: $\sem{(S \lor R) \land \lnot S}v = \false$.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Truth table for $(A \lor B) \land \lnot A$}
+  {\scriptsize \begin{displaymath}
+      \begin{array}{cc|cc|c}
+        A&B&A \lor B&\lnot A& (A \lor B) \land \lnot A\\
+        \hline
+        \false&\false&\false&\true&\false\\
+        \false&\true &\true &\true&\true\\
+        \true &\false&\true &\false&\false\\
+        \true &\true &\true &\false&\false\\
+      \end{array}
+    \end{displaymath}}
+
+  The semantics of a formula can be read off from the lines of the truth table that end with $\true$:
+  \begin{displaymath}
+    \sem{(A \lor B) \land \lnot A} = \left\{ \{ A \assigned \false; B \assigned \true \} \right\}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Satisfiability}
+
+  A formula $P$ is \rhighlight{satisfiable} if there {\bf exists at
+    least one} valuation $v$ such that $\sem{P}v = \true$.
+
+  \bigskip
+  \pause
+
+  \emph{Alternatively:} there is at least one row in the truth table
+  that ends with $\true$.
+
+  \bigskip
+  \pause
+
+  \emph{Alternatively:} the semantics of $P$ contains at least one
+  valuation.
+\end{frame}
+
+\begin{frame}
+  {Validity}
+
+  A formula $P$ is \rhighlight{valid} if {\bf for all} valuations $v$,
+  we have $\sem{P}v = \true$.
+
+  \bigskip
+  \pause
+
+  \emph{Alternatively:} all rows in the truth table end with $\true$.
+
+  \bigskip
+  \pause
+
+  \emph{Alternatively:} the semantics of $P$ consists of all possible
+  valuations.
+
+  \bigskip
+  \pause
+
+  A valid formula is also called a \emph{tautology}.
+\end{frame}
+
+\begin{frame}
+  {Sunny and Rainy}
+
+  \medskip
+
+  Is the formula $(S \lor R) \land \lnot S$
+  \begin{enumerate}
+  \item Satisfiable? \\
+    \quad \hiddenuntil<2>{Yes. $v = \{ S \assigned \false, R \assigned \true \}$}
+  \item Valid? \\
+    \quad \hiddenuntil<3>{No: $v = \{S\assigned \true, R\assigned \false\}$ is a counterexample}
+  \end{enumerate}
+
+  \bigskip
+  \pause\pause\pause
+
+  Is the formula $((S \lor R) \land \lnot S) \to R$
+  \begin{enumerate}
+  \item Satisfiable? \\
+    \quad \hiddenuntil<5>{Yes. $v = \{ S \assigned \true, R \assigned \false \}$}
+  \item Valid? \\
+    \quad \hiddenuntil<6>{Yes. (need to check the truth table)}
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+  {An observation}
+
+  If a valuation $v$ makes a formula $P$ true, then it makes $\lnot P$ false.
+  \begin{displaymath}
+    \sem{P}v = \true \qquad \Leftrightarrow \qquad \sem{\lnot P}v = \false
+  \end{displaymath}
+
+\end{frame}
+
+\begin{frame}[t]
+  {Satisfiability vs Validity}
+
+  A formula $P$ is valid exactly when $\lnot P$ is not satisfiable.
+
+  \pause
+
+  {\it Proof.}
+  \begin{displaymath}
+    \begin{array}{@{}cll}
+      \hspace{1cm}   &P \textrm{ valid}\hspace{6.5cm}&\hspace{12cm} \\
+      \only<3->{\Leftrightarrow&\textrm{for all }v, \sem{P}v = \true&\textit{by definition}} \\
+      \only<4->{\Leftrightarrow&\textrm{for all }v, \sem{\lnot P}v = \false&\textit{by above observation}} \\
+      \only<5->{\Leftrightarrow&\textrm{for all }v, \textrm{not}~(\sem{\lnot P}v = \true)&\textit{$\true$ is not $\false$}} \\
+      \only<6->{\Leftrightarrow&\textrm{does not exist }v\textrm{ such that }\sem{\lnot P}v = \true&\textit{``for all, not'' $\equiv$ ``not exists''}} \\
+      \only<7->{\Leftrightarrow&\lnot P \textrm{ not satisfiable}&\textit{by definition}}
+    \end{array}
+  \end{displaymath}
+
+  \pause\pause\pause\pause\pause
+\end{frame}
+
+\begin{frame}[t]
+  {Satisfiability vs Validity}
+
+  A formula $P$ is valid exactly when $\lnot P$ is not satisfiable.
+
+
+  \bigskip
+
+  \emph{Consequence: }Counterexample finding
+
+  \bigskip
+
+  \begin{itemize}
+  \item If we get a valuation satisfying $\lnot P$, it is a
+    \rhighlight{counterexample} to the validity of $P$.
+  \item If we do not find any valuation satisfying $\lnot P$, then $P$
+    is valid.
+  \item So we can reduce the problem of determining validity to
+    finding satisfying valuations.
+  \end{itemize}
+\end{frame}
+
+% \begin{frame}
+%   {The Satisfiability Problem}
+
+%   The \emph{Satisfiability Problem} (SAT): is it possible to find
+%   a valuation that satisfies $P$?
+
+%   \pause
+%   \bigskip
+
+%   Why do we care?
+%   \begin{itemize}
+%   \item<3-> Many Practical Applications
+%     \begin{itemize}
+%     \item Checking hardware designs (encode circuits as formulas)
+%     \item Checking software designs (encode states and transitions as formulas)
+%     \item Package management (Eclipse, Debian, ...)
+%     \item ...
+%     \end{itemize}
+%   \item<4-> Interesting Theory and Deep Questions
+%     \begin{itemize}
+%     \item P vs NP
+%     \item What is \emph{easy}? What is \emph{hard}?
+%     \end{itemize}
+%   \end{itemize}
+
+% \end{frame}
+
+% \begin{frame}
+%   \emph{Modelling with Propositional Logic} often means translating
+%   some problem into a collection of \emph{constraints}, all of which
+%   must hold simultaneously:
+
+%   \bigskip
+
+%   \begin{displaymath}
+%     \begin{array}{l@{\qquad}l}
+%       \mathit{foo}_1 \lor \mathit{foo}_2           & \textrm{some version of {\it foo} must be installed} \\
+%       \lnot\mathit{foo}_1 \lor \lnot\mathit{foo}_2 & \textrm{versions 1 and 2 are incompatible} \\
+%       \lnot\mathit{foo}_1 \lor \mathit{bar}_1      & \textrm{{\it foo v1} requires {\it bar v1}} \\
+%       ...
+%     \end{array}
+%   \end{displaymath}
+
+%   \bigskip
+
+%   A satisfying assignment = a set of packages that can be installed.
+%   \begin{displaymath}
+%     \begin{array}{l}
+%       \mathit{foo}_1 = \true, \mathit{foo}_2 = \false, \mathit{bar}_1 = \true; \textrm{or} \\
+%       \mathit{foo}_1 = \false, \mathit{foo}_2 = \true, \mathit{bar}_1 = \true; \textrm{or} \\
+%       \mathit{foo}_1 = \false, \mathit{foo}_2 = \true, \mathit{bar}_1 = \false; \textrm{but not...} \\
+%       \mathit{foo}_1 = \true, \mathit{foo}_2 = \true, \mathit{bar}_1 = ?
+%     \end{array}
+%   \end{displaymath}
+% \end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item Truth tables enable mass production of meaning
+  \item Satisfiability: at least one valuation makes it true.
+  \item Validity: every valuation makes it true.
+  \item Satisfiability and Validity related via negation.
+  \end{itemize}
+\end{frame}
+
+\weeksection{Entailment}
+
+\begin{frame}
+  {Entailment}
+
+  Entailment is a relation between some assumptions:
+  \begin{displaymath}
+    P_1, \dots, P_n
+  \end{displaymath}
+  and a conclusion:
+  \begin{displaymath}
+    Q
+  \end{displaymath}
+
+  \pause
+  \bigskip
+
+  What we want to capture is:
+
+  \medskip
+
+  \qquad \emph{If we assume $P_1$, ..., $P_n$ are all true, then it is safe to conclude $Q$.}
+
+  % \pause
+  % \bigskip
+
+  % \sechead{Note:} Satisfiability and Validity are properties of
+  % individual formulas. Entailment is a \emph{relation} between a
+  % collection of formulas (the assumptions) and a single formula (the
+  % conclusion).
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Is it safe?}
+
+  If we assume
+  \begin{center}
+    it is sunny
+  \end{center}
+  then is it safe to conclude
+  \begin{center}
+    it is sunny
+  \end{center}
+
+  \bigskip
+  \pause
+
+  Yes! \pause There are two cases:
+  \begin{enumerate}
+  \item It is sunny  (i.e., $v(\mathrm{Sunny}) = \true$)
+  \item \strikeafter<4>{It isn't sunny (i.e., $v(\mathrm{Sunny}) = \false$)}
+  \end{enumerate}
+  \pause But we are assuming ``it is sunny'', so the second case
+  doesn't matter.
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Is it safe?}
+
+  If we assume
+  \begin{center}
+    \emph{nothing}
+  \end{center}
+  then is it safe to conclude
+  \begin{center}
+    it is sunny
+  \end{center}
+
+  \bigskip
+  \pause
+
+  No! \pause There are two cases:
+  \begin{enumerate}
+  \item It is sunny  (i.e., $v(\mathrm{Sunny}) = \true$)
+  \item It isn't sunny (i.e., $v(\mathrm{Sunny}) = \false$)
+  \end{enumerate}
+  \pause But we are making no assumptions, so either ``world'' is
+  possible: it might not be sunny.
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Is it safe?}
+
+  If we assume
+  \begin{center}
+    it is raining
+  \end{center}
+  then it is safe to conclude:
+  \begin{center}
+    it is not sunny
+  \end{center}
+
+  \bigskip
+  \pause
+
+  No! \pause There are four cases:
+  \begin{enumerate}
+  \item It is sunny and raining
+  \item \strikeafter<4>{It is sunny and not raining}
+  \item It is not sunny, but is raining
+  \item \strikeafter<4>{It is not sunny and not raining}
+  \end{enumerate}
+  \pause % We are assuming ``it is raining'', so cases 2 and 4 don't
+  % matter, but that still leaves case 1: it may be sunny and raining.
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Is it safe?}
+
+  If we assume
+  \begin{center}
+    it is raining \qquad \emph{and} \qquad if it is raining it is not sunny
+  \end{center}
+  then is it safe to conclude:
+  \begin{center}
+    it is not sunny
+  \end{center}
+
+  \bigskip
+  \pause
+
+  Yes! \pause There are four cases:
+  \begin{enumerate}
+  \item \strikeafter<5>{It is sunny and raining}
+  \item \strikeafter<4>{It is sunny and not raining}
+  \item It is not sunny, but is raining
+  \item \strikeafter<4>{It is not sunny and not raining}
+  \end{enumerate}
+  \pause % We are assuming ``it is raining'', so cases 2 and 4 don't
+  % matter. \pause We are also assuming ``if it is raining, it is not
+  % sunny'', so case 1 is removed too. The only remaining case has ``not
+  % sunny''.
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Is it safe?}
+
+  If we assume
+  \begin{center}
+    \emph{nothing}
+  \end{center}
+  then is it safe to conclude:
+  \begin{center}
+    it is sunny or not sunny
+  \end{center}
+
+  \pause
+  \bigskip
+
+  Yes!. There are two cases:
+  \begin{enumerate}
+  \item It is sunny
+  \item It is not sunny
+  \end{enumerate}
+  \pause In either case the conclusion is true: $A \lor B$ requires at
+  least one of $A$ or $B$ to be true.
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Is it safe?}
+
+  If we assume
+  \begin{center}
+    it is sunny \qquad \emph{and} \qquad it is not sunny
+  \end{center}
+  then is it safe to conclude:
+  \begin{center}
+    the moon is made of spaghetti
+  \end{center}
+
+  \pause
+  \bigskip
+
+  Yes! \pause There are four cases:
+  \begin{enumerate}
+  \item \strikeafter<5>{it is sunny, and the moon is made of spaghetti}
+  \item \strikeafter<4>{it is not sunny, and the moon is made of spaghetti}
+  \item \strikeafter<5>{it is sunny, and the moon is not made of spaghetti}
+  \item \strikeafter<4>{it is not sunny, and the moon is not made of spaghetti}
+  \end{enumerate}
+  \pause\pause
+  % \pause We are assuming ``it is sunny'', so cases 2 and 4 don't
+  % matter. \pause We are \emph{also} assuming ``it is not sunny'', so
+  % cases 1 and 3 don't matter. \pause There are no remaining cases and
+  % ``the moon is made of spaghetti'' is true in all of them.
+\end{frame}
+
+
+  % Idea: step through example by example
+  % - example 0 : assume nothing, then it is sunny?
+  % - example 1 : assume that it is sunny, then it is sunny?
+  % - example 1 : if it is raining, it is not sunny?
+  % - example 2 : if it is raining or sunny and it is not sunny, then it is raining?
+  % - example 3 : if is is raining and (raining implies not sunny), then it is sunny?
+  % - example 4 : if A and (A -> !B), then !B
+  % - example 5 : if A and (A -> B), then B
+  % - example 6 :
+
+  % common feature of ones that are not valid: there is a counterexample where the assumptions are true, but the conclusion isn't
+  % idea: an entailment is valid if
+
+\begin{frame}[t]
+  {Entailment}
+
+  In general, we have $n$ assumptions $P_1, \ldots, P_n$ and
+  conclusion $Q$.
+
+  \bigskip
+  \bigskip
+
+  We are going to say: \qquad $P_1,\ldots,P_n \models Q$
+
+  \hspace{3.5cm} \textcolor{black!60}{Read as $P_1,\ldots,P_n \textit{ entails } Q$}
+
+  \bigskip
+
+  if:\\
+  \quad for all ``situations'' \textcolor{black!60}{(i.e., valuations)}\\
+  \quad \quad that make \textbf{all} the assumptions $P_i$ true,\\
+  \quad \qquad the conclusion $Q$ is true.
+
+\end{frame}
+
+\begin{frame}
+  {Entailment}
+
+  \textbf{With more symbols} \\\qquad for all valuations $v$, if, for
+  all $i$, $\sem{P_i} v = \true$, then $\sem{Q} v = \true$.
+
+  \bigskip
+
+  \textbf{In terms of Semantics}\\ \qquad every valuation in all $\sem{P_i}$
+  is also in $\sem{Q}$ \\ \qquad (in set theory symbols:
+  $(\sem{P_1} \cap \dots \cap \sem{P_n}) \subseteq \sem{Q}$).
+\end{frame}
+
+\begin{frame}
+  {Entailment vs Validity}
+
+  If we have no assumptions, then:
+  \begin{displaymath}
+    \models P
+  \end{displaymath}
+  exactly when
+  \begin{displaymath}
+    \textrm{for all }v.~\sem{P}v = \true
+  \end{displaymath}
+  exactly when
+  \begin{displaymath}
+    P\textrm{ is valid}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Deduction Theorem}
+  \begin{displaymath}
+    P_1, \ldots, P_n, P \models Q
+    \qquad \textit{exactly when} \qquad
+    P_1, \ldots, P_n \models P \to Q
+  \end{displaymath}
+
+  \bigskip
+
+  All these statements are equivalent:
+  \begin{enumerate}
+  \item $P_1, \ldots, P_n, P \models Q$
+  \item for all $v$, if all $\sem{P_i} v = \true$ and $\sem{P}v = \true$, then $\sem{Q}v = \true$
+  \item for all $v$, if all $\sem{P_i} v = \true$, then (if $\sem{P} v = \true$, then $\sem{Q}v = \true$)
+  \item for all $v$, if all $\sem{P_i} v = \true$, then $\sem{P \to Q}v = \true$
+  \item $P_1, \ldots, P_n \models P \to Q$
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Entailment vs satisfiability}
+
+  So, it is the case that
+  \begin{displaymath}
+    P_1,\dots,P_n \models Q
+  \end{displaymath}
+  exactly when
+  \begin{displaymath}
+    \models P_1 \to \dots \to P_n \to Q
+  \end{displaymath}
+  exactly when
+  \begin{displaymath}
+    P_1 \to \dots \to P_n \to Q \textrm{ is valid}
+  \end{displaymath}
+  exactly when
+  \begin{displaymath}
+    \lnot (P_1 \to \dots \to P_n \to Q) \textrm{ is not satisfiable}
+  \end{displaymath}
+
+  % FIXME: drive the point home: if we have a satisfiability checker, we have a counterexample finder
+
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item Entailment defines safe deductions.
+  \item Relationship with Validity
+  \item Relationship with ``$\to$'' \quad\textcolor{black!60}{(Deduction Theorem)}
+  \item Relationship with Satisfaction.
+  \end{itemize}
+
+  % FIXME:
+
+  % Entailment has many properties:
+  % \begin{enumerate}
+  % \item Everything entails itself: $A \models A$.
+  % \item Order of assumptions doesn't matter.
+  % \item Adding assumptions preserves entailment: $P_1,\dots,P_n \models Q$ implies $P_1,\dots,P_n,P \models Q$
+  % \end{enumerate}
+  % We will cover these properties and more in the tutorials.
+\end{frame}
+
+\end{document}

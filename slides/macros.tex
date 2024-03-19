@@ -1,0 +1,98 @@
+\usepackage[sci,noslidestrathidentity]{strathclyde}
+\strathsetidentity{Department of}{Computer \& Information Sciences}
+
+\usepackage{lmodern}
+\usepackage{subscript}
+\usepackage{url}
+\usepackage{pifont}
+\usepackage{csquotes}
+\usepackage{mathpartir}
+\usepackage{stmaryrd}
+\usepackage{multirow}
+\usepackage{euler}
+\usepackage[normalem]{ulem}
+
+% 2013-09-08 SU adding xetex specifics
+% http://www.woggie.net/2008/07/16/beamer-pdftex-and-xetex/
+\usepackage{xltxtra}
+
+% 2013-09-08 SU http://robjhyndman.com/hyndsight/xelatex/
+\defaultfontfeatures{Ligatures=TeX}
+
+% 2015-12-09 SU table beautified
+\renewcommand{\arraystretch}{1.2}
+\usepackage{booktabs}
+
+%MGK compatibility
+\newcommand{\hh}[1]
+  {\medskip\textbf{\large #1}}
+\newcommand{\pdu}[3]
+  {#1\rightarrow #2 : &\ & \makebox[70mm][l]{$#3$}}
+
+
+
+\setlength{\marginparwidth}{2cm}
+\usepackage{todonotes}%[disable]
+\let\OldTodo\todo
+\renewcommand{\todo}{\OldTodo[inline]}%
+\newcommand{\todolater}[1]{}% Things to do for next year
+
+
+\DeclareTextCommandDefault{\nobreakspace}{\leavevmode\nobreak\ }
+\usepackage{rotating}
+
+\usepackage{pdfcomment}% To add alt text for images using \pdftooltip{}
+
+\usepackage{appendixnumberbeamer}
+
+\newcommand{\messageframe}[1]{\begin{frame}\begin{center}\Huge #1\end{center}\end{frame}}
+\newcommand{\sechead}[1]{{\bf #1} \\}
+\newcommand{\examplehead}[1]{{\bf Example:} {\it\textcolor{red!90}{#1}} \\}
+\newcommand{\eqnote}[1]{\hspace{3cm}\textit{#1}}
+\newcommand{\sidenote}[1]{\qquad {\footnotesize \textcolor{black!60}{(#1)}}}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+\newcommand{\true}{\mathsf{T}}
+\newcommand{\false}{\mathsf{F}}
+
+\def\strikeafter<#1>#2{\temporal<#1>{#2}{\sout{#2}}{\sout{#2}}}
+
+
+%\newcommand{\rhighlight}{\textcolor{titlered}}
+\newcommand{\rhighlight}{\textbf}
+\newcommand{\highlight}{\textbf}
+
+% \setmainfont{Linux Biolinum O}
+\setmainfont{LinBiolinum}[
+Path=,
+UprightFont = *_R.otf ,
+BoldFont = *_RB.otf ,
+ItalicFont = *_RI.otf
+]
+
+\setbeamertemplate{navigation symbols}{}
+%\usecolortheme[rgb={0.8,0,0}]{structure}
+\usefonttheme{serif}
+\usefonttheme{structurebold}
+\setbeamercolor{description item}{fg=black}
+
+
+\author[Atkey]{Dr.~Robert Atkey}
+\institute[Strathclyde]{Computer \& Information Sciences}
+\date[]{}
+
+\newcommand{\weeksection}[1]{%
+  \section{\thetitle{}, Part~\thesection : #1}
+  \begin{frame}
+    \begin{center}
+      \textcolor{black!60}{\thetitle{}, Part \thesection}\\
+      {\Huge #1}
+    \end{center}
+  \end{frame}}
+
+\newcommand{\weektitle}[2]{\def\thetitle{#2}
+\title[CS208 - Week #1]{CS208 (Semester 1) Week #1 : #2}}
+
+\newcommand{\assigned}{:}
+
+\newcommand{\forcedto}{\assigned_f}
+\newcommand{\decideto}{\assigned_d}

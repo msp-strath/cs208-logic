@@ -3,3 +3,11 @@
 /_build/
 /_site/
 /target
+/slides/*.nav
+/slides/*.aux
+/slides/*.log
+/slides/*.out
+/slides/*.pdf
+/slides/*.snm
+/slides/*.toc
+/slides/*.upa

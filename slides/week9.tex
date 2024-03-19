@@ -1,0 +1,483 @@
+% -*- TeX-engine: xetex -*-
+
+\documentclass[xetex,aspectratio=169,14pt,hyperref={pdfpagelabels=true,pdflang={en-GB}}]{beamer}
+
+\input{macros}
+
+\weektitle{9}{Equality and Arithmetic}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\weeksection{Rules for Equality}
+
+\begin{frame}
+  {What is Equality?}
+
+  \begin{displaymath}
+    t_1 = t_2
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {What is Equality?}
+
+  Some properties:
+  \begin{enumerate}
+  \item \emph{Reflexivity: } for all $x$, $x = x$
+  \item \emph{Symmetry: } for all $x$ and $y$, if $x = y$ then $y = x$
+  \item \emph{Transitivity: } for all $x$, $y$ and $z$, if $x = y$ and $y = z$, then $x = z$
+  \end{enumerate}
+
+  \pause
+  \bigskip
+
+  Any binary relation that satisfies these properties is called an
+  \emph{equivalence relation}.
+\end{frame}
+
+\begin{frame}
+  {What is Equality?}
+
+  The \textbf{special} property of equality is the following:
+
+  \bigskip
+
+  \begin{center}
+    If $s = t$, then everything that is true about $s$ is true about $t$.
+  \end{center}
+
+  \pause
+  \bigskip
+
+  \textcolor{black!60}{(and vice versa. but do we need to say this?)}
+
+  \pause
+  \bigskip
+
+  Gottfried Leibniz (co-inventor of Calculus) took this as the
+  \emph{definition} of equality.
+\end{frame}
+
+\begin{frame}
+  {What is Equality?}
+
+  With more symbols:
+  \begin{center}
+    If $t_1 = t_2$, then for all $P$, if $P[x \mapsto t_1]$ then $P[x \mapsto t_2]$
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  {What is Equality?}
+
+  All we will need is:
+  \begin{enumerate}
+  \item Reflexivity: for every term $t$, $t = t$
+  \item Substitution: $t_1 = t_2$ and $P[x \mapsto t_1]$ implies $P[x \mapsto t_2]$
+  \end{enumerate}
+
+  \bigskip
+
+  Amazingly, this is enough!
+\end{frame}
+
+\begin{frame}
+  {Symmetry}
+
+  To prove that $x = y$ implies $y = x$:
+  \begin{enumerate}
+  \item We know that $x = x$ by reflexivity
+  \item So we use our assumption to replace the first $x$ by $y$ to get $y = x$.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Transitivity}
+
+  To prove that $x = y$ and $y = z$ implies $x = z$:
+  \begin{enumerate}
+  \item Substitute the second assumption in the first to get $x = z$.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Rules for Equality: Introduction}
+
+  \begin{displaymath}
+    \inferrule* [right=Reflexivity]
+    { }
+    {\Gamma \vdash t = t}
+  \end{displaymath}
+
+  \bigskip
+
+  Every term is equal to itself.
+\end{frame}
+
+\begin{frame}
+  {Rules for Equality: Elimination}
+
+  \begin{displaymath}
+    \inferrule* [right=Subst]
+    {\Gamma \vdash P[x \mapsto t_2]}
+    {\Gamma~[t_1 = t_2] \vdash P[x \mapsto t_1]}
+  \end{displaymath}
+
+  If we know that $t_1 = t_2$ then we can replace $t_1$ with $t_2$ in
+  the goal. This is substitution backwards: if we know
+  $P[x \mapsto t_2]$ and $t_1 = t_2$, then we know $P[x \mapsto t_1]$.
+\end{frame}
+
+\begin{frame}
+  {Example: Symmetry}
+
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\inferrule* [Right=Introduce]
+      {\inferrule* [Right=Introduce]
+        {\inferrule* [Right=Use]
+          {\inferrule* [Right=Subst]
+            {\inferrule* [Right=Reflexivity]
+              { }
+              {\mathit{x}, \mathit{y}, x = y \vdash y = y}
+            }
+            {\mathit{x}, \mathit{y}, x = y~[x = y] \vdash y = x}
+          }
+          {\mathit{x}, \mathit{y}, x = y \vdash y = x}
+        }
+        {\mathit{x}, \mathit{y} \vdash x = y \to y = x}
+      }
+      {\mathit{x} \vdash \forall \mathit{y}. x = y \to y = x}
+    }
+    { \vdash \forall \mathit{x}. \forall \mathit{y}. x = y \to y = x}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Example: Transitivity}
+
+  {\small
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\inferrule* [Right=Introduce]
+      {\inferrule* [Right=Introduce]
+        {\inferrule* [Right=Introduce]
+          {\inferrule* [Right=Introduce]
+            {\inferrule* [Right=Use]
+              {\inferrule* [Right=Subst]
+                {\inferrule* [Right=Use]
+                  {\inferrule* [Right=Done]
+                    { }
+                    {\mathit{x}, \mathit{y}, \mathit{z}, x = y, y = z~[y = z] \vdash y = z}
+                  }
+                  {\mathit{x}, \mathit{y}, \mathit{z}, x = y, y = z \vdash y = z}
+                }
+                {\mathit{x}, \mathit{y}, \mathit{z}, x = y, y = z~[x = y] \vdash x = z}
+              }
+              {\mathit{x}, \mathit{y}, \mathit{z}, x = y, y = z \vdash x = z}
+            }
+            {\mathit{x}, \mathit{y}, \mathit{z}, x = y \vdash y = z \to x = z}
+          }
+          {\mathit{x}, \mathit{y}, \mathit{z} \vdash x = y \to y = z \to x = z}
+        }
+        {\mathit{x}, \mathit{y} \vdash \forall \mathit{z}. x = y \to y = z \to x = z}
+      }
+      {\mathit{x} \vdash \forall \mathit{y}. \forall \mathit{z}. x = y \to y = z \to x = z}
+    }
+    { \vdash \forall \mathit{x}. \forall \mathit{y}. \forall \mathit{z}. x = y \to y = z \to x = z}
+  \end{displaymath}}
+\end{frame}
+
+\begin{frame}
+  {Rewriting}
+
+  \begin{enumerate}
+  \item ~\TirName{Subst} can be quite tricky to use because we have to
+    give a formula $P$ such that $P[x \mapsto t_1]$ is the one we
+    start with, and $P[x \mapsto t_2]$ is the one we end up with.
+  \item Usually, we want to replace \emph{every} occurrence of $t_1$
+    with $t_2$. We write this as:
+    \begin{displaymath}
+      P\{t_1 \mapsto t_2\}
+    \end{displaymath}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Rewriting}
+
+  \begin{displaymath}
+    \inferrule* [right=Rewrite$\to$]
+    {\Gamma \vdash P\{t_1 \mapsto t_2\}}
+    {\Gamma~[t_1 = t_2] \vdash P}
+  \end{displaymath}
+
+  \bigskip
+
+  If we have $t_1 = t_2$ then we can replace $t_1$ with $t_2$
+  everywhere.
+\end{frame}
+
+\begin{frame}
+  {Rewriting}
+
+  For convenience:
+  \begin{displaymath}
+    \inferrule* [right=Rewrite$\leftarrow$]
+    {\Gamma \vdash P\{t_2 \mapsto t_1\}}
+    {\Gamma~[t_1 = t_2] \vdash P}
+  \end{displaymath}
+
+  \bigskip
+
+  If we have $t_1 = t_2$ then we can replace $t_1$ with $t_2$
+  everywhere.
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  Equality is characterised by two principles:
+  \begin{enumerate}
+  \item Everything is equal to itself (\emph{reflexivity})
+  \item If $s = t$, then everything that is true about $s$ is true
+    about $t$.
+  \end{enumerate}
+\end{frame}
+
+\weeksection{Arithmetic and Induction}
+
+\begin{frame}
+  {Arithmetic}
+
+  One thing we might want to do with Predicate Logic is reason about
+  numbers:
+
+  \bigskip
+
+  \begin{itemize}
+  \item $\forall x. \forall y.~x + y = y + x$
+  \item $\forall x. \forall y.\forall z.~x + (y + z) = (x+y) + z$
+  \item $\forall x. \forall y. \forall z.~x \times (y+z) = (x \times y) + (x \times z)$
+  \item $\forall n.~n > 2 \to \lnot(\exists x. \exists y. \exists z.~x^n + y^n = z^n)$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Representation of Numbers}
+
+  To make thing easier, we use a \emph{unary} representation of numbers:
+
+  \bigskip
+
+  A number is either:
+  \begin{enumerate}
+  \item $0$ or
+  \item $S(n)$, where $n$ is a number.
+  \end{enumerate}
+
+  \bigskip
+
+  For example, $5$ is represented as $S(S(S(S(S(0)))))$.
+
+  \bigskip
+
+  This is \emph{massively} inefficient, but makes reasoning easier.
+\end{frame}
+
+\begin{frame}
+  {Axioms}
+
+  We can now write down some plausible axioms for arithmetic.
+\end{frame}
+
+\begin{frame}
+  {Axiom 1}
+
+  \begin{displaymath}
+    \forall x.~\lnot(0 = S(x))
+  \end{displaymath}
+
+  \bigskip
+
+  $0$ is not the successor of any number.
+\end{frame}
+
+\begin{frame}
+  {Axiom 2}
+
+  \begin{displaymath}
+    \forall x. \forall y. S(x) = S(y) \to x = y
+  \end{displaymath}
+
+  \bigskip
+
+  If two successors are equal, the things they are successors of must
+  be equal.
+
+  \bigskip
+
+  This is a way of saying ``successor goes on forever''. If we had a
+  loop such that $S(x)$ was equal to some number $y$ less than $x$,
+  then this axiom would not hold.
+\end{frame}
+
+\begin{frame}
+  {Axioms 3 and 4}
+
+  \begin{displaymath}
+    \begin{array}{l}
+      \forall x.~add(0,x) = x \\
+      \forall x. \forall y.~add(S(x),y) = S(add(x,y))
+    \end{array}
+  \end{displaymath}
+
+  \bigskip
+
+  \begin{enumerate}
+  \item Adding $0$ to $x$ gives $x$, i.e., $0+x=x$
+  \item $(1+x)+y = 1+(x+y)$.
+  \end{enumerate}
+
+  \bigskip
+
+  These axioms define addition.
+\end{frame}
+
+\begin{frame}
+  {Axioms 5 and 6}
+
+  \begin{displaymath}
+    \begin{array}{l}
+      \forall x.~mul(0,x) = 0 \\
+      \forall x. \forall y.~mul(S(x),y) = add(y,mul(x,y))
+    \end{array}
+  \end{displaymath}
+
+  \bigskip
+
+  \begin{enumerate}
+  \item $0 \times x = 0$
+  \item $(1+x) \times y = y + (x \times y)$
+  \end{enumerate}
+
+  \bigskip
+
+  These axioms define multiplication.
+\end{frame}
+
+\begin{frame}
+  {Peano's Axioms (not all of them)}
+
+  \begin{enumerate}
+  \item $\forall x.~\lnot(0 = S(x))$
+  \item $\forall x. \forall y.~S(x) = S(y) \to x = y$
+  \item $\forall x.~add(0,x) = x$
+  \item $\forall x.\forall y.~add(S(x),y) = S(add(x,y))$
+  \item $\forall x.~mul(0,x) = 0$
+  \item $\forall x. \forall y.~mul(S(x),y) = add(y,mul(x,y))$
+  \end{enumerate}
+
+  \bigskip
+
+  (named after Guiseppe Peano)
+\end{frame}
+
+\begin{frame}
+  {What can we prove?}
+
+  Can do computation:
+  \begin{displaymath}
+    add(S(S(0)),S(S(S(0)))) = S(S(S(S(S(0)))))
+  \end{displaymath}
+  \qquad \qquad \textcolor{black!60}{(2+3=5)}
+
+  \bigskip
+
+  But can't prove anything for all numbers:
+  \begin{displaymath}
+    \forall x. \forall y. x + y = y + x
+  \end{displaymath}
+  is not provable yet.
+\end{frame}
+
+\begin{frame}
+  {Induction}
+
+  To prove things for all numbers, we use the principle of \emph{induction}:
+
+  \bigskip
+
+  To prove for all $x$, $P(x)$, we must:
+  \begin{itemize}
+  \item Prove $P(0)$
+  \item For all $n$, prove that $P(n)$ implies $P(S(n))$
+  \end{itemize}
+  \textcolor{black!60}{(this is the main reason we use the unary representation)}
+
+  \bigskip
+
+  The assumption $P(n)$ in part 2 is called the \emph{induction hypothesis}.
+\end{frame}
+
+\begin{frame}
+  {Example (informal)}
+
+  To prove $add(x,0) = x$ by induction on $x$:
+  \begin{enumerate}
+  \item Need to prove that $add(0,0) = 0$, which is axiom 3.
+  \item Need to prove if $add(n,0) = n$, then $add(S(n),0) = S(n)$:
+    \begin{enumerate}
+    \item We have $add(S(n),0) = S(add(n,0))$ by axiom 4; and
+    \item so $S(add(n,0)) = S(n)$ by the induction hypothesis
+    \end{enumerate}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Induction as a Rule}
+
+  \begin{displaymath}
+    \inferrule* [right=Induction]
+    {\Gamma \vdash P[x \mapsto 0] \\
+      \Gamma, x_1, P[x \mapsto x_1] \vdash P[x \mapsto S(x_1)]}
+    {\Gamma \vdash P}
+  \end{displaymath}
+  where $x$ is declared in $\Gamma$.
+\end{frame}
+
+\begin{frame}
+  {Peano's Axioms}
+
+  \begin{enumerate}
+  \item $\forall x.~\lnot(0 = S(x))$
+  \item $\forall x. \forall y.~S(x) = S(y) \to x = y$
+  \item $\forall x.~add(0,x) = x$
+  \item $\forall x.\forall y.~add(S(x),y) = S(add(x,y))$
+  \item $\forall x.~mul(0,x) = 0$
+  \item $\forall x. \forall y.~mul(S(x),y) = add(y,mul(x,y))$
+  \end{enumerate}
+  $+$ induction
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  We can reason about arithmetic using Peano's Axioms.
+  \begin{itemize}
+  \item 6 axioms defining $0$, $S$, $add$ and $mul$
+  \item and induction
+  \end{itemize}
+  This system is surprisingly powerful.
+
+  \pause
+  \bigskip
+
+  In fact, it is \emph{too} powerful, as we shall see next week.
+\end{frame}
+
+
+\end{document}

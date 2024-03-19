@@ -1,0 +1,695 @@
+% -*- TeX-engine: xetex -*-
+
+\documentclass[xetex,aspectratio=169,14pt,hyperref={pdfpagelabels=true,pdflang={en-GB}}]{beamer}
+
+\input{macros}
+
+\weektitle{10}{Metatheory of Predicate Logic}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\weeksection{Metatheory}
+
+\begin{frame}
+  \begin{enumerate}
+  \item Is our proof system sound and complete?
+  \item Are our axiomatisations complete enough?
+  \item Can we automate mathematics?
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Soundness}
+
+  The proof system we have seen so far is \emph{sound}:
+  \begin{displaymath}
+    \Gamma \vdash Q \quad \Rightarrow \quad \Gamma \models Q
+  \end{displaymath}
+  \textcolor{black!60}{``Every provable judgement is valid.''}\\
+  \textcolor{black!60}{Can be checked by checking that every rule preserves validity.}
+\end{frame}
+
+\begin{frame}
+  {Completeness}
+
+  If we add a rule for excluded middle ($P \lor \lnot P$ for any formula $P$), then it is \emph{complete}:
+  \begin{displaymath}
+    \Gamma \models Q \quad \Rightarrow \quad \Gamma \vdash Q
+  \end{displaymath}
+  \textcolor{black!60}{``Every valid judgement is provable.''}\\
+  \textcolor{black!60}{This is not a simple fact. ``G{\"o}del's Completeness Theorem''}
+\end{frame}
+
+\begin{frame}
+  {Automating Mathematics?}
+
+  If our proof system is sound and complete, then we should be able to
+  automatically prove things by searching for proofs?
+
+  \bigskip
+
+  This is one of the oldest branches of AI.
+\end{frame}
+
+\begin{frame}
+  {Automating Mathematics?}
+
+  We have seen so far that there are many axiomatisations for
+  describing certain bits of mathematics:
+  \begin{enumerate}
+  \item Monoid axioms: addition with a zero.
+  \item Peano's axioms: arithmetic
+  \item Zermelo-Frankel axioms: set theory
+  \end{enumerate}
+
+  \bigskip
+
+  Are these axiomatisations suitable for finding proofs?
+\end{frame}
+
+\begin{frame}
+  {Syntactic Completeness}
+
+  An axiomatisation $\mathrm{Ax}$ is \emph{syntactically complete} if
+  for all formulas $P$, we can prove one of:
+  \begin{displaymath}
+    \mathrm{Ax} \vdash P
+  \end{displaymath}
+  or
+  \begin{displaymath}
+    \mathrm{Ax} \vdash \lnot P
+  \end{displaymath}
+  if we can prove both, then the theory is \emph{inconsistent}.
+\end{frame}
+
+\begin{frame}
+  {Effectively Generatable}
+
+  An axiomatisation $\mathrm{Ax}$ is \emph{effectively generatable} if
+  we can write a computer program that generates all the valid axioms.
+
+  \bigskip
+
+  There may be infinitely many axioms, but each one will eventually be
+  generated.
+\end{frame}
+
+\begin{frame}
+  {Automation}
+
+  If an axiomatisation $\mathrm{Ax}$ is syntactically complete and
+  effectively generatable, then we can (in principle) write a program
+  to search for a proof of some $P$:
+
+  \bigskip
+
+  \begin{enumerate}
+  \item Search for a proof $\mathrm{Ax} \vdash P$ \\
+    try proofs of size 1, then proofs of size 2, then proofs of size 3...
+  \item Interleaved with this: search for a proof of $\mathrm{Ax} \vdash \lnot P$
+  \end{enumerate}
+
+  \bigskip
+
+  Since one of them is provable, we will eventually terminate.
+\end{frame}
+
+\begin{frame}
+  \begin{center}
+    Is every interesting axiomatisation syntactically complete?
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  {Peano's axioms ($\mathrm{PA}$)}
+
+  \begin{enumerate}
+  \item $\forall x.~\lnot(0 = S(x))$
+  \item $\forall x. \forall y.~S(x) = S(y) \to x = y$
+  \item $\forall x.~add(0,x) = x$
+  \item $\forall x.\forall y.~add(S(x),y) = S(add(x,y))$
+  \item $\forall x.~mul(0,x) = 0$
+  \item $\forall x. \forall y.~mul(S(x),y) = add(y,mul(x,y))$
+  \end{enumerate}
+  $+$ induction
+
+  \bigskip
+
+  is effectively generatable.
+\end{frame}
+
+\begin{frame}
+  {Robinson's axioms ($\mathrm{Q}$)}
+
+  \begin{enumerate}
+  \item $\forall x.~\lnot(0 = S(x))$
+  \item $\forall x. \forall y.~S(x) = S(y) \to x = y$
+  \item $\forall x.~add(0,x) = x$
+  \item $\forall x.\forall y.~add(S(x),y) = S(add(x,y))$
+  \item $\forall x.~mul(0,x) = 0$
+  \item $\forall x. \forall y.~mul(S(x),y) = add(y,mul(x,y))$
+  \item $\forall x. (x = 0) \lor (\exists y. x = S(y))$\qquad {\bf (instead of induction)}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {G{\"o}del's 1st Incompleteness Theorem}
+
+  For any \emph{effectively generatable} consistent set of axioms
+  $\mathrm{Ax}$ that imply those of Robinson arithmetic, there exists
+  a formula $P$ such that it is \textbf{not} possible to prove either
+  of
+  \begin{displaymath}
+    \mathrm{Ax} \vdash P
+  \end{displaymath}
+  or
+  \begin{displaymath}
+    \mathrm{Ax} \vdash \lnot P
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Consequences}
+
+  $\mathrm{PA}$ is not syntactically complete, so our attempt to use
+  it to automate mathematics fails.
+
+  \bigskip
+
+  In fact, provability in $\mathrm{PA}$ is undecidable, so all attempts
+  are doomed.
+\end{frame}
+
+\begin{frame}
+  {Consequences}
+
+  \begin{enumerate}
+  \item $\mathrm{PA}$ is incomplete, so there is a formula $P$ such that neither of:
+    \begin{mathpar}
+      \mathrm{PA} \vdash P
+
+      \textrm{and}
+
+      \mathrm{PA} \vdash \lnot P
+    \end{mathpar}
+    are provable.
+  \item Inspection of G{\"o}del's proof shows that the formula $P$ it
+    generates is actually true in ``the'' natural numbers.
+  \item So we could use the axioms $\mathrm{PA} + P$, but then goto 1.
+  \end{enumerate}
+\end{frame}
+
+% https://stopa.io/post/269
+
+\begin{frame}
+  {Consequences}
+
+  So:
+  \begin{enumerate}
+  \item $\mathrm{PA}$ does not cover everything that is ``true'' about arithmetic
+  \item Every attempt to fix it is doomed
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Consequences}
+
+  \emph{Some people} have said that G{\"o}del's Incompleteness theorem
+  shows that there are fundamental limitations to what computers can
+  reason about.
+
+  \pause
+  \bigskip
+
+  The reasoning (roughly) goes:
+  \begin{enumerate}
+  \item Computers can only use effectively generatable axioms
+  \item This means that there are truths they cannot prove
+  \item Humans can perceive ``real'' truth to see these truths
+  \item Therefore, Humans are better than computers, and AI is impossible.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Consequences}
+
+  Two problems with this:
+
+  \begin{enumerate}
+  \item Humans only know that the formula generated by G{\"o}del's
+    Incompleteness Theorem is true by some \emph{larger}
+    axiomatisation we are (maybe implicitly) using. Computers can use
+    this axiomatisation.
+  \item The theorem depends on the theory being consistent. How do we
+    \emph{know} this? Definitely not obvious for Zermelo-Frankel set
+    theory.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {(In)Completeness?}
+
+  G{\"o}del proved:
+  \begin{enumerate}
+  \item Completeness ``Everything that is true is provable''
+  \item Incompleteness ``There exist true things that are not provable''
+  \end{enumerate}
+
+  \bigskip
+
+  Surely a contradiction?
+\end{frame}
+
+\begin{frame}
+  {(In)Completeness?}
+
+  There is no contradiction.
+
+  \pause
+  \bigskip
+
+  Completeness Theorem says that if something is true in \emph{every}
+  model of the axioms, it is provable.
+
+  \pause
+  \bigskip
+
+  Incompleteness Theorem only gives something that is true for
+  \emph{``the''} natural numbers. It might be false in other models.
+\end{frame}
+
+\begin{frame}
+  {Automating Mathematics?}
+
+  If we can't completely automate arithmetic, then what can we do?
+
+  \begin{enumerate}
+  \item Do proof search with a timeout
+  \item Restrict to weaker systems to gain decidability, e.g.:
+    \begin{itemize}
+    \item Pure equality
+    \item Linear Arithmetic: only addition, no multiplication
+    \end{itemize}
+  \end{enumerate}
+
+  \bigskip
+
+  Automated proof for fragments of logic is a large and ongoing topic
+  of research, with applications in software engineering, computer
+  security, optimisation, ...
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{enumerate}
+  \item Our proof system is sound
+  \item If we add excluded middle, it is complete
+  \item G{\"o}del's Incompleteness theorem:
+    \begin{itemize}
+    \item If some axioms can prove basic facts about arithmetic, then
+      there are statements that it can neither prove nor disprove.
+    \end{itemize}
+  \item Not every theory is decidable, but some useful ones are.
+  \end{enumerate}
+\end{frame}
+
+% \weeksection{Formulas from Programs}
+
+% \newcommand{\pred}[1]{\mathrm{#1}}
+% \newcommand{\lit}[1]{\textit{#1}}
+
+% \begin{frame}
+%   \sechead{Pre- and Post-conditions}
+
+%   The goal is to establish statements of the form:
+%   \begin{displaymath}
+%     \{P\}~\texttt{C}~\{Q\}
+%   \end{displaymath}
+%   where
+%   \begin{itemize}
+%   \item $P$ is a \emph{precondition}
+%   \item \texttt{C} is a program (``command'')
+%   \item $Q$ is a \emph{postcondition}
+%   \end{itemize}
+
+%   \medskip
+
+%   meaning: ``If the initial state satisfies $P$, then after running
+%   \texttt{C}, the final state will satisfy $Q$''.
+
+%   \bigskip
+
+%   \rhighlight{Note}: this says nothing about what happens if
+%   \texttt{C} doesn't finish.
+% \end{frame}
+
+% \begin{frame}
+%   \sechead{Generating Weakest Preconditions}
+
+%   We take programs:
+%   \begin{displaymath}
+%     \texttt{C}
+%   \end{displaymath}
+%   and \emph{postconditions} (Predicate logic formulas):
+%   \begin{displaymath}
+%     Q
+%   \end{displaymath}
+%   and to compute their \emph{weakest precondition}:
+%   \begin{displaymath}
+%     \pred{wp}(\texttt{C}, Q)
+%   \end{displaymath}
+%   and we try to prove that $P \to \pred{wp}(\texttt{C}, Q)$.
+% \end{frame}
+
+% \begin{frame}
+%   \sechead{Computing formulas for loop-less programs}
+
+%   Given a program \texttt{C} and a postcondition $Q$, we will \\
+%   compute the \emph{weakest precondition}, a formula:
+%   \begin{displaymath}
+%     \mathrm{wp}(\texttt{C}, Q)
+%   \end{displaymath}
+%   by looking at the structure of \texttt{C}.
+
+%   \bigskip
+
+%   \emph{Weakest precondition} means:
+%   \begin{enumerate}
+%   \item It is a good precondition: If we can prove
+%     $\mathrm{wp}(\texttt{C}, Q)$ about the initial state, then after
+%     \texttt{C} terminates, $Q$ will be true.
+%   \item It is the \emph{weakest}: If there is another formula $P'$
+%     that is also a precondition, then $P' \to \mathrm{wp}(\texttt{C}, Q)$.
+%     For example the precondition $x > 0$ is weaker than $x > 1$, because
+%     \begin{displaymath}
+%       x > 1 \to x > 0
+%     \end{displaymath}
+%   \end{enumerate}
+% \end{frame}
+
+% \begin{frame}
+%   \sechead{Weakest Precondition for \texttt{skip}}
+
+%   \begin{displaymath}
+%     \mathrm{wp}(\texttt{skip}, Q) = Q
+%   \end{displaymath}
+
+%   Why?
+%   \begin{enumerate}
+%   \item \texttt{skip} does nothing
+%   \item So, if we want $Q$ to be true after running \texttt{skip},
+%     then it better be true beforehand.
+%   \end{enumerate}
+% \end{frame}
+
+% \begin{frame}
+%   \sechead{Weakest Precondition for \texttt{C$_1$; C$_2$}}
+%   \begin{displaymath}
+%     \mathrm{wp}(\texttt{C$_1$; C$_2$}, Q) = \mathrm{wp}(\texttt{C$_1$}, \mathrm{wp}(\texttt{C$_2$}, Q))
+%   \end{displaymath}
+
+%   Why?
+%   \begin{enumerate}
+%   \item \texttt{C$_1$; C$_2$} does \texttt{C$_1$} and then \texttt{C$_2$}
+%   \item If we want $Q$ to be true at the end, then:
+%   \item We want $\mathrm{wp}(\texttt{C$_2$}, Q)$ to be true before running \texttt{C$_2$}, and
+%   \item $\mathrm{wp}(\texttt{C$_1$}, \mathrm{wp}(\texttt{C$_2$}, Q))$ before running \texttt{C$_1$}
+%   \end{enumerate}
+% \end{frame}
+
+% \begin{frame}
+%   \sechead{Weakest Precondition for \texttt{x := $t$}}
+
+%   \begin{displaymath}
+%     \mathrm{wp}(\texttt{x := $t$}, Q) = Q[x := t]
+%   \end{displaymath}
+
+%   Why?
+%   \begin{enumerate}
+%   \item We want $Q$ to be true after setting $x$ to $t$.
+%   \item So we take $Q$ and set $x$ to be $t$ (by substitution).
+%   \end{enumerate}
+
+%   \sidenote{This rule was not at all obvious: this, and the whole
+%     weakest precondition set up translate programs (which evolve over
+%     time) into formulas (which don't).}
+% \end{frame}
+
+% \begin{frame}
+%   \sechead{Weakest precondition for \texttt{if}}
+
+%   \begin{displaymath}
+%     \begin{array}{l}
+%       \mathrm{wp}(\texttt{if ($P$) \{ C$_1$ \} else \{ C$_2$ \}}, Q) = \\
+%       \qquad
+%       \begin{array}[t]{cl}
+%         &(P \to \mathrm{wp}(\texttt{C$_1$}, Q)) \\
+%         \land&(\lnot P \to \mathrm{wp}(\texttt{C$_2$}, Q))
+%       \end{array}
+%     \end{array}
+%   \end{displaymath}
+
+%   Why?
+%   \begin{enumerate}
+%   \item If $P$ is true, then we do \texttt{C$_1$}, if $P$ is false, we do \texttt{C$_2$}
+%   \item So we need to account for two possibilities:
+%     \begin{enumerate}
+%     \item $P$ is true, so the precondition will be the one for \texttt{C$_1$}
+%     \item $P$ is false, so the precondition will be the one for \texttt{C$_2$}
+%     \end{enumerate}
+%   \item We \emph{do not} $\lor$ them together. \\
+%     \sidenote{The program may do this or that, so we have to prove
+%       that \emph{and} that, to cover all the possible cases}
+%   \end{enumerate}
+% \end{frame}
+
+% \begin{frame}
+%   \sechead{What about loops?}
+
+%   \begin{displaymath}
+%     \texttt{while ($P$) \{ C \}}
+%   \end{displaymath}
+%   ``If $P$ is false, stop; otherwise do \texttt{C} and then do the loop again''
+
+%   \pause
+%   \bigskip
+
+%   To calculate:
+%   \begin{displaymath}
+%     \pred{wp}(\texttt{while ($P$) \{C\}}, Q)
+%   \end{displaymath}
+%   Let's try:
+%   \begin{displaymath}
+%     \begin{array}{cll}
+%        &\pred{wp}(\texttt{while ($P$) \{C\}}, Q) \\
+%       =&(\lnot P \to Q) & \textit{if $P$, then loop does not execute} \\
+%        &\land (P \to \pred{wp}(\texttt{C; while($P$)\{C\}}, Q)) & \textit{if not $P$, do \texttt{C} and try loop again}\\
+%       =&(\lnot P \to Q)\\
+%        &\multicolumn{2}{l}{\land (P \to \pred{wp}(\texttt{C}, \pred{wp}(\texttt{while ($P$) \{C\}}, Q)))}
+%     \end{array}
+%   \end{displaymath}
+%   But now if we expand
+%   \begin{displaymath}
+%     \pred{wp}(\texttt{while ($P$) \{C\}}, Q)
+%   \end{displaymath}
+%   again, we are stuck in a loop...
+% \end{frame}
+
+% \begin{frame}
+%   \sechead{Cutting the Gordian Knot}
+
+%   If we want to work out some formula $X$ for
+%   \begin{displaymath}
+%     \pred{wp}(\texttt{while ($P$) \{C\}}, Q)
+%   \end{displaymath}
+%   We know, by the reasoning on the previous slide, that it must imply:
+%   \begin{displaymath}
+%     (\lnot P \to Q)\land (P \to \pred{wp}(\texttt{C}, \pred{wp}(\texttt{while ($P$) \{C\}}, Q)))
+%   \end{displaymath}
+%   so we just ask the programmer to give an $X$ such that:
+%   \begin{displaymath}
+%     X \to ((\lnot P \to Q)\land (P \to \pred{wp}(\texttt{C}, X)))
+%   \end{displaymath}
+%   and set $\pred{wp}(\texttt{while ($P$) \{C\}}, Q) = X$.
+
+%   \bigskip
+
+%   \begin{itemize}
+%   \item The $X$ is specific to this loop and $Q$.
+%   \item $X$ is the \emph{loop invariant}
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \sechead{Annotated Loops}
+
+%   To allow weakest precondition calculation, we annotate loops with
+%   their invariants:
+
+%   \begin{displaymath}
+%     \texttt{while$^{I}$ ($P$) \{ C \}}
+%   \end{displaymath}
+
+%   Now we have:
+%   \begin{displaymath}
+%     \begin{array}{l}
+%       \pred{wp}(\texttt{while$^{I}$ ($P$) \{ C \}}, Q) = I
+%     \end{array}
+%   \end{displaymath}
+%   and we also have to prove:
+%   \begin{displaymath}
+%     \begin{array}{cl}
+%       1.&(\lnot P \land I) \to Q\\
+%       2.&(P \land I) \to \pred{wp}(\texttt{C},I)
+%     \end{array}
+%   \end{displaymath}
+% \end{frame}
+
+
+% \weeksection{Logic in Computer Science}
+
+% \begin{frame}
+%   What have we done?
+
+%   \begin{itemize}
+%   \item Week 1 : Propositional Logic
+%   \item Weeks 2\&3 : Logical Modelling
+%   \item Weeks 4\&5 : Deductive Systems
+%   \item Weeks 6\&7: Predicate Logic, syntax and proofs
+%   \item Week 8 : Predicate Logic, semantics
+%   \item Week 9 : Arithmetic and Induction
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Logical Modelling}
+
+%   \begin{displaymath}
+%     (a \lor b \lor \lnot c) \land \cdots
+%   \end{displaymath}
+
+%   \begin{itemize}
+%   \item Solutions as True/False assignments
+%   \item Constraints as logical formulas
+%   \item Finding solutions as \emph{search}
+%   \end{itemize}
+
+%   Going further:
+%   \begin{itemize}
+%   \item Computation as search (Prolog, ...)
+%   \item Satisfiability Modulo Theory (SMT) solvers
+%   \item Specialised solvers
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Deductive systems}
+
+%   \begin{displaymath}
+%     \inferrule*
+%     {\mathit{premise}_1 \cdots \mathit{premise}_n}
+%     {\mathit{conclusion}}
+%   \end{displaymath}
+
+%   \begin{itemize}
+%   \item Rules as steps of inference
+%   \item Proofs as rules arranged into a tree
+%   \end{itemize}
+
+%   Going further:
+%   \begin{itemize}
+%   \item Defining Programming Languages:
+%     \begin{itemize}
+%     \item What programs are well-typed?
+%     \item What do programs do?
+%     \end{itemize}
+%   \item Programs as proof search (Prolog, Datalog)
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Predicate Logic: Syntax and Proofs}
+
+%   \begin{displaymath}
+%     \forall x. \exists y. \cdots
+%   \end{displaymath}
+
+%   \begin{itemize}
+%   \item Statements about \emph{all} or \emph{some}
+%   \item Quantifiers as a ``game''
+%   \end{itemize}
+
+%   Going further:
+%   \begin{itemize}
+%   \item Software specification
+%   \item
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Predicate Logic: Semantics}
+
+%   \begin{displaymath}
+%     \mathit{within} = \{ (\mathsf{glasgow}, \mathsf{scotland}), \cdots \}
+%   \end{displaymath}
+
+%   \begin{itemize}
+%   \item Models of Predicate Logic $\approx$ databases
+%   \end{itemize}
+
+%   Going further:
+%   \begin{itemize}
+%   \item Deductive databases
+%   \item Probabilistic databases
+%   \item Temporal databases
+%   \item Model generation
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{
+% \end{frame}
+
+% \begin{frame}
+%   \begin{center}
+%     What we didn't cover
+%   \end{center}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Modal Logic}
+
+%   \sechead{Propositional Logic}
+%   Make statements about ``now'', ``timeless'', ``one possibility''
+
+%   \begin{displaymath}
+%     \mathit{Raining} \lor \mathit{Sunny}
+%   \end{displaymath}
+
+%   \pause
+%   \bigskip
+
+%   \sechead{Modal Logic}
+%   Statements like:
+%   \begin{enumerate}
+%   \item It is \textbf{necessary} that $P$
+%   \item It is \textbf{possible} that $P$
+%   \item $P$ will be true \textbf{tomorrow}
+%   \item $P$ will be true \textbf{forever}
+%   \item $P$ will be true \textbf{eventually}
+%   \end{enumerate}
+%   \medskip
+
+%   Reasoning about \emph{possible worlds}, \emph{possible futures}.
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Program Verification}
+
+
+% \end{frame}
+
+\end{document}

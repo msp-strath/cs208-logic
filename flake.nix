@@ -12,6 +12,23 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+
+        tex = pkgs.texlive.combine {
+          inherit (pkgs.texlive)
+            # https://tug.org/texlive/devsrc/Master/doc.html
+            scheme-minimal latex-bin xetex latexmk beamer
+            infwarerr kvoptions latex-tools-dev
+
+            libertine
+
+            mathpartir stmaryrd frankenstein multirow
+            colortbl cmll euler fontspec tools extsizes
+            minibox varwidth fragments psnfss csquotes
+            ulem xltxtra realscripts booktabs todonotes
+            pdfcomment datetime2 tracklang zref marginnote
+            soulpos appendixnumberbeamer; # soulutf8;
+        };
+
         on = opam-nix.lib.${system};
         localPackagesQuery = builtins.mapAttrs (_: pkgs.lib.last)
           (on.listRepo (on.makeOpamRepo ./.));
@@ -50,18 +67,37 @@
         packages =
           pkgs.lib.getAttrs (builtins.attrNames localPackagesQuery) scope';
       in {
-        legacyPackages = scope';
+        # legacyPackages = scope';
 
-        inherit packages;
+        #inherit packages;
 
-        ## If you want to have a "default" package which will be built with just `nix build`, do this instead of `inherit packages;`:
-        # packages = packages // { default = packages.slakemoth; };
+        packages = packages // { slides = pkgs.stdenvNoCC.mkDerivation rec {
+          name = "slides";
+          src = self;
+          buildInputs = [ pkgs.coreutils pkgs.bash tex pkgs.libertine pkgs.gnumake ];
+          phases = ["unpackPhase" "buildPhase" "installPhase"];
+          buildPhase = ''
+export PATH="${pkgs.lib.makeBinPath buildInputs}";
+mkdir -p .cache/texmf-var;
+export TEXMFHOME=.cache;
+export TEXMFVAR=.cache/texmf-var;
+make -C slides -j 8 all
+'';
+          installPhase = ''
+mkdir -p $out;
+cp slides/week*.pdf $out/;
+'';
+        }; };
+
+
+                   # // { default = packages.slakemoth; };
 
         devShells.default = pkgs.mkShell {
           inputsFrom = builtins.attrValues packages;
           buildInputs = devPackages ++ [
             pkgs.rsync
             # You can add packages from nixpkgs here
+            tex
           ];
         };
       });

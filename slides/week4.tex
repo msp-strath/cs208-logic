@@ -1,0 +1,813 @@
+% -*- TeX-engine: xetex -*-
+
+\documentclass[xetex,aspectratio=169,14pt,hyperref={pdfpagelabels=true,pdflang={en-GB}}]{beamer}
+
+\input{macros}
+
+\weektitle{4}{Natural Deduction I}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\weeksection{Deductive Reasoning}
+% Subtitle:     \textcolor{black!60}{To Truth Through Proof!}\footnote{Apologies to Peter B. Andrews: \url{http://gtps.math.cmu.edu/tttp.html}}
+
+\begin{frame}
+  \sechead{Why have logic(s)?}
+  One reason is to study ``arguments''.
+  \begin{itemize}
+  \item To separate valid and invalid reasoning.
+  \item If we assume $P_1, P_2, P_3$, then when is it valid to conclude $Q$?
+  \end{itemize}
+
+  \pause
+  \bigskip
+
+  \sechead{One answer is ``entailment''}
+  \begin{itemize}
+  \item $P_1, \dots \models Q$ ``is'' valid reasoning from assumptions to a conclusion.
+  \end{itemize}
+  \emph{Entailment} is defined in terms of the semantics of formulas
+  \begin{itemize}
+  \item $P_1, ... \models Q$ if \highlight<3->{for all valuations $v$}, $\sem{P}v = \true$ implies $\sem{Q}v \kern-3pt= \true$
+  \end{itemize}
+
+  \pause
+  \pause
+  \bigskip
+
+  \sechead{This doesn't match how we reason normally.}
+  If we are trying to convince someone, we don't (usually) say: \\
+  \qquad \emph{``let's go through all the combinations of truth values and test each one.''}
+\end{frame}
+
+\begin{frame}
+  \sechead{Chains of Inference}
+  Usually, we might say things like:
+  \begin{enumerate}
+  \item Let's assume that $A, B, C$ are true.
+  \item If we assume $A$ and $B$ imply $D$, then $D$ is true.
+  \item If we assume $C$ and $D$ imply $E$, then $E$ is true.
+  \item So, we can conclude $E$, under the assumptions.
+  \end{enumerate}
+  If our reasoning is sound, then we ought to be able to conclude
+  \begin{displaymath}
+    A, B, C, (A \land B) \to D, (C \land D) \to E \models E
+  \end{displaymath}
+
+  \pause
+  \sechead{We have a form of \emph{modularity}}
+  \begin{itemize}
+  \item We don't check the entailment for every possible truth value of $A, B, C, D, E$ \qquad \textcolor{black!60}{($2^5 = 32$ combinations!)}
+  \item We apply individual reasoning \emph{steps} and chain them together.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Semantic Reasoning doesn't scale}
+
+  In \emph{Propositional Logic}, it is possible (though not always
+  feasible) to check all cases.
+  \begin{itemize}
+  \item If there are $n$ atomic propositions, check $2^n$ combinations.
+  \item SAT solvers are good at only checking the ones that matter.
+  \item But there are still Hard Problems that take too long.
+  \end{itemize}
+
+  \pause
+  \bigskip
+
+  Also, later in the course we will study \emph{Predicate Logic}
+  \begin{itemize}
+  \item Predicate logic allows \emph{universal} statements:
+    \begin{displaymath}
+      \forall x.\forall y.~x+y = y+x
+    \end{displaymath}
+    \emph{``For all (numbers) $x$ and $y$, $x+y$ is equal to $y+x$''}
+  \item Simply not possible to exhaustively check all numbers.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Deductive Systems}
+  To overcome these problems, we use \emph{deductive systems}.
+
+  \bigskip
+
+  A \rhighlight{deductive system} is a collection of \emph{rules} for
+  deriving conclusions from assumptions.
+  \begin{itemize}
+  \item Typically, the rules are ``finitely describable'' \\
+    \sidenote{roughly: we can implement them on a computer}
+  \end{itemize}
+
+  \bigskip
+
+  Typically (but not always), we write
+  \begin{displaymath}
+    P_1, \cdots, P_n \vdash Q
+  \end{displaymath}
+  when we can derive conclusion $Q$ from assumptions $P_1, \cdots, P_n$.
+
+  % \bigskip There are many deductive systems. We will look at a variant
+  % of Natural Deduction.
+
+\end{frame}
+
+\begin{frame}
+  {Soundness and Completeness}
+
+  \textbf{Soundness} : ``Everything that is provable is valid''
+  \begin{displaymath}
+    P_1, \cdots, P_n \vdash Q \qquad \textit{implies} \qquad P_1, \cdots, P_n \models Q
+  \end{displaymath}
+  \sidenote{pretty much a requirement to be useful}
+
+  \bigskip
+
+  \textbf{Completeness} : ``Everything that is valid is provable''
+  \begin{displaymath}
+    P_1, \cdots, P_n \models Q \qquad \textit{implies} \qquad P_1, \cdots, P_n \vdash Q
+  \end{displaymath}
+  \sidenote{not \emph{essential}, but good to have}
+
+\end{frame}
+
+\begin{frame}
+  {Advantages of Deductive Systems}
+
+  \bigskip \emph{1. } We can write computer programs to check our proofs, even
+  when talking about infinitely many things.
+
+  \pause
+  \bigskip
+  \emph{2. }If we remove or alter rules do we get an interesting new logic?
+
+  \pause
+  \bigskip
+  \emph{3. }We can start to ask questions about the proofs:
+  \begin{itemize}
+  \item An entailment $P_1, \cdots, P_n \models Q$ is either valid or invalid. Meh.
+  \item but there may be many proofs (ways of applying the rules).
+  \item Questions:
+    \begin{itemize}
+    \item Do different proofs \emph{mean} different things?
+    \item Is one proof a simplification of another?
+    \item Is there information hidden in proofs that we can extract?
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t]
+  {Inference Rules}
+
+  \begin{displaymath}
+    \inferrule*
+    {\mathit{premise}_1 \\ \cdots \\ \mathit{premise}_n}
+    {\mathit{conclusion}}
+  \end{displaymath}
+
+  The idea:
+  \begin{itemize}
+  \item If we can prove all of $\mathit{premise}_1$ and ... and $\mathit{premise}_n$; then
+  \item we have a proof of $\mathit{conclusion}$.
+  \end{itemize}
+
+  \pause
+  \bigskip
+
+  We might have zero premises, \\
+  \quad in which case the $\mathit{conclusion}$
+  requires no proof (``is an axiom'').
+
+  \pause
+  \bigskip
+
+  Rules are organised into \emph{trees} to make \emph{deductions}.
+\end{frame}
+
+\begin{frame}[t]
+  {Example}
+  \begin{mathpar}
+    \inferrule* [right=Rule1] { } {\textrm{bears}~\textit{are furry}}
+
+    \inferrule* [right=Rule2] { } {\textrm{bears}~\textit{make milk}}
+
+    \inferrule* [right=Rule3]
+    {X~\textit{are furry} \\ X~\textit{make milk}}
+    {X~\textit{are mammals}}
+  \end{mathpar}
+
+  \pause
+  \bigskip
+
+  A deduction:
+  \begin{displaymath}
+    \inferrule* [right=Rule3]
+    {\inferrule* [right=Rule1] { } {\textrm{bears}~\textit{are furry}} \\
+      \inferrule* [Right=Rule2] { } {\textrm{bears}~\textit{make milk}}}
+    {\textrm{bears}~\textit{are mammals}}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Example (cont.)}
+
+  \begin{mathpar}
+    \inferrule* [right=Rule4]
+    {X~\textit{are covered in fibres}}
+    {X~\textit{are furry}}
+
+    \inferrule* [right=Rule5]
+    { }
+    {\textrm{coconuts}~\textit{are covered in fibres}}
+
+    \inferrule* [right=Rule6]
+    { }
+    {\textrm{coconuts}~\textit{make milk}}
+  \end{mathpar}
+
+\end{frame}
+
+\begin{frame}
+  {Example (cont.)}
+
+  Another deduction:
+  \begin{displaymath}
+    \inferrule* [right=R3]
+    {\inferrule* [right=R4]
+      {\inferrule* [Right=R5] { } {\textrm{coconuts}~\textit{are covered in fibres}}}
+      {\textrm{coconuts}~\textit{are furry}}
+      \\
+      \inferrule* [Right=R6]
+      { } {\textrm{coconuts}~\textit{make milk}}}
+    {\textrm{coconuts}~\textit{are mammals}}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}[t]
+  {Example (cont.)}
+  When \emph{building} deductions, we work bottom up:
+
+  \begin{minipage}[t][2cm][b]{\textwidth}
+  \begin{displaymath}
+    \only<2>{\textrm{coconuts}~\textit{are mammals}}%
+    \only<3>{\inferrule* [right=R3]
+      {\textrm{coconuts}~\textit{are furry} \\ \textrm{coconuts}~\textit{make milk}}
+      {\textrm{coconuts}~\textit{are mammals}}}%
+    \only<4>{\inferrule* [right=R3]
+      {\inferrule* [right=R4] {\textrm{coconuts}~\textit{are covered in fibres}} {\textrm{coconuts}~\textit{are furry}}
+        \\
+        \textrm{coconuts}~\textit{make milk}}
+      {\textrm{coconuts}~\textit{are mammals}}}%
+    \only<5>{\inferrule* [right=R3]
+      {\inferrule* [right=R4]
+        {\inferrule* [Right=R5] { } {\textrm{coconuts}~\textit{are covered in fibres}}}
+        {\textrm{coconuts}~\textit{are furry}}
+        \\
+        \textrm{coconuts}~\textit{make milk}}
+      {\textrm{coconuts}~\textit{are mammals}}}%
+    \only<6-7>{\inferrule* [right=R3]
+    {\inferrule* [right=R4]
+      {\inferrule* [Right=R5] { } {\textrm{coconuts}~\textit{are covered in fibres}}}
+      {\textrm{coconuts}~\textit{are furry}}
+      \\
+      \inferrule* [Right=R6]
+      { } {\textrm{coconuts}~\textit{make milk}}}
+      {\textrm{coconuts}~\textit{are mammals}}}
+  \end{displaymath}
+\end{minipage}
+
+\bigskip
+
+  \begin{enumerate}
+  \item<2-> Write down the conclusion
+  \item<3-> Apply rule \TirName{Rule3} ($X$ \emph{are mammals} if $X$ \emph{are furry and make milk})
+  \item<4-> Apply rule \TirName{Rule4} ($X$ \emph{are furry} if they \emph{are covered in fibres})
+  \item<5-> Apply rule \TirName{Rule5} (an axiom)
+  \item<6-> Apply rule \TirName{Rule6} (an axiom)
+  \end{enumerate}
+
+  % \bigskip
+  % \pause\pause\pause\pause\pause\pause
+  % \begin{itemize}
+  % \item A statement with no line above it is an \emph{open goal}
+  % \item A branch of the tree that ends with an axiom is called \emph{closed}
+  % \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item The \emph{why?} of deductive systems.
+  \item Inference rules.
+  \item How to make chains of inference.
+  \end{itemize}
+\end{frame}
+
+
+\weeksection{Natural Deduction}
+
+\begin{frame}[t]
+  {Judgements}
+
+  We want to deduce \emph{judgements} of the form:
+  \begin{displaymath}
+    P_1, \dots, P_n \vdash Q
+  \end{displaymath}
+  meaning:
+  \begin{center}
+    From assumptions $P_1, \dots, P_n$, we can prove $Q$.
+  \end{center}
+
+  \bigskip
+
+  {\bf Soundness}
+  The system will be \emph{sound}, meaning:
+  \begin{displaymath}
+    P_1,\dots,P_n \vdash Q~\textrm{provable}~~\Rightarrow~~P_1, \dots, P_n \models Q
+  \end{displaymath}
+
+  We will make sure it is sound by checking each rule as we go. \\
+  \quad \textcolor{black!60}{If all the premises are valid entailments, then so is the conclusion}
+\end{frame}
+
+\begin{frame}[t]
+  {Judgements}
+
+  The main judgement form is
+  \begin{displaymath}
+    P_1, \dots, P_n \vdash Q
+  \end{displaymath}
+  \qquad \textcolor{black!60}{With assumptions $P_1,\dots,P_n$, can prove $Q$}
+
+  \pause
+  \bigskip
+
+  We will also use an auxiliary judgement:
+  \begin{displaymath}
+    P_1, \dots, P_n~[P] \vdash Q
+  \end{displaymath}
+  \quad \textcolor{black!60}{$\cdot$ With assumptions $P_1,\dots,P_n$, \emph{focusing on} $P$, can prove $Q$}\\
+  \quad \textcolor{black!60}{$\cdot$ Also ``means'' $P_1,\dots,P_n,P \models Q$}\\
+  \quad \textcolor{black!60}{$\cdot$ Having a focus is useful for organising proofs}
+\end{frame}
+
+\begin{frame}[t]
+  {Judgements}
+
+  The main judgement form is
+  \begin{displaymath}
+    P_1, \dots, P_n \vdash Q
+  \end{displaymath}
+
+  \medskip
+
+  We will also use an auxiliary judgement:
+  \begin{displaymath}
+    P_1, \dots, P_n~[P] \vdash Q
+  \end{displaymath}
+
+  \pause
+  \bigskip
+
+  \textbf{Assumption lists}~The list of assumptions
+  $P_1, \dots, P_n$ will appear often. So we
+  will shorten it to $\Gamma$
+  \textcolor{black!60}{$ = P_1, \dots, P_n$}.
+\end{frame}
+
+\newcommand{\pUse}[1]{\texttt{use}~#1\texttt{,}~}
+\newcommand{\pDone}{\texttt{done}}
+\newcommand{\pSplit}[2]{\texttt{split(}#1~\texttt{|}~#2\texttt{)}}
+\newcommand{\pFst}{\texttt{first,}~}
+\newcommand{\pSnd}{\texttt{second,}~}
+\newcommand{\pTrue}{\texttt{true}}
+
+%\titlecard{Basic Rules}
+
+\begin{frame}
+  {Basic Rules}
+
+  \begin{displaymath}
+    \inferrule* [right=Done]
+    { }
+    {\Gamma~[P] \vdash P}
+  \end{displaymath}
+
+  \bigskip
+  \bigskip
+  \pause
+
+  \begin{itemize}
+  \item If we have a focused assumption $P$, then we can prove $P$
+  \item (Remember $\Gamma$ stands for a list of other assumptions)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Basic Rules}
+
+  \begin{displaymath}
+    \inferrule* [right=Use]
+    {P \in \Gamma \\ \Gamma~[P] \vdash Q}
+    {\Gamma \vdash Q}
+  \end{displaymath}
+
+  \bigskip
+  \bigskip
+  \pause
+
+  \begin{itemize}
+  \item $P \in \Gamma$ means ``$P$ is in $\Gamma$''.
+  \item If we have a $P$ in our current assumptions, we can focus on it.
+  \item $P \in \Gamma$ is a \emph{side condition}: it is something we
+    check when we apply the rule, not another judgement to be proved.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t]
+  {A first proof}
+
+  \bigskip
+
+  \begin{minipage}[t][2cm][b]{\textwidth}
+    \begin{displaymath}
+      \only<1>{A \vdash A\quad\quad}%
+      \only<2>{\inferrule* [right=Use] {A~[A] \vdash A} {A \vdash A}}%
+      \only<3>{\inferrule* [right=Use] {\inferrule* [Right=Done] { } {A~[A] \vdash A}} {A \vdash A}}
+    \end{displaymath}
+  \end{minipage}
+
+  \bigskip
+
+  \begin{itemize}
+  \item<2-> First \TirName{Use} the $A$ assumption.
+  \item<3-> Then we are \TirName{Done}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Soundness}
+
+  \begin{mathpar}
+    \inferrule* [right=Done]
+    { }
+    {\Gamma~[P] \vdash P}
+
+    \inferrule* [right=Use]
+    {P \in \Gamma \\ \Gamma~[P] \vdash Q}
+    {\Gamma \vdash Q}
+  \end{mathpar}
+
+  \pause
+  \bigskip
+
+  \TirName{Done} is sound because assuming $P$ entails $P$, and extra
+  assumptions make no difference.
+
+  \pause
+  \bigskip
+
+  \TirName{Use} is sound because if we assuming $P$ twice entails $Q$,
+  then it is okay to assume it once.
+\end{frame}
+
+\begin{frame}
+  {Rules for connectives}
+
+  \bigskip
+
+  The rule \TirName{Done} and \TirName{Use} do not mention the connectives.
+
+  \bigskip
+
+  In Natural Deduction, rules for connectives come in two kinds:
+
+  \bigskip
+
+  \begin{enumerate}
+  \item {\bf Introduction} rules\\
+    \textcolor{black!60}{How to \emph{construct} a proof with the connective}
+  \item {\bf Elimination} rules \\
+    \textcolor{black!60}{How to \emph{use} an assumption with this connective}
+  \end{enumerate}
+
+  \bigskip
+  \pause
+
+  Very rough analogy:\quad \textcolor{black!60}{but can be made very precise}
+  \begin{enumerate}
+  \item Introduction rules are like \emph{constructors} for building objects
+  \item Elimination rules are like \emph{methods} for taking apart objects
+  \end{enumerate}
+\end{frame}
+
+%\titlecard{Rules for Conjunction}
+
+\begin{frame}
+  {``And'' Introduction}
+
+
+  \begin{displaymath}
+    \inferrule* [right=Split]
+    {\Gamma \vdash Q_1 \\ \Gamma \vdash Q_2}
+    {\Gamma \vdash Q_1 \land Q_2}
+  \end{displaymath}
+
+  \bigskip
+  \pause
+
+  \begin{itemize}
+  \item To prove $P_1 \land P_2$ we have to prove $P_1$ and $P_2$
+  \item This rule is often called \TirName{$\land$-Introduction}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \sechead{An example proof}
+
+  \bigskip
+
+  \begin{displaymath}
+    \inferrule* [Right=Split]
+    { \inferrule* [right=Use]
+      {\inferrule* [Right=Done]
+        { } {A, B~[A] \vdash A}}
+      {A, B \vdash A}
+      \\
+      \inferrule* [Right=Use]
+      {\inferrule* [Right=Done]
+        { } {A, B~[B] \vdash B}
+      }
+      {A, B \vdash B}
+    }
+    {A, B \vdash A \land B}
+  \end{displaymath}
+
+  \pause
+  \bigskip
+
+  To prove $A \land B$, we \TirName{Split} into proofs of $A$ and
+  $B$. \\
+  In each case, we \TirName{Use} the corresponding assumption.
+\end{frame}
+
+\begin{frame}
+  {``And'' Elimination}
+
+  \begin{mathpar}
+    \inferrule* [right=First]
+    {\Gamma~[P_1] \vdash Q}
+    {\Gamma~[P_1 \land P_2] \vdash Q}
+
+    \inferrule* [right=Second]
+    {\Gamma~[P_2] \vdash Q}
+    {\Gamma~[P_1 \land P_2] \vdash Q}
+  \end{mathpar}
+
+  \bigskip
+  \pause
+
+  If we are focused on an formula $P_1 \land P_2$, we can select
+  either the \TirName{First} or \TirName{Second} component to focus
+  on.
+\end{frame}
+
+\begin{frame}
+  \sechead{Example proof}
+
+  \begin{displaymath}
+    \inferrule* [Right=Use]
+    {\inferrule* [Right=Second]
+      {\inferrule* [Right=Done]
+        { }
+        {A \land B~[B] \vdash B}
+      }
+      {A \land B~[A \land B] \vdash B}
+    }
+    {A \land B \vdash B}
+  \end{displaymath}
+\end{frame}
+
+%\titlecard{Rules for Truth}
+
+\begin{frame}
+  {``True'' Introduction}
+
+  \bigskip
+
+  \begin{displaymath}
+    \inferrule* [right=True]
+    { }
+    {\Gamma \vdash \true}
+  \end{displaymath}
+
+  \bigskip
+  \pause
+
+  \begin{itemize}
+  \item $\true$ is always provable.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {``True'' Elimination}
+
+  \pause
+  \bigskip
+
+  \begin{center}
+    \emph{No elimination rule!}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item The judgement forms for (focused) Natural Deduction:
+    \begin{mathpar}
+      P_1, \dots, P_n \vdash Q
+
+      P_1, \dots, P_n~[P] \vdash Q
+    \end{mathpar}
+  \item Rules for \TirName{Use} and \TirName{Done}
+  \item Rules for introducing and eliminating $\land$.
+  \end{itemize}
+\end{frame}
+
+\weeksection{Rules for ``Implies''}
+
+\begin{frame}
+  {``Implies'' Introduction}
+
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\Gamma, P \vdash Q}
+    {\Gamma \vdash P \to Q}
+  \end{displaymath}
+
+  \pause
+  \bigskip
+
+  To prove $P \to Q$, we prove $Q$ under the assumption $P$.
+\end{frame}
+
+\begin{frame}
+  {Example: $A \to A$}
+
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\inferrule* [Right=Use]
+      {\inferrule* [Right=Done] { } {A~[A] \vdash A}}
+      {A \vdash A}
+    }
+    {\vdash A \to A}
+  \end{displaymath}
+
+\end{frame}
+
+\begin{frame}
+  {Example : $(A \land B) \to A$}
+
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\inferrule* [Right=Use]
+      {\inferrule* [Right=First]
+        {\inferrule* [Right=Done]
+          { }
+          {\mathrm{A} \land \mathrm{B}~[\mathrm{A}] \vdash \mathrm{A}}
+        }
+        {\mathrm{A} \land \mathrm{B}~[\mathrm{A} \land \mathrm{B}] \vdash \mathrm{A}}
+      }
+      {\mathrm{A} \land \mathrm{B} \vdash \mathrm{A}}
+    }
+    { \vdash (\mathrm{A} \land \mathrm{B}) \to \mathrm{A}}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {``Implies'' Elimination}
+
+  \begin{displaymath}
+    \inferrule* [right=Apply]
+    {\Gamma \vdash P_1 \\ \Gamma~[P_2] \vdash Q}
+    {\Gamma~[P_1 \to P_2] \vdash Q}
+  \end{displaymath}
+
+  \bigskip
+  \pause
+
+  If we have $P_1 \to P_2$ and we can prove $P_1$, then we have $P_2$.
+\end{frame}
+
+\begin{frame}
+  {Example: $A \to (A \to B) \to B$}
+
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\inferrule* [Right=Introduce]
+      {\inferrule* [Right=Use]
+        {\inferrule* [Right=Apply]
+          {\inferrule* [right=Use]
+            {\inferrule* [Right=Done]
+              { }
+              {\mathrm{A}, \mathrm{A} \to \mathrm{B}~[\mathrm{A}] \vdash \mathrm{A}}
+            }
+            {\mathrm{A}, \mathrm{A} \to \mathrm{B} \vdash \mathrm{A}}
+            \\
+            \inferrule* [Right=Done]
+            { }
+            {\mathrm{A}, \mathrm{A} \to \mathrm{B}~[\mathrm{B}] \vdash \mathrm{B}}
+          }
+          {\mathrm{A}, \mathrm{A} \to \mathrm{B}~[\mathrm{A} \to \mathrm{B}] \vdash \mathrm{B}}
+        }
+        {\mathrm{A}, \mathrm{A} \to \mathrm{B} \vdash \mathrm{B}}
+      }
+      {\mathrm{A} \vdash (\mathrm{A} \to \mathrm{B}) \to \mathrm{B}}
+    }
+    { \vdash \mathrm{A} \to (\mathrm{A} \to \mathrm{B}) \to \mathrm{B}}
+  \end{displaymath}
+\end{frame}
+
+
+% \begin{frame}
+
+%   Examples (see scans):
+%   \begin{enumerate}
+%   \item $\vdash A \to (A \lor B)$
+%   \item $\vdash A \to B \to (A \land B)$
+%   \end{enumerate}
+% \end{frame}
+
+% \begin{frame}
+%   Examples (see scans):
+%   \begin{enumerate}
+%   \item $A \to B, A \vdash B$
+%   \item $A \lor B, B \to C \vdash A \lor C$
+%   \item $A \to B \to C \vdash (A \land B) \to C$
+%   \end{enumerate}
+% \end{frame}
+
+\begin{frame}
+  {The Rules so far}
+
+  \begin{mathpar}
+    \inferrule* [right=Done]
+    { }
+    {\Gamma~[P] \vdash P}
+
+    \inferrule* [right=Use]
+    {P \in \Gamma \\ \Gamma~[P] \vdash Q}
+    {\Gamma \vdash Q}
+
+    \inferrule* [right=Split]
+    {\Gamma \vdash Q_1 ~~~~~~ \Gamma \vdash Q_2}
+    {\Gamma \vdash Q_1 \land Q_2}
+    \quad
+    \inferrule* [right=First]
+    {\Gamma~[P_1] \vdash Q}
+    {\Gamma~[P_1 \land P_2] \vdash Q}
+    ~
+    \inferrule* [right=Second]
+    {\Gamma~[P_2] \vdash Q}
+    {\Gamma~[P_1 \land P_2] \vdash Q}
+
+    \inferrule* [right=Introduce]
+    {\Gamma, P \vdash Q}
+    {\Gamma \vdash P \to Q}
+
+    \inferrule* [right=Apply]
+    {\Gamma \vdash P_1 \\ \Gamma~[P_2] \vdash Q}
+    {\Gamma~[P_1 \to P_2] \vdash Q}
+  \end{mathpar}
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item The rules for Implication
+    \begin{mathpar}
+      \inferrule* [right=Introduce]
+      {\Gamma, P \vdash Q}
+      {\Gamma \vdash P \to Q}
+
+      \inferrule* [right=Apply]
+      {\Gamma \vdash P_1 \\ \Gamma~[P_2] \vdash Q}
+      {\Gamma~[P_1 \to P_2] \vdash Q}
+    \end{mathpar}
+  \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\weeksection{Using the Interactive Editor}
+
+
+\end{document}

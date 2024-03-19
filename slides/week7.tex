@@ -1,0 +1,721 @@
+% -*- TeX-engine: xetex -*-
+
+\documentclass[xetex,aspectratio=169,14pt,hyperref={pdfpagelabels=true,pdflang={en-GB}}]{beamer}
+
+\input{macros}
+
+\weektitle{7}{Predicate Logic : Natural Deduction}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\weeksection{Upgrading Natural Deduction}
+
+\begin{frame}[t]
+  {Tracking free variables}
+
+  \bigskip
+
+  We are going to prove things like:
+  \begin{displaymath}
+    \vdash \forall x. (p(x) \land q(x)) \to p(x)
+  \end{displaymath}
+
+  \bigskip
+
+  This will mean we will have proof states like:
+  \begin{displaymath}
+    \dots \vdash (p(x) \land q(x)) \to p(x)
+  \end{displaymath}
+
+  We need to keep track of variables as well as assumed formulas to
+  the left of the $\vdash$ ``turnstile''.
+\end{frame}
+
+\begin{frame}
+  {Judgements}
+
+  Proving:
+  \begin{displaymath}
+    \underbrace{P_1, x_1, \dots, x_i, P_j, \dots, x_m, P_n}_{\textit{assumptions and variables}} \vdash \underbrace{Q}_{\textit{conclusion}}
+  \end{displaymath}
+
+  Focused:
+  \begin{displaymath}
+    \underbrace{P_1, x_1, \dots, x_i, P_j, \dots, x_m, P_n}_{\textit{assumptions and variables}}~[\underbrace{P}_{\textit{focus}}] \vdash \underbrace{Q}_{\textit{conclusion}}
+  \end{displaymath}
+
+  Note:
+  \begin{enumerate}
+  \item We never focus on a variable, only formulas
+  \item Each $P_j$ only contains free variables that appear to the
+    \emph{left} of it
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[t]
+  \sechead{Well-scoped terms and formulas}
+
+  If we have a list of variables and assumptions (a ``context''):
+  \begin{displaymath}
+    \Gamma = P_1, x_1, \dots, x_i, P_j, \dots, x_m, P_n
+  \end{displaymath}
+  \textcolor{black!60}{$\Gamma$ is the name we're giving to the list}
+
+  \bigskip
+
+  \begin{itemize}
+  \item A formula $P$ is \emph{well-scoped in $\Gamma$} if all the
+    free variables of $P$ appear in $\Gamma$.
+  \item A term $t$ is \emph{well-scoped in $\Gamma$} if all the
+    variables of $t$ appear in $\Gamma$.
+  \end{itemize}
+
+  \bigskip
+
+  \begin{itemize}
+  \item All formulas in $\Gamma$ must be well-scoped by the variables
+    to their left (same condition as previous slide).
+  \item The focus and conclusion must always be well-scoped in
+    $\Gamma$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Well-scoped terms and formulas}
+
+  Are the following well-scoped?
+
+  \bigskip
+
+  \begin{enumerate}
+  \item Context: $x$\quad Formula: $\forall y. P(y) \to Q(y)$\\
+    \pause
+    Yes. The variable $y$ is bound in the formula.
+    \pause
+  \item Context: $x$\quad Formula: $\forall y. P(y) \to Q(x,y)$\\
+    \pause Yes. The variable $y$ is bound in the formula, and the free
+    variable $x$ is in the context.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Well-scoped terms and formulas}
+  Are the following well-scoped?
+
+  \bigskip
+
+  \begin{enumerate}
+  \item Context: \emph{empty}\quad Formula: $\forall y. P(y) \to Q(x,y)$\\
+    \pause No. The variable $y$ is bound in the formula, but the free
+    variable $x$ is not in the context.
+    \pause
+  \item Context: \emph{empty}\quad Term: $x+1$\\
+    \pause No. The variable $x$ is free in the term but is not in the
+    context.  \pause
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Well-scoped Judgements}
+  Is the following well-scoped?
+
+  \bigskip
+
+  \begin{enumerate}
+  \item Is this judgement well-scoped:
+    \begin{displaymath}
+      x, y~[P(x,y)] \vdash Q(x)
+    \end{displaymath}
+    \pause Yes. The free variables of the focus and conclusion are
+    $x, y$, which are in the context.
+
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Well-scoped Judgements}
+  Is the following well-scoped?
+
+  \bigskip
+
+  \begin{enumerate}
+  \item Is this judgement well-scoped:
+    \begin{displaymath}
+      x~[P(x,y)] \vdash Q(x)
+    \end{displaymath}
+    \pause No. The free variables of the focus and conclusion are
+    $x, y$, but $y$ is not in the context.
+
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Well-scoped Judgements}
+  Is the following well-scoped?
+
+  \bigskip
+
+  \begin{enumerate}
+  \item Is this judgement well-scoped:
+    \begin{displaymath}
+      x, Q(x), y~[P(x,y)] \vdash Q(y)
+    \end{displaymath}
+    \pause Yes. Each variable appears before (reading left to right)
+    it is used.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Well-scoped Judgements}
+  Is the following well-scoped?
+
+  \bigskip
+
+  \begin{enumerate}
+  \item Is this judgement well-scoped:
+    \begin{displaymath}
+      \forall x. Q(x), y~[P(x,y)] \vdash Q(y)
+    \end{displaymath}
+    \pause No. The $x$ in the first $Q(x)$ is OK, but the $x$ in
+    $P(x,y)$ has not been declared in scope.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{enumerate}
+  \item We started to upgrade Natural Deduction to Predicate Logic
+  \item We need to manage the \emph{scope} of variables
+  \item To do so, we add them to the context
+  \item Variables may only be used by formulas to their right
+  \end{enumerate}
+\end{frame}
+
+% \begin{frame}
+%   \sechead{Bound and Free Variables}
+%   The Quantifiers are \emph{binders}.
+
+%   \bigskip
+
+%   In the formula:
+%   \begin{displaymath}
+%     \exists k. (x = k + k) \lor (x = k + k + 1)
+%   \end{displaymath}
+%   \begin{enumerate}
+%   \item The variable $x$ is \emph{free}
+%   \item The variable $k$ is \emph{bound}
+%   \end{enumerate}
+
+%   \pause
+
+%   Bound variables can be renamed as we like:
+%   \begin{displaymath}
+%     \exists j. (x = j + j) \lor (x = j + j + 1)
+%   \end{displaymath}
+
+% \end{frame}
+
+\weeksection{Substitution}
+
+\begin{frame}
+  {From General to Specific}
+
+  We will have \emph{general} assumptions like:
+  \begin{displaymath}
+    \forall x. \mathrm{human}(x) \to \mathrm{mortal}(x)
+  \end{displaymath}
+
+  \bigskip
+
+  And we want to \emph{specialise} (or \emph{instantiate}) to:
+  \begin{displaymath}
+    \mathrm{human}(\mathsf{socrates}()) \to \mathrm{mortal}(\mathsf{socrates}())
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Substitution}
+  The notation
+  \begin{displaymath}
+    P[x:=t]
+  \end{displaymath}
+  means ``replace all \emph{free} occurrences of $x$ in $P$ with $t$''.
+  \begin{itemize}
+  \item $x$ is a \emph{variable}
+  \item $P$ is a \emph{formula}
+  \item $t$ is a \emph{term}
+  \end{itemize}
+
+
+  \bigskip
+
+  \textcolor{black!60}{But there is a subtlety...}
+\end{frame}
+
+\begin{frame}
+  {Substitution Examples}
+
+  \begin{displaymath}
+    \begin{array}{cl}
+      &(\mathrm{mortal}(x))[x := \mathsf{socrates}()]\\
+      \Longrightarrow&\mathrm{mortal}(\mathsf{socrates}())\\
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Substitution Examples}
+
+  \begin{displaymath}
+    \begin{array}{cl}
+      &(\forall y. \mathrm{weatherIs}(d,y) \to \mathrm{weatherIs}(\mathsf{dayAfter}(d),y))[d:=\mathsf{tuesday}]\\
+      \Longrightarrow&\forall y. \mathrm{weatherIs}(\mathsf{tuesday},y) \to \mathrm{weatherIs}(\mathsf{dayAfter}(\mathsf{tuesday}),y)\\
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Substitution Examples}
+
+  \begin{displaymath}
+    \begin{array}{cl}
+      &(\exists y. \mathrm{sameElements}(x,y) \land \mathrm{sorted}(y))[x:=\mathsf{cons}(z_1,\mathsf{cons}(z_2,\mathsf{nil}))]\\
+      \Longrightarrow&\exists y. \mathrm{sameElements}(\mathsf{cons}(z_1,\mathsf{cons}(z_2,\mathsf{nil})),y) \land \mathrm{sorted}(y)\\
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Substitution Examples}
+  \begin{displaymath}
+    \begin{array}{cl}
+      &(\forall y. x+y=y+x)[x:=z-z] \\
+      \Longrightarrow&\forall y. (z-z)+y = y+(z-z)
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}[t]
+  {Accidental Name Capture}
+
+  If we substitute naively, then we produce nonsense:
+  \begin{enumerate}
+  \item $\exists y. \mathrm{sameElements}(x,y)$ \\
+    \emph{``there exists a $y$ that has the same elements as $x$''}\\
+    ~\\
+  \item $(\exists y. \mathrm{sameElements}(x,y))[x:=\mathsf{append}(y,[1,2])]$\\
+    \emph{``replace $x$ by the list $\mathsf{append}(y,[1,2])$''}\\
+    ~\\
+  \item $\exists y. \mathrm{sameElements}(\mathsf{append}(y,[1,2]),y)$\\
+    \emph{``there exists a $y$ that has the same elements as $y + [1,2]$?''}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Capture Avoidance}
+
+  \bigskip
+
+  \textbf{Solution: Rename bound variables}
+  \begin{displaymath}
+    \begin{array}{cl}
+      &(\exists y. \mathrm{sameElements}(x,y))[x:=\mathsf{append}(y,[1,2])]\\
+      \Longrightarrow&(\exists z. \mathrm{sameElements}(x,z))[x:=\mathsf{append}(y,[1,2])]\\
+      \Longrightarrow&\exists z. \mathrm{sameElements}(\mathsf{append}(y,[1,2]),z)
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Capture Avoiding Substitution}
+
+  When working out
+  \begin{displaymath}
+    P[x := t]
+  \end{displaymath}
+  If any of the variables in $t$ are bound in $P$ then rename them
+  before doing the substitution.
+\end{frame}
+
+\begin{frame}
+  {Substitution Examples}
+
+  \begin{enumerate}
+  \item $P(x,y)[x:=y+y]$\pause \quad $= P(y+y,y)$
+    \pause
+    \bigskip
+  \item $P(x,y)[y:=y+y]$\pause \quad $= P(x,y+y)$
+    \pause
+    \bigskip
+  \item $(\forall x. P(x,y))[x:=y+y]$\pause \quad $= \forall x. P(x,y)$
+  \end{enumerate}
+\end{frame}
+
+
+\begin{frame}
+  {Substitution Examples}
+
+  \begin{enumerate}
+  \item $(\forall x. P(x,y))[y:=x+x]$\pause \quad $= \forall z. P(z,x+x)$ \\
+    \qquad \textcolor{black!60}{Renaming!}
+    \pause
+    \bigskip
+  \item $(\forall x. P(x,y) \to (\exists z. Q(y,z)))[y:=z+z]$\pause\\
+    $= \forall x. P(x,z+z) \to (\exists w. Q(z+z,w))$\\
+    \qquad \textcolor{black!60}{Renaming!}
+    \pause
+    \bigskip
+  \item $(\forall x. P(x,z) \to (\exists z. Q(y,z)))[z:=x+x]$\pause\\
+    $= \forall w. P(w,x+x) \to (\exists z. Q(y,z))$\\
+    \qquad \textcolor{black!60}{Renaming! and no substitution of the final $z$}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item Substitution
+    \begin{displaymath}
+      P [x := t]
+    \end{displaymath}
+    is how we go from the general $x$ to the specific $t$.
+  \item We need to be careful to rename bound variables to avoid
+    accidental name capture.
+  \end{itemize}
+\end{frame}
+
+\weeksection{Rules for ``Forall''}
+
+\begin{frame}[t]
+  \sechead{What does $\forall x. P$ mean?}
+  \sidenote{assuming a domain of discourse}
+
+  \bigskip
+
+  \emph{Answer 1} : it means for all individuals ``$\mathsf{a}$'', $P[x:=\mathsf{a}]$ is true.\\
+  \sidenote{we think of ``for all'' as an infinite conjunction}
+
+  \pause
+  \bigskip
+
+  \emph{Answer 2} : thinking about proofs:
+
+  \medskip
+
+  To \emph{prove} a $\forall x. P$:
+  \begin{itemize}
+  \item We must prove $P[x:=x_0]$ for a \emph{general} $x_0$.
+  \item The $x_0$ stands in for any ``$\mathsf{a}$'' that might be chosen.
+  \end{itemize}
+
+  \bigskip
+
+  To \emph{use} a proof of $\forall x. P$:
+  \begin{itemize}
+  \item We can \emph{choose} any $t$ we like for $x$, and get $P[x:=t]$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \sechead{Introduction rule}
+
+  \begin{displaymath}
+    \inferrule* [right=Introduce$\forall$]
+    {\Gamma, x_0 \vdash Q[x:=x_0]}
+    {\Gamma \vdash \forall x. Q}
+  \end{displaymath}
+
+  \bigskip
+  \pause
+
+  ``To prove $\forall x. Q$, we prove $Q[x:=x_0]$, assuming an arbitrary $x_0$.''
+\end{frame}
+
+\begin{frame}
+
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\inferrule* [Right=Introduce]
+      {\inferrule* [Right=Use]
+        {\inferrule* [Right=First]
+          {\inferrule* [Right=Done]
+            { }
+            {\mathit{x}, \mathrm{P}(\mathit{x}) \land \mathrm{Q}(\mathit{x})~[\mathrm{P}(\mathit{x})] \vdash \mathrm{P}(\mathit{x})}
+          }
+          {\mathit{x}, \mathrm{P}(\mathit{x}) \land \mathrm{Q}(\mathit{x})~[\mathrm{P}(\mathit{x}) \land \mathrm{Q}(\mathit{x})] \vdash \mathrm{P}(\mathit{x})}
+        }
+        {\mathit{x}, \mathrm{P}(\mathit{x}) \land \mathrm{Q}(\mathit{x}) \vdash \mathrm{P}(\mathit{x})}
+      }
+      {\mathit{x} \vdash (\mathrm{P}(\mathit{x}) \land \mathrm{Q}(\mathit{x})) \to \mathrm{P}(\mathit{x})}
+    }
+    { \vdash \forall \mathit{x}. (\mathrm{P}(\mathit{x}) \land \mathrm{Q}(\mathit{x})) \to \mathrm{P}(\mathit{x})}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  \sechead{Elimination}
+
+  \begin{displaymath}
+    \inferrule* [right=Instantiate]
+    {\Gamma~[P[x:=t]] \vdash Q}
+    {\Gamma~[\forall x. P] \vdash Q}
+  \end{displaymath}
+
+  \bigskip
+
+  (side condition: $t$ is well-scoped in $\Gamma$)
+
+  \bigskip
+  \pause
+
+  ``If we have $P$ for all $x$, then we can pick any well-scoped $t$
+  we like to stand in for it.''
+
+\end{frame}
+
+\begin{frame}
+
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\inferrule* [Right=Introduce]
+      {\inferrule* [Right=Use]
+        {\inferrule* [Right=Instantiate]
+          {\inferrule* [Right=Apply]
+            {\inferrule* [right=Use]
+              {\inferrule* [Right=Done]
+                { }
+                {\Gamma~[\mathrm{h}(\mathsf{s}())] \vdash \mathrm{h}(\mathsf{s}())}
+              }
+              {\Gamma \vdash \mathrm{h}(\mathsf{s}())}
+              \\
+              \inferrule* [Right=Done]
+              { }
+              {\Gamma~[\mathrm{m}(\mathsf{s}())] \vdash \mathrm{m}(\mathsf{s}())}
+            }
+            {\Gamma~[\mathrm{h}(\mathsf{s}()) \to \mathrm{m}(\mathsf{s}())] \vdash \mathrm{m}(\mathsf{s}())}
+          }
+          {\Gamma~[\forall \mathit{x}. \mathrm{h}(\mathit{x}) \to \mathrm{m}(\mathit{x})] \vdash \mathrm{m}(\mathsf{s}())}
+        }
+        {\Gamma \vdash \mathrm{m}(\mathsf{s}())}
+      }
+      {\forall \mathit{x}. \mathrm{h}(\mathit{x}) \to \mathrm{m}(\mathit{x}) \vdash \mathrm{h}(\mathsf{s}()) \to \mathrm{m}(\mathsf{s}())}
+    }
+    { \vdash (\forall \mathit{x}. \mathrm{h}(\mathit{x}) \to \mathrm{m}(\mathit{x})) \to \mathrm{h}(\mathsf{s}()) \to \mathrm{m}(\mathsf{s}())}
+  \end{displaymath}
+  where
+  $\Gamma = \forall \mathit{x}. \mathrm{h}(\mathit{x}) \to \mathrm{m}(\mathit{x}), \mathrm{h}(\mathsf{s}())$
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item To prove $\forall x. P(x)$, we must prove $P(x_0)$ for a general $x_o$.
+  \item To use $\forall x. P(X)$, we get to choose the $t$ we use for $x$.
+  \end{itemize}
+\end{frame}
+
+\weeksection{Rules for ``Exists''}
+
+\begin{frame}[t]
+  \sechead{What does $\exists x. P$ mean?}
+  \sidenote{assuming a domain of discourse}
+
+  \bigskip
+
+  \emph{Answer 1 } : there is at least one ``$\mathsf{a}$'' such that $P[x:=\mathsf{a}]$ is true.\\
+  \sidenote{we think of ``exists'' as an infinite disjunction}
+
+  \pause
+  \bigskip
+
+  \emph{Answer 2} : thinking about proofs:
+
+  \medskip
+
+  To \emph{prove} a $\exists x.P$:
+  \begin{itemize}
+  \item We must provide a \emph{witness} term $t$ such that $P[x:=t]$.
+  \end{itemize}
+
+  \bigskip
+
+  To \emph{use} a proof of $\exists x. P$:
+  \begin{itemize}
+  \item We have to work with an arbitrary $x_0$ and all we know is $P[x:=x_0]$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \sechead{Introduction}
+
+  \begin{displaymath}
+    \inferrule* [right=Exists]
+    {\Gamma \vdash P[x:=t]}
+    {\Gamma \vdash \exists x. P}
+  \end{displaymath}
+
+  (side condition: $t$ is well-scoped in $\Gamma$)
+
+  \bigskip
+
+  ``To prove $\exists x. P$, we have to provide a witness $t$ for $x$,
+  and show that $P[x:=t]$''
+\end{frame}
+
+\begin{frame}
+
+  {\small
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\inferrule* [Right=Exists]
+      {\inferrule* [Right=Use]
+        {\inferrule* [Right=Done]
+          { }
+          {\mathrm{human}(\mathsf{socrates}())~[\mathrm{human}(\mathsf{socrates}())] \vdash \mathrm{human}(\mathsf{socrates}())}
+        }
+        {\mathrm{human}(\mathsf{socrates}()) \vdash \mathrm{human}(\mathsf{socrates}())}
+      }
+      {\mathrm{human}(\mathsf{socrates}()) \vdash \exists \mathit{x}. \mathrm{human}(\mathit{x})}
+    }
+    { \vdash \mathrm{human}(\mathsf{socrates}()) \to (\exists \mathit{x}. \mathrm{human}(\mathit{x}))}
+  \end{displaymath}}
+
+\end{frame}
+
+\begin{frame}
+  \sechead{Elimination}
+
+  \begin{displaymath}
+    \inferrule* [right=Unpack]
+    {\Gamma, x_0, P[x:=x_0] \vdash Q}
+    {\Gamma~[\exists x. P] \vdash Q}
+  \end{displaymath}
+
+  ``To use $\exists x. P$, we get some arbitrary $x_0$ that we know
+  $P[x:=x_0]$ about.''
+\end{frame}
+
+\begin{frame}
+
+  {\small
+    \begin{displaymath}
+      \inferrule* [right=Introduce]
+      {\inferrule* [Right=Use]
+        {\inferrule* [Right=Unpack]
+          {\inferrule* [Right=Exists]
+            {\inferrule* [Right=Use]
+              {\inferrule* [Right=First]
+                {\inferrule* [Right=Done]
+                  { }
+                  {\exists \mathit{x}. \mathrm{h}(\mathit{x}) \land \mathrm{m}(\mathit{x}), \mathit{ali}, \mathrm{h}(\mathit{ali}) \land \mathrm{m}(\mathit{ali})~[\mathrm{h}(\mathit{ali})] \vdash \mathrm{h}(\mathit{ali})}
+                }
+                {\exists \mathit{x}. \mathrm{h}(\mathit{x}) \land \mathrm{m}(\mathit{x}), \mathit{ali}, \mathrm{h}(\mathit{ali}) \land \mathrm{m}(\mathit{ali})~[\mathrm{h}(\mathit{ali}) \land \mathrm{m}(\mathit{ali})] \vdash \mathrm{h}(\mathit{ali})}
+              }
+              {\exists \mathit{x}. \mathrm{h}(\mathit{x}) \land \mathrm{m}(\mathit{x}), \mathit{ali}, \mathrm{h}(\mathit{ali}) \land \mathrm{m}(\mathit{ali}) \vdash \mathrm{h}(\mathit{ali})}
+            }
+            {\exists \mathit{x}. \mathrm{h}(\mathit{x}) \land \mathrm{m}(\mathit{x}), \mathit{ali}, \mathrm{h}(\mathit{ali}) \land \mathrm{m}(\mathit{ali}) \vdash \exists \mathit{x}. \mathrm{h}(\mathit{x})}
+          }
+          {\exists \mathit{x}. \mathrm{h}(\mathit{x}) \land \mathrm{m}(\mathit{x})~[\exists \mathit{x}. \mathrm{h}(\mathit{x}) \land \mathrm{m}(\mathit{x})] \vdash \exists \mathit{x}. \mathrm{h}(\mathit{x})}
+        }
+        {\exists \mathit{x}. \mathrm{h}(\mathit{x}) \land \mathrm{m}(\mathit{x}) \vdash \exists \mathit{x}. \mathrm{h}(\mathit{x})}
+      }
+      { \vdash (\exists \mathit{x}. \mathrm{h}(\mathit{x}) \land \mathrm{m}(\mathit{x})) \to (\exists \mathit{x}. \mathrm{h}(\mathit{x}))}
+    \end{displaymath}}
+\end{frame}
+
+%\titlecard{Comparing \\the Quantifiers \\to\\ the Connectives}
+
+\begin{frame}
+  {Comparing $\land$ and $\forall$}
+
+  \rhighlight{Introduction}
+  \begin{mathpar}
+    \inferrule* [right=Split]
+    {\Gamma \vdash P_1 \\ \Gamma \vdash P_2}
+    {\Gamma \vdash P_1 \land P_2}
+
+    \inferrule* [right=$\forall$-I]
+    {\Gamma, x_0 \vdash P[x:=x_0]}
+    {\Gamma \vdash \forall x. P}
+  \end{mathpar}
+  For $\land$, we have to prove $P_i$, no matter what $i$ is. For
+  $\forall$, we have to prove $P[x:=x_0]$, no matter what $x_0$ is.
+\end{frame}
+
+\begin{frame}
+  {Comparing $\land$ and $\forall$}
+
+  \rhighlight{Elimination}
+  \begin{mathpar}
+    \inferrule* [right=First]
+    {\Gamma~[P_1] \vdash Q}
+    {\Gamma~[P_1 \land P_2] \vdash Q}
+
+    \inferrule* [right=Second]
+    {\Gamma~[P_2] \vdash Q}
+    {\Gamma~[P_1 \land P_2] \vdash Q}
+
+    \inferrule* [right=Instantiate]
+    {\Gamma~[P[x:=t]] \vdash Q}
+    {\Gamma~[\forall x. P] \vdash Q}
+  \end{mathpar}
+  For $\land$, we choose $1$ or $2$. For $\forall$, we choose $t$.
+\end{frame}
+
+\begin{frame}
+  {Comparing $\lor$ and $\exists$}
+
+  \rhighlight{Introduction}
+  \begin{mathpar}
+    \inferrule* [right=Left]
+    {\Gamma \vdash P_1}
+    {\Gamma \vdash P_1 \lor P_2}
+
+    \inferrule* [right=Right]
+    {\Gamma \vdash P_2}
+    {\Gamma \vdash P_1 \lor P_2}
+
+    \inferrule* [right=Exists]
+    {\Gamma \vdash P[x:=t]}
+    {\Gamma \vdash \exists x. P}
+  \end{mathpar}
+  For $\lor$, we choose which of $1$ or $2$ we want. For $\exists$, we
+  choose the witnessing term $t$.
+\end{frame}
+
+\begin{frame}
+  {Comparing $\lor$ and $\exists$}
+
+  \rhighlight{Elimination}
+  \begin{mathpar}
+    \inferrule* [right=Cases]
+    {\Gamma, P_1 \vdash Q \\
+      \Gamma, P_2 \vdash Q}
+    {\Gamma~[P_1 \lor P_2] \vdash Q}
+
+    \inferrule* [right=Unpack]
+    {\Gamma, x_0, P[x:=x_0] \vdash Q}
+    {\Gamma~[\exists x. P] \vdash Q}
+  \end{mathpar}
+  For $\lor$, we must deal with $1$ or $2$. For $\exists$, we must
+  cope with any $x_0$.
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item To prove $\exists x. P(x)$ we must give a witness $t$ and prove $P(t)$.
+  \item To use $\exists x. P(X)$ we get to assume there is some $y$ and $P(y)$.
+  \end{itemize}
+\end{frame}
+
+\weeksection{Using the interactive prover}
+
+
+\end{document}

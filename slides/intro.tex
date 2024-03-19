@@ -1,0 +1,237 @@
+% -*- TeX-engine: xetex -*-
+
+\documentclass[xetex,aspectratio=169,14pt,hyperref={pdfpagelabels=true,pdflang={en-GB}}]{beamer}
+
+\input{macros}
+
+\title[CS208 - Introduction]{CS208 (Semester 1) : Introduction}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\begin{frame}{CS208 : Logic and Algorithms}
+
+  In this semester we will study \emph{Symbolic Logic}.
+
+  \bigskip
+
+  \begin{enumerate}
+  \item What is a good language for formal statements?
+  \item What are valid rules of inference?
+  \item How can we relate situations and statements about them?
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Very rough History of Logic}
+
+  (with a Western bias)
+
+  \bigskip
+
+  \begin{tabular}{ll}
+    \textcolor{black!60}{$\sim$350BCE}& Aristotle's \emph{Organon} (``\emph{logos}'' = ``the word'') \\
+    \textcolor{black!60}{300BCE-1847CE}& Lots of interesting but scattered stuff... \\
+    \textcolor{black!60}{1847} & George Boole's \emph{Mathematical Analysis of Logic} \\
+%                & \quad later \emph{An Investigation of the Laws of Thought...} \\
+    \textcolor{black!60}{1879} & Gottlob Frege's \emph{Begriffsschrift} \\
+ %               & \quad invention of \emph{Quantifiers} \\
+    \textcolor{black!60}{1880s to 1930s} & Logic\textbf{s} as an object of study in their own right\\
+  %              & \quad Kurt G{\"o}del, Alfred Tarski, Alan Turing, ...\\
+    \textcolor{black!60}{1940s to date} & Explosion, especially driven by CS.
+  \end{tabular}
+\end{frame}
+
+\begin{frame}
+  {Why study Logic?}
+
+  Logic is \emph{extremely useful} in Computer Science.
+
+  \bigskip
+
+  For example...
+  \begin{enumerate}
+  \item Digital circuits
+  \item Specifying systems' behaviour
+  \item Proving that systems satisfy their specifications
+  \item Automated Reasoning, rule-based AI
+  \item Designing Programming Languages
+  \item Database Query Languages
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {In this course}
+
+  We will cover two major sorts of Logic:
+
+  \begin{enumerate}
+  \item Propositional Logic
+  \item Predicate Logic
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Propositional Logic}
+
+  Propositional Logic talks about atomic statements:
+  \begin{mathpar}
+    \textit{``it is raining''}
+
+    \textit{``I am in Glasgow''}
+  \end{mathpar}
+  and compound statements made from those:
+  \begin{mathpar}
+    \textit{``it is raining''} \land \textit{``I am in Glasgow''}
+
+    \textit{``it is raining''} \to \textit{``I am in Glasgow''}
+  \end{mathpar}
+
+\end{frame}
+
+\begin{frame}
+  {Predicate Logic}
+
+  Predicate Logic adds \emph{quantifiers} and \emph{predicates}:
+  \begin{mathpar}
+    \forall \mathit{day}.~\textrm{InGlasgow}(\mathit{day}) \to (\textrm{Raining}(\mathit{day}) \lor \textrm{Drizzle}(\mathit{day}))
+
+    \forall x. \forall y.~x + y = y + x
+  \end{mathpar}
+\end{frame}
+
+\begin{frame}
+  {Semantics}
+
+  The \emph{Semantics} of a logic tell you what formulas \emph{mean}.
+
+  \bigskip
+
+  Roughly, we will take the view that a formula's meaning is the
+  collection of situations that make it true.
+  \begin{mathpar}
+    \sem{G \lor R} = \left\{
+      \begin{array}{@{}l}
+        \{G \mapsto \true, R \mapsto \false\}, \\
+        \{G \mapsto \false, R \mapsto \true\}, \\
+        \{G \mapsto \true, R \mapsto \true\}
+      \end{array}
+    \right\}
+
+    \sem{G \land R} = \left\{ [G \mapsto \true,R \mapsto \true] \right\}
+  \end{mathpar}
+\end{frame}
+
+\begin{frame}
+  {Logical Modelling}
+
+  A fundamental use for logic is to create models of situations.
+
+  \bigskip
+
+  \begin{enumerate}
+  \item Encode potential facts as atomic statements:
+    \begin{itemize}
+    \item $\mathsf{cell}((3,3), 4)$ -- cell $(3,3)$ of a sudoku board contains $4$.
+    \item $\mathsf{assigned}(A,M)$ -- task $A$ is assigned to machine $M$.
+    \item $\mathsf{installed}(progA, 1)$ -- version 1 of program A is installed
+    \end{itemize}
+  \item Encode constraints as logical statements:
+    \begin{itemize}
+    \item $\mathsf{installed}(progA,1) \to (\mathsf{installed}(libB,3) \land \mathsf{installed}(libC,2))$ \\
+      -- program A v1 requires libB v3 and libC v2.
+    \end{itemize}
+  \item Finding a true/false value for each atom that makes all the
+    constraints true allows us to solve the problem.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Deductive Systems}
+
+  \emph{Deductive Systems} are collections of rules that allow you to
+  derive valid statements from valid statements.
+
+  \bigskip
+
+  A rule:
+  \begin{displaymath}
+    \inferrule*
+    {X\textit{ is feathery} \\ X\textit{ lays eggs}}
+    {X\textit{ is a bird}}
+  \end{displaymath}
+
+  Above the line are \emph{premises}, below is the \emph{conclusion}.
+
+  \bigskip
+
+  We will study rules for Propositional and Predicate Logic.
+\end{frame}
+
+\begin{frame}
+  {Course plan}
+
+  \begin{tabular}{ll}
+    Week 1 & Recap Propositional Logic \\
+    Week 2 & Logical modelling and SAT solvers \\
+    Week 3 & More examples of Logical Modelling \\
+    Week 4 & More examples of Logical Modelling \\
+    Week 5 & Deductive proof for Propositional Logic \\
+    Week 6 & Predicate Logic \\
+    Week 7 & Deductive proof for Predicate Logic \\
+    Week 8 & Semantics of Predicate Logic \\
+    Week 9 & Equality and Arithmetic in Predicate Logic \\
+    Week 10 & Metatheory \\
+  \end{tabular}
+\end{frame}
+
+\begin{frame}
+  {Course Delivery}
+
+  For Semester 1:
+  \begin{itemize}
+  \item \textbf{Lectures}: two/week \\
+    Mondays 12:00-13:00, GH514 \\
+    Fridays 12:00-13:00, RC512
+  \item \textbf{Video minilectures}: roughly four/week, roughly ten minutes each.
+  \item \textbf{Notes and Tutorial Exercises}: linked from MyPlace.
+  \item \textbf{Tutorials}: Mondays and Fridays, assignment to follow.
+  \item \textbf{Mattermost chat}: use the Mattermost channel for this
+    course to discuss the course and ask questions.
+  \item \textbf{Individual questions}: contact the course lecturer.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Assessment}
+
+  The whole course (Semesters 1\&2) is 30\% coursework, 70\% exam.
+
+  \bigskip
+
+  This semester there are two courseworks:
+  \begin{center}
+    \begin{tabular}{llll}
+      Name & Release & Submission & Weighting\\
+      \hline
+      1 : Logical Modelling &Wed 4th Oct &Wed 18th Oct &7.5 \% \\
+      2 : Deductive Proof   &Wed 2nd Nov &Wed 30th Nov &7.5 \%\\
+    \end{tabular}
+  \end{center}
+
+  \bigskip
+
+  Single exam for Logic and Algorithms in April/May.
+\end{frame}
+
+\begin{frame}
+  \begin{center}
+    {\Huge Hope you enjoy the course!} \\
+    Check MyPlace for course arrangements and updates.
+  \end{center}
+\end{frame}
+
+\end{document}
