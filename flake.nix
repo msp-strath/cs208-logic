@@ -64,14 +64,14 @@
         devPackages = builtins.attrValues
           (pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) scope');
         # Packages in this workspace
-        packages =
+        opam_packages =
           pkgs.lib.getAttrs (builtins.attrNames localPackagesQuery) scope';
-      in {
+      in rec {
         # legacyPackages = scope';
 
         #inherit packages;
 
-        packages = packages // {
+        packages = opam_packages // {
           slides = pkgs.stdenvNoCC.mkDerivation rec {
             name = "slides";
             src = self;
@@ -102,14 +102,10 @@ cp assets/* $out;
           };
         };
 
-        # // { default = packages.slakemoth; };
-
         devShells.default = pkgs.mkShell {
           inputsFrom = builtins.attrValues packages;
           buildInputs = devPackages ++ [
             pkgs.rsync
-            # You can add packages from nixpkgs here
-            tex
           ];
         };
       });

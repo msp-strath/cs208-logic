@@ -11,3 +11,6 @@
 /slides/*.snm
 /slides/*.toc
 /slides/*.upa
+/slides/*.fdb_latexmk
+/slides/*.xdv
+/slides/*.fls
