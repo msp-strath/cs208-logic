@@ -44,7 +44,7 @@ let template ~title:title_text ?(sub_title="") ~script_url body_html =
           main body_html;
           footer @| [
               text "Source code for these pages ";
-              a ~attrs:[A.href "https://github.com/bobatkey/interactive-logic-course"]
+              a ~attrs:[A.href "https://github.com/msp-strath/cs208-logic"]
                 (text "on GitHub");
               text ". ";
               text "Styling provided by ";

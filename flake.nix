@@ -26,7 +26,7 @@
             minibox varwidth fragments psnfss csquotes
             ulem xltxtra realscripts booktabs todonotes
             pdfcomment datetime2 tracklang zref marginnote
-            soulpos appendixnumberbeamer; # soulutf8;
+            soulpos appendixnumberbeamer;
         };
 
         on = opam-nix.lib.${system};
@@ -52,24 +52,17 @@
         overlay = final: prev:
           {
             # You can add overrides here
-            z3 = prev.z3.overrideAttrs (finalattrs: prevattrs: {
-              # comment out lines that check for the destdir that hasn't been made yet
-              preBuild = ''
-                sed -i '1957,1958s/^/#/' scripts/mk_util.py
-              '';
-            });
           };
         scope' = scope.overrideScope' overlay;
         # Packages from devPackagesQuery
         devPackages = builtins.attrValues
           (pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) scope');
+
         # Packages in this workspace
         opam_packages =
           pkgs.lib.getAttrs (builtins.attrNames localPackagesQuery) scope';
       in rec {
         # legacyPackages = scope';
-
-        #inherit packages;
 
         packages = opam_packages // {
           slides = pkgs.stdenvNoCC.mkDerivation rec {
