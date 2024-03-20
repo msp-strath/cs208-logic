@@ -1,6 +1,8 @@
 *~
+.envrc
 /.direnv/
 /_build/
+/result
 /_site/
 /target
 /slides/*.nav
