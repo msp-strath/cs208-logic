@@ -1,12 +1,12 @@
 (lang dune 3.7)
 (using menhir 2.1)
 
-(name slakemoth)
+(name cs208-logic)
 
 ; (generate_opam_files true)
 
 (source
- (github bobatkey/interactive-logic-course))
+ (github msp-strath/cs208-logic))
 
 (authors "Robert Atkey")
 
