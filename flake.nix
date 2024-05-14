@@ -79,18 +79,24 @@ make -C slides -j 8 all
 '';
             installPhase = ''
 mkdir -p $out;
-cp slides/week*.pdf $out/;
+for w in 1 2 3 4 5 6 7 8 9 10; do
+  outfile=$(printf "week%02d-slides.pdf" $w);
+  cp slides/week$w.pdf $out/$outfile;
+done;
 '';
           };
+
           site = pkgs.stdenvNoCC.mkDerivation rec {
             name = "site";
             src = self;
-            buildInputs = [ packages.site_gen packages.frontend ];
+            buildInputs = [ packages.site_gen packages.frontend packages.slides ];
             phases = ["unpackPhase" "installPhase"];
             installPhase = ''
 mkdir -p $out;
 site_gen pages $out;
-cp assets/* $out;
+cp assets/*.css $out;
+cp assets/sat-solver-notes.pdf $out;
+cp ${packages.slides}/*.pdf $out;
 cp ${packages.frontend}/share/frontend/frontend.bc.js $out;
 '';
           };
