@@ -1,12 +1,13 @@
 {
   inputs = {
+    nixpkgs.url = github:NixOS/nixpkgs/nixos-24.05;
     opam-nix.url = "github:tweag/opam-nix";
+    opam-nix.inputs.nixpkgs.follows = "nixpkgs";
     opam-repository = {
       url = "github:ocaml/opam-repository";
       flake = false;
     };
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.follows = "opam-nix/nixpkgs";
   };
   outputs = { self, flake-utils, opam-nix, nixpkgs, opam-repository }@inputs:
     flake-utils.lib.eachDefaultSystem (system:
@@ -42,7 +43,7 @@
         query = devPackagesQuery // {
           ## You can force versions of certain packages here, e.g:
           ## - force the ocaml compiler to be taken from opam-repository:
-          ocaml-base-compiler = "5.0.0";
+          ocaml-base-compiler = "5.2.0";
           ## - or force the compiler to be taken from nixpkgs and be a certain version:
           # ocaml-system = "4.14.0";
           ## - or force ocamlfind to be a certain version:
@@ -53,7 +54,7 @@
           {
             # You can add overrides here
           };
-        scope' = scope.overrideScope' overlay;
+        scope' = scope.overrideScope overlay;
         # Packages from devPackagesQuery
         devPackages = builtins.attrValues
           (pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) scope');
