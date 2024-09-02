@@ -52,8 +52,13 @@ and kind_of env ~ctxt term =
   | Apply (name, terms) ->
      (match NameMap.find name.detail ctxt with
       | domain ->
-         (* FIXME: check that terms is empty? *)
-         Ok (Domain domain)
+         (match terms with
+          | [] ->
+             Ok (Domain domain)
+          | _ ->
+             errorf name.location
+               "'%s' is a local variable and cannot have arguments."
+               name.detail)
       | exception Not_found ->
          (match NameMap.find name.detail env.defns with
           | exception Not_found ->
