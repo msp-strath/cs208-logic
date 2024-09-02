@@ -1,0 +1,5 @@
+domain node { A, B, C }
+
+define myNode { [ A, B ] }
+
+print(myNode)

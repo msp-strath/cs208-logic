@@ -167,11 +167,11 @@ let merge_environments env1 env2 =
                  failwith "Changed atom declaration"
             | Some (Defined _) ->
                failwith "atom has become definition")
-        | Defined { args; body } ->
+        | Defined { args; body; kind } ->
            let name = name ^ "#1" in
            let rename1 = List.fold_right (fun (nm, _) -> NameMap.remove nm) args rename1 in
            let body = rename_term rename1 body in
-           let defn = Defined { args; body } in
+           let defn = Defined { args; body; kind } in
            (NameMap.add name defn merged, env2))
       env1.defns
       (NameMap.empty, env2.defns)
@@ -181,11 +181,11 @@ let merge_environments env1 env2 =
       (fun name defn merged ->
         match defn with
         | Atom _ -> failwith "Extra atom definition"
-        | Defined { args; body } ->
+        | Defined { args; body; kind } ->
            let name = name ^ "#2" in
            let rename2 = List.fold_right (fun (nm, _) -> NameMap.remove nm) args rename2 in
            let body = rename_term rename2 body in
-           let defn = Defined { args; body } in
+           let defn = Defined { args; body; kind } in
            NameMap.add name defn merged)
       defns2
       merged

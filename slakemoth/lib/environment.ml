@@ -1,4 +1,5 @@
 open Ast
+open Kinding
 
 type domain_info =
   { constructors : string list }
@@ -12,6 +13,7 @@ type defn =
   | Defined of
       { args : (name * name) list
       ; body : term
+      ; kind : kind
       }
   | Atom of
       { args : (name * name) list }
