@@ -110,7 +110,7 @@ define preservesC {
 }
 
 // Exercise ideas:
-// 1. Encode a domain into boolean flags
+// 1. Encode a domain into booleans
 // 2. Encode a certain set of actions into an 'effect' definition
 // 3. Do some planning with given initial and final states, and fixed number of steps
 // 4. Encode some invariants that ought to hold all the way through; are there sequences that do this?
@@ -121,8 +121,8 @@ define preservesC {
 ifsat (steps & initial & final)
   [ for (t : timestep)
       {
-	"state"  : { for (v : variable) v : isSet(t,v) },
-	(if (t != T4)
-           "action" : [for (a : action) if (active(t,a)) a]) // "the (a : action) active(t,a)"
+	"state" : { for (v : variable) v : isSet(t,v) },
+	(if (t != T4)   // FIXME: ~last(t)
+           "action" : (the (a : action) active(t,a)))
       }
   ]

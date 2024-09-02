@@ -148,6 +148,11 @@ and kind_of env ~ctxt term =
      (* (Clauses,JsonSequence -> JsonSequence) & (Clauses,Assignments -> Assignments) *)
      let* () = check env ~ctxt (Clauses, term1) in
      check_is_sequence env ~ctxt term2
+  | The (var_name, domain, predicate) ->
+     let* () = check_domain env domain in
+     let ctxt = NameMap.add var_name domain.detail ctxt in
+     let* () = check env ~ctxt (Clauses, predicate) in
+     Ok (Domain domain.detail)
   | Sequence terms ->
      (let* kind =
         fold_left_err

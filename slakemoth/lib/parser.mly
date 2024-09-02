@@ -17,7 +17,7 @@
 %token DEFINE
 %token ATOM
 %token DOMAIN
-%token KW_DUMP KW_IFSAT KW_FOR KW_IF KW_ALLSAT KW_PRINT NEXT
+%token KW_DUMP KW_IFSAT KW_FOR KW_IF KW_ALLSAT KW_PRINT NEXT THE
 
 %token COMMA
 %token COLON
@@ -89,6 +89,7 @@ quantifier:
 | FORALL { fun (nm, domain) body -> BigAnd (nm, domain, body) }
 | SOME   { fun (nm, domain) body -> BigOr (nm, domain, body) }
 | KW_FOR { fun (nm, domain) body -> For (nm, domain, body) }
+| THE    { fun (nm, domain) body -> The (nm, domain, body) }
 
 implication_term:
 | t1=eq_term; OP_IMPLIES; t2=implication_term

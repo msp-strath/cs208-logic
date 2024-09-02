@@ -30,6 +30,7 @@ rule token = parse
 | "true"       { TRUE }
 | "false"      { FALSE }
 | "next"       { NEXT }
+| "the"        { THE }
 | ','          { COMMA }
 | ':'          { COLON }
 | '{'          { LBRACE }

@@ -306,6 +306,18 @@ module Eval (Assignment : ASSIGNMENT) = struct
           | VTrue -> eval local_env term
           | VFalse -> { detail = VEmptySequence; location = term.location }
           | _ -> raise (Evaluation_error "indeterminate truth value"))
+      | The (var_name, domain, predicate) ->
+         let { constructors } = get_domain domain env in
+         let rec loop = function
+           | [] -> raise (Evaluation_error "indeterminate truth value")
+           | cnm::cnms ->
+              (let local_env = NameMap.add var_name cnm local_env in
+               match (eval local_env predicate).detail with
+               | VTrue -> { detail = VCons cnm; location = term.location }
+               | VFalse -> loop cnms
+               | _ -> raise (Evaluation_error "indeterminate truth value"))
+         in
+         loop constructors
       | Sequence terms ->
          let seq = List.fold_right
                      (fun term ->

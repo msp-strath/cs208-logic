@@ -34,10 +34,11 @@ type term_detail =
   (* JSON bits *)
   | JSONObject of term
   | JSONArray of term
-  | For of name * name with_location * term
-  | If of term * term
   | Sequence of term list
   | Assign of term * term
+  | For of name * name with_location * term
+  | If of term * term
+  | The of name * name with_location * term
 
 and term = term_detail with_location
 
