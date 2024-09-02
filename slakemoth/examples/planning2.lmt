@@ -36,6 +36,9 @@ define no_change(v : variable, tNow : timestep, tNext : timestep) {
 //    (a) a precondition: what must the state look like for this action to happen
 //    (b) an effect: what does change in the next state
 //    (c) a non-effect: what *doesn't* change in the next state (we could automate this)
+//
+// Alternatively: an action determines a relationship between the
+// pre-state and the post-state.
 
 domain action { A1, A2, A3 }
 
@@ -117,9 +120,9 @@ define preservesC {
 
 ifsat (steps & initial & final)
   [ for (t : timestep)
-        {
-          "state"  : {for (v : variable) v : isSet(t,v)},
-          (if (t != T4)
-	    "action" : [for (a : action) if (active(t,a)) a]) // "the (a : action) active(t,a)"
-        }
+      {
+	"state"  : { for (v : variable) v : isSet(t,v) },
+	(if (t != T4)
+           "action" : [for (a : action) if (active(t,a)) a]) // "the (a : action) active(t,a)"
+      }
   ]
