@@ -18,18 +18,8 @@
 
 domain timestep { T1, T2, T3, T4 }
 
-// FIXME: this is a literal for all inputs, because equalities are
-// always resolved to true/false.
-define next(t1 : timestep, t2 : timestep) {
-  (t1 != T1 | t2 = T2) &
-  (t1 != T2 | t2 = T3) &
-  (t1 != T3 | t2 = T4) &
-  (t1 != T4)
-}
+// print ({ for (t1 : timestep) t1 : { for (t2 : timestep) t2 : next(t1,t2) } })
 
-ifsat(true) { for (t1 : timestep) t1 : { for (t2 : timestep) t2 : next(t1,t2) } }
-
-domain action { A1, A2, A3 }
 domain variable { A, B, C }
 
 atom isSet(t : timestep, v : variable)
@@ -47,6 +37,8 @@ define no_change(v : variable, tNow : timestep, tNext : timestep) {
 //    (b) an effect: what does change in the next state
 //    (c) a non-effect: what *doesn't* change in the next state (we could automate this)
 
+domain action { A1, A2, A3 }
+
 define effect(act : action, tNow : timestep, tNext : timestep) {
     (act = A1 ==>  // switches 'A', if 'B' is set
        // Precondition
@@ -56,7 +48,7 @@ define effect(act : action, tNow : timestep, tNext : timestep) {
        // Frame
        (forall (v : variable) v != A ==> no_change(v, tNow, tNext)))
 
-  & (act = A2 ==> // sets 'B'
+  & (act = A2 ==> // sets 'B' if it is unset
        // Precondition
        ~isSet(tNow,B) &
        // Postcondition
@@ -64,7 +56,7 @@ define effect(act : action, tNow : timestep, tNext : timestep) {
        // Frame
        (forall (v : variable) v != B ==> no_change(v, tNow, tNext)))
 
-  & (act = A3 ==> // unsets 'B'
+  & (act = A3 ==> // unsets 'B' if it is set
        // Precondition
        isSet(tNow,B) &
        // Postcondition
@@ -73,8 +65,8 @@ define effect(act : action, tNow : timestep, tNext : timestep) {
        (forall (v : variable) v != B ==> no_change(v, tNow, tNext)))
 }
 
-// Generic planning stuff: this works for all planning problems, up to
-// the step type
+// Generic planning stuff: this works for all planning problems, given
+// a definition of 'effect' and an action 'type'.
 
 atom active(t : timestep, a : action)
 
@@ -93,18 +85,11 @@ define action_choice(t : timestep) {
       a1 = a2 | ~active(t, a1) | ~active(t, a2))
 }
 
-// FIXME: should be some nice way of stating this, driven by the type
-//
-// forall (t : timestep)
-//   t != tfinal ==> action_choice(t) & action_conditions(t, t+1)
 define steps {
   forall (t1 : timestep)
     forall (t2 : timestep)
-      next(t1, t2) ==> action_choice(t1) & action_conditions(t1, t2)
-  //   action_choice(T1) & action_conditions(T1, T2)
-  // & action_choice(T2) & action_conditions(T2, T3)
-  // & action_choice(T3) & action_conditions(T3, T4)
-  // & action_choice(T4) & action_conditions(T4, T5)
+      next(t1, t2) ==>
+        action_choice(t1) & action_conditions(t1, t2)
 }
 
 // We can now define some specifications
@@ -130,12 +115,11 @@ define preservesC {
 
 // Point is that we can encode 'action's by how they change the state
 
-
-// FIXME: need a 'once'; and also should include the state at every timestep.
 ifsat (steps & initial & final)
   [ for (t : timestep)
         {
           "state"  : {for (v : variable) v : isSet(t,v)},
-          "action" : [if (t != T4) for (a : action) if (active(t,a)) a] // "the (a : action) active(t,a)"
+          (if (t != T4)
+	    "action" : [for (a : action) if (active(t,a)) a]) // "the (a : action) active(t,a)"
         }
   ]

@@ -12,7 +12,9 @@ type name = string
 module NameMap = Map.Make (String)
 
 type term_detail =
+  (* References to atoms and defined data *)
   | Apply of name with_location * term list
+  | Next of term * term
   (* Constants *)
   | IntConstant of int
   | StrConstant of string

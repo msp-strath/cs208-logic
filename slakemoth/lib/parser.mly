@@ -17,7 +17,7 @@
 %token DEFINE
 %token ATOM
 %token DOMAIN
-%token KW_DUMP KW_IFSAT KW_FOR KW_IF KW_ALLSAT KW_PRINT
+%token KW_DUMP KW_IFSAT KW_FOR KW_IF KW_ALLSAT KW_PRINT NEXT
 
 %token COMMA
 %token COLON
@@ -120,6 +120,8 @@ binop:
 base_term:
 | OP_NOT; t=base_term
   { { detail = Neg t; location = Location.mk $startpos $endpos } }
+| NEXT; LPAREN; t1=base_term; COMMA; t2=base_term; RPAREN
+  { { detail = Next (t1, t2); location = Location.mk $startpos $endpos } }
 | nm=identifier
   { { detail = Apply(nm, []); location = Location.mk $startpos $endpos } }
 | nm=identifier; LPAREN; terms=separated_list(COMMA,base_term); RPAREN

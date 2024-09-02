@@ -69,6 +69,17 @@ and kind_of env ~ctxt term =
           | Atom { args } ->
              let* () = check_application env ctxt term.location args terms in
              Ok Literal))
+
+  | Next (term1, term2) ->
+     (let* k1 = kind_of env ~ctxt term1 in
+      let* k2 = kind_of env ~ctxt term2 in
+      match k1, k2 with
+      | Domain d1, Domain d2 when equal_name d1 d2 ->
+         Ok Literal
+      | _ ->
+         errorf term.location
+           "Expecting two domain values of the same kind")
+
   | IntConstant _i ->
      failwith "int constants"
   | Constructor cnm ->

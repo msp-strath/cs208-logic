@@ -29,6 +29,7 @@ rule token = parse
 | "print"      { KW_PRINT }
 | "true"       { TRUE }
 | "false"      { FALSE }
+| "next"       { NEXT }
 | ','          { COMMA }
 | ':'          { COLON }
 | '{'          { LBRACE }

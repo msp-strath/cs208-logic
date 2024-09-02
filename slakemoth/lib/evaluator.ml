@@ -208,6 +208,21 @@ module Eval (Assignment : ASSIGNMENT) = struct
                  { detail = VCons cnm; location = term.location }
               | _ ->
                  raise (Evaluation_error "Local variable given arguments")))
+
+      | Next (term1, term2) ->
+         let v1 = to_constructor (eval local_env term1) in
+         let v2 = to_constructor (eval local_env term2) in
+         let domain, _ = NameMap.find v1 env.constructor_domains in
+         let rec is_next = function
+           | [] | [_] ->
+              { detail = VFalse; location = term.location }
+           | w1::w2::_ when w1 = v1 && w2 = v2 ->
+              { detail = VTrue; location = term.location }
+           | _::rest ->
+              is_next rest
+         in
+         is_next (NameMap.find domain env.domains).constructors
+
       | IntConstant i ->
          { detail = VInt i; location = term.location }
       | Constructor cnm ->
