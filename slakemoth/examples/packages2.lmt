@@ -7,15 +7,15 @@ domain package {
 
 atom installed(p : package)
 
-definition incompatible(p1 : package, p2 : package) {
+define incompatible(p1 : package, p2 : package) {
   ~installed(p1) | ~installed(p2)
 }
 
-definition depends(p1 : package, p2 : package) {
+define depends(p1 : package, p2 : package) {
   ~installed(p1) | installed(p2)
 }
 
-definition constraints {
+define constraints {
     incompatible(ProgA1, ProgA2)
   & incompatible(LibC1, LibC2)
   & depends(ProgA1, LibC1)
@@ -24,7 +24,7 @@ definition constraints {
   & depends(LibC2, LibD)
 }
 
-definition requirements {
+define requirements {
     (installed(ProgA1) | installed(ProgA2))
   & installed(ProgB)
 }

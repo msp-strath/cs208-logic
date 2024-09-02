@@ -5,30 +5,29 @@ atom libC1
 atom libC2
 atom libD
 
-definition incompatibilities {
+define incompatibilities {
     (~progA1 | ~progA2)
   & (~libC1 | ~libC2)
 }
 
-definition dependencies {
+define dependencies {
     (~progA1 | libC1) // progA1 depends on libC1
   & (~progA2 | libC2)
   & (~progB  | libC2)
   & (~libC2  | libD)
 }
 
-definition requirements {
+define requirements {
     (progA1 | progA2)
   & progB
 }
 
-definition main {
+define main {
   incompatibilities & dependencies & requirements
 }
 
-// dump main
-
-ifsat main {
+// Can we satisfy all the constraints?
+ifsat (main) {
   "progA1": progA1,
   "progA2": progA2,
   "progB": progB,
@@ -37,6 +36,7 @@ ifsat main {
   "libD": libD
 }
 
+// Can we satisfy all the constraints without installing 'progA2'?
 ifsat (main & ~progA2) {
   "progA1": progA1,
   "progA2": progA2,

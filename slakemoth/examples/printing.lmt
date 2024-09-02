@@ -1,0 +1,4 @@
+atom x
+
+// This crashes at the moment
+print({"foo":true, "bar":x})

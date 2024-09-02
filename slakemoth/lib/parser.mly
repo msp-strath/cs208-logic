@@ -74,8 +74,6 @@ constructor:
   { { detail=name; location = Location.mk $startpos $endpos } }
 
 term:
-| t1=quant_term; OP_IMPLIES; t2=term
-  { { detail = Implies (t1, t2); location = Location.mk $startpos $endpos } }
 | t=quant_term
   { t }
 
@@ -84,13 +82,19 @@ quant_term:
   { { detail = q (nm, domain) body; location = Location.mk $startpos $endpos } }
 | KW_IF; LPAREN; t=term; RPAREN; body=quant_term
   { { detail = If (t, body); location = Location.mk $startpos $endpos } }
-| t=connected_term
+| t=implication_term
   { t }
 
 quantifier:
 | FORALL { fun (nm, domain) body -> BigAnd (nm, domain, body) }
 | SOME   { fun (nm, domain) body -> BigOr (nm, domain, body) }
 | KW_FOR { fun (nm, domain) body -> For (nm, domain, body) }
+
+implication_term:
+| t1=eq_term; OP_IMPLIES; t2=implication_term
+  { { detail = Implies (t1, t2); location = Location.mk $startpos $endpos } }
+| t=connected_term
+  { t }
 
 connected_term:
 | t=eq_term; OP_AND; ts=separated_nonempty_list(OP_AND, eq_term)
@@ -122,6 +126,7 @@ base_term:
   { { detail = Apply(nm, terms); location = Location.mk $startpos $endpos } }
 | LPAREN; t=term; RPAREN
   { t }
+(* FIXME: empty arrays and objects *)
 | LBRACE; t=term; RBRACE
   { { detail = JSONObject t; location = Location.mk $startpos $endpos } }
 | LBRACK; t=term; RBRACK

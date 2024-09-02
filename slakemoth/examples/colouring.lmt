@@ -12,7 +12,7 @@ define all_nodes_some_colour {
 define one_colour(n : node) {
   forall(c1 : colour)
     forall(c2 : colour)
-      (c1 = c2 | ~is_colour(n,c1) | ~is_colour(n,c2))
+      c1 = c2 | ~is_colour(n,c1) | ~is_colour(n,c2)
 }
 
 // dump(all_nodes_some_colour)
