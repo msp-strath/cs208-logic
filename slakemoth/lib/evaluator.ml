@@ -364,15 +364,38 @@ let assignment_of_vals atom_table vals =
   in
   (module A : ASSIGNMENT with type atom = unit)
 
-let all_sat env term json_term =
+let initialise_solver env =
   let solver = Solver.create () in
   let atom_table = Hashtbl.create 1024 in
+  NameMap.iter
+    (fun nm -> function
+      | Defined _ -> ()
+      | Atom domains ->
+         let rec all_values args = function
+           | [] ->
+              let a = Solver.gen solver in
+              let str = mk_atom_str nm (List.rev args) in
+              Hashtbl.add atom_table str a;
+              Solver.add_clause solver [ true, a; false, a ]
+           | (_,dom)::domains ->
+              let dom_info = NameMap.find dom env.domains in
+              List.iter
+                (fun vnm -> all_values (vnm::args) domains)
+                dom_info.constructors
+         in
+         all_values [] domains.args)
+    env.defns;
+  solver, atom_table
+
+let all_sat env term json_term =
+  let solver, atom_table = initialise_solver env in
   let module E = Eval (val (assignment_of_solver solver atom_table)) in
   let clauses = E.to_clauses (E.eval env E.empty_local_env term) in
   List.iter (Solver.add_clause solver) clauses;
   let rec loop jsons =
     match Solver.solve solver with
-    | `UNSAT -> List.rev jsons
+    | `UNSAT ->
+       List.rev jsons
     | `SAT vals ->
        let module E2 = Eval (val (assignment_of_vals atom_table vals)) in
        let json = E2.to_json (E2.eval env E2.empty_local_env json_term) in
@@ -384,9 +407,20 @@ let all_sat env term json_term =
   in
   loop []
 
+let if_sat env term json_term =
+  let solver, atom_table = initialise_solver env in
+  let module E = Eval (val (assignment_of_solver solver atom_table)) in
+  let clauses = E.to_clauses (E.eval env E.empty_local_env term) in
+  List.iter (Solver.add_clause solver) clauses;
+  match Solver.solve solver with
+  | `UNSAT ->
+     Json.JNull
+  | `SAT vals ->
+     let module E2 = Eval (val (assignment_of_vals atom_table vals)) in
+     E2.to_json (E2.eval env E2.empty_local_env json_term)
 
 (* FIXME: split these out into individual functions, and make them
-   return the *)
+   return the JSON output so it can be rendered properly. *)
 let execute_command fmt = function
   | Dump_Clauses (env, term) ->
      (let clauses = EvalSymb.(to_clauses (eval env empty_local_env term)) in
@@ -395,19 +429,8 @@ let execute_command fmt = function
           Format.fprintf fmt "%s\n" (String.concat " | " (List.map (function (true, a) -> a | (false, a) -> "-" ^ a) clause)))
         clauses)
   | IfSat (env, term, json_term) ->
-     (let solver = Solver.create () in
-      let atom_table = Hashtbl.create 1024 in
-      let module E = Eval (val (assignment_of_solver solver atom_table)) in
-      let clauses = E.to_clauses (E.eval env E.empty_local_env term) in
-      List.iter (Solver.add_clause solver) clauses;
-      match Solver.solve solver with
-      | `UNSAT ->
-         Format.fprintf fmt "null@\n"
-      | `SAT vals ->
-         let module E2 = Eval (val (assignment_of_vals atom_table vals)) in
-         let json = E2.to_json (E2.eval env E2.empty_local_env json_term) in
-         Format.fprintf fmt "@[<v0>%a@]@\n"
-           Json.Printing.pp json)
+     let json = if_sat env term json_term in
+     Format.fprintf fmt "@[<v0>%a@]@\n" Json.Printing.pp json
   | AllSat (env, term, json_term) ->
      let jsons = all_sat env term json_term in
      List.iter (Format.fprintf fmt "@[<v0>%a@]@\n" Json.Printing.pp) jsons
