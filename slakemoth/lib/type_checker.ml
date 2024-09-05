@@ -80,8 +80,6 @@ and kind_of env ~ctxt term =
          errorf term.location
            "Expecting two domain values of the same kind")
 
-  | IntConstant _i ->
-     failwith "int constants"
   | Constructor cnm ->
      (match NameMap.find cnm env.constructor_domains with
       | exception Not_found ->

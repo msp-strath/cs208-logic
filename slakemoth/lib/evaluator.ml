@@ -21,7 +21,6 @@ module Eval (Assignment : ASSIGNMENT) = struct
 
   type value =
     | VCons of constructor_name
-    | VInt  of int
     | VString of string
     | VTrue
     | VFalse
@@ -113,11 +112,12 @@ module Eval (Assignment : ASSIGNMENT) = struct
     match v.detail with
     | VTrue -> Json.JBool true
     | VFalse -> Json.JBool false
-    | VLiteral _ | VClause _ | VClauses _ -> raise (Evaluation_error "undetermined result")
+    | VLiteral _ | VClause _ | VClauses _ ->
+       (* FIXME: serialise the constraints *)
+       raise (Evaluation_error "undetermined result")
     | VJson j -> j
     | VString s -> JString s
     | VCons cnm -> JString cnm
-    | VInt i -> JInt i
     | VJsons _ | VAssignments _ | VEmptySequence ->
        raise (Evaluation_error "Sequence where single value expected")
 
@@ -223,8 +223,6 @@ module Eval (Assignment : ASSIGNMENT) = struct
          in
          is_next (NameMap.find domain env.domains).constructors
 
-      | IntConstant i ->
-         { detail = VInt i; location = term.location }
       | Constructor cnm ->
          { detail = VCons cnm; location = term.location }
       | Eq (term1, term2) ->

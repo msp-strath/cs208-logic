@@ -6,6 +6,8 @@ type 'a with_location =
   }
 
 type constructor_name = string
+
+(* FIXME: distinguish constructor and domain/variable names. *)
 type name = string
 [@@deriving eq]
 
@@ -16,7 +18,6 @@ type term_detail =
   | Apply of name with_location * term list
   | Next of term * term
   (* Constants *)
-  | IntConstant of int
   | StrConstant of string
   | Constructor of string
   (* built-in atoms *)
@@ -42,16 +43,6 @@ type term_detail =
 
 and term = term_detail with_location
 
-module Gen = struct
-  let or_ terms =
-    { detail = Or terms; location = Location.generated }
-  let atom nm =
-    { detail = Apply ({ detail = nm; location = Location.generated }, [])
-    ; location = Location.generated
-    }
-end
-
-
 type param_spec =
   (name with_location * name with_location) list
 
@@ -65,6 +56,7 @@ type declaration =
   | AllSat of term * term
   | Print of term
 
+(* Pretty printing terms and declarations. *)
 let pp_name fmt name =
   Format.fprintf fmt "%s" name.detail
 
@@ -148,8 +140,6 @@ and pp_base_term fmt term =
        pp_name name
        (Format.pp_print_list ~pp_sep:pp_comma pp_term)
        args
-  | IntConstant i ->
-     Format.fprintf fmt "%d" i
   | Constructor cnm ->
      Format.fprintf fmt "%s" cnm
   | Neg t ->
