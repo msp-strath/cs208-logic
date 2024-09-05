@@ -25,9 +25,11 @@ domain variable { A, B, C }
 atom isSet(t : timestep, v : variable)
 
 // A way of saying that a variable has the same value in two timesteps
-define no_change(v : variable, tNow : timestep, tNext : timestep) {
-    (isSet(tNow, v)  | ~isSet(tNext, v))
-  & (isSet(tNext, v) | ~isSet(tNow, v))
+define no_change(v : variable, t1 : timestep, t2 : timestep) {
+    (isSet(t1, v)  | ~isSet(t2, v))
+  & (isSet(t2, v) | ~isSet(t1, v))
+  // alternative:
+//  (isSet(t1, v) ==> isSet(t2, v)) & (isSet(t2, v) ==> isSet(t1, v))
 }
 
 // This is the description of what each of the actions does
@@ -37,46 +39,94 @@ define no_change(v : variable, tNow : timestep, tNext : timestep) {
 //    (b) an effect: what does change in the next state
 //    (c) a non-effect: what *doesn't* change in the next state (we could automate this)
 //
-// Alternatively: an action determines a relationship between the
+// In other words: an action determines a relationship between the
 // pre-state and the post-state.
 
 domain action { A1, A2, A3 }
 
-define effect(act : action, tNow : timestep, tNext : timestep) {
-    (act = A1 ==>  // switches 'A', if 'B' is set
-       // Precondition
-       isSet(tNow, A) & isSet(tNow, B) &
-       // Postcondition
-       ~isSet(tNext, A) &
-       // Frame
-       (forall (v : variable) v != A ==> no_change(v, tNow, tNext)))
+// FIXME: support for reading atoms from CSV files, so they are
+// inputs, not outputs.
+//
+// Also need support for reading domains from files.
+//
+// Could also define tables inline:
+//
+//  define_table requires(a : action, v : variable, s : state)
+//    { (A1, A, On), (A1, B, On)
+//    , (A2, B, On)
+//    , (A3, B, Off)
+//    }
+//
+// define_table changes(a : action, v : variable, s : state)
+//    { (A1, A, Off)
+//    , (A2, B, Off)
+//    , (A3, B, Off)
+//    }
+//
+// define no_change(a : action, v : variable) {
+//    forall (v' : variable)
+//      forall (s : state)
+//        changes(a, v', c) ==> v != v'
+// }
+// atom requiresOn(a : action, v : variable)
+// atom requiresOff(a : action, v : variable)
+// atom setsOn(a : action, v : variable)
+// atom setsOff(a : action, v : variable)
 
-  & (act = A2 ==> // sets 'B' if it is unset
-       // Precondition
-       ~isSet(tNow,B) &
-       // Postcondition
-       isSet(tNext,B) &
-       // Frame
-       (forall (v : variable) v != B ==> no_change(v, tNow, tNext)))
+// // If we had for each action:
+// //  1. requiresOn(act, stVar), requiresOff(act, stVar)
+// //  2. setsOn(act, stVar), setsOff(act, stVar)
+// // Then we'd have a generic effect:
+// define effect2 (act : action, tNow : timestep, tNext : timestep) {
+//   (forall (v : variable) requiresOn(act, v) ==> isSet(tNow, v))
+//   &
+//   (forall (v : variable) requiresOff(act, v) ==> ~isSet(tNow, v))
+//   &
+//   (forall (v : variable) setsOn(act, v) ==> isSet(tNext, v))
+//   &
+//   (forall (v : variable) setsOff(act, v) ==> ~isSet(tNext, v))
+//   &
+//   (forall (v : variable) ~setsOn(act, v) ==> ~setsOff(act, v) ==> no_change(v, tNow, tNext))
+// }
 
-  & (act = A3 ==> // unsets 'B' if it is set
-       // Precondition
-       isSet(tNow,B) &
-       // Postcondition
-       ~isSet(tNext,B) &
-       // Frame
-       (forall (v : variable) v != B ==> no_change(v, tNow, tNext)))
+
+// switches 'A', if 'B' is set
+define action1 (tNow : timestep, tNext : timestep) {
+  isSet(tNow, A) & isSet(tNow, B) &
+  ~isSet(tNext, A) &
+  (forall (v : variable) v != A ==> no_change(v, tNow, tNext))
+}
+
+// sets 'B' if it is unset
+define action2 (tNow : timestep, tNext : timestep) {
+  // Precondition
+  ~isSet(tNow,B) &
+  // Postcondition
+  isSet(tNext,B) &
+  // Frame
+  (forall (v : variable) v != B ==> no_change(v, tNow, tNext))
+}
+
+// unsets 'B' if it is set
+define action3 (tNow : timestep, tNext : timestep) {
+  // Precondition
+  isSet(tNow,B) &
+  // Postcondition
+  ~isSet(tNext,B) &
+  // Frame
+  (forall (v : variable) v != B ==> no_change(v, tNow, tNext))
+}
+
+atom active(t : timestep, a : action)
+
+define effect(tNow : timestep, tNext : timestep) {
+    (active(tNow, A1) ==> action1(tNow, tNext))
+  & (active(tNow, A2) ==> action2(tNow, tNext))
+  & (active(tNow, A3) ==> action3(tNow, tNext))
 }
 
 // Generic planning stuff: this works for all planning problems, given
 // a definition of 'effect' and an action 'type'.
-
-atom active(t : timestep, a : action)
-
-define action_conditions(t : timestep, tNext : timestep) {
-  forall (a : action)
-    active(t, a) ==> effect(a, t, tNext)
-}
 
 define action_choice(t : timestep) {
   // Some action must take place
@@ -90,9 +140,9 @@ define action_choice(t : timestep) {
 
 define steps {
   forall (t1 : timestep)
-    forall (t2 : timestep)
-      next(t1, t2) ==>
-        action_choice(t1) & action_conditions(t1, t2)
+  forall (t2 : timestep)
+    next(t1, t2) ==>
+      action_choice(t1) & effect(t1, t2)
 }
 
 // We can now define some specifications
@@ -118,7 +168,7 @@ define preservesC {
 
 // Point is that we can encode 'action's by how they change the state
 
-ifsat (steps & initial & final)
+allsat (steps & initial & final & (forall (a : action) ~active(T4, a)))
   [ for (t : timestep)
       {
 	"state" : { for (v : variable) v : isSet(t,v) },
