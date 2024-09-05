@@ -171,7 +171,7 @@ define preservesC {
 allsat (steps & initial & final & (forall (a : action) ~active(T4, a)))
   [ for (t : timestep)
       {
-	"state" : { for (v : variable) v : isSet(t,v) },
+	"state" : [ for (v : variable) if (isSet(t,v)) v ], // { for (v : variable) v : isSet(t,v) },
 	(if (t != T4)   // FIXME: ~last(t)
            "action" : (the (a : action) active(t,a)))
       }
