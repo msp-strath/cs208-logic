@@ -23,8 +23,10 @@ let execute filename =
   let contents  = In_channel.with_open_bin filename In_channel.input_all in
   let* decls    = Reader.parse contents in
   let* commands = Type_checker.check_declarations decls in
-  let fmt = Format.std_formatter in
-  List.iter (Evaluator.execute_command fmt) commands;
+  commands
+  |> List.to_seq
+  |> Seq.concat_map Evaluator.execute_command
+  |> Seq.iter (Format.printf "@[<v0>%a@]@\n" Json.Printing.pp);
   Result.ok ()
 
 let pretty_print filename =

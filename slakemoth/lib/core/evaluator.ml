@@ -425,10 +425,10 @@ let all_sat env term json_term =
   let module E = Eval (val (assignment_of_solver solver atom_table)) in
   let clauses = E.to_clauses (E.eval env E.empty_local_env term) in
   List.iter (Solver.add_clause solver) clauses;
-  let rec loop jsons =
+  let rec loop () =
     match Solver.solve solver with
     | `UNSAT ->
-       List.rev jsons
+       Seq.Nil
     | `SAT vals ->
        let module E2 = Eval (val (assignment_of_vals atom_table vals)) in
        let json = E2.to_json (E2.eval env E2.empty_local_env json_term) in
@@ -436,9 +436,9 @@ let all_sat env term json_term =
          Hashtbl.fold (fun _ v -> List.cons (not (vals v), v)) atom_table []
        in
        Solver.add_clause solver anti_clause;
-       loop (json::jsons)
+       Seq.Cons (json, loop)
   in
-  loop []
+  loop
 
 let if_sat env term json_term =
   let solver, atom_table = initialise_solver env in
@@ -447,27 +447,28 @@ let if_sat env term json_term =
   List.iter (Solver.add_clause solver) clauses;
   match Solver.solve solver with
   | `UNSAT ->
-     Json.JNull
+     Seq.return Json.JNull
   | `SAT vals ->
      let module E2 = Eval (val (assignment_of_vals atom_table vals)) in
-     E2.to_json (E2.eval env E2.empty_local_env json_term)
+     Seq.return (E2.to_json (E2.eval env E2.empty_local_env json_term))
 
-(* FIXME: split these out into individual functions, and make them
-   return the JSON output so it can be rendered properly. *)
-let execute_command fmt = function
+let execute_command = function
   | Dump_Clauses (env, term) ->
-     (let clauses = EvalSymb.(to_clauses (eval env empty_local_env term)) in
-      List.iter
-        (fun clause ->
-          Format.fprintf fmt "%s\n" (String.concat " | " (List.map (function (true, a) -> a | (false, a) -> "-" ^ a) clause)))
-        clauses)
+     let clauses = EvalSymb.(to_clauses (eval env empty_local_env term)) in
+     let json =
+       Json.JArray
+         (List.map
+            (fun clause ->
+              Json.JArray
+                (List.map (function (true, a) -> Json.JString a
+                                  | (false, a) -> Json.JString ("-" ^ a))
+                   clause))
+            clauses)
+     in
+     Seq.return json
   | IfSat (env, term, json_term) ->
-     let json = if_sat env term json_term in
-     Format.fprintf fmt "@[<v0>%a@]@\n" Json.Printing.pp json
+     if_sat env term json_term
   | AllSat (env, term, json_term) ->
-     let jsons = all_sat env term json_term in
-     List.iter (Format.fprintf fmt "@[<v0>%a@]@\n" Json.Printing.pp) jsons
+     all_sat env term json_term
   | Print (env, term) ->
-     let json = EvalSymb.(to_json (eval env empty_local_env term)) in
-     Format.fprintf fmt "@[<v0>%a@]@\n"
-       Json.Printing.pp json
+     Seq.return EvalSymb.(to_json (eval env empty_local_env term))

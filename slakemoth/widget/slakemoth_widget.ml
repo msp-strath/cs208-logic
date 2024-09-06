@@ -151,7 +151,11 @@ let component configuration =
             | Ok commands ->
                let b = Buffer.create 8192 in
                let fmt = Format.formatter_of_buffer b in
-               List.iter (Slakemoth.Evaluator.execute_command fmt) commands;
+               commands
+               |> List.to_seq
+               |> Seq.concat_map Slakemoth.Evaluator.execute_command
+               |> Seq.iter (Format.fprintf fmt "@[<v0>%a@]@\n"
+                              Generalities.Json.Printing.pp);
                Format.pp_print_flush fmt ();
                { state with fresh = true; output = `String (Buffer.contents b) }
             | Error _ ->
