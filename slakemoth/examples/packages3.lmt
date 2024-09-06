@@ -1,0 +1,41 @@
+domain package {
+  ProgA1, ProgA2,
+  ProgB,
+  LibC1, LibC2,
+  LibD
+}
+
+atom installed(p : package)
+
+define conflict(p1 : package, p2 : package)
+  table {
+    (ProgA1, ProgA2)
+    (LibC1, LibC2)
+  }
+
+define requires(p1 : package, p2 : package)
+  table {
+    (ProgA1, LibC1)
+    (ProgA2, LibC2)
+    (ProgB, LibC2)
+    (LibC2, LibD)
+  }
+
+define valid_installation {
+  (forall (p1 : package)
+     forall (p2 : package)
+       conflict(p1, p2) ==> (~installed(p1) | ~installed(p2)))
+  &
+  (forall (p1 : package)
+     forall (p2 : package)
+       requires(p1, p2) ==> (~installed(p1) | installed(p2)))
+}
+
+define requirements {
+  (installed(ProgA1) | installed(ProgA2))
+  &
+  installed(ProgB)
+}
+
+allsat (valid_installation & requirements)
+  { for (p : package) p : installed(p) }
