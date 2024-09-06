@@ -29,7 +29,7 @@ We will only need to assume this minimal set of function symbols for building pr
 
 We define our world of computational things via one predicate:
 
-1. `exec(program, input, output)` -- when we run `program` on `input` the result is `output`. Note that there may be no output for a given input (i.e. the program never gives us an answer), or there may be multiple possible answers for an input (i.e. the program may be non-deterministic).
+1. `exec(program, input, output)` -- meaning that when we run `program` on `input` the result is `output`. Note that there may be no output for a given input (i.e. the program never gives us an answer), or there may be multiple possible answers for an input (i.e. the program may be non-deterministic).
 
 We do not distinguish between things that are program-like and things that are data-like. In particular, a program can take itself as an input. This flexibility of self reference will be crucial for stating the halting problem and proving that it is undecidable.
 
@@ -43,20 +43,20 @@ These axioms are meant to establish some basic properties of computation that an
 
 The program `true()` outputs `true()` for any input:
 ```formula
-   all x. exec(true(), x, true())
+all x. exec(true(), x, true())
 ```
 and if it outputs anything, then that thing is equal to `true()`:
 ```formula
-   all x. all y. exec(true(), x, y) -> y = true()
+all x. all y. exec(true(), x, y) -> y = true()
 ```
 
 Similarly, `false()` outputs `false()` for any input:
 ```formula
-   all x. exec(false(), x, false())
+all x. exec(false(), x, false())
 ```
 and if it outputs anything, then that thing is equal to `false()`:
 ```formula
-   all x. all y. exec(false(), x, y) -> y = false()
+all x. all y. exec(false(), x, y) -> y = false()
 ```
 
 ### The `loop` program
@@ -70,11 +70,11 @@ The program `loop` never outputs anything:
 
 The program `duplicate(p)` acts like I said above:
 ```formula
-   all p. all x. all y. exec(p,pair(x,x),y) -> exec(duplicate(p),x,y)
+all p. all x. all y. exec(p,pair(x,x),y) -> exec(duplicate(p),x,y)
 ```
 and this is the only way it acts:
 ```formula
-   all p. all x. all y. exec(duplicate(p),x,y) -> exec(p,pair(x,x),y)
+all p. all x. all y. exec(duplicate(p),x,y) -> exec(p,pair(x,x),y)
 ```
 
 ### The `if` program
@@ -109,7 +109,7 @@ ex y. exec(p,x,y)
 
 To specify when we have a program that solves the halting problem, we use a predicate `solution(p)`. Any solution must satisfy the following four properties, so we say that `solution(p)` implies each one:
 
-1. A solution must always says “true” or “false”:
+1. A solution must always say “true” or “false”:
 
    ```formula
    all p. solution(p) -> (all q. all x. exec(p,pair(q,x),true()) \/ exec(p,pair(q,x),false()))
@@ -134,6 +134,7 @@ To specify when we have a program that solves the halting problem, we use a pred
      (all q. all x. exec(p,pair(q,x),false()) -> ¬(ex y. exec(q,x,y)))
    ```
 
+FIXME: put some quiz questions here.
 
 ## What if we had a solution to the Halting Problem?
 
@@ -156,12 +157,14 @@ We call this program `spoiler` because we can use it to prove that there cannot 
 We can write this program in the format described above like so:
 
 ```formula
-if(dup(p),loop(),true())
+if(duplicate(p),loop(),true())
 ```
 
 ### Solution says “halts”, then spoiler loops
 
 We can prove formally from the axioms that, if the solution `p` says “true” then the spoiler program does not halt:
+
+FIXME: put a rough plan of the proof here.
 
 ```focused-nd {id=haltingproblem-1}
 (config
@@ -187,7 +190,9 @@ We can prove formally from the axioms that, if the solution `p` says “true” 
 
 ### Solution says “loops”, then spoiler halts
 
-Conversly, we can prove formally from the axioms that, if the solution `p` says “false” then the spoiler program does halt:
+Conversely, we can prove from the axioms that, if the solution `p` says “false” then the spoiler program does halt:
+
+FIXME: put a rough plan of the proof here
 
 ```focused-nd {id=haltingproblem-2}
 (config
@@ -210,9 +215,9 @@ Conversly, we can prove formally from the axioms that, if the solution `p` says 
 
 ## Undecidability of the Halting Problem
 
-Given these two facts about the spoiler program, we can prove formally from our axioms that there can be *no* solution to the halting problem. The proof goes like this:
+Given these two facts we have proved about the spoiler program, we can now prove that there can be *no* solution to the halting problem. The proof goes like this:
 
-1. To prove that there cannot be a solution, we assume that there is a solution `p` and prove `F` (“false” as a logical proposition).
+1. To prove that there cannot be a solution, we assume that there is a solution `p` and prove `F` (“false” as a logical proposition) to show that there is a contradiction.
 2. Since `p` is a solution it must either say “true” or “false” when given the spoiler program as *both the program and its input*. This means the proof splits into two cases:
 
    1. If `p` says “true”, then we know that:
@@ -229,7 +234,7 @@ Given these two facts about the spoiler program, we can prove formally from our 
 
 	  We cannot have that a program both halts and does not halt, so we can prove `F`.
 
-   We have proved `F` in both branches of the proof, so it must be impossible for there to be a solution to the halting problem.
+   We have proved `F` in both branches of the proof, so we have a contradiction. The only assumption we made (apart from our basic assumptions about programs) is that there is a solution to the halting problem. So it must be impossible for such a solution to exist.
 
 We can carry this proof out formally from our axioms of computation and the two results we proved above:
 

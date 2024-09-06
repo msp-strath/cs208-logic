@@ -3,16 +3,22 @@ let ok = Result.ok
 let of_predicate ~on_error p x =
   if p x then Ok x else Error on_error
 
-let ( let* ) x f = match x with
-  | Ok a -> f a
-  | Error _ as e -> e
+module Syntax = struct
 
-let ( and* ) : type a b e. (a, e) result -> (b, e) result -> (a * b, e) result =
-  fun x y ->
-  match x, y with
-  | Ok a, Ok b -> Ok (a, b)
-  | Error _ as e, _ -> e
-  | _, (Error _ as e) -> e
+  let ( let* ) x f = match x with
+    | Ok a -> f a
+    | Error _ as e -> e
+
+  let ( and* ) : type a b e. (a, e) result -> (b, e) result -> (a * b, e) result =
+    fun x y ->
+    match x, y with
+    | Ok a, Ok b -> Ok (a, b)
+    | Error _ as e, _ -> e
+    | _, (Error _ as e) -> e
+
+end
+
+open Syntax
 
 let errorf fmt =
   Printf.ksprintf (fun msg -> Error msg) fmt
@@ -58,9 +64,3 @@ let traverse_array : type a b e. (a -> (b, e) result) -> a array -> (b array, e)
                     | Ok x -> x
                     | Error e -> raise (Fail_traverse e)))
   with Fail_traverse e -> Error e
-
-let of_option : type a e. on_None:e -> a option -> (a, e) result =
-  fun ~on_None a_opt ->
-  match a_opt with
-  | None -> Error on_None
-  | Some a -> Ok a

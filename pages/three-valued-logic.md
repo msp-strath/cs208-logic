@@ -2,7 +2,7 @@
 
 Propositional Logic, as we have studied it so far in this course, is *two valued*. It is also possible to consider logics with more than two truth values.  These “multi-valued” logics have practical uses in representing things like degrees of truth, or fuzzily defined concepts, or the absence of evidence.
 
-The three-valued logic we will look at here is similar to the kind of logic used in SQL, where booleans can be `TRUE`, `FALSE`, or `NULL`. It is sometimes called “Kleene's 3-valued logic”, after the American logician Stephen Kleene, or “Ƚukasiewicz logic”, after the Polish logician Jan Ƚukasiewicz (the two logics differ in how they handle implication, which I won't cover here). I'll write these three truth values as:
+The three-valued logic we will look at here is similar to the kind of logic used in SQL, where logical values can be `TRUE`, `FALSE`, or `NULL`. It is sometimes called “Kleene's 3-valued logic”, after the American logician Stephen Kleene, or “Ƚukasiewicz logic”, after the Polish logician Jan Ƚukasiewicz (the two logics differ in how they handle implication, which I won't cover here). I'll write these three truth values as:
 
 | Value | Meaning                      |
 |-------|------------------------------|
@@ -14,32 +14,27 @@ The three-valued logic we will look at here is similar to the kind of logic used
 
 The following tables describe how $\land$, $\lor$, and $\lnot$ work with the new truth values. For $\land$ and $\lor$, I have written these out with the possible input values along the top and left side, rather than the traditional style, because there are now more combinations of the two inputs to consider.
 
-\begin{mathpar}
-  \begin{array}{c|ccc}
-    \land  & \false & \indet & \true \\
-    \hline
-    \false & \false & \false & \false \\
-    \indet & \false & \indet & \indet \\
-    \true  & \false & \indet & \true
-  \end{array}
+| and | F | I | T |
+|-----|---|---|---|
+| F   | F | F | F |
+| I   | F | I | I |
+| T   | F | I | T |
 
-  \begin{array}{c|ccc}
-    \lor   & \false & \indet & \true \\
-    \hline
-    \false & \false & \indet & \true  \\
-    \indet & \indet & \indet & \true \\
-    \true  & \true  & \true  & \true
-  \end{array}
+| or | F | I | T |
+|----|---|---|---|
+| F  | F | I | T |
+| I  | I | I | T |
+| T  | T | T | T |
 
-  \begin{array}{c|c}
-    P   & \lnot P \\
-    \hline
-    \false & \true \\
-    \indet & \indet \\
-    \true  & \false
-  \end{array}
-\end{mathpar}
+| P | !P |
+|---|----|
+| F | T  |
+| I | I  |
+| T | F  |
+
 So $\false \land \indet = \false$, $\false \lor \indet = \indet$, etc.
+
+FIXME: put a little quiz here.
 
 We can think of $\indet$ as the absence of evidence for either true or false. The connectives $\land$ and $\lor$ only give definite answers when it is safe to do so, otherwise they return $\indet$. For $\land$, we can only definitely say the answer is $\true$ if both inputs are $\true$, but we can definitely say the output is $\false$ if any of the inputs is $\false$. Conversely, for $\lor$, we can only say the output is definitely $\false$ when both inputs are $\false$, and so on. So three-valued logic is a way of dealing with *missing data*. This is the reason it is used in SQL, where we may have `NULL`s representing missing or unknown data.
 

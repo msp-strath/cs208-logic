@@ -1,6 +1,6 @@
-domain variable { A, B, C }
-
 domain state { On, Off }
+
+domain variable { A, B, C }
 
 domain action { A1, A2, A3 }
 

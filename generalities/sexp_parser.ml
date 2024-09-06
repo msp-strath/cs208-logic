@@ -1,4 +1,4 @@
-open Result_ext
+open Result_ext.Syntax
 
 type sexp = Sexplib.Type.t = Atom of string | List of sexp list
 
@@ -17,19 +17,21 @@ let to_conv f sexp =
 
 let of_opt f sexp =
   match f sexp with
-  | None -> annotate_error sexp @@ Error "failed"
+  | None -> Result_ext.annotate_error sexp @@ Error "failed"
   | Some v -> Ok v
 
 let of_conv f sexp =
   try Ok (f sexp) with
   | Sexplib.Conv.Of_sexp_error (exn, sexp) ->
-     annotate_error sexp @@ Error (Printexc.to_string exn)
+     Result_ext.annotate_error sexp @@ Error (Printexc.to_string exn)
 
 let sexp sexp = Ok sexp
 
 let atom = function
-  | Atom str -> Ok str
-  | sexp     -> annotate_error sexp @@ Error "Expecting a single atom"
+  | Atom str ->
+     Ok str
+  | sexp ->
+     Result_ext.annotate_error sexp @@ Error "Expecting a single atom"
 
 let%test "atom1" =
   Result.is_ok (atom (Atom "atom"))
@@ -42,11 +44,13 @@ let sequence p = function
      let* result, _others = p sexp items in
      Ok result
   | sexp ->
-     annotate_error sexp @@ Error "Expecting a list"
+     Result_ext.annotate_error sexp @@ Error "Expecting a list"
 
 let list p = function
-  | List items -> traverse p items
-  | Atom _ as sexp -> annotate_error sexp @@ Error "Expecting a list"
+  | List items ->
+     Result_ext.traverse p items
+  | Atom _ as sexp ->
+     Result_ext.annotate_error sexp @@ Error "Expecting a list"
 
 let fix f =
   let rec p input = f p input in
@@ -58,7 +62,7 @@ let close p parent items =
 
 let on_kind ~atom ~list = function
   | Atom str as sexp ->
-     annotate_error sexp @@ atom str
+     Result_ext.annotate_error sexp @@ atom str
   | List items as sexp ->
      close list sexp items
 
@@ -66,20 +70,20 @@ let match_tag k = function
   | List (Atom tag::entry_items) as sexp ->
      close (k tag) sexp entry_items
   | sexp ->
-     annotate_error sexp @@ Error "Expecting a tagged entry"
+     Result_ext.annotate_error sexp @@ Error "Expecting a tagged entry"
 
 let tagged tag k = function
   | List (Atom entry_tag::entry_items) as sexp when String.equal entry_tag tag ->
      close k sexp entry_items
   | sexp ->
-     annotate_error sexp @@ Error (Printf.sprintf "Expecting (%s ...)" tag)
+     Result_ext.annotate_error sexp @@ Error (Printf.sprintf "Expecting (%s ...)" tag)
 
 let fail msg parent _items =
-  annotate_error parent @@ Error msg
+  Result_ext.annotate_error parent @@ Error msg
 
 let one p parent = function
   | [sexp] -> let* result = p sexp in Ok (result, [])
-  | _      -> annotate_error parent @@ Error "Expecting a single entry"
+  | _      -> Result_ext.annotate_error parent @@ Error "Expecting a single entry"
 
 let many p _parent items =
   let* results = Result_ext.traverse p items in
@@ -95,7 +99,9 @@ let extract_tagged_items tag =
 
 let consume_all tag k _parent items =
   let tagged, other = extract_tagged_items tag items in
-  let* results = traverse (fun (parent, items) -> close k parent items) tagged in
+  let* results =
+    Result_ext.traverse (fun (parent, items) -> close k parent items) tagged
+  in
   Ok (results, other)
 
 let consume_one tag k parent items =
@@ -104,10 +110,10 @@ let consume_one tag k parent items =
      let* result = close k parent items in
      Ok (result, others)
   | [], _others ->
-     annotate_error parent @@
+     Result_ext.annotate_error parent @@
        Error (Printf.sprintf "Missing '%s' entry" tag)
   | _::_::_, _others ->
-     annotate_error parent @@
+     Result_ext.annotate_error parent @@
        Error (Printf.sprintf "Multiple '%s' entries" tag)
 
 let consume_opt tag k parent items =
@@ -118,11 +124,11 @@ let consume_opt tag k parent items =
   | [], others ->
      Ok (None, others)
   | _::_::_, _others ->
-     annotate_error parent @@
+     Result_ext.annotate_error parent @@
        Error (Printf.sprintf "Multiple '%s' entries" tag)
 
 let consume_next p parent = function
-  | [] -> annotate_error parent @@ Error "Unexpected end of entry"
+  | [] -> Result_ext.annotate_error parent @@ Error "Unexpected end of entry"
   | sexp::items ->
      let* result = p sexp in
      Ok (result, items)
@@ -130,7 +136,7 @@ let consume_next p parent = function
 let assert_nothing_left parent = function
   | [] -> Ok ((), [])
   | _others ->
-     annotate_error parent @@
+     Result_ext.annotate_error parent @@
        Error "Additional unexpected entries"
 
 let ( let* ) c k parent items =
@@ -162,6 +168,6 @@ let result e parent items =
 let ( let+? ) p k sexp =
   match p sexp with
   | Ok a ->
-     annotate_error sexp (k a)
+     Result_ext.annotate_error sexp (k a)
   | Error _ as e ->
      e

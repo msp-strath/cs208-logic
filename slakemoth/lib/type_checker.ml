@@ -1,5 +1,6 @@
 open Ast
-open Generalities.Result_ext
+open Generalities
+open Result_ext.Syntax
 open Environment
 open Kinding
 
@@ -43,7 +44,7 @@ let rec check_application env ctxt location arg_domains terms =
     let checkees =
       List.map2 (fun (_, domain) term -> (Domain domain, term)) arg_domains terms
     in
-    traverse_ (check env ~ctxt) checkees
+    Result_ext.traverse_ (check env ~ctxt) checkees
 
 (** Attempt to compute the minimal kind of a term in the current
     environment and context. *)
@@ -111,12 +112,12 @@ and kind_of env ~ctxt term =
   | Or terms ->
      (*   (Constant, Constant -> Constant)
         & (Clause, Clause     -> Clause) *)
-     let* () = traverse_ (fun tm -> check env ~ctxt (Clause, tm)) terms in
+     let* () = Result_ext.traverse_ (fun tm -> check env ~ctxt (Clause, tm)) terms in
      Ok Clause
   | And terms ->
      (* (Constant, Constant -> Constant)
         & (Clauses, Clauses -> Clauses) *)
-     let* () = traverse_ (fun tm -> check env ~ctxt (Clauses, tm)) terms in
+     let* () = Result_ext.traverse_ (fun tm -> check env ~ctxt (Clauses, tm)) terms in
      Ok Clauses
   | BigOr (var_name, domain, term) ->
      let* () = check_domain env domain in
@@ -153,7 +154,7 @@ and kind_of env ~ctxt term =
      Ok (Domain domain.detail)
   | Sequence terms ->
      (let* kind =
-        fold_left_err
+        Result_ext.fold_left_err
           (fun kind term ->
             let* kind' = check_is_sequence env ~ctxt term in
             join_kind term.location kind kind')
@@ -320,9 +321,9 @@ let check_items env args =
     match combine_opt tuple.detail constructors with
     | None -> errorf tuple.location "Tuple length mismatch" (* FIXME: detail *)
     | Some values ->
-       traverse check_value values
+       Result_ext.traverse check_value values
   in
-  traverse check_tuple
+  Result_ext.traverse check_tuple
 
 let check_not_declared global_env name =
   match NameMap.mem name.detail global_env.defns with
@@ -344,7 +345,7 @@ let check_duplicates names =
 
 let check_arg_specs global_env arg_specs =
   let* names =
-    traverse
+    Result_ext.traverse
       (fun (name, domain_name) ->
         let* () = check_domain global_env domain_name in
         Ok name)
@@ -400,7 +401,7 @@ let check_declaration (env, commands) = function
   | Domain_decl (name, constructors) ->
      let* () = check_domain_not_declared env name in
      let* constructor_domains =
-       fold_left_err
+       Result_ext.fold_left_err
          (fun constructor_domains constructor ->
            match NameMap.find constructor.detail constructor_domains with
            | exception Not_found ->
@@ -440,7 +441,7 @@ let check_declaration (env, commands) = function
 
 let check_declarations decls =
   let* _, commands_rev =
-    fold_left_err
+    Result_ext.fold_left_err
       check_declaration
       (initial_global_env, [])
       decls
@@ -449,7 +450,7 @@ let check_declarations decls =
 
 let check_declarations_open env decls =
   let* env, commands_rev =
-    fold_left_err
+    Result_ext.fold_left_err
       check_declaration
       (env, [])
       decls

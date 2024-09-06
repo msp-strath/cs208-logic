@@ -1,6 +1,6 @@
 open Slakemoth
-
-open Generalities.Result_ext
+open Generalities
+open Result_ext.Syntax
 
 let handle_errors = function
   | Ok () ->
@@ -25,7 +25,7 @@ let execute filename =
   let* commands = Type_checker.check_declarations decls in
   let fmt = Format.std_formatter in
   List.iter (Evaluator.execute_command fmt) commands;
-  Ok ()
+  Result.ok ()
 
 let pretty_print filename =
   let contents = In_channel.with_open_bin filename In_channel.input_all in
@@ -33,7 +33,7 @@ let pretty_print filename =
   Format.printf
     "@[<v0>%a@]"
     (Format.pp_print_list Ast.pp_declaration) decls;
-  Ok ()
+  Result.ok ()
 
 let () =
   handle_errors @@

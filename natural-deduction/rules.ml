@@ -30,7 +30,7 @@ module Term : sig
 
   val to_string : ('a -> string) -> 'a t -> string
 end = struct
-  open Result_ext
+  open Result_ext.Syntax
 
   type 'a t =
     | Var of 'a
@@ -101,14 +101,14 @@ end = struct
   let rec check_no_vars = function
     | Var v -> Error (`HasVar v)
     | Fun (fnm, args) ->
-       let* args = traverse check_no_vars args in
-       ok (Fun (fnm, args))
+       let* args = Result_ext.traverse check_no_vars args in
+       Result.ok (Fun (fnm, args))
 
   let rec traverse f = function
     | Var v -> Result.map var (f v)
     | Fun (fnm, args) ->
        let* args = Result_ext.traverse (traverse f) args in
-       ok (Fun (fnm, args))
+       Result.ok (Fun (fnm, args))
 
   let rec to_string string_of_var = function
     | Var vnm -> string_of_var vnm
@@ -182,7 +182,7 @@ module type RULES = sig
 end
 
 module OfSexp = struct
-  open Result_ext
+  open Result_ext.Syntax
 
   (* Check that every variable in the premises appears in the
      conclusion, so we will never need to prompt for variables'
@@ -195,8 +195,8 @@ module OfSexp = struct
       else
         Error (Printf.sprintf "Variable '%s' in premises does not appear in the conclusion" v)
     in
-    let* () = traverse_ (Term.traverse_ check_var) premises in
-    ok { premises; conclusion }
+    let* () = Result_ext.traverse_ (Term.traverse_ check_var) premises in
+    Result.ok { premises; conclusion }
 
   open Sexp_parser
 
@@ -214,7 +214,7 @@ module OfSexp = struct
       (let* rules = consume_all "rule" rule in
        let* goal  = consume_one "goal" (one Term.of_sexp) in
        let* ()    = assert_nothing_left in
-       let* goal  = result @@ Term.traverse (errorf "Goal has variable '%s'") goal in
+       let* goal  = result @@ Term.traverse (Result_ext.errorf "Goal has variable '%s'") goal in
        return (rules, goal))
 
   let config_rules_only =

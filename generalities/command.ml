@@ -100,7 +100,7 @@ let parse_command : type a. a commands -> string list -> (a, [>error]) result =
 
 let of_string : type a. a commands -> string -> (a, string) result =
   fun commands input ->
-  let open Result_ext in
+  let open Result_ext.Syntax in
   Result.map_error string_of_error
     (let* tokens = Simple_tokeniser.tokenise input in
      parse_command commands tokens)
