@@ -1,7 +1,6 @@
 (library
  (name slakemoth)
- (libraries msat.sat menhirLib parser_util generalities)
- (preprocess (pps ppx_deriving.ord ppx_deriving.eq)))
+ (libraries msat.sat menhirLib parser_util generalities))
 
 (menhir
  (flags --table --unused-token UNKNOWN)

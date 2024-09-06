@@ -32,7 +32,7 @@ let pretty_print filename =
   let* decls   = Reader.parse contents in
   Format.printf
     "@[<v0>%a@]"
-    (Format.pp_print_list Ast.pp_declaration) decls;
+    (Format.pp_print_list Slakemoth_pp.Ast.pp_declaration) decls;
   Result.ok ()
 
 let () =

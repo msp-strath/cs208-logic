@@ -2,4 +2,4 @@
  (name main)
  (public_name slakemoth)
  (package slakemoth)
- (libraries slakemoth))
+ (libraries slakemoth slakemoth_pp))

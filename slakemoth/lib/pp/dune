@@ -1,0 +1,3 @@
+(library
+ (name slakemoth_pp)
+ (libraries slakemoth))
