@@ -17,7 +17,7 @@
 %token DEFINE
 %token ATOM
 %token DOMAIN
-%token KW_DUMP KW_IFSAT KW_FOR KW_IF KW_ALLSAT KW_PRINT NEXT THE
+%token KW_DUMP KW_IFSAT KW_FOR KW_IF KW_ALLSAT KW_PRINT NEXT THE TABLE
 
 %token COMMA
 %token COLON
@@ -37,7 +37,9 @@ structure:
 
 item:
 | DEFINE; name=identifier; param_spec=param_spec; LBRACE; body=term; RBRACE
-  { Definition (name, param_spec, body) }
+  { Definition (name, param_spec, Term body) }
+| DEFINE; name=identifier; param_spec=param_spec; TABLE; LBRACE; items=list(tuple); RBRACE
+  { Definition (name, param_spec, Table items) }
 | DOMAIN; name=identifier; LBRACE; constructors=separated_list(COMMA, constructor); RBRACE
   { Domain_decl (name, constructors) }
 | ATOM; name=identifier; param_spec=param_spec
@@ -60,6 +62,10 @@ print_command:
 solve_command:
 | KW_IFSAT { fun t1 t2 -> IfSat (t1, t2) }
 | KW_ALLSAT { fun t1 t2 -> AllSat (t1, t2) }
+
+tuple:
+| LPAREN; values=separated_list(COMMA, constructor); RPAREN
+  { { detail=values; location = Location.mk $startpos $endpos } }
 
 binding:
 | nm=identifier; COLON; domain=identifier

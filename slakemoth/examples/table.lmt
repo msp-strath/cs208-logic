@@ -1,0 +1,21 @@
+// Basic tables
+define true_table table { () }
+define false_table table { }
+
+// Expecting 'true'
+print (true_table)
+
+// Expecting 'false'
+print (false_table)
+
+// A little table test
+domain v { A, B, C }
+domain s { On, Off }
+
+define p(var : v, st : s) table {
+  (A, On)
+  (B, Off)
+  (C, On) (C, Off)
+}
+
+print ([ for (var : v) for (st : s) [ var, st, p(var,st) ] ])

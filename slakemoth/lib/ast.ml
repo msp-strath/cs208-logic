@@ -43,12 +43,19 @@ type term_detail =
 
 and term = term_detail with_location
 
+type tuple = name with_location list
+type table = tuple with_location list
+
 type param_spec =
   (name with_location * name with_location) list
 
+type definition =
+  | Term of term
+  | Table of table
+
 (* Declarations that can appear at the top-level in a file *)
 type declaration =
-  | Definition  of name with_location * param_spec * term
+  | Definition  of name with_location * param_spec * definition
   | Domain_decl of name with_location * constructor_name with_location list
   | Atom_decl of name with_location * param_spec
   | Dump of term
@@ -169,18 +176,34 @@ let pp_arg_spec =
     ~pp_sep:pp_comma
     pp_arg
 
+let pp_tuple fmt tuple =
+  Format.fprintf fmt "(%a)"
+    (Format.pp_print_list
+       ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ",")
+       pp_name)
+    tuple.detail
+
+let pp_table =
+  Format.pp_print_list pp_tuple
+
 let pp_declaration fmt = function
-  | Definition (name, [], body) ->
+  | Definition (name, [], Term body) ->
      Format.fprintf fmt
        "@[<v0>@[<v2>define %a {@ %a@]@,}@]@,"
        pp_name name
        pp_term body
-  | Definition (name, arg_spec, body) ->
+  | Definition (name, arg_spec, Term body) ->
      Format.fprintf fmt
        "@[<v0>@[<v2>define %a(@[%a@]) {@ %a@]@,}@]@,"
        pp_name name
        pp_arg_spec arg_spec
        pp_term body
+  | Definition (name, arg_spec, Table items) ->
+     Format.fprintf fmt
+       "@[<v0>@[<v2>define %a(@[%a@]) table {@ %a@]@,}@]@,"
+       pp_name name
+       pp_arg_spec arg_spec
+       pp_table items
   | Domain_decl (name, constructors) ->
      Format.fprintf fmt "@[<hv0>domain %a @[<hv2>{@ %a@]@ }@]@,"
        pp_name name

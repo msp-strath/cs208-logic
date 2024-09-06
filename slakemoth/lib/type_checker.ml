@@ -66,7 +66,7 @@ and kind_of env ~ctxt term =
           | Defined { args; kind; _ } ->
              let* () = check_application env ctxt term.location args terms in
              Ok kind
-          | Atom { args } ->
+          | Table { args; _} | Atom { args } ->
              let* () = check_application env ctxt term.location args terms in
              Ok Literal))
 
@@ -301,9 +301,33 @@ and check env ~ctxt (required_kind, term) =
          errorf term.location
            "Required zero or more 'name : data 'pairs.")
 
+let check_items env args =
+  (* FIXME: could use the reverse lookup table to get a domain for
+     each constructor? *)
+  let constructors =
+    List.map
+      (fun (_, domain) -> (NameMap.find domain env.domains).constructors)
+      args
+  in
+  let check_value (cnm, constructors) =
+    if List.mem cnm.detail constructors then
+      Ok cnm.detail
+    else
+      errorf cnm.location "'%s' is not a value in this domain"
+        cnm.detail
+  in
+  let check_tuple tuple =
+    match combine_opt tuple.detail constructors with
+    | None -> errorf tuple.location "Tuple length mismatch" (* FIXME: detail *)
+    | Some values ->
+       traverse check_value values
+  in
+  traverse check_tuple
+
 let check_not_declared global_env name =
   match NameMap.mem name.detail global_env.defns with
-  | true -> errorf name.location "The name '%s' has already been used" name.detail (* FIXME: where? *)
+  | true ->
+     errorf name.location "The name '%s' has already been used" name.detail (* FIXME: where? *)
   | false -> Ok ()
 
 let check_duplicates names =
@@ -341,7 +365,7 @@ let check_domain_not_declared global_env domain =
   | false -> Ok ()
 
 let check_declaration (env, commands) = function
-  | Definition (name, arg_specs, body) ->
+  | Definition (name, arg_specs, Term body) ->
      let* () = check_not_declared env name in
      let* () = check_arg_specs env arg_specs in
      let ctxt = List.fold_right
@@ -357,6 +381,14 @@ let check_declaration (env, commands) = function
            kind
          }
      in
+     Ok ({ env with defns = NameMap.add name.detail defn env.defns }, commands)
+
+  | Definition (name, arg_specs, Table items) ->
+     let* () = check_not_declared env name in
+     let* () = check_arg_specs env arg_specs in
+     let args = List.map (fun (n,d) -> n.detail, d.detail) arg_specs in
+     let* items = check_items env args items in
+     let defn = Table { args; items } in
      Ok ({ env with defns = NameMap.add name.detail defn env.defns }, commands)
 
   | Atom_decl (name, arg_specs) ->

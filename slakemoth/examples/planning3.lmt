@@ -1,0 +1,85 @@
+domain variable { A, B, C }
+
+domain state { On, Off }
+
+domain action { A1, A2, A3 }
+
+define requires (a : action, v : variable, s : state)
+  table {
+    (A1, A, On) (A1, B, On)
+    (A2, B, On)
+    (A3, B, Off)
+  }
+
+define changes (a : action, v : variable, s : state)
+  table {
+    (A1, A, Off)
+    (A2, B, Off)
+    (A3, B, On)
+  }
+
+// This is actually a constant, but the type system cannot see that at
+// the moment.
+define does_not_change (a : action, x : variable) {
+  forall (y : variable)
+    forall (s : state)
+      changes(a, y, s) ==> x != y
+}
+
+// print ([ for (x : variable) if (does_not_change(A2, x)) x ])
+
+// Possible timesteps
+domain timestep { T1, T2, T3, T4 }
+
+// states of variables at timesteps
+atom isOn(t : timestep, v : variable)
+
+// A predicate that says "action 'a' can fire in timestep 'tNow' with effects in timestep 'tNext'"
+define effect(a : action, tNow : timestep, tNext : timestep) {
+    (forall (x : variable) requires(a, x, On) ==> isOn(tNow, x))
+  & (forall (x : variable) requires(a, x, Off) ==> ~isOn(tNow, x))
+  & (forall (x : variable) changes(a, x, On) ==> isOn(tNext, x))
+  & (forall (x : variable) changes(a, x, Off) ==> ~isOn(tNext, x))
+  & (forall (x : variable) ~changes(a,x,On) ==> ~changes(a,x,Off) ==> isOn(tNow, x) ==> isOn(tNext,x))
+  & (forall (x : variable) ~changes(a,x,On) ==> ~changes(a,x,Off) ==> isOn(tNext, x) ==> isOn(tNow,x))
+}
+
+atom active (t : timestep, a : action)
+
+// 'steps' is true exactly when the states align with the actions that
+// are active.
+define steps {
+  (forall (t1 : timestep)
+   forall (t2 : timestep)
+   next(t1, t2) ==>
+     (some (a : action) active(t1,a))
+     &
+     (forall (a1 : action) forall (a2 : action) a1 = a2 | ~active(t1,a1) | ~active(t1,a2))
+     &
+     (forall (a : action) active(t1,a) ==> effect(a, t1, t2)))
+  & (forall (a : action) ~active(T4, a))
+}
+
+// A specification: a completely specified starting state, and a
+// partially specified final state
+
+define specification {
+  (isOn(T1, A) & ~isOn(T1,B) & ~isOn(T1, C))
+  &
+  (~isOn(T4, A))
+}
+
+// Other possible specifications:
+// 1. For a given initial state and partially specified final state, is there a sequence of actions that gets us to the final state?
+// 2. Fix the actions performed, and the final state and ask if there are any inputs that yield that final state
+// 3. Is there an intitial state, final state, and sequence of actions that violates an invariant (assuming the invariant holds for the initial state)
+
+allsat (steps & specification)
+  [ for (t : timestep)
+      {
+	"state" : // [ for (v : variable) if (isOn(t,v)) v ],
+	          { for (v : variable) v : isOn(t,v) },
+	(if (t != T4)   // FIXME: ~last(t)
+           "action" : (the (a : action) active(t,a)))
+      }
+  ]

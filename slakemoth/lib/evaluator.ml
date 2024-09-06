@@ -201,7 +201,15 @@ module Eval (Assignment : ASSIGNMENT) = struct
                        NameMap.empty
                    in
                    let result = eval local_env body in
-                   { result with location = term.location })
+                   { result with location = term.location }
+              | Table { items; _ } ->
+                 let values =
+                   List.map (fun term -> to_constructor (eval local_env term)) terms
+                 in
+                 if List.mem values items then
+                   { detail = VTrue; location = term.location }
+                 else
+                   { detail = VFalse; location = term.location })
           | cnm ->
              (match terms with
               | [] ->
@@ -394,7 +402,7 @@ let initialise_solver env =
   let atom_table = Hashtbl.create 1024 in
   NameMap.iter
     (fun nm -> function
-      | Defined _ -> ()
+      | Defined _ | Table _ -> ()
       | Atom domains ->
          let rec all_values args = function
            | [] ->

@@ -15,6 +15,10 @@ type defn =
       ; body : term
       ; kind : kind
       }
+  | Table of
+      { args  : (name * name) list
+      ; items : name list list
+      }
   | Atom of
       { args : (name * name) list }
 
