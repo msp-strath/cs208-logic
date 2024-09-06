@@ -98,7 +98,7 @@ let rec rename_term rho term =
       match NameMap.find_opt name.detail rho with
       | None -> {term with detail = Apply (name, args) }
       | Some renamed -> {term with detail = Apply ({ name with detail = renamed }, args)})
-  | IntConstant _ | StrConstant _ | Constructor _ | True | False ->
+  | StrConstant _ | Constructor _ | True | False ->
      term
   | Eq (term1, term2) ->
      let term1 = rename_term rho term1 in
@@ -131,6 +131,8 @@ let rec rename_term rho term =
      { term with detail = BigAnd (nm, domain, term1) }
   | JSONObject _ | JSONArray _ | For _ | If _ | Sequence _ | Assign _ ->
      failwith "RENAME JSON"
+  | Next _ | The _ ->
+     failwith "RENAME NEW STUFF"
 
 
 let merge_environments env1 env2 =
@@ -165,8 +167,10 @@ let merge_environments env1 env2 =
                  (NameMap.add name (Atom { args}) merged, NameMap.remove name env2)
                else
                  failwith "Changed atom declaration"
-            | Some (Defined _) ->
+            | Some (Defined _ | Table _) ->
                failwith "atom has become definition")
+        | Table _ ->
+           failwith "TABLES"
         | Defined { args; body; kind } ->
            let name = name ^ "#1" in
            let rename1 = List.fold_right (fun (nm, _) -> NameMap.remove nm) args rename1 in
@@ -181,6 +185,7 @@ let merge_environments env1 env2 =
       (fun name defn merged ->
         match defn with
         | Atom _ -> failwith "Extra atom definition"
+        | Table _ -> failwith "TABLE"
         | Defined { args; body; kind } ->
            let name = name ^ "#2" in
            let rename2 = List.fold_right (fun (nm, _) -> NameMap.remove nm) args rename2 in
