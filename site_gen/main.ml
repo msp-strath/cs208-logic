@@ -37,8 +37,8 @@ let template ~title:title_text ?(sub_title="") ~script_url body_html =
             p (text sub_title);
             nav @| [
                 a ~attrs:[A.href "contents.html"] (text "Contents");
-                a ~attrs:[A.href "coursework1.html"] (text "Coursework 1");
-                a ~attrs:[A.href "coursework2.html"] (text "Coursework 2");
+                (* a ~attrs:[A.href "coursework1.html"] (text "Coursework 1"); *)
+                (* a ~attrs:[A.href "coursework2.html"] (text "Coursework 2"); *)
               ]
           ];
           main body_html;
@@ -139,6 +139,8 @@ let code_render renderer ids attributes kind content =
       | Error (`Parse err) ->
          (* FIXME: just log the error? *)
          failwith (Parser_util.Driver.string_of_error err))
+  | "comment" ->
+     Some Html_static.empty
   | _ ->
      None
 

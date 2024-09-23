@@ -30,10 +30,11 @@ Part 0 of this course is a (re)introduction to the basic concepts of Proposition
 
 3. [Truth Tables, Satisfiability, and Validity](truth-tables.html): An effective way to compute the meaning of a logical formula, and two kinds of statements we can make about a formula.
 
+```comment
 4. [Entailment](entailment.html): A generalised form of validity. What does it mean to say a formula is true under some assumptions?
 
 5. [Beyond the binary: Three-valued Logic](three-valued-logic.html). We will primarily study *two*-valued logic (`true` and `false`), but what if we have more than two truth values?
-
+```
 
 ## Part 1: Logical Modelling
 
@@ -58,8 +59,6 @@ In Part 1, we use logical modelling to describe and solve problems.
 9. [Converting to CNF](converting-to-cnf.html). SAT solvers take their input in CNF. Some problems are naturally in CNF (like the Packages or Resource Allocation problems above), but sometimes we need to convert any formula to one in CNF.
 
 10. [Circuits, Gates and Formulas](circuits.html), where we look at encoding logic gates as clauses, using the Tseytin transformaion. We can then get the solver to answer questions about circuits.
-
-**Coursework:** [Coursework 1 is here](coursework1.html).
 
 ## Part 2: Deductive proof and Predicate Logic
 
