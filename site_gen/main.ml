@@ -36,7 +36,7 @@ let template ~title:title_text ?(sub_title="") ~script_url body_html =
             h1 (text title_text);
             p (text sub_title);
             nav @| [
-                a ~attrs:[A.href "contents.html"] (text "Contents");
+                a ~attrs:[A.href "index.html"] (text "Contents");
                 (* a ~attrs:[A.href "coursework1.html"] (text "Coursework 1"); *)
                 (* a ~attrs:[A.href "coursework2.html"] (text "Coursework 2"); *)
               ]

@@ -1,10 +1,10 @@
 This page links to the interactive notes and exercises for Logic part of [CS208 Logic & Algorithms](https://classes.myplace.strath.ac.uk/course/view.php?id=15121), part of the Undergraduate Computer Science degree at the [University of Strathclyde](https://www.strath.ac.uk/science/computerinformationsciences/).
 
-Please send any comments and queries to [Robert Atkey](mailto:robert.atkey@strath.ac.uk) ([Web page](https://bentnib.org)). The source code for these pages in available [on Github](https://github.com/bobatkey/interactive-logic-course).
+Please send any comments and queries to [Robert Atkey](mailto:robert.atkey@strath.ac.uk) ([Web page](https://bentnib.org)). The source code for these pages in available [on Github](https://github.com/msp-strath/cs208-logic).
 
 ## Introduction
 
-In the first half of the course, we will study Symbolic Logic. Symbolic Logic is a fundamental set of the techniques for describing data and processes. It is useful in computing for describing, building and checking systems. We will look at how to define logic (syntax and semantics), algorithms for computing with logic, and systems for deriving proofs in formal logic. We will also keep in mind the practical uses of logic in Computer Science.
+In the first semester of the CS208, we will study Symbolic Logic. Symbolic Logic is a fundamental set of the techniques for describing data and processes. It is useful in computing for describing, building, and checking systems, and for solving complicated problems involving many interacting constraints. We will look at how to define logic (syntax and semantics), algorithms for computing with logic, and systems for deriving proofs in formal logic. We will also keep in mind the practical uses of logic in Computer Science.
 
 This course follows on from CS103 and CS106 in first year.
 
@@ -31,9 +31,9 @@ Part 0 of this course is a (re)introduction to the basic concepts of Proposition
 3. [Truth Tables, Satisfiability, and Validity](truth-tables.html): An effective way to compute the meaning of a logical formula, and two kinds of statements we can make about a formula.
 
 ```comment
-4. [Entailment](entailment.html): A generalised form of validity. What does it mean to say a formula is true under some assumptions?
+1. [Entailment](entailment.html): A generalised form of validity. What does it mean to say a formula is true under some assumptions?
 
-5. [Beyond the binary: Three-valued Logic](three-valued-logic.html). We will primarily study *two*-valued logic (`true` and `false`), but what if we have more than two truth values?
+2. [Beyond the binary: Three-valued Logic](three-valued-logic.html). We will primarily study *two*-valued logic (`true` and `false`), but what if we have more than two truth values?
 ```
 
 ## Part 1: Logical Modelling
@@ -50,19 +50,21 @@ In Part 1, we use logical modelling to describe and solve problems.
 
 5. [The Package Installation Problem](packages.html).
 
-6. [SAT solvers](sat.html), the underlying technology.
+6. [How to handle bigger problems](domains-and-parameters.html) with domains and parameters.
 
-7. [How to handle bigger problems](domains-and-parameters.html) with domains and parameters.
+7. [An exercise on Package Installations](packages-exercise.html).
 
-8. [Resource allocation problems](resource-alloc.html), which are a kind of graph colouring problem. (*under construction*)
+7. [SAT solvers](sat.html), the underlying technology.
+
+8. [Resource allocation problems](resource-alloc.html), which are a kind of graph colouring problem.
 
 9. [Converting to CNF](converting-to-cnf.html). SAT solvers take their input in CNF. Some problems are naturally in CNF (like the Packages or Resource Allocation problems above), but sometimes we need to convert any formula to one in CNF.
 
-10. [Circuits, Gates and Formulas](circuits.html), where we look at encoding logic gates as clauses, using the Tseytin transformaion. We can then get the solver to answer questions about circuits.
+10. [Circuits, Gates and Formulas](circuits.html), where we look at encoding logic gates as clauses, using the Tseytin transformaion. We can then get the solver to answer questions about circuits. We also look at a use of circuits to solve problems that are hard to solve directly.
 
 ## Part 2: Deductive proof and Predicate Logic
 
-In Part 2, we strive for truth through proof. We will be using an interactive proof editor to construct natural deduction proofs. Exercises with fixed things to prove are embedded in each of the pages. You can also enter your own things to prove [on this page](prover.html).
+In Part 2, we strive for truth through proof. We will be using an interactive proof editor to construct natural deduction proofs. Exercises with fixed things to prove are embedded in each of the pages linked below. You can also enter your own things to prove [on this page](prover.html).
 
 1. [Introduction to Deductive Proof](proof-intro.html), which describes the general idea of proof systems, and introduces a small example of a proof system inspired by biology.
 
@@ -72,7 +74,7 @@ In Part 2, we strive for truth through proof. We will be using an interactive pr
 
 4. [Proof rules for Or and Not](proof-or.html), which complete the rules for the connectives of Propositional Logic.
 
-5. [Soundness and Completeness, and some Philosophy](sound-complete-meaning.html). The system so far is sound, but is it complete? Should it be complete?
+5. [Soundness and Completeness, and some Philosophy](sound-complete-meaning.html). The system so far is sound, but is it complete? Should it be complete? What does mathematics mean?
 
 6. [Introducing Predicate Logic](pred-logic-intro.html) as an expressive language for making statements in a formalised way. By selecting our vocabulary carefully, we can use Predicate Logic as a modelling tool to describe many situations.
 
