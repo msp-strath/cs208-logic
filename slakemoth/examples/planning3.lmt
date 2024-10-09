@@ -54,7 +54,9 @@ define steps {
    next(t1, t2) ==>
      (some (a : action) active(t1,a))
      &
-     (forall (a1 : action) forall (a2 : action) a1 = a2 | ~active(t1,a1) | ~active(t1,a2))
+     (forall (a1 : action)
+      forall (a2 : action)
+        a1 = a2 | ~active(t1,a1) | ~active(t1,a2))
      &
      (forall (a : action) active(t1,a) ==> effect(a, t1, t2)))
   & (forall (a : action) ~active(T4, a))

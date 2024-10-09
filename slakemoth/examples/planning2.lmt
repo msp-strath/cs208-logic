@@ -26,7 +26,7 @@ atom isSet(t : timestep, v : variable)
 
 // A way of saying that a variable has the same value in two timesteps
 define no_change(v : variable, t1 : timestep, t2 : timestep) {
-    (isSet(t1, v)  | ~isSet(t2, v))
+    (isSet(t1, v) | ~isSet(t2, v))
   & (isSet(t2, v) | ~isSet(t1, v))
   // alternative:
 //  (isSet(t1, v) ==> isSet(t2, v)) & (isSet(t2, v) ==> isSet(t1, v))
