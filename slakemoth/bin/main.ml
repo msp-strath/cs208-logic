@@ -6,7 +6,7 @@ let handle_errors = function
   | Ok () ->
      exit 0
   | Error (`Parse err) ->
-     Format.eprintf "ERROR: %s\n" (Parser_util.Driver.string_of_error err);
+     Printf.eprintf "ERROR: %s\n" (Parser_util.Driver.string_of_error err);
      exit 1
   | Error (`Type_error (location, msg)) ->
      let msg = Printf.sprintf "Problem at %a: %s"
@@ -26,7 +26,8 @@ let execute filename =
   commands
   |> List.to_seq
   |> Seq.concat_map Evaluator.execute_command
-  |> Seq.iter (Format.printf "@[<v0>%a@]@\n" Json.Printing.pp);
+  |> Seq.iter (fun json -> Pretty.print (Json.P.to_document json);
+                           print_newline ());
   Result.ok ()
 
 let pretty_print filename =

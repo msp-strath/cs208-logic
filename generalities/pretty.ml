@@ -93,14 +93,26 @@ let group doc =
 (******************************************************************************)
 (* Output of documents *)
 
-let emit =
-  print_string
-let emit_newline =
-  print_newline
-let emit_spaces n =
-  print_string (String.make n ' ')
+type output =
+  { emit         : string -> unit
+  ; emit_newline : unit -> unit
+  ; emit_spaces  : int -> unit
+  }
 
-let output ?(width=80) document =
+let output_of_channel ch =
+  { emit         = Out_channel.output_string ch
+  ; emit_newline = (fun () -> Out_channel.output_char ch '\n')
+  ; emit_spaces  = (fun n -> Out_channel.output_string ch (String.make n ' '))
+  }
+
+let output_of_buffer b =
+  { emit         = Buffer.add_string b
+  ; emit_newline = (fun () -> Buffer.add_string b "\n")
+  ; emit_spaces  = (fun n -> Buffer.add_string b (String.make n ' '))
+  }
+
+let output ?(width=80) output document =
+  let { emit; emit_newline; emit_spaces } = output in
   let rec flat = function
     | Empty | AlignSpaces _ ->
        ()
@@ -139,3 +151,16 @@ let output ?(width=80) document =
   in
   let _ = process 0 0 0 document.doc in
   ()
+
+let print ?width document =
+  let o = output_of_channel Out_channel.stdout in
+  output ?width o document
+
+let to_buffer ?width b document =
+  let o = output_of_buffer b in
+  output ?width o document
+
+let to_string ?width document =
+  let b = Buffer.create 8192 in
+  to_buffer ?width b document;
+  Buffer.contents b

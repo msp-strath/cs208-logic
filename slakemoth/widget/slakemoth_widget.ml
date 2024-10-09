@@ -4,6 +4,7 @@ let component configuration =
 
       module Ast = Slakemoth.Ast
       open Slakemoth.Environment
+      open Generalities
 
       type state = {
           input : string;
@@ -150,13 +151,12 @@ let component configuration =
            (match state.parse_result with
             | Ok commands ->
                let b = Buffer.create 8192 in
-               let fmt = Format.formatter_of_buffer b in
                commands
                |> List.to_seq
                |> Seq.concat_map Slakemoth.Evaluator.execute_command
-               |> Seq.iter (Format.fprintf fmt "@[<v0>%a@]@\n"
-                              Generalities.Json.Printing.pp);
-               Format.pp_print_flush fmt ();
+               |> Seq.iter (fun json ->
+                      Pretty.to_buffer ~width:50 b (Json.P.to_document json);
+                      Buffer.add_string b "\n");
                { state with fresh = true; output = `String (Buffer.contents b) }
             | Error _ ->
                (* Button should be disabled to prevent this *)
