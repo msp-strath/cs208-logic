@@ -47,7 +47,7 @@ let pp fmt { universe; relations } =
          xs
   in
   let pp_rel_defn fmt (nm, tuples) =
-    Format.fprintf fmt "%s = {[@<hov>%a@]}" nm
+    Format.fprintf fmt "%s = {@[<hov>%a@]}" nm
       (Format.pp_print_seq ~pp_sep:pp_comma_brk pp_tuple)
       (TupleSet.to_seq tuples)
   in
