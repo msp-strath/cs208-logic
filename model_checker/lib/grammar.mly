@@ -1,5 +1,4 @@
 %{
-open Fol_formula
 open Structure
 
 (* FIXME: locations *)
@@ -12,9 +11,8 @@ open Structure
 %token AXIOMATISATION SYNTH SIZE
 %token LBRACE RBRACE MODELS EQUALS LPAREN RPAREN COMMA SLASH COLON
 
-%token AND OR NOT ARROW DOT FORALL EXISTS TRUE FALSE EQ NE
-
-%token EOF UNKNOWN QUOTE
+%token EOF UNKNOWN
+%token <Fol_formula.formula> QUOTED
 
 %start <Structure.item list> structure
 
@@ -31,13 +29,13 @@ item:
     { Model { name; vocab_name; defns } }
   | AXIOMATISATION; name=IDENT; FOR; vocab=IDENT; LBRACE; formulas=separated_list(COMMA,named_formula); RBRACE
     { Axioms { name; vocab; formulas } }
-  | CHECK; model_name=IDENT; MODELS; QUOTE; formula=formula; QUOTE
+  | CHECK; model_name=IDENT; MODELS; formula=QUOTED
     { Check { model_name; formula } }
   | SYNTH; axioms=IDENT; SIZE; cardinality=INTLIT
     { Synth { axioms; cardinality } }
 
 named_formula:
-  | nm=IDENT; COLON; QUOTE; f=formula; QUOTE
+  | nm=IDENT; COLON; f=QUOTED
     { (nm, f) }
 
 arity_defn:

@@ -11,12 +11,14 @@ depends: [
   "ocaml"
   "dune" {>= "3.7"}
   "menhir"
-  "fol_formula"
-  "parser_util"
   "omd"
   "html_sig"
   "ctypes"
   "ctypes-foreign"
+  "sexplib0"
+  "ppx_sexp_conv"
+  "ppx_inline_test"
+  "sexplib"
 ]
 pin-depends: [
   [ "html_sig.~dev"

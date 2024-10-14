@@ -16,7 +16,6 @@ depends: [
   "odoc" {with-doc}
   "ulmus"
   "omd"
-  "parser_util"
   "ppx_monoid"
   "ppx_deriving"
   "ppx_inline_test"

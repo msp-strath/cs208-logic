@@ -25,12 +25,6 @@
  ;  (topics "to describe" your project)))
 
 (package
-  (name fol_formula))
-
-(package
-  (name parser_util))
-
-(package
   (name site_gen))
 
 (package

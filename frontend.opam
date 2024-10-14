@@ -6,11 +6,9 @@ depends: [
   "msat"
   "menhir"
   "ulmus"
-  "parser_util"
   "ppx_monoid"
   "ppx_deriving"
   "ppx_inline_test"
-  "fol_formula"
 ]
 pin-depends: [
   [ "ulmus.~dev"

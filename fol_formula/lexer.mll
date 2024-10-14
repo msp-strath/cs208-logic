@@ -11,8 +11,8 @@ let digit   = ['0'-'9']
 rule token = parse
 | white   { token lexbuf }
 | "->" | "→"   { ARROW }
-| "/\\" | "∧" | "&&" { AND }
-| "\\/" | "∨" | "||" { OR }
+| "/\\" | "∧" | "&&" | "&" { AND }
+| "\\/" | "∨" | "||" | "|" { OR }
 | "!" | "~" | "¬" { NOT }
 | "("     { LPAREN }
 | ")"     { RPAREN }
