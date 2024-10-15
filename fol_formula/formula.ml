@@ -1,4 +1,5 @@
 open Sexplib0.Sexp_conv
+open Generalities
 
 type t =
   | True
@@ -42,6 +43,56 @@ let to_string f =
     | True -> "T"
     | False -> "F"
     | (Imp _ | And _ | Or _ | Forall _ | Exists _) as f -> "(" ^ formula f ^ ")"
+  in
+  formula f
+
+let to_doc f =
+  let open Pretty in
+  let variable x = text x in
+  let rec formula = function
+    | Forall _ | Exists _ as f -> nest 2 (group (quantifiers f))
+    | f -> propositional f
+  and quantifiers = function
+    | Forall (x, f) ->
+       text "∀" ^^ variable x ^^ text ". " ^^ quantifiers f
+    | Exists (x, f) ->
+       text "∃" ^^ variable x ^^ text ". " ^^ quantifiers f
+    | f -> break ^^ propositional f
+  and propositional = function
+    | Imp _ as f -> align (group (imps f))
+    | And _ as f -> align (group (ands f))
+    | Or _ as f -> align (group (ors f))
+    | f -> base f
+  and imps = function
+    | Imp (f1, f2) -> base f1 ^^ text " →" ^^ break ^^ imps f2
+    | f            -> base f
+  and ands = function
+    | And (f1, f2) -> base f1 ^^ break ^^ text "∧" ^^ break ^^ ands f2
+    | f -> base f
+  and ors = function
+    | Or (f1, f2) -> base f1 ^^ break ^^ text "∨" ^^ break ^^ ors f2
+    | f -> base f
+  and base = function
+    | Atom ("=", [ t1; t2 ]) ->
+       Term.to_doc t1 ^^ text " = " ^^ Term.to_doc t2
+    | Atom ("!=", [ t1; t2 ]) ->
+       Term.to_doc t1 ^^ text " != " ^^ Term.to_doc t2
+    | Atom (a, []) ->
+       text a
+    | Atom (a, tms) ->
+       text a
+       ^^ text "("
+       ^^ (tms |> List.to_seq
+           |> Seq.map Term.to_doc
+           |> Seq_ext.intersperse (text ", ")
+           |> concat)
+       ^^ text ")"
+    | Not f ->
+       text "¬" ^^ base f
+    | True -> text "T"
+    | False -> text "F"
+    | (Imp _ | And _ | Or _ | Forall _ | Exists _) as f ->
+       text "(" ^^ formula f ^^ text ")"
   in
   formula f
 

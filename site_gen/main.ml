@@ -131,11 +131,12 @@ let code_render renderer ids attributes kind content =
      Some (aside (renderer body))
   | "formula" ->
      let open Fol_formula in
+     let open Generalities in
      (match Formula.of_string content with
       | Ok fmla ->
          let open Html_static in
-         Some (div ~attrs:[ A.class_ "displayedformula" ]
-                 (text (Formula.to_string fmla)))
+         Some (pre ~attrs:[ A.class_ "displayedformula" ]
+                 (text (Pretty.to_string ~width:60 (Formula.to_doc fmla))))
       | Error (`Parse err) ->
          (* FIXME: just log the error? *)
          failwith (Parser_util.Driver.string_of_error err))

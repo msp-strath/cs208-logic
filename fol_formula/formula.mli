@@ -28,6 +28,8 @@ val to_string : t -> string
 
 val to_latex : t -> string
 
+val to_doc : t -> Generalities.Pretty.document
+
 (** {2 Queries} *)
 
 val fv : t -> NameSet.t -> NameSet.t

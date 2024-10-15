@@ -1,4 +1,5 @@
 open Sexplib0.Sexp_conv
+open Generalities
 
 type t =
   | Var of string
@@ -29,6 +30,18 @@ let rec to_latex = function
   | Fun (f, tms) ->
       Printf.sprintf "\\mathsf{%s}(%s)" f
         (String.concat ", " (List.map to_latex tms))
+
+let parens d = Pretty.(text "(" ^^ d ^^ text ")")
+
+let rec to_doc = function
+  | Var x ->
+     Pretty.text x
+  | Fun ("0", []) ->
+     Pretty.text "0"
+  | Fun (fname, terms) ->
+     Pretty.(text fname
+             ^^
+             parens (terms |> List.to_seq |> Seq.map to_doc |> Seq_ext.intersperse (text ", ") |> concat))
 
 let rec pp fmt = function
   | Var x -> Format.fprintf fmt "%s" x

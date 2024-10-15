@@ -11,10 +11,10 @@ input {
     font-family: monospace;
 }
 
-/* Displayed formulas are centred. */
+/* Displayed formulas are not centred. */
 
 .displayedformula {
-    text-align: center;
+    /* text-align: center; */
 }
 
 /* Code entry stuff */
