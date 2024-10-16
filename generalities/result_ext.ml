@@ -3,6 +3,16 @@ let ok = Result.ok
 let of_predicate ~on_error p x =
   if p x then Ok x else Error on_error
 
+let check_false ~on_error b =
+  if b then Error on_error else Ok ()
+
+let check_true ~on_error b =
+  if b then Ok () else Error on_error
+
+let of_option ~on_error = function
+  | None -> Error on_error
+  | Some v -> Ok v
+
 module Syntax = struct
 
   let ( let* ) x f = match x with
