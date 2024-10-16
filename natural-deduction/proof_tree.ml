@@ -2,10 +2,10 @@ open Sexplib0.Sexp_conv
 
 include Proof_tree_intf
 
-module Make (Calculus : CALCULUS) (Hole : HOLE with type goal = Calculus.goal) =
-(* : PROOF_TREE with module Calculus = Calculus
-               and module Hole     = Hole*)
-struct
+module Make (Calculus : CALCULUS) (Hole : HOLE with type goal = Calculus.goal)
+ : PROOF_TREE with module Calculus = Calculus
+               and module Hole     = Hole
+= struct
   module Calculus = Calculus
   module Hole = Hole
 
