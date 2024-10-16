@@ -1,24 +1,24 @@
-vocab V {
+vocab path_vocabulary {
   path/2
 }
 
-axioms A1 for V {
+axioms A1 for path_vocabulary {
   symmetry    : "all x. all y. path(x,y) -> path(y,x)",
   irreflexive : "all x. ¬(path(x,x))",
-//  trans       : "all x.all y. all z. path(x,y) -> path(y,z) -> path(x,z)",
+//  trans       : "all x. all y. all z. path(x,y) -> path(y,z) -> path(x,z)",
   step        : "all x. ex y. path(x,y)"
 }
 
 synth A1 size 2
 
-vocab V2 {
+vocab people_and_resources_vocab {
   person/1,
   resource/1,
   uses/2
 }
 
 // this only has models that have even cardinality!
-axioms A for V2 {
+axioms A for people_and_resources_vocab {
   person-or-resource : "all x. person(x) \/ resource(x)",
   ax2        : "all x. ¬ (person(x) /\ resource(x))",
   uses-types : "all p. all r. uses(p,r) -> (person(p) /\ resource(r))",
