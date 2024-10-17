@@ -38,7 +38,7 @@ Proofs are constructed from rules by arranging them into trees, which we usually
 
 ### Rules
 
-Here are the proof rules used for the small mammalian biology proof system given in the video. There are three axioms A1-A4 that tell us basic facts about bears and coconuts, and two rules R1 and R2 that allow us to make further deductions.
+Here are the proof rules used for the small mammalian biology proof system given in the video. There are four axioms A1-A4 that tell us basic facts about bears and coconuts, and two rules R1 and R2 that allow us to make further deductions.
 
 ```rules-display
 (config
