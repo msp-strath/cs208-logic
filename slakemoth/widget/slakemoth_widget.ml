@@ -142,6 +142,17 @@ let component configuration =
 
       let initial = initial_full configuration
 
+      let limit sequence =
+        let limit = 50 in
+        let rec take items n s =
+          if n = limit then
+            (List.rev items, `Limited)
+          else match s () with
+               | Seq.Nil -> List.rev items, `All
+               | Seq.Cons (x, xs) -> take (x::items) (n+1) xs
+        in
+        take [] 0 sequence
+
       let update action state =
         match action with
         | Update input ->
@@ -153,10 +164,19 @@ let component configuration =
                let b = Buffer.create 8192 in
                commands
                |> List.to_seq
-               |> Seq.concat_map Slakemoth.Evaluator.execute_command
-               |> Seq.iter (fun json ->
-                      Pretty.to_buffer ~width:50 b (Json.P.to_document json);
-                      Buffer.add_string b "\n");
+               |> Seq.map Slakemoth.Evaluator.execute_command
+               |> Seq.map limit
+               |> Seq.iter (fun (jsons, limited) ->
+                      jsons
+                      |> List.iter (fun json ->
+                             Pretty.to_buffer ~width:50 b
+                               (Json.P.to_document json);
+                             Buffer.add_string b "\n");
+                      match limited with
+                      | `Limited ->
+                         Buffer.add_string b
+                           "<more solutions exist, only showing first 50>\n"
+                      | `All -> ());
                { state with fresh = true; output = `String (Buffer.contents b) }
             | Error _ ->
                (* Button should be disabled to prevent this *)
