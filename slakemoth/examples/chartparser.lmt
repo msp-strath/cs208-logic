@@ -1,0 +1,124 @@
+domain position { P1, P2, P3, Pend }
+
+domain nt { S, NP, VP, N, V, Cat, Dog, Kissed }
+
+
+// The rules:
+// chart(x, y, a) :- input(x, a), next(x, y)
+// chart(x, y, a) :- chart(x, y, b), ruleU(a, b)
+// chart(x, y, a) :- chart(x, w, b), chart(w, y, c), rule(a, b, c)
+
+// Clark completion and introduction of fresh variables gives:
+
+// ~chart(x, y, a) | fromInput(x, y, a) | (some w, b, c. ruleApplication(x, w, y, a, b, c)) | (some b. unary(x, y, a, b))
+// ~ruleApplication(x, w, y, a, b, c) | chart(x, y, a)
+// ~fromInput(x, y, z) | chart(x, y, a)
+// ~unary(x, y, a, b) | chart(x, y, a)
+
+// ~fromInput(x, y, a) | next(x, y)
+// ~fromInput(x, y, a) | input(x, a)
+// ~input(x, a) | ~next(x, y) | fromInput(x, y, a)
+
+// ~ruleApplication(x, w, y, a, b, c) | chart(x, w, b)
+// ~ruleApplication(x, w, y, a, b, c) | chart(w, y, c)
+// ~ruleApplication(x, w, y, a, b, c) | rule(a, b, c)
+// ~chart(x, w, b) | ~chart(w, y, c) | ~rule(a, b, c) | ruleApplication(x, w, y, a, b, c)
+
+atom chart(x : position, y : position, symbol : nt)
+atom binary(start : position, mid : position, end : position, a : nt, b : nt, c : nt)
+atom unary(start : position, end : position, a : nt, b : nt)
+atom fromInput(x : position, y : position, a : nt)
+
+atom input(x : position, symbol : nt)
+
+define rule(a : nt, b : nt, c : nt)
+  table {
+    (S, NP, VP)
+    (VP, V, NP)
+  }
+
+define ruleU(a : nt, b : nt)
+  table {
+    (NP, N)
+    (N, Cat)
+    (N, Dog)
+    (V, Kissed)
+  }
+
+define terminal(a : nt)
+  table {
+    (Cat) (Dog) (Kissed)
+  }
+
+define input_constraints {
+  (forall (x : position) x = Pend | (some (a : nt) input(x, a)))
+  &
+  (forall (a : nt) ~input(Pend, a))
+  &
+  (forall (x : position) forall (a : nt) ~input(x, a) | terminal(a))
+  &
+  (forall (x : position) forall (a : nt) forall (b : nt) a = b | ~input(x,a) | ~input(x,b))
+}
+
+define chart_constraints {
+  forall (x : position)
+   forall (y : position)
+    forall (a : nt)
+     (~chart(x, y, a)
+       | fromInput(x, y, a)
+       | (some (b : nt) unary(x, y, a, b))
+       | (some (w : position) some (b : nt) some (c : nt) binary(x, w, y, a, b, c))) &
+     (forall (w : position) forall (b : nt) forall (c : nt)
+       ~binary(x, w, y, a, b, c) | chart(x, y, a)) &
+     (~fromInput(x, y, a) | chart(x,y,a)) &
+     (forall (b : nt) ~unary(x, y, a, b) | chart(x, y, a))
+}
+
+define fromInput_constraints {
+  forall (x : position)
+   forall (y : position)
+    forall (a : nt)
+      (~fromInput(x, y, a) | next(x,y))
+      &
+      (~fromInput(x, y, a) | input(x, a))
+      &
+      (~next(x, y) | ~input(x, a) | fromInput(x, y, a))
+}
+
+define unary_constraints {
+  forall (x : position)
+    forall (y : position)
+      forall (a : nt)
+        forall (b : nt)
+	  (~unary(x, y, a, b) | ruleU(a, b)) &
+	  (~unary(x, y, a, b) | chart(x, y, b)) &
+	  (~ruleU(a, b) | ~chart(x, y, b) | unary(x, y, a, b))
+}
+
+define binary_constraints {
+  forall (x : position)
+    forall (y : position)
+      forall (w : position)
+        forall (a : nt)
+	  forall (b : nt)
+	    forall (c : nt)
+	        (~binary(x, w, y, a, b, c) | chart(x, w, b))
+	      & (~binary(x, w, y, a, b, c) | chart(w, y, c))
+	      & (~binary(x, w, y, a, b, c) | rule(a, b, c))
+	      & (~chart(x, w, b) | ~chart(w, y, c) | ~rule(a, b, c) | binary(x, w, y, a, b, c))
+}
+
+define main {
+  input_constraints &
+  fromInput_constraints &
+  chart_constraints &
+  unary_constraints &
+  binary_constraints &
+  chart(P1, Pend, S)
+}
+
+// dump(main)
+
+// This is very slow...
+allsat (main)
+  [ for (p : position) for (s : nt) if (input(p, s)) s ]
