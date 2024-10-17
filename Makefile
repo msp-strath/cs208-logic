@@ -12,17 +12,24 @@ ifeq ($(TARGET),)
 $(error No deploy target found! Should be in a file 'target')
 endif
 
-.PHONY: complete-site html-pages frontend-js assets-copy all deploy clean
+.PHONY: complete-site html-pages frontend-js assets-copy slides all deploy clean
 
 all: complete-site
 
 deploy: complete-site
 	rsync -avz --delete $(SITE)/ $(TARGET)
 
-complete-site: $(SITE) html-pages frontend-js assets-copy
+complete-site: $(SITE) html-pages frontend-js assets-copy slides
 
 $(SITE):
 	mkdir -p $(SITE)
+
+slides: $(SITE)
+	make -C slides -j 8 all
+	for w in 1 2 3 4 5 6 7 8 9 10; do \
+	  outfile=$$(printf "week%02d-slides.pdf" $$w); \
+	  cp slides/week$$w.pdf $(SITE)/$$outfile; \
+	done
 
 html-pages: $(SITE)
 	dune exec ./site_gen/main.exe pages $(SITE)
