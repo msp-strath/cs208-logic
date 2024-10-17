@@ -1,0 +1,12 @@
+vocab path_vocabulary {
+  path/2
+}
+
+axioms A1 for path_vocabulary {
+  symmetry    : "all x. all y. path(x,y) -> path(y,x)",
+  irreflexive : "all x. ¬(path(x,x))",
+//  trans       : "all x. all y. all z. path(x,y) -> path(y,z) -> path(x,z)",
+  step        : "all x. ex y. path(x,y)"
+}
+
+synth A1 size 2

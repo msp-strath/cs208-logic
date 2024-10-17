@@ -22,6 +22,9 @@ let add_vocabulary name vocab env =
 let add_model name (vocab, model) env =
   { env with models = IdentMap.add name (vocab, model) env.models }
 
+let add_axiomset name (vocab, formulas) env =
+  { env with axioms = IdentMap.add name (vocab, formulas) env.axioms }
+
 let get_vocabulary vocab_name env =
   match IdentMap.find_opt vocab_name env.vocabs with
   | None ->
@@ -107,10 +110,11 @@ let check_model_definition env name vocab_name defns =
                 (fun tuples values ->
                   let* () =
                     Result_ext.check_true
-                      ~on_error:(Printf.sprintf "All members of the \
-                                                 interpretation of \
-                                                 predicate '%s' should \
-                                                 have arity %d."
+                      ~on_error:(Printf.sprintf
+                                   "All members of the \
+                                    interpretation of \
+                                    predicate '%s' should \
+                                    have arity %d."
                                    predicate_name
                                    arity)
                       (List.length values = arity)
@@ -133,8 +137,36 @@ let check_model_definition env name vocab_name defns =
              vocab.pred_arity)
       in
       let model = Model.{ universe; relations } in
-      Result.ok (add_model name (vocab_name, model) env,
-                 Message (Printf.sprintf "Model '%s' has been declared." name))
+      let env = add_model name (vocab_name, model) env in
+      Result.ok
+        (env,
+         Message (Printf.sprintf "Model '%s' has been declared." name))
+    end
+
+let check_axiomset env name vocab formulas =
+  Result.map_error (Printf.sprintf "In axiom set %s: %s" name)
+    begin
+      let* () =
+        Result_ext.check_false
+          ~on_error:"Multiple axiom sets with this name"
+          (IdentMap.mem name env.axioms)
+      in
+      let* vocab = get_vocabulary vocab env in
+      let check_formula checked (nm, formula) =
+        if IdentMap.mem nm checked then
+          Result_ext.errorf "Multiple formulas named '%s'." nm
+        else
+          let* () =
+            Result.map_error (Printf.sprintf "Axiom '%s': %s" nm)
+              (Wff.valid_closed_formula vocab formula)
+          in
+          Result.ok (IdentMap.add nm formula checked)
+      in
+      let* checked =
+        Result_ext.fold_left_err check_formula IdentMap.empty formulas
+      in
+      let env = add_axiomset name (vocab, checked) env in
+      Result.ok (env, Message (Printf.sprintf "Axiom set '%s' defined." name))
     end
 
 let exec_item env =
@@ -145,39 +177,7 @@ let exec_item env =
   | Model { name; vocab_name; defns } ->
      check_model_definition env name vocab_name defns
   | Axioms { name; vocab; formulas } ->
-     Result.map_error
-       (Printf.sprintf "In axiom set %s: %s" name)
-       begin
-         if IdentMap.mem name env.axioms then
-           Error "Multiple axiom sets with this name"
-         else
-           match IdentMap.find_opt vocab env.vocabs with
-           | None ->
-              Result_ext.errorf
-                "Vocabulary %s not defined."
-                vocab
-           | Some vocab ->
-              let rec check_formulas checked = function
-                | (nm, formula) :: formulas ->
-                   (if IdentMap.mem nm checked then
-                      Result_ext.errorf "Multiple formulas named '%s'." nm
-                    else
-                      match Wff.valid_closed_formula vocab formula with
-                      | Error msg ->
-                         Result_ext.errorf "Axiom '%s': %s" nm msg
-                      | Ok () ->
-                         check_formulas
-                           (IdentMap.add nm formula checked)
-                           formulas)
-                | [] ->
-                   Ok
-                     ({env with
-                        axioms = IdentMap.add name (vocab, checked) env.axioms },
-                      Message (Printf.sprintf "Axiom set '%s' defined." name) )
-              in
-              check_formulas IdentMap.empty formulas
-       end
-
+     check_axiomset env name vocab formulas
   | Check { model_name; formula } ->
      (match IdentMap.find_opt model_name env.models with
       | None ->

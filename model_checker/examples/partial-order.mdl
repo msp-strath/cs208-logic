@@ -1,0 +1,54 @@
+vocab LE_vocab {
+  le/2
+}
+
+axioms LE for LE_vocab {
+  reflexivity   : "all x. le(x,x)",
+  anti-symmetry : "all x. all y. le(x,y) -> le(y,x) -> x = y",
+  transitivity  : "all x. all y. all z. (le(x,y) /\ le(y,z)) -> le(x,z)"
+}
+
+model Model0 for LE_vocab {
+  universe = { a, b, c, d },
+  le = { (a, a), (b, b), (c, c), (d, d) }
+}
+
+check Model0 |= "all x. le(x,x)"
+check Model0 |= "all x. all y. le(x,y) -> le(y,x) -> x = y"
+check Model0 |= "all x. all y. all z. (le(x,y) /\ le(y,z)) -> le(x,z)"
+
+model Model1 for LE_vocab {
+  universe = { a, b, c, d },
+  le = { (a, a), (b, b), (c, c), (d, d),
+         (a, b), (b, c), (c, d)
+       }
+}
+
+check Model1 |= "all x. le(x,x)"
+check Model1 |= "all x. all y. le(x,y) -> le(y,x) -> x = y"
+check Model1 |= "all x. all y. all z. (le(x,y) /\ le(y,z)) -> le(x,z)"
+
+model Model2 for LE_vocab {
+  universe = { a, b, c, d },
+  le = { (a, a), (b, b), (c, c), (d, d),
+         (a, b), (b, c), (c, d),
+	 (a, c), (a, d),
+	 (b, d)
+       }
+}
+
+check Model2 |= "all x. le(x,x)"
+check Model2 |= "all x. all y. le(x,y) -> le(y,x) -> x = y"
+check Model2 |= "all x. all y. all z. (le(x,y) /\ le(y,z)) -> le(x,z)"
+
+synth LE size 4
+
+axioms LE2 for LE_vocab {
+  reflexivity   : "all x. le(x,x)",
+  anti-symmetry : "all x. all y. le(x,y) -> le(y,x) -> x = y",
+  transitivity  : "all x. all y. all z. (le(x,y) /\ le(y,z)) -> le(x,z)",
+  interesting   :
+    "ex x. ex y. ex z. x != y /\ y != z /\ x != z /\ le(x,y) /\ le(y,z)"
+}
+
+synth LE2 size 4
