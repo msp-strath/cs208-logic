@@ -25,6 +25,7 @@ module Make (C : CALCULUS) (D : DOCUMENT) = struct
   let empty_update = ()
   let update_goal () f = f
   let update_assumption () a = a
+  let combine_update () () = ()
 
   type goal = Doc | CommentDoc | Proof_goal of C.goal [@@deriving sexp]
   type assumption = C.assumption

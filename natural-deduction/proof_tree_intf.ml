@@ -11,6 +11,8 @@ module type CALCULUS = sig
 
   val update_assumption : update -> assumption -> assumption
 
+  val combine_update : update -> update -> update
+
   type rule [@@deriving sexp]
 
   type error

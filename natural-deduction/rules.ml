@@ -28,6 +28,10 @@ module Term : sig
 
   val vars : string t -> VarSet.t -> VarSet.t
 
+  val map : ('a -> 'b) -> 'a t -> 'b t
+
+  val contains : ('a -> bool) -> 'a t -> bool
+
   val to_string : ('a -> string) -> 'a t -> string
 end = struct
   open Result_ext.Syntax
@@ -67,17 +71,19 @@ end = struct
     fix @@
       fun p_term ->
       on_kind
-        ~atom:(fun str ->
+        ~atom:
+        (fun str ->
           match classify_atom str with
           | Ok (`Var vnm) -> Ok (Var vnm)
           | Ok (`Symbol symb) -> Ok (Fun (symb, []))
           | Error _ as e -> e)
-        ~list:(let* head = consume_next atom in
-               let* args = many p_term in
-               match classify_atom head with
-               | Error _ as e -> result e
-               | Ok (`Var _) -> fail "Variable in head position"
-               | Ok (`Symbol head) -> return (Fun (head, args)))
+        ~list:
+        (let* head = consume_next atom in
+         let* args = many p_term in
+         match classify_atom head with
+         | Error _ as e -> result e
+         | Ok (`Var _) -> fail "Variable in head position"
+         | Ok (`Symbol head) -> return (Fun (head, args)))
 
   (* let rec of_sexp = function *)
   (*   | Atom str as sexp -> *)
@@ -117,6 +123,14 @@ end = struct
     | Fun (fnm, arg_terms) ->
        fnm ^ "(" ^ String.concat ", " (List.map (to_string string_of_var) arg_terms) ^ ")"
 
+  let rec contains p = function
+    | Var v         -> p v
+    | Fun (_, args) -> List.exists (contains p) args
+
+  let rec map f = function
+    | Var v -> Var (f v)
+    | Fun (fnm, args) -> Fun (fnm, List.map (map f) args)
+
   let equal var_eq t1 t2 =
     let rec check t1 t2 =
       match t1, t2 with
@@ -146,6 +160,22 @@ type rule_description =
   ; conclusion : string Term.t
   }
 
+let freshen gensym { premises; conclusion } =
+  let table = ref VarMap.empty in
+  let update_var v =
+    match VarMap.find v !table with
+    | exception Not_found ->
+       let replacement = gensym () in
+       table := VarMap.add v replacement !table;
+       replacement
+    | replacement ->
+       replacement
+  in
+  let premises = List.map (Term.map update_var) premises
+  and conclusion = Term.map update_var conclusion
+  in
+  premises, conclusion
+
 let eq_var (x : Impossible.t) (y : Impossible.t) = Impossible.elim y
 
 let rec match_term (pattern : string Term.t) (term : Impossible.t Term.t) subst =
@@ -173,29 +203,60 @@ and match_terms patterns terms subst =
      None
 
 let rec apply_subst subst = function
-  | Term.Var v -> VarMap.find v subst
+  | Term.Var v ->
+     (match VarMap.find v subst with
+      | exception Not_found -> Term.Var v
+      | term -> apply_subst subst term)
   | Fun (fnm, terms) ->
      Term.Fun (fnm, List.map (apply_subst subst) terms)
+
+let rec unify_term (term1 : string Term.t) (term2 : string Term.t) subst =
+  match apply_subst subst term1, apply_subst subst term2 with
+  | Fun (fnm1, terms1), Fun (fnm2, terms2) ->
+     if String.equal fnm1 fnm2 then
+       unify_terms terms1 terms2 subst
+     else
+       None
+  | Var v1, Var v2 when String.equal v1 v2 ->
+     Some subst
+  | Var v, term | term, Var v ->
+     if Term.contains (String.equal v) term then
+       None (* circular *)
+     else
+       Some (VarMap.add v term subst)
+and unify_terms terms1 terms2 subst =
+  match terms1, terms2 with
+  | [], [] ->
+     Some subst
+  | t1::terms1, t2::terms2 ->
+     (match unify_term t1 t2 subst with
+      | None -> None
+      | Some subst -> unify_terms terms1 terms2 subst)
+  | _ ->
+     None
 
 module type RULES = sig
   val rules : (string * rule_description) list
 end
 
 module OfSexp = struct
-  open Result_ext.Syntax
+  (* open Result_ext.Syntax *)
 
   (* Check that every variable in the premises appears in the
      conclusion, so we will never need to prompt for variables'
      values. *)
   let check_rule premises conclusion =
+    (*
     let conclusion_vars = Term.vars conclusion VarSet.empty in
     let check_var v =
       if VarSet.mem v conclusion_vars then
         Ok ()
       else
-        Error (Printf.sprintf "Variable '%s' in premises does not appear in the conclusion" v)
+        Error (Printf.sprintf
+                 "Variable '%s' in premises does not appear in the conclusion" v)
     in
     let* () = Result_ext.traverse_ (Term.traverse_ check_var) premises in
+     *)
     Result.ok { premises; conclusion }
 
   open Sexp_parser
@@ -226,7 +287,7 @@ end
 
 module Calculus (Rules : RULES) : sig
   include Proof_tree.CALCULUS
-          with type goal = Impossible.t Term.t
+          with type goal = string Term.t
            and type assumption = Impossible.t
            and type error = string
 
@@ -235,13 +296,24 @@ module Calculus (Rules : RULES) : sig
 end = struct
   open Sexplib0.Sexp_conv
 
-  type goal = Impossible.t Term.t
-  type assumption = Impossible.t
-  type update = unit
+  type metavar = string
 
-  let empty_update = ()
-  let update_goal () g = g
-  let update_assumption () a = a
+  let gensym =
+    let next = ref 0 in
+    fun () ->
+    let id = !next in
+    incr next;
+    "X" ^ string_of_int id
+
+  type goal = metavar Term.t
+  type assumption = Impossible.t
+  type update = string Term.t VarMap.t
+
+  let empty_update = VarMap.empty
+  let update_goal = apply_subst
+  let update_assumption _subst = Impossible.elim
+  let combine_update =
+    VarMap.union (fun _ a b -> Some a)
 
   type rule = string [@@deriving sexp]
 
@@ -256,11 +328,12 @@ end = struct
   type error = string
 
   let apply _assumps rule_name goal =
-    let { conclusion; premises } = List.assoc rule_name Rules.rules in
-    match match_term conclusion goal VarMap.empty with
+    let rule_desc = List.assoc rule_name Rules.rules in
+    let premises, conclusion = freshen gensym rule_desc in
+    match unify_term conclusion goal VarMap.empty with
     | Some subst ->
        let subgoals = List.map (fun t -> [], apply_subst subst t) premises in
-       Ok (subgoals, ())
+       Ok (subgoals, subst)
     | None ->
        Error "rule conclusion does not match goal"
 end
@@ -269,7 +342,7 @@ module UI (Rules : RULES) = struct
 
   module Calculus = Calculus (Rules)
 
-  let string_of_goal = Term.to_string Impossible.elim
+  let string_of_goal = Term.to_string Fun.id
 
   let string_of_assumption _ = Impossible.elim
 

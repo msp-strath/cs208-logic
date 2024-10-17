@@ -42,6 +42,7 @@ end = struct
   let empty_update = ()
   let update_assumption () f = f
   let update_goal () f = f
+  let combine_update () () = ()
 
   type rule =
     | Implies_intro

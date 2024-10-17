@@ -149,27 +149,6 @@ module Make (Calculus : CALCULUS) (Hole : HOLE with type goal = Calculus.goal)
   let ( let* ) x f = match x with Ok x -> f x | Error _ as e -> e
   let lift_err = function Ok _ as x -> x | Error e -> Error (`RuleError e)
 
-  let rec of_tree context goal = function
-    | Hole h ->
-       Ok { formula = goal; status = Hole { content = h } }
-    | Rule (rule, children) ->
-       let* subgoals, _update = lift_err (Calculus.apply context rule goal) in
-       let* children = of_trees context subgoals children in
-       Ok { formula = goal; status = Rule { rule; children } }
-
-  and of_trees context goals trees =
-    match (goals, trees) with
-    | [], [] -> Ok []
-    | (assumptions, goal) :: goals, tree :: trees ->
-       let* subtree = of_tree (List.rev_append assumptions context) goal tree in
-       let* boxes = of_trees context goals trees in
-       Ok ({ subtree; assumptions } :: boxes)
-    | _, [] | [], _ -> Error `LengthMismatch
-
-  let of_tree assumptions goal tree =
-    let* prooftree = of_tree (List.rev assumptions) goal tree in
-    Ok { assumptions; subtree = prooftree }
-
   (**********************************************************************)
   (* Tree updates *)
 
@@ -233,14 +212,46 @@ module Make (Calculus : CALCULUS) (Hole : HOLE with type goal = Calculus.goal)
            premises
        in
        Ok (reconstruct formula (Rule { rule; children }) update pt_context)
-    | Error err -> Error (`RuleError err)
+    | Error err ->
+       Error (`RuleError err)
 
-  (* FIXME: this doesn't do anything with updates *)
+
+  let rec of_tree update context goal = function
+    | Hole h ->
+       let goal = Calculus.update_goal update goal in
+       Ok ({ formula = goal; status = Hole { content = h } },
+           update)
+    | Rule (rule, children) ->
+       let* subgoals, update' = lift_err (Calculus.apply context rule goal) in
+       let update = Calculus.combine_update update update' in
+       let* children, update = of_trees update context subgoals children in
+       let goal = Calculus.update_goal update goal in
+       Ok ({ formula = goal; status = Rule { rule; children } }, update)
+
+  and of_trees update context goals trees =
+    match (goals, trees) with
+    | [], [] -> Ok ([], update)
+    | (assumptions, goal) :: goals, tree :: trees ->
+       let goal = Calculus.update_goal update goal in
+       (* FIXME: update assumptions too *)
+       let* subtree, update = of_tree update (List.rev_append assumptions context) goal tree in
+       let* boxes, update = of_trees update context goals trees in
+       Ok ({ subtree; assumptions } :: boxes, update)
+    | _, [] | [], _ -> Error `LengthMismatch
+
   let insert_tree tree { pt_formula; pt_status; pt_context; pt_assumptions } =
-    match of_tree pt_assumptions pt_formula tree with
-    | Ok { assumptions = _; subtree = { formula = _; status } } ->
-       Ok (reconstruct pt_formula status Calculus.empty_update pt_context)
-    | Error err -> Error err
+    let* { status; _}, update =
+      of_tree Calculus.empty_update pt_assumptions pt_formula tree
+    in
+    Ok (reconstruct pt_formula status Calculus.empty_update pt_context)
+
+  let of_tree assumptions goal tree =
+    let* prooftree, update =
+      of_tree Calculus.empty_update (List.rev assumptions) goal tree
+    in
+    (* Propagate upadtes backwards *)
+    let prooftree = update_prooftree update prooftree in
+    Ok { assumptions; subtree = prooftree }
 
   let set_hole content { pt_formula; pt_context } =
     let status : status = Hole { content } in

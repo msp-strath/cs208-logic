@@ -11,6 +11,7 @@ type update = unit
 let empty_update = ()
 let update_goal () f = f
 let update_assumption () a = a
+let combine_update () () = ()
 
 (* to add:
 
