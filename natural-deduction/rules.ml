@@ -33,6 +33,12 @@ module Term : sig
   val contains : ('a -> bool) -> 'a t -> bool
 
   val to_string : ('a -> string) -> 'a t -> string
+
+  (* FIXME: abstract type of substitutions so we don't ever make a
+     circular one. *)
+  val apply_subst : string t VarMap.t -> string t -> string t
+
+  val unify : string t -> string t -> string t VarMap.t -> string t VarMap.t option
 end = struct
   open Result_ext.Syntax
 
@@ -85,25 +91,6 @@ end = struct
          | Ok (`Var _) -> fail "Variable in head position"
          | Ok (`Symbol head) -> return (Fun (head, args)))
 
-  (* let rec of_sexp = function *)
-  (*   | Atom str as sexp -> *)
-  (*      (let* kind = annotate_error sexp @@ classify_atom str in *)
-  (*       match kind with *)
-  (*       | `Var vnm -> Ok (Var str) *)
-  (*       | `Symbol symb -> Ok (Fun (symb, []))) *)
-  (*   | List (Atom str :: sexps) as sexp -> *)
-  (*      (let* kind = annotate_error sexp @@ classify_atom str in *)
-  (*       match kind with *)
-  (*       | `Var vnm -> *)
-  (*          annotate_error sexp @@ *)
-  (*            Error "Variable in head position" *)
-  (*       | `Symbol symb -> *)
-  (*          let* terms = traverse of_sexp sexps in *)
-  (*          Ok (Fun (symb, terms))) *)
-  (*   | List _ as sexp -> *)
-  (*      annotate_error sexp @@ *)
-  (*        Error "Empty list" *)
-
   let rec check_no_vars = function
     | Var v -> Error (`HasVar v)
     | Fun (fnm, args) ->
@@ -151,10 +138,41 @@ end = struct
   let rec traverse_ p = function
     | Var x          -> p x
     | Fun (_, terms) -> Result_ext.traverse_ (traverse_ p) terms
+
+  let rec apply_subst subst = function
+    | Var v ->
+       (match VarMap.find v subst with
+        | exception Not_found -> Var v
+        | term -> apply_subst subst term)
+    | Fun (fnm, terms) ->
+       Fun (fnm, List.map (apply_subst subst) terms)
+
+  let rec unify (term1 : string t) (term2 : string t) subst =
+    match apply_subst subst term1, apply_subst subst term2 with
+    | Fun (fnm1, terms1), Fun (fnm2, terms2) ->
+       if String.equal fnm1 fnm2 then
+         unify_terms terms1 terms2 subst
+       else
+         None
+    | Var v1, Var v2 when String.equal v1 v2 ->
+       Some subst
+    | Var v, term | term, Var v ->
+       if contains (String.equal v) term then
+         None (* circular *)
+       else
+         Some (VarMap.add v term subst)
+  and unify_terms terms1 terms2 subst =
+    match terms1, terms2 with
+    | [], [] ->
+       Some subst
+    | t1::terms1, t2::terms2 ->
+       (match unify t1 t2 subst with
+        | None -> None
+        | Some subst -> unify_terms terms1 terms2 subst)
+    | _ ->
+       None
 end
 
-(* FIXME: Allow for arguments that must be supplied by a
-   command. Arguments are positional. *)
 type rule_description =
   { premises   : string Term.t list
   ; conclusion : string Term.t
@@ -176,89 +194,11 @@ let freshen gensym { premises; conclusion } =
   in
   premises, conclusion
 
-let eq_var (x : Impossible.t) (y : Impossible.t) = Impossible.elim y
-
-let rec match_term (pattern : string Term.t) (term : Impossible.t Term.t) subst =
-  match pattern, term with
-  | Var v, term ->
-     (match VarMap.find_opt v subst with
-      | None -> Some (VarMap.add v term subst)
-      | Some term' ->
-         if Term.equal eq_var term term' then Some subst else None)
-  | Fun (fnm1, terms1), Fun (fnm2, terms2) ->
-     if String.equal fnm1 fnm2 then
-       match_terms terms1 terms2 subst
-     else
-       None
-  | _, Var _ -> .
-
-and match_terms patterns terms subst =
-  match patterns, terms with
-  | [], [] -> Some subst
-  | p::patterns, t::terms ->
-     (match match_term p t subst with
-      | None -> None
-      | Some subst -> match_terms patterns terms subst)
-  | _ ->
-     None
-
-let rec apply_subst subst = function
-  | Term.Var v ->
-     (match VarMap.find v subst with
-      | exception Not_found -> Term.Var v
-      | term -> apply_subst subst term)
-  | Fun (fnm, terms) ->
-     Term.Fun (fnm, List.map (apply_subst subst) terms)
-
-let rec unify_term (term1 : string Term.t) (term2 : string Term.t) subst =
-  match apply_subst subst term1, apply_subst subst term2 with
-  | Fun (fnm1, terms1), Fun (fnm2, terms2) ->
-     if String.equal fnm1 fnm2 then
-       unify_terms terms1 terms2 subst
-     else
-       None
-  | Var v1, Var v2 when String.equal v1 v2 ->
-     Some subst
-  | Var v, term | term, Var v ->
-     if Term.contains (String.equal v) term then
-       None (* circular *)
-     else
-       Some (VarMap.add v term subst)
-and unify_terms terms1 terms2 subst =
-  match terms1, terms2 with
-  | [], [] ->
-     Some subst
-  | t1::terms1, t2::terms2 ->
-     (match unify_term t1 t2 subst with
-      | None -> None
-      | Some subst -> unify_terms terms1 terms2 subst)
-  | _ ->
-     None
-
 module type RULES = sig
   val rules : (string * rule_description) list
 end
 
 module OfSexp = struct
-  (* open Result_ext.Syntax *)
-
-  (* Check that every variable in the premises appears in the
-     conclusion, so we will never need to prompt for variables'
-     values. *)
-  let check_rule premises conclusion =
-    (*
-    let conclusion_vars = Term.vars conclusion VarSet.empty in
-    let check_var v =
-      if VarSet.mem v conclusion_vars then
-        Ok ()
-      else
-        Error (Printf.sprintf
-                 "Variable '%s' in premises does not appear in the conclusion" v)
-    in
-    let* () = Result_ext.traverse_ (Term.traverse_ check_var) premises in
-     *)
-    Result.ok { premises; conclusion }
-
   open Sexp_parser
 
   let rule =
@@ -267,8 +207,7 @@ module OfSexp = struct
     let* conclusion = consume_one "conclusion" (one Term.of_sexp) in
     let* ()         = assert_nothing_left in
     let  premises   = Option.value ~default:[] premises in
-    let* rule       = result @@ check_rule premises conclusion in
-    return (name, rule)
+    return (name, { premises; conclusion })
 
   let config =
     tagged "config"
@@ -310,7 +249,7 @@ end = struct
   type update = string Term.t VarMap.t
 
   let empty_update = VarMap.empty
-  let update_goal = apply_subst
+  let update_goal = Term.apply_subst
   let update_assumption _subst = Impossible.elim
   let combine_update =
     VarMap.union (fun _ a b -> Some a)
@@ -330,9 +269,9 @@ end = struct
   let apply _assumps rule_name goal =
     let rule_desc = List.assoc rule_name Rules.rules in
     let premises, conclusion = freshen gensym rule_desc in
-    match unify_term conclusion goal VarMap.empty with
+    match Term.unify conclusion goal VarMap.empty with
     | Some subst ->
-       let subgoals = List.map (fun t -> [], apply_subst subst t) premises in
+       let subgoals = List.map (fun t -> [], Term.apply_subst subst t) premises in
        Ok (subgoals, subst)
     | None ->
        Error "rule conclusion does not match goal"
