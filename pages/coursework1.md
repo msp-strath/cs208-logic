@@ -92,7 +92,7 @@ The Truth...
 Real compilers don't, in general, use logical modelling in the way explained here, at least not directly. Register allocation is only part of the problem that compilers have to solve, which also includes instruction selection and scheduling that interact with register allocation. In practice, real compilers use a collection of greedy algorithms and heuristics to make sure they do not take too long to compile code. They also have to deal with the case when there are too few registers for the variables used in the program, in which case they have to “spill” to memory. However, logical modelling is a nice way of thinking about the problem conceptually before committing to a particular solution strategy.
 ```
 
-As an example, we will look at the following program (though the solution you will write should work for any program by changing the constraints). The program uses six variables, and is written in [Static Single Assignment (SSA)](FIXME) form. This means that every variable is only written to once, which makes things easier (most modern compilers use SSA internally).
+As an example, we will look at the following program (though the solution you will write should work for any program by changing the constraints). The program uses six variables, and is written in [Static Single Assignment (SSA)](https://en.m.wikipedia.org/wiki/Static_single-assignment_form) form. This means that every variable is only written to once, which makes things easier (most modern compilers use SSA internally).
 
 ```
 1. X = 5
