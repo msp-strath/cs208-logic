@@ -7,7 +7,7 @@ Algorithms* 2024/25.
 
 It is worth 7.5% towards your final mark for all of CS208 (both semesters). The rest will be a second Logic coursework (worth 7.5%), Algorithms coursework in semester two (worth 15% in total), and a final exam in April/May 2025 worth 70%.
 
-This coursework is comprised of several questions for you to do with the logical modelling tool introduced in the lectures and course notes. The questions will make use of the concepts of logical modelling described in part 1 of the course. The whole coursework is marked out of 20.
+This coursework is comprised of several questions for you to do with the logical modelling tool introduced in the lectures and course notes. The questions will make use of the concepts of Logical Modelling described in part 1 of the course. The whole coursework is marked out of 20.
 
 This page will remember the answers you type in, even if you leave the page and come back. Your browser's [local storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API) is used to store the data. If you delete saved data in your browser, or visit this page in private browsing mode and then close the window, you will lose your answers.
 
