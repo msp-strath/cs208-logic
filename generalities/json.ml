@@ -11,7 +11,6 @@ module P = struct
   open Pretty
 
   let comma = text ","
-  let parens doc = text "(" ^^ doc ^^ text ")"
   let square_bracket doc = text "[" ^^ doc ^^ text "]"
   let curly_bracket doc = text "{" ^^ doc ^^ text "}"
   let quote x = text "\"" ^^ x ^^ text "\""
@@ -67,15 +66,7 @@ module P = struct
             fields)
 end
 
-let rec to_string = function
-  | JString str -> Printf.sprintf "%S" str
-  | JBool b -> Printf.sprintf "%b" b
-  | JInt i -> string_of_int i
-  | JArray jsons ->
-     "[" ^ String.concat ", " (List.map to_string jsons) ^ "]"
-  | JNull -> "null"
-  | JObject obj ->
-     let field_to_string (nm, json) =
-       Printf.sprintf "%S: %s" nm (to_string json)
-     in
-     "{" ^ String.concat ", " (List.map field_to_string obj) ^ "}"
+let to_document = P.to_document
+
+let to_string json =
+  Pretty.to_flat_string (to_document json)

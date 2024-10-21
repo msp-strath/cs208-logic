@@ -111,8 +111,8 @@ let output_of_buffer b =
   ; emit_spaces  = (fun n -> Buffer.add_string b (String.make n ' '))
   }
 
-let output ?(width=80) output document =
-  let { emit; emit_newline; emit_spaces } = output in
+let output_flat output document =
+  let { emit; _ } = output in
   let rec flat = function
     | Empty | AlignSpaces _ ->
        ()
@@ -123,6 +123,10 @@ let output ?(width=80) output document =
     | Text s | Break s ->
        emit s
   in
+  flat document
+
+let output ?(width=80) output document =
+  let { emit; emit_newline; emit_spaces } = output in
   let rec process col bd indent = function
     | Empty ->
        col
@@ -145,7 +149,7 @@ let output ?(width=80) output document =
        process col bd col doc
     | Group (doc, flat_width) ->
        if col + flat_width + bd <= width then
-         (flat doc; col + flat_width)
+         (output_flat output doc; col + flat_width)
        else
          process col bd indent doc
   in
@@ -163,4 +167,10 @@ let to_buffer ?width b document =
 let to_string ?width document =
   let b = Buffer.create 8192 in
   to_buffer ?width b document;
+  Buffer.contents b
+
+let to_flat_string document =
+  let b = Buffer.create 8192 in
+  let o = output_of_buffer b in
+  output_flat o document.doc;
   Buffer.contents b

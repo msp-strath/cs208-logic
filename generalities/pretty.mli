@@ -26,3 +26,5 @@ val print : ?width:int -> document -> unit
 val to_string : ?width:int -> document -> string
 
 val to_buffer : ?width:int -> Buffer.t -> document -> unit
+
+val to_flat_string : document -> string

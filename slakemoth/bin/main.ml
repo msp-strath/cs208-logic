@@ -26,7 +26,7 @@ let execute filename =
   commands
   |> List.to_seq
   |> Seq.concat_map Evaluator.execute_command
-  |> Seq.iter (fun json -> Pretty.print (Json.P.to_document json);
+  |> Seq.iter (fun json -> Pretty.print (Json.to_document json);
                            print_newline ());
   Result.ok ()
 

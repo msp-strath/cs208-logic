@@ -170,7 +170,7 @@ let component configuration =
                       jsons
                       |> List.iter (fun json ->
                              Pretty.to_buffer ~width:50 b
-                               (Json.P.to_document json);
+                               (Json.to_document json);
                              Buffer.add_string b "\n");
                       match limited with
                       | `Limited ->
