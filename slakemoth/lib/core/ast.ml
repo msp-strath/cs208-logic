@@ -63,3 +63,11 @@ type declaration =
   | IfSat of term * term
   | AllSat of term * term
   | Print of term
+
+type script = declaration list
+
+type marking_script =
+  { domains : (name * constructor_name list) list
+  ; atoms   : (name * name list) list
+  ; definitions : (name * term * term) list
+  }

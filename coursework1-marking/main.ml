@@ -135,7 +135,7 @@ let rec rename_term rho term =
      failwith "RENAME NEW STUFF"
 
 
-let merge_environments env1 env2 =
+let merge_environments (env1 : Slakemoth.Environment.environment) (env2 : Slakemoth.Environment.environment) =
   (* 1. Check that all the domains are the same *)
   (* 2. Check that all the atoms are the same *)
   (* 3. Rename all the definitions *)

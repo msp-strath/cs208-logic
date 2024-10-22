@@ -3,7 +3,6 @@
 %token <string> IDENT
 %token <string> CONSTRUCTOR_NAME
 %token <string> STRING_LITERAL
-(* %token <int> NATURAL *)
 %token OP_AND
 %token OP_OR
 %token OP_EQ
@@ -28,12 +27,31 @@
 %token EOF UNKNOWN
 
 %start<Ast.declaration list> structure
+%start<Ast.marking_script> marking_script
 
 %%
 
 structure:
 | items=list(item); EOF
   { items }
+
+marking_script:
+| domains=list(domain_decl); atoms=list(atom_decl);
+  definitions=list(check_definition); EOF
+  { { domains; atoms; definitions } }
+
+check_definition:
+| DEFINE; name=identifier; LBRACE; body=term; RBRACE; json=term
+  { (name.detail, body, json) }
+
+domain_decl:
+| DOMAIN; name=identifier; LBRACE; constructors=separated_list(COMMA, constructor); RBRACE
+  { (name.detail, List.map (fun x -> x.detail) constructors) }
+
+atom_decl:
+| ATOM; name=identifier; param_spec=param_spec
+  { (name.detail, List.map (fun (_,x) -> x.detail) param_spec) }
+
 
 item:
 | DEFINE; name=identifier; param_spec=param_spec; LBRACE; body=term; RBRACE
