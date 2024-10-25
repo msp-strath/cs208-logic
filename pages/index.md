@@ -54,13 +54,13 @@ In Part 1, we use logical modelling to describe and solve problems.
 
 7. [An exercise on Package Installations](packages-exercise.html).
 
-7. [SAT solvers](sat.html), the underlying technology.
+8. [SAT solvers](sat.html), the underlying technology.
 
-8. [Resource allocation problems](resource-alloc.html), which are a kind of graph colouring problem.
+9. [Resource allocation problems](resource-alloc.html), which are a kind of graph colouring problem.
 
-9. [Converting to CNF](converting-to-cnf.html). SAT solvers take their input in CNF. Some problems are naturally in CNF (like the Packages or Resource Allocation problems above), but sometimes we need to convert any formula to one in CNF.
+10. [Converting to CNF](converting-to-cnf.html). SAT solvers take their input in CNF. Some problems are naturally in CNF (like the Packages or Resource Allocation problems above), but sometimes we need to convert any formula to one in CNF.
 
-10. [Circuits, Gates and Formulas](circuits.html), where we look at encoding logic gates as clauses, using the Tseytin transformaion. We can then get the solver to answer questions about circuits. We also look at a use of circuits to solve problems that are hard to solve directly.
+11. [Circuits, Gates and Formulas](circuits.html), where we look at encoding logic gates as clauses, using the Tseytin transformaion. We can then get the solver to answer questions about circuits. We also look at a use of circuits to solve problems that are hard to solve directly.
 
 ## Part 2: Deductive proof and Predicate Logic
 
@@ -82,9 +82,9 @@ In Part 2, we strive for truth through proof. We will be using an interactive pr
 
 8. [Proof rules for Predicate Logic](pred-logic-rules.html). Natural deduction rules for “for all” and “exists” allow us to construct proofs of Predicate Logic formulas.
 
-9. [Predicate Logic Semantics](pred-logic-semantics.html). A break from proof for a bit to consider what Predicate Logic formulas are talking about. It is not just about true and false anymore, but about relationships between individuals.
+9. [Equality](equality.html). How do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
 
-10. [Equality](equality.html). How do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
+10. [Predicate Logic Semantics](pred-logic-semantics.html). A break from proof for a bit to consider what Predicate Logic formulas are talking about. It is not just about true and false anymore, but about relationships between individuals.
 
 11. [Arithmetic and Induction](induction.html). Induction allows us to prove facts about infinitely many individuals, as long as those individuals are built up in a “well founded” way. We look specifically at induction on natural numbers, which will allow us to prove facts in the theory of arithmetic as described by Peano's axioms.
 
