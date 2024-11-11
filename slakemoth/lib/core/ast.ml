@@ -65,9 +65,3 @@ type declaration =
   | Print of term
 
 type script = declaration list
-
-type marking_script =
-  { domains : (name * constructor_name list) list
-  ; atoms   : (name * name list) list
-  ; definitions : (name * term * term) list
-  }

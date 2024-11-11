@@ -1,5 +1,4 @@
-open Generalities
-open Result_ext.Syntax
+open! Generalities
 
 let add_negated_clauses solver clauses =
   let x =
@@ -31,6 +30,7 @@ let check_contains env constraint1 constraint2 =
      let assignment = Evaluator.assignment_of_vals atom_table vals in
      `EXTRA assignment
 
+(*
 let rec rename_term rho term =
   let open Ast in
   match term.detail with
@@ -75,6 +75,10 @@ let rec rename_term rho term =
   | Next _ | The _ ->
      failwith "RENAME NEW STUFF"
 
+exception Missing_atom of string
+exception Changed_Atom of string * (string * string) list * (string * string) list
+exception Atom_became_defn of string
+
 let merge_environments (env1 : Environment.environment) (env2 : Environment.environment) =
   (* 1. Check that all the domains are the same *)
   (* 2. Check that all the atoms are the same *)
@@ -97,20 +101,22 @@ let merge_environments (env1 : Environment.environment) (env2 : Environment.envi
     |> Seq.map (fun (nm, _) -> nm, nm ^ "#2")
     |> NameMap.of_seq
   in
-  let merged, defns2 =
-    NameMap.fold
+  let* merged, defns2 =
+    try
+    Result.ok @@ NameMap.fold
       (fun name defn (merged, env2) ->
         match defn with
         | Atom { args } ->
            (match NameMap.find_opt name env2 with
-            | None -> failwith "Missing atom in env2"
+            | None ->
+               raise (Missing_atom name)
             | Some (Atom { args = args2 }) ->
-               if args = args2 then
-                 (NameMap.add name (Atom { args}) merged, NameMap.remove name env2)
+               if List.map snd args = List.map snd args2 then
+                 (NameMap.add name (Atom { args }) merged, NameMap.remove name env2)
                else
-                 failwith "Changed atom declaration"
+                 raise (Changed_Atom (name, args, args2))
             | Some (Defined _ | Table _) ->
-               failwith "atom has become definition")
+               raise (Atom_became_defn name))
         | Table _ ->
            failwith "TABLES"
         | Defined { args; body; kind } ->
@@ -121,6 +127,11 @@ let merge_environments (env1 : Environment.environment) (env2 : Environment.envi
            (NameMap.add name defn merged, env2))
       env1.defns
       (NameMap.empty, env2.defns)
+    with
+    | Atom_became_defn name -> Error (`Atom_become_defn name)
+    | Missing_atom name -> Error (`Missing_atom name)
+    | Changed_Atom (name, expected, given) ->
+       Error (`Changed_atom (name, expected, given))
   in
   let defns =
     NameMap.fold
@@ -138,82 +149,13 @@ let merge_environments (env1 : Environment.environment) (env2 : Environment.envi
       merged
   in
   Ok ({ env1 with defns }, rename1, rename2)
+ *)
 
-
-let do_question expected submitted =
-  match expected, submitted with
-  | [ Environment.AllSat (expected_env, expected_constraint, expected_json) ],
-    [ Environment.AllSat (sub_env, sub_constraint, sub_json) ] ->
-     let* (env, rename1, rename2) = merge_environments expected_env sub_env in
-     let expected = rename_term rename1 expected_constraint in
-     let submitted = rename_term rename2 sub_constraint in
-     (match check_contains env expected submitted,
-            check_contains env submitted expected with
-      | `CONTAINED, `CONTAINED -> Ok ()
-      | `EXTRA assgn, `CONTAINED ->
-         let module E2 = Evaluator.Eval (val assgn) in
-         let json = E2.to_json (E2.eval env E2.empty_local_env expected_json) in
-         Error (`Not_enough_solutions json)
-      | `CONTAINED, `EXTRA assgn ->
-         let module E2 = Evaluator.Eval (val assgn) in
-         let json = E2.to_json (E2.eval env E2.empty_local_env sub_json) in
-         Error (`Too_many_solutions json)
-      | `EXTRA expected, `EXTRA submitted ->
-         let expected_json =
-           let module E = Evaluator.Eval (val expected) in
-           E.to_json (E.eval env E.empty_local_env expected_json)
-         and submitted_json =
-           let module E = Evaluator.Eval (val submitted) in
-           E.to_json (E.eval env E.empty_local_env sub_json)
-         in
-         Error (`Solution_mismatch (expected_json, submitted_json)))
-  | _, _ ->
-     Error `Unexpected_commands
-
-module type DOCUMENT = sig
-  type block
-  type inline
-
-  val txt : string -> inline
-  val p : inline list -> block
-  val code_bl : string -> block
-
-end
-
-let print_err (type block) (module D : DOCUMENT with type block = block) : _ -> block list =
-  let open D in
-  function
-  (* | `Parse err -> *)
-  (*    [p [txt (Printf.sprintf "I was unable to parse your submission: %s" *)
-  (*               (Parser_util.Driver.string_of_error err))] *)
-  (*    ] *)
-  (* | `Type_error (_loc, msg) -> *)
-  (*    [p [txt (Printf.sprintf "There was an error trying to interpret \ *)
-  (*                             your submission: %s" msg)] *)
-  (*    ] *)
-  | `Unexpected_commands ->
-     [p [txt (Printf.sprintf "Your submission had unexpected commands in it.")]]
-  | `Domain_mismatch ->
-     [p [txt "There was a mismatch in the domain definitions, so I was \
-              unable to mark this submission automatically."]]
-  | `Not_enough_solutions expected_json ->
-     [p [txt "Your code does not produce enough solutions. The \
-              following solution is not generated by your constraints:"]
-     ; code_bl (Generalities.Json.to_string expected_json)
-     ]
-  | `Too_many_solutions unwanted_json ->
-     [p [txt "Your code produces too many solutions. The following \
-              solution is generated by your constraints, but is not \
-              required by the solution:"]
-     ; code_bl (Generalities.Json.to_string unwanted_json)
-     ]
-  | `Solution_mismatch (expected, submitted) ->
-     [ p [txt "Your code produces solutions that are not required, and \
-               misses solutions that are required. The following is an \
-               example of a solution that your code should produce but \
-               does not:"]
-     ; code_bl (Generalities.Json.to_string expected)
-     ; p [txt "This is an example of a solution that you code produces \
-               but should not:"]
-     ; code_bl (Generalities.Json.to_string submitted)
-     ]
+let implies env phi psi json =
+  match check_contains env phi psi with
+  | `CONTAINED ->
+     `Contained
+  | `EXTRA assgn ->
+     let module E2 = Evaluator.Eval (val assgn) in
+     let json = E2.to_json (E2.eval env E2.empty_local_env json) in
+     `Extra json

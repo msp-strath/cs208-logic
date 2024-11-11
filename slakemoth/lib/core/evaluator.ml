@@ -177,7 +177,7 @@ module Eval (Assignment : ASSIGNMENT) = struct
           | exception Not_found ->
              (match NameMap.find name.detail env.defns with
               | exception Not_found ->
-                 raise (Evaluation_error "Definition not found") (* FIXME: say what *)
+                 raise (Evaluation_error (Printf.sprintf "Definition not found: %S" name.detail))
               | Atom _ ->
                  let values =
                    List.map (fun term -> to_constructor (eval local_env term)) terms
