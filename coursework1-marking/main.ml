@@ -1,409 +1,1091 @@
-(* FIXME: use generalities *)
-let ( let* ) x f = match x with
-  | Error _ as e -> e
-  | Ok a -> f a
-
-let on_false err = function
-  | true -> Ok ()
-  | false -> Error err
-
+open Generalities
+open Result_ext.Syntax
 
 let read_answers_file filename =
-  In_channel.with_open_text filename
-    (fun ch ->
-      Seq.of_dispenser (fun () -> In_channel.input_line ch)
-      |> Seq.map
-           (fun line ->
-             Scanf.sscanf line "%s@:%S" (fun fieldname data -> fieldname, data))
-      |> List.of_seq)
+  try
+    In_channel.with_open_text filename
+      (fun ch ->
+        Seq.of_dispenser (fun () -> In_channel.input_line ch)
+        |> Seq.map
+             (fun line ->
+               Scanf.sscanf line "%s@:%S" (fun fieldname data -> fieldname, data))
+        |> List.of_seq
+        |> Result.ok)
+  with
+  | exn ->
+     Error (Printf.sprintf "Read failure: %s" (Printexc.to_string exn))
 
 let parse_and_typecheck string =
   let open Slakemoth in
-  let* decls = Reader.parse string in
+  let* decls    = Reader.parse string in
   let* commands = Type_checker.check_declarations decls in
   Ok commands
 
-let questions =
-  [ "cw1-question1a",
-    "Question 1(a)",
-    1,
-    `One "atom a\natom b\natom c\natom d\n\nallsat (a | b | c | d)\n  { \"a\": a, \"b\": b, \"c\": c, \"d\": d }\n"
-  ; "cw1-question1b",
-    "Question 1(b)",
-    1,
-    `One "atom a\natom b\natom c\natom d\n\nallsat ((a | b | c | d) &\n        (~a | ~b) &\n        (~a | ~c) &\n        (~a | ~d) &\n        (~b | ~c) &\n        (~b | ~d) &\n        (~c | ~d))\n  { \"a\": a, \"b\": b, \"c\": c, \"d\": d }\n"
-  ; "cw1-question1c",
-    "Question 1(c)",
-    3,
-    `One "atom a\natom b\natom c\n\nallsat ((a | b | c) &\n        (~a | b | c) &\n        (~b | a | c) &\n        (~c | a | b) &\n        (~a | ~b | ~c))\n  { \"a\": a, \"b\": b, \"c\": c }\n"
-  ; "cw1-question2",
-    "Question 2",
-    4,
-    `One "domain package {\n  ChatServer, MailServer1, MailServer2,\n  Database1, Database2, GitServer\n}\n\natom installed(p : package)\n\ndefine depends(p : package, dependency : package) {\n  // fill this in\n  ~installed(p) | installed(dependency)\n}\n\ndefine conflict(p1 : package, p2 : package) {\n  // fill this in\n  ~installed(p1) | ~installed(p2)\n}\n\ndefine depends_or(p : package,\n                  dependency1 : package,\n                  dependency2 : package) {\n  // fill this in\n  ~installed(p) | installed(dependency1) | installed(dependency2)\n}\n\ndefine dependencies_and_conflicts {\n  // fill this in\n  depends_or(ChatServer, MailServer1, MailServer2) &\n  depends_or(ChatServer, Database1, Database2) &\n  conflict(MailServer1, MailServer2) &\n  conflict(Database1, Database2) &\n  depends(GitServer, Database2)\n}\n\ndefine requirements {\n  // fill this in\n  installed(ChatServer) & installed(GitServer)\n}\n\nallsat(dependencies_and_conflicts & requirements)\n  { for(packageName : package)\n      packageName : installed(packageName)\n  }\n"
-  ; "cw1-question3",
-    "Question 3",
-    3,
-    `Alt ("domain machine { M1, M2, M3 }\ndomain task { T1, T2, T3, T4, T5 }\n\n// If assign(t,m) is true, then task 't'\n// is assigned to machine 'm'.\natom assign(t : task, m : machine)\n\ndefine all_tasks_some_machine {\n  forall(t : task) some(m : machine) assign(t,m)\n}\n\ndefine all_tasks_one_machine {\n  forall(t : task)\n    forall(m1: machine)\n      forall(m2 : machine)\n        m1 = m2 | ~assign(t,m1) | ~assign(t,m2)\n}\n\ndefine separate_machines(task1 : task, task2 : task) {\n  forall(m : machine) ~assign(task1, m) | ~assign(task2, m)\n}\n\ndefine conflicts {\n  // fill_this_in\n  separate_machines(T1,T2) &\n  separate_machines(T2,T3) &\n  separate_machines(T2,T5) &\n  separate_machines(T3,T4) &\n  separate_machines(T3,T5)\n}\n\ndefine special_cases {\n  // fill_this_in\n  ~assign(T1,M3) &\n  ~assign(T1,M1) &\n  ~assign(T2,M1) &\n  ~assign(T3,M3) &\n  (forall(m : machine) ~assign(T2,m) | assign(T4,m))\n}\n\ndefine main {\n  all_tasks_some_machine &\n  all_tasks_one_machine &\n  conflicts &\n  special_cases\n}\n\nallsat(main)\n  { for (t : task)\n      t:[for (m : machine)\n           if (assign(t, m)) m]\n  }\n",
-          "domain machine { M1, M2, M3 }\ndomain task { T1, T2, T3, T4, T5 }\n\n// If assign(t,m) is true, then task 't'\n// is assigned to machine 'm'.\natom assign(t : task, m : machine)\n\ndefine all_tasks_some_machine {\n  forall(t : task) some(m : machine) assign(t,m)\n}\n\ndefine all_tasks_one_machine {\n  forall(t : task)\n    forall(m1: machine)\n      forall(m2 : machine)\n        m1 = m1 | ~assign(t,m1) | ~assign(t,m2)\n}\n\ndefine separate_machines(task1 : task, task2 : task) {\n  forall(m : machine) ~assign(task1, m) | ~assign(task2, m)\n}\n\ndefine conflicts {\n  // fill_this_in\n  separate_machines(T1,T2) &\n  separate_machines(T2,T3) &\n  separate_machines(T2,T5) &\n  separate_machines(T3,T4) &\n  separate_machines(T3,T5)\n}\n\ndefine special_cases {\n  // fill_this_in\n  ~assign(T1,M3) &\n  ~assign(T1,M1) &\n  ~assign(T2,M1) &\n  ~assign(T3,M3) &\n  (forall(m : machine) ~assign(T2,m) | assign(T4,m))\n}\n\ndefine main {\n  all_tasks_some_machine &\n  all_tasks_one_machine &\n  conflicts &\n  special_cases\n}\n\nallsat(main)\n  { for (t : task)\n      t:[for (m : machine)\n           if (assign(t, m)) m]\n  }\n")
-  ; "cw1-question4a",
-    "Question 4(a)",
-    3,
-    `One "domain node { Input1, Input2, Output }\n\natom active(n : node)\n\ndefine xor(x : node, y : node, z : node) {\n  // fill_this_in\n  (~active(x) |  active(y) |  active(z)) &\n  (~active(x) | ~active(y) | ~active(z)) &\n  ( active(x) |  active(y) | ~active(z)) &\n  ( active(x) | ~active(y) |  active(z))\n}\n\nallsat (xor(Output, Input1, Input2))\n { \"Input1\": active(Input1), \"Input2\": active(Input2), \"Output\": active(Output) }\n"
-  ; "cw1-question4b",
-    "Question 4(b)",
-    2,
-    `One "domain node { I1, I2, S, Cout }\n\natom active(n : node)\n\ndefine xor(x : node, y : node, z : node) {\n  // put your definition here\n  (~active(x) |  active(y) |  active(z)) &\n  (~active(x) | ~active(y) | ~active(z)) &\n  ( active(x) |  active(y) | ~active(z)) &\n  ( active(x) | ~active(y) |  active(z))\n}\n\n// Use this\ndefine and(x : node, y : node, z : node) {\n  (~active(x) | active(y)) &\n  (~active(x) | active(z)) &\n  ( active(x) | ~active(y) | ~active(z))\n}\n\ndefine half-adder(input1 : node, input2 : node, sum : node, carry : node) {\n  // fill_this_in\n  xor(sum, input1, input2) &\n  and(carry, input1, input2)\n}\n\nallsat (half-adder (I1, I2, S, Cout))\n  { for(n : node) n : active(n) }\n"
-  ; "cw1-question4c",
-    "Question 4(c)",
-    3,
-    `Show_result
-  ]
-
-let add_negated_clauses solver clauses =
-  let open Slakemoth in
-  let x =
-    Solver.add_disj solver
-      (List.map
-         (fun clause ->
-           let clause' =
-             List.map (function (true, v) -> Solver.add_not solver v
-                              | (false, v) -> v)
-               clause
-           in
-           Solver.add_conj solver clause')
-         clauses)
-  in
-  Solver.add_assert solver x
-
-let check_contains env constraint1 constraint2 =
-  let open Slakemoth in
-  let solver = Solver.create () in
-  let atom_table = Hashtbl.create 1024 in
-  let module E = Evaluator.Eval (val (Evaluator.assignment_of_solver solver atom_table)) in
-  let clauses1 = E.to_clauses (E.eval env E.empty_local_env constraint1) in
-  let clauses2 = E.to_clauses (E.eval env E.empty_local_env constraint2) in
-  List.iter (Solver.add_clause solver) clauses1;
-  add_negated_clauses solver clauses2;
-  match Solver.solve solver with
-  | `UNSAT -> `CONTAINED
-  | `SAT vals ->
-     let assignment = Evaluator.assignment_of_vals atom_table vals in
-     `EXTRA assignment
-
-let rec rename_term rho term =
-  let open Slakemoth.Ast in
-  match term.detail with
-  | Apply (name, args) ->
-     (let args = List.map (rename_term rho) args in
-      match NameMap.find_opt name.detail rho with
-      | None -> {term with detail = Apply (name, args) }
-      | Some renamed -> {term with detail = Apply ({ name with detail = renamed }, args)})
-  | StrConstant _ | Constructor _ | True | False ->
-     term
-  | Eq (term1, term2) ->
-     let term1 = rename_term rho term1 in
-     let term2 = rename_term rho term2 in
-     { term with detail = Eq (term1, term2) }
-  | Ne (term1, term2) ->
-     let term1 = rename_term rho term1 in
-     let term2 = rename_term rho term2 in
-     { term with detail = Ne (term1, term2) }
-  | Neg term1 ->
-     let term1 = rename_term rho term1 in
-     { term with detail = Neg term1 }
-  | Or terms ->
-     let terms = List.map (rename_term rho) terms in
-     { term with detail = Or terms }
-  | And terms ->
-     let terms = List.map (rename_term rho) terms in
-     { term with detail = And terms }
-  | Implies (term1, term2) ->
-     let term1 = rename_term rho term1 in
-     let term2 = rename_term rho term2 in
-     { term with detail = Implies (term1, term2) }
-  | BigOr (nm, domain, term1) ->
-     let rho = NameMap.remove nm rho in
-     let term1 = rename_term rho term1 in
-     { term with detail = BigOr (nm, domain, term1) }
-  | BigAnd (nm, domain, term1) ->
-     let rho = NameMap.remove nm rho in
-     let term1 = rename_term rho term1 in
-     { term with detail = BigAnd (nm, domain, term1) }
-  | JSONObject _ | JSONArray _ | For _ | If _ | Sequence _ | Assign _ ->
-     failwith "RENAME JSON"
-  | Next _ | The _ ->
-     failwith "RENAME NEW STUFF"
-
-
-let merge_environments (env1 : Slakemoth.Environment.environment) (env2 : Slakemoth.Environment.environment) =
-  (* 1. Check that all the domains are the same *)
-  (* 2. Check that all the atoms are the same *)
-  (* 3. Rename all the definitions *)
-  let open Slakemoth.Environment in
-  let open Slakemoth.Ast in
-  let* () = on_false `Domain_mismatch
-              (NameMap.equal DomainInfo.equal env1.domains env2.domains) in
-  let rename1 =
-    NameMap.to_seq env1.defns
-    |> Seq.filter (function _, Defined _ -> true | _ -> false)
-    |> Seq.map (fun (nm, _) -> nm, nm ^ "#1")
-    |> NameMap.of_seq
-  in
-  let rename2 =
-    NameMap.to_seq env2.defns
-    |> Seq.filter (function _, Defined _ -> true | _ -> false)
-    |> Seq.map (fun (nm, _) -> nm, nm ^ "#2")
-    |> NameMap.of_seq
-  in
-  let merged, defns2 =
-    NameMap.fold
-      (fun name defn (merged, env2) ->
-        match defn with
-        | Atom { args } ->
-           (match NameMap.find_opt name env2 with
-            | None -> failwith "Missing atom in env2"
-            | Some (Atom { args = args2 }) ->
-               if args = args2 then
-                 (NameMap.add name (Atom { args}) merged, NameMap.remove name env2)
-               else
-                 failwith "Changed atom declaration"
-            | Some (Defined _ | Table _) ->
-               failwith "atom has become definition")
-        | Table _ ->
-           failwith "TABLES"
-        | Defined { args; body; kind } ->
-           let name = name ^ "#1" in
-           let rename1 = List.fold_right (fun (nm, _) -> NameMap.remove nm) args rename1 in
-           let body = rename_term rename1 body in
-           let defn = Defined { args; body; kind } in
-           (NameMap.add name defn merged, env2))
-      env1.defns
-      (NameMap.empty, env2.defns)
-  in
-  let defns =
-    NameMap.fold
-      (fun name defn merged ->
-        match defn with
-        | Atom _ -> failwith "Extra atom definition"
-        | Table _ -> failwith "TABLE"
-        | Defined { args; body; kind } ->
-           let name = name ^ "#2" in
-           let rename2 = List.fold_right (fun (nm, _) -> NameMap.remove nm) args rename2 in
-           let body = rename_term rename2 body in
-           let defn = Defined { args; body; kind } in
-           NameMap.add name defn merged)
-      defns2
-      merged
-  in
-  Ok ({ env1 with defns }, rename1, rename2)
-
-
-
-
-
-
-(* FIXME: for question4c, check that the answer produced matches the spec *)
-
-let q4c_filter =
-  let open Generalities.Json in
-  function
-  | JObject fields ->
-     JObject (List.filter
-                (fun (nm, _) -> nm = "Input1" || nm = "Input2" || nm = "Input3")
-                fields)
-  | json -> json
-
-let evaluate submission =
-  let open Slakemoth in
-  let* submitted = parse_and_typecheck submission in
-  match submitted with
-  | [Environment.AllSat (env, constraint_term, json)] ->
-     Ok (Evaluator.all_sat env constraint_term json)
-  | _ ->
-     Error `Unexpected_commands
-
-let do_question specimen submission =
-  let* expected = parse_and_typecheck specimen in
-  let* submitted = parse_and_typecheck submission in
-  let open Slakemoth in
-  match expected, submitted with
-  | [ Environment.AllSat (expected_env, expected_constraint, expected_json) ],
-    [ Environment.AllSat (sub_env, sub_constraint, sub_json) ] ->
-     let* (env, rename1, rename2) = merge_environments expected_env sub_env in
-     let expected = rename_term rename1 expected_constraint in
-     let submitted = rename_term rename2 sub_constraint in
-     (match check_contains env expected submitted,
-            check_contains env submitted expected with
-      | `CONTAINED, `CONTAINED -> Ok ()
-      | `EXTRA assgn, `CONTAINED ->
-         let module E2 = Evaluator.Eval (val assgn) in
-         let json = E2.to_json (E2.eval env E2.empty_local_env expected_json) in
-         Error (`Not_enough_solutions json)
-      | `CONTAINED, `EXTRA assgn ->
-         let module E2 = Evaluator.Eval (val assgn) in
-         let json = E2.to_json (E2.eval env E2.empty_local_env sub_json) in
-         Error (`Too_many_solutions json)
-      | `EXTRA expected, `EXTRA submitted ->
-         let expected_json =
-           let module E = Evaluator.Eval (val expected) in
-           E.to_json (E.eval env E.empty_local_env expected_json)
-         and submitted_json =
-           let module E = Evaluator.Eval (val submitted) in
-           E.to_json (E.eval env E.empty_local_env sub_json)
-         in
-         Error (`Solution_mismatch (expected_json, submitted_json)))
-  | _, _ ->
-     Error `Unexpected_commands
-
-let list_to_string p l =
-  String.concat " " (List.map p l)
-
-let print_err =
-  let open Omd.Ctor in
-  function
+let document_of_mismatch = let open Document in function
+  | `Additional_atom name ->
+     [para [textf "Additional defined atom '%s' in submitted script." name]]
+  | `Atom_different_parameter_domains name ->
+     [para [textf
+       "The atom '%s' is declared with different parameter domains in \
+        the submitted script."
+       name]]
+  | `Atom_missing name ->
+     [para [textf "The atom '%s' is missing in the submitted script." name]]
+  | `Domain_different_constructors name ->
+     [para [textf
+       "The domain '%s' has different constructors in the submitted script."
+       name]]
+  | `Domain_missing name ->
+     [para [textf
+       "The domain '%s' is missing in the submitted script."
+       name]]
+  | `Expecting_an_atom name ->
+     [ para [ textf
+       "The definition '%s' is not an atom in the submitted script."
+       name]]
+  | `Expecting_definition name ->
+     [ para [ textf
+       "Expecting a definition '%s' in the submitted script, but it \
+        was either not present or was an atom or table."
+       name ] ]
+  | `Non_clause_definition name ->
+     [ para [ textf
+       "Definition '%s' is present in the submitted script, but is not \
+        of the correct type."
+       name
+         ]
+     ]
   | `Parse err ->
-     [p [txt (Printf.sprintf "I was unable to parse your submission: %s"
-                (Parser_util.Driver.string_of_error err))]
+     [
+       para [
+           textf "I was unable to parse your submission: %s"
+             (Parser_util.Driver.string_of_error_with_location err)
+         ]
      ]
   | `Type_error (_loc, msg) ->
-     [p [txt (Printf.sprintf "There was an error trying to interpret \
-                              your submission: %s" msg)]
-     ]
-  | `Unexpected_commands ->
-     [p [txt (Printf.sprintf "Your submission had unexpected commands in it.")]]
-  | `Domain_mismatch ->
-     [p [txt "There was a mismatch in the domain definitions, so I was \
-              unable to mark this submission automatically."]]
-  | `Not_enough_solutions expected_json ->
-     [p [txt "Your code does not produce enough solutions. The \
-              following solution is not generated by your constraints:"]
-     ; code_bl (Generalities.Json.to_string expected_json)
-     ]
-  | `Too_many_solutions unwanted_json ->
-     [p [txt "Your code produces too many solutions. The following \
-              solution is generated by your constraints, but is not \
-              required by the solution:"]
-     ; code_bl (Generalities.Json.to_string unwanted_json)
-     ]
-  | `Solution_mismatch (expected, submitted) ->
-     [ p [txt "Your code produces solutions that are not required, and \
-               misses solutions that are required. The following is an \
-               example of a solution that your code should produce but \
-               does not:"]
-     ; code_bl (Generalities.Json.to_string expected)
-     ; p [txt "This is an example of a solution that you code produces \
-               but should not:"]
-     ; code_bl (Generalities.Json.to_string submitted)
+     [para [textf "There was an error trying to interpret your \
+                   submission: %s" msg]
      ]
 
-let seq_head seq = match seq () with
-  | Seq.Cons (x, _) -> x
-  | Seq.Nil -> failwith "empty sequence"
+let basic_env =
+  let open Slakemoth in
+  Environment.
+  { initial_global_env
+  with defns = Ast.NameMap.singleton "fill_this_in"
+                 (Defined { args = []
+                          ; body = { detail = Ast.False
+                                   ; location = Parser_util.Location.generated }
+                          ; kind = Kinding.Constant })
+  }
+
+type selector =
+  | OneCommand
+  | Definition of string
+
+type check =
+  | And of check * check
+  | GivenImpliesSpec
+  | SpecImpliesGiven
+
+type criteria =
+  { name        : string
+  ; marks_value : int
+  ; selector    : selector
+  ; specimen    : string
+  ; json        : string
+  ; checks      : check
+  }
+
+type expected_context =
+  { domains : (string * string list) list
+  (* ; tables  : (string * string list * string list list) list *)
+  ; atoms   : (string * string list) list
+  }
+
+type question =
+  { question_id    : string
+  ; question_title : string
+  ; description    : string option
+  ; total_value    : int
+  ; expected       : expected_context
+  ; criteria       : criteria list
+  }
+
+let question1a =
+  { question_id    = "cw1-2024-question1a"
+  ; question_title = "Question 1(a)"
+  ; description = None
+  ; total_value    = 1
+  ; expected       = { domains = []
+                     (* ; tables  = [] *)
+                     ; atoms   = [ "w", []; "x", []; "y", []; "z", [] ]
+                     }
+  ; criteria =
+      [ { name        = "The specification is that at least one atom \
+                         should be true."
+        ; marks_value = 1
+        ; selector    = OneCommand
+        ; specimen    = "w | x | y | z"
+        ; json        = {|{ "w": w, "x": x, "y": y, "z": z }|}
+        ; checks      = And (GivenImpliesSpec, SpecImpliesGiven)
+        }
+      ]
+  }
+
+let question1b =
+  { question_id    = "cw1-2024-question1b"
+  ; question_title = "Question 1(b)"
+  ; description = None
+  ; total_value    = 1
+  ; expected       = { domains = []
+                     (* ; tables  = [] *)
+                     ; atoms   = [ "w", []; "x", []; "y", []; "z", [] ]
+                     }
+  ; criteria =
+      [ { name        = "The specification is that exactly one atom \
+                         should be true."
+        ; marks_value = 1
+        ; selector    = OneCommand
+        ; specimen    = "(w | x | y | z) & (~w | ~x) & (~w | ~y) & (~w | ~z) & (~x | ~y) & (~x | ~z) & (~y | ~z)"
+        ; json        = {|{ "w": w, "x": x, "y": y, "z": z }|}
+        ; checks      = And (GivenImpliesSpec, SpecImpliesGiven)
+        }
+      ]
+  }
+
+let question1c =
+  { question_id    = "cw1-2024-question1c"
+  ; question_title = "Question 1(c)"
+  ; description = None
+  ; total_value    = 2
+  ; expected       = { domains = []
+                     (* ; tables  = [] *)
+                     ; atoms   = [ "x", []; "y", []; "z", [] ]
+                     }
+  ; criteria =
+      [ { name        = "The specification is that exactly two atoms \
+                         should be true."
+        ; marks_value = 2
+        ; selector    = OneCommand
+        ; specimen    = "(x | y | z) & (~x | y | z) & (~y | x | z) & (~z | x | y) & (~x | ~y | ~z)"
+        ; json        = {|{ "x": x, "y": y, "z": z }|}
+        ; checks      = And (GivenImpliesSpec, SpecImpliesGiven)
+        }
+      ]
+  }
+
+let question2 =
+  { question_id = "cw1-2024-question2"
+  ; question_title = "Question 2 : Register Allocation"
+  ; description = Some "Each of the criteria of the question are listed below, with the total marks given capped at 5."
+  ; total_value = 5
+  ; expected = { domains =
+                   [ "variable", [ "X"; "Y"; "Z"; "W"; "U"; "V" ]
+                   ; "register", [ "R1"; "R2"; "R3" ]
+                   ]
+               ; atoms =
+                   [ "allocated", [ "variable"; "register" ]
+                   ]
+               }
+  ; criteria =
+      let json = "{ for (v : variable) v : [ for (r : register) if (allocated(v, r)) r ] }" in
+      let sep_term =
+        Printf.sprintf "forall (r : register)
+                        ~allocated(%s, r) | ~allocated(%s, r)"
+      in
+      let separate x y =
+        { name = Printf.sprintf "Constraint: %s and %s are not in the same register." x y
+        ; marks_value = 1
+        ; selector = OneCommand
+        ; specimen = sep_term x y
+        ; json = Printf.sprintf "{ %s : [ for (r : register) if (allocated(%s, r)) r ]
+                                 , %s : [ for (r : register) if (allocated(%s, r)) r ] }" x x y y
+        ; checks = GivenImpliesSpec
+        }
+      in
+      [
+        { name = "Constraint: All variables are allocated a register"
+        ; marks_value = 1
+        ; selector = OneCommand
+        ; specimen = "forall (v : variable) some (r : register) allocated(v, r)"
+        ; json
+        ; checks = GivenImpliesSpec
+        }
+      ; { name = "Constraint: All variables are in at most one \
+                  register. This was not in the original \
+                  specification, but some people included is anyway."
+        ; marks_value = 1
+        ; selector = OneCommand
+        ; specimen = {|  forall (v : variable)
+                      forall (r1 : register)
+                      forall (r2 : register)
+                      (r1 = r2 | ~allocated(v,r1) | ~allocated(v,r2))
+                      |}
+        ; json
+        ; checks = GivenImpliesSpec
+        }
+      ; separate "X" "Y"
+      ; separate "X" "W"
+      ; separate "X" "U"
+      ; separate "X" "Z"
+      ; separate "Z" "W"
+      ;
+      ]
+  }
+
+let question3 =
+  { question_id = "cw1-2024-question3"
+  ; question_title = "Question 3 : Robot World"
+  ; description = Some "The individual constraints are given one mark each."
+  ; total_value = 5
+  ; expected = { domains =
+                   [ "location", [ "Store"; "Factory"; "LoadingBay" ]
+                   ; "object",   [ "Putty"; "Widget" ]
+                   ];
+                 atoms = [ "robotIn", [ "location" ]
+                         ; "objectIn", [ "location"; "object" ]
+                         ; "robotHolding", [ "object" ]
+                         ]
+               }
+  ; criteria =
+      [ { name = "Specification: the robot is somewhere"
+        ; marks_value = 1
+        ; selector = Definition "robot_is_somewhere"
+        ; specimen = "some (l : location) robotIn(l)"
+        ; json = {|{ "robotIn": [ for (l : location) if (robotIn(l)) l ] }|}
+        ; checks = And (GivenImpliesSpec, SpecImpliesGiven)
+        }
+      ; { name = "Specification: the robot is never in multiple places"
+        ; marks_value = 1
+        ; selector = Definition "robot_never_in_multiple_places"
+        ; specimen =
+            "forall (l1 : location) forall (l2 : location) l1 = l2 | ~robotIn(l1) | ~robotIn(l2)"
+        ; json = {|{ "robotIn": [ for (l : location) if (robotIn(l)) l ] }|}
+        ; checks = And (GivenImpliesSpec, SpecImpliesGiven)
+        }
+      ; { name = "Specification: every object is somewhere"
+        ; marks_value = 1
+        ; selector = Definition "every_object_is_somewhere"
+        ; specimen = "forall (o : object) \
+                        robotHolding(o) | (some (l : location) objectIn(l, o))"
+        ; json = {|{    "objectIn":
+       { for (obj : object)
+           obj : [ for (l : location)
+             if(objectIn(l, obj)) l ] },
+    "robotHolding":
+       [ for (o : object)
+       if (robotHolding(o)) o ]
+                  }|}
+        ; checks = And (GivenImpliesSpec, SpecImpliesGiven)
+        }
+      ; { name = "Constraint: objects are never in multiple places"
+        ; marks_value = 1
+        ; selector = Definition "objects_never_in_multiple_places"
+        ; specimen = {|  forall (o : object)
+    forall (l1 : location)
+      forall (l2 : location)
+        l1 = l2 | ~objectIn(l1, o) | ~objectIn(l2, o)|}
+        ; json = {|{    "objectIn":
+       { for (obj : object)
+           obj : [ for (l : location)
+                  if(objectIn(l, obj)) l ] } }|}
+        ; checks = And (GivenImpliesSpec, SpecImpliesGiven)
+        }
+      ; { name = "Constraint: objects are never with the robot and in a location"
+        ; marks_value = 1
+        ; selector = Definition "objects_never_held_and_not_held"
+        ; specimen = {|  forall (o : object)
+    forall (l : location)
+      ~robotHolding(o) | ~objectIn(l, o)
+                      |}
+        ; json = {|{    "objectIn":
+       { for (obj : object)
+           obj : [ for (l : location)
+             if(objectIn(l, obj)) l ] },
+    "robotHolding":
+       [ for (o : object)
+       if (robotHolding(o)) o ]
+                  }|}
+        ; checks = And (GivenImpliesSpec, SpecImpliesGiven)
+        }
+      ]
+  }
+
+let question4 =
+  { question_id = "cw1-2024-question4"
+  ; question_title = "Question 4 : Finding Paths"
+  ; description = Some "The individual constraints are given one mark each."
+  ; total_value = 6
+  ; expected = { domains =
+                   [ "location", [ "Store"; "Factory"; "LoadingBay";
+                                   "Road"; "Yard"; "WasteHeap" ]
+                   ; "timestep", [ "T1"; "T2"; "T3"; "T4"; "T5"; "Tend" ]
+                   ];
+                 atoms = [ "robotIn", [ "timestep"; "location" ]
+                         ]
+               }
+  ; criteria =
+      let json = {|[ for (t : timestep) [for (loc : location) if (robotIn(t, loc)) loc ] ]|} in
+      [
+        { name = "Constraint: The robot is always somewhere"
+        ; marks_value = 1
+        ; selector = Definition "always_somewhere"
+        ; specimen = "forall (t : timestep) some (l : location) robotIn(t, l)"
+        ; json
+        ; checks = And (GivenImpliesSpec, SpecImpliesGiven)
+        }
+      ; { name = "Constraint: The robot is never in more than one place"
+        ; marks_value = 1
+        ; selector = Definition "never_in_more_than_one_place"
+        ; specimen = {|forall (t : timestep)
+    forall (l1 : location)
+      forall (l2 : location)
+        l1 = l2 | ~robotIn(t, l1) | ~robotIn(t, l2)
+                      |}
+        ; json
+        ; checks = And (GivenImpliesSpec, SpecImpliesGiven)
+        }
+      ; { name = "Constraint: sequential timesteps' locations are linked in the map."
+        ; marks_value = 1
+        ; selector = Definition "good_steps"
+        ; specimen = {|
+  forall (t1 : timestep)
+    forall (t2 : timestep)
+      forall (src : location)
+        forall (tgt : location)
+           ~next(t1, t2)
+         | ~robotIn(t1, src)
+         | ~robotIn(t2, tgt)
+         | linked(src,tgt)
+                      |}
+        ; json
+        ; checks = And (GivenImpliesSpec, SpecImpliesGiven)
+        }
+      ; { name = "Constraint: the robot is initially in the store."
+        ; marks_value = 1
+        ; selector = Definition "initialState"
+        ; specimen = "robotIn(T1, Store)"
+        ; json
+        ; checks = And (GivenImpliesSpec, SpecImpliesGiven)
+        }
+      ; { name = "Constraint: The robot is on the Road at 'Tend'."
+        ; marks_value = 1
+        ; selector = Definition "targetState"
+        ; specimen = "robotIn(Tend, Road)"
+        ; json
+        ; checks = And (GivenImpliesSpec, SpecImpliesGiven)
+        }
+      ; { name = "Constraint: The robot never visits the same place twice."
+        ; marks_value = 1
+        ; selector = Definition "never_visit_same_place_twice"
+        ; specimen = "forall (t1 : timestep)
+    forall (t2 : timestep)
+      forall (l : location)
+        t1 = t2 | ~robotIn(t1, l) | ~robotIn(t2, l)"
+        ; json
+        ; checks = And (GivenImpliesSpec, SpecImpliesGiven)
+        }
+      ]
+  }
+
+
+
+let questions =
+  [ question1a;
+    question1b;
+    question1c;
+    question2;
+    question3;
+    question4
+  ]
+
+
+
+let sprintf = Printf.sprintf
+
+let select_defn commands env =
+  let open Slakemoth in
+  let open Slakemoth.Environment in
+  function
+  | OneCommand ->
+     (match commands with
+      | [ AllSat (_, term, _) | IfSat (_, term, _) ] ->
+         Ok term
+      | _ ->
+         Error `Missing_command)
+  | Definition name ->
+     (match Ast.NameMap.find_opt name env.defns with
+      | Some (Defined { args = []; body; kind = _ }) ->
+         Ok body
+      | Some (Defined _ | Table _ | Atom _) ->
+         Error (`Definition_not_as_expected name)
+      | None ->
+         Error (`Definition_missing name))
+
+
+let check_criteria commands env { name; marks_value; selector; specimen; json; checks } =
+  let specimen_tm = Result.get_ok (Slakemoth.Reader.parse_term specimen) in
+  let json = Result.get_ok (Slakemoth.Reader.parse_term json) in
+  match select_defn commands env selector with
+  | Error `Missing_command ->
+     name, 0,
+     Document.[ para [ text "Expected exactly one 'ifsat' or 'allsat'." ] ]
+  | Error (`Definition_not_as_expected defn_name) ->
+     name, 0,
+     Document.[
+         para [
+             textf "Expecting a definition of %s with no arguments, \
+                    but the definition in the submission was different."
+               defn_name
+           ]
+     ]
+  | Error (`Definition_missing defn_name) ->
+     name, 0,
+     Document.[
+         para [
+             textf "Expecting a definition of %s, but there was no \
+                    such definition in the submission."
+               defn_name
+           ]
+     ]
+  | Ok submitted ->
+     let rec check = function
+       | And (phi1, phi2) ->
+          let ok1, message1 = check phi1 in
+          let ok2, message2 = check phi2 in
+          ok1 && ok2,
+          message1 @ message2
+       | GivenImpliesSpec ->
+          (match Slakemoth.Compare.implies env submitted specimen_tm json with
+           | `Contained ->
+              true,
+              Document.[ para [ text "The solutions generated by your \
+                                      solution are included in the \
+                                      specification." ] ]
+           | `Extra json ->
+              false,
+              Document.[ para [ text "Your submission does not satisfy \
+                                      this part of the \
+                                      specification. It allows the \
+                                      extra solution:" ];
+                                monospace (Json.to_document json)])
+       | SpecImpliesGiven ->
+          (match Slakemoth.Compare.implies env specimen_tm submitted json with
+           | `Contained ->
+              true, Document.[ para [ text "Every solution from the \
+                                            specification is contained \
+                                            within your submission." ] ]
+           | `Extra json ->
+              false, Document.[ para [ text "The specification says \
+                                             that the following \
+                                             solution ought to be \
+                                             allowed, but it is not \
+                                             allowed by your \
+                                             definition." ];
+                                monospace (Json.to_document json)])
+     in
+     let ok, feedback = check checks in
+     name, (if ok then marks_value else 0),
+     feedback @ Document.[ (if ok then
+                              para [ textf "%d mark%s given" marks_value
+                                       (if marks_value = 1 then "" else "s") ]
+                            else
+                              para [ textf "No marks given" ]);
+                           para [ text "The specimen solution is:" ];
+                           preformatted specimen
+                ]
+
+open Slakemoth
+
+let check_domain (env : Environment.environment) (name, expected_constructors) =
+  let open Environment in
+  let open Ast in
+  match NameMap.find_opt name env.domains with
+  | None ->
+     Error (`Domain_missing name)
+  | Some { constructors } ->
+     let expected_constructors = List.sort String.compare expected_constructors in
+     let constructors          = List.sort String.compare constructors in
+     if List.equal String.equal expected_constructors constructors then
+       Ok ()
+     else
+       Error (`Domain_different_constructors name)
+
+let check_atom env (name, expected_domains) =
+  let open Environment in
+  let open Ast in
+  match NameMap.find_opt name env.defns with
+  | None ->
+     Error (`Atom_missing name)
+  | Some (Defined _ | Table _) ->
+     Error (`Expecting_an_atom name)
+  | Some (Atom { args }) ->
+     if List.length args = List.length expected_domains &&
+          List.for_all2 (fun domain (_, domain') -> String.equal domain domain')
+            expected_domains
+            args
+     then
+       Ok ()
+     else
+       Error (`Atom_different_parameter_domains name)
+
+let check_atom_expected expected_atoms = function
+  | (_, (Environment.Defined _ | Table _)) ->
+     Ok ()
+  | (name, Atom _) ->
+     match List.assoc_opt name expected_atoms with
+     | None ->
+        Error (`Additional_atom name)
+     | Some _ ->
+        Ok ()
+
+
+let mark_question submission q =
+  match List.assoc_opt q.question_id submission with
+  | None | Some "" ->
+     0, q.total_value,
+     Document.[ para [ text "Nothing submitted!" ] ]
+  | Some submission ->
+     let result =
+       let open Slakemoth in
+       let* parsed = Reader.parse submission
+       in
+       let* env, commands =
+         Type_checker.check_declarations_open basic_env parsed
+       in
+       let* () =
+         Result_ext.traverse_ (check_domain env) q.expected.domains
+       in
+       let* () =
+         Result_ext.traverse_ (check_atom env) q.expected.atoms
+       in
+       let* () =
+         Result_ext.traverse_ (check_atom_expected q.expected.atoms)
+           (Ast.NameMap.bindings env.defns)
+       in
+       let results =
+         List.map (check_criteria commands env) q.criteria
+       in
+       Ok results
+     in
+     (match result with
+      | Error problem ->
+         0, q.total_value,
+         Document.[
+             para [ text "Your submission:" ];
+             preformatted submission;
+             para [ text "There was a problem trying to understand your submission:" ]] @
+             document_of_mismatch problem
+      | Ok results ->
+         let open Document in
+         let process_result (total_given, feedback) (description, given, message) =
+           (total_given + given,
+            feedback @ [ [ para [text description] ] @ message ])
+         in
+         let mark, feedback_items =
+           List.fold_left process_result (0, []) results
+         in
+         min mark q.total_value,
+         q.total_value,
+         Document.[
+             para [ text "Your submission:" ];
+             preformatted submission;
+             enumerate feedback_items
+         ])
+
+let mark_question submission q =
+  let mark, max_mark, feedback = mark_question submission q in
+  mark,
+  max_mark,
+  Document.section
+    ~title:(sprintf "%s (%d/%d)" q.question_title mark max_mark)
+    ~content:(match q.description with
+              | None -> feedback
+              | Some desc -> Document.(para [ text desc ] :: feedback))
+    ()
+
+
+(*
+
+let questions =
+  let open Document in
+  [ "cw1-2024-question1a", "Question 1(a)", 1,
+    `Match (1, text "",
+{|atom w atom x atom y atom z allsat (w | x | y | z) { "w": w, "x": x, "y": y, "z": z }|})
+  ; "cw1-2024-question1b", "Question 1(b)", 1,
+    `Match (1, text "",
+{|atom w atom x atom y atom z
+ allsat ((w | x | y | z) & (~w | ~x) & (~w | ~y) & (~w | ~z) & (~x | ~y) & (~x | ~z) & (~y | ~z))
+ { "w": w, "x": x, "y": y, "z": z }|})
+  ; "cw1-2024-question1c", "Question 1(c)", 2,
+    `Match (2, text "",
+{|atom x atom y atom z
+ allsat ((x | y | z) & (~x | y | z) & (~y | x | z) & (~z | x | y) & (~x | ~y | ~z))
+ { "x": x, "y": y, "z": z }|})
+  ; "cw1-2024-question2",  "Question 2: Register Allocation", 5,
+    `Or(
+        `Match (5, text "This is a complete solution that makes sure that every variable has at most one register.",
+                {|domain variable { X, Y, Z, W, U, V }
+
+domain register { R1, R2, R3 }
+
+atom allocated(v : variable, r : register)
+
+// Every variable goes in a register
+define all_variables_allocated {
+  forall (v : variable) some (r : register) allocated(v, r)
+}
+
+define all_variables_at_most_one_register {
+  forall (v : variable)
+    forall (r1 : register)
+      forall (r2 : register)
+        (r1 = r2 | ~allocated(v,r1) | ~allocated(v,r2))
+}
+
+define overlapping_live_ranges(v1 : variable, v2 : variable) {
+   forall (r : register)
+     ~allocated(v1, r) | ~allocated(v2, r)
+}
+
+define constraints {
+  overlapping_live_ranges(X, Y) &
+  overlapping_live_ranges(X, W) &
+  overlapping_live_ranges(X, U) &
+  overlapping_live_ranges(X, Z) &
+  overlapping_live_ranges(Z, W)
+}
+
+ifsat (all_variables_allocated &
+       all_variables_at_most_one_register &
+       constraints)
+  { for (v : variable)
+      v : [ for (r : register) if (allocated(v, r)) r ] }
+                 |}),
+        `Or (`Match (5, text "This is a mostly complete solution that does \
+                         not make sure that every variable has at most \
+                         one register.",
+                {|domain variable { X, Y, Z, W, U, V }
+
+domain register { R1, R2, R3 }
+
+atom allocated(v : variable, r : register)
+
+// Every variable goes in a register
+define all_variables_allocated {
+  forall (v : variable) some (r : register) allocated(v, r)
+}
+
+define overlapping_live_ranges(v1 : variable, v2 : variable) {
+   forall (r : register)
+     ~allocated(v1, r) | ~allocated(v2, r)
+}
+
+define constraints {
+  overlapping_live_ranges(X, Y) &
+  overlapping_live_ranges(X, W) &
+  overlapping_live_ranges(X, U) &
+  overlapping_live_ranges(X, Z) &
+  overlapping_live_ranges(Z, W)
+}
+
+ifsat (all_variables_allocated &
+       constraints)
+  { for (v : variable)
+      v : [ for (r : register) if (allocated(v, r)) r ] }
+                 |}),
+             `Match (4, text "This solution uses 'is_register' instead of 'allocated'?",
+                     {|domain variable { X, Y, Z, W, U, V }
+
+domain register { R1, R2, R3 }
+
+atom is_register(v : variable, r : register)
+
+// Every variable goes in a register
+define all_variables_allocated {
+  forall (v : variable) some (r : register) is_register(v, r)
+}
+
+define overlapping_live_ranges(v1 : variable, v2 : variable) {
+   forall (r : register)
+     ~is_register(v1, r) | ~is_register(v2, r)
+}
+
+define constraints {
+  overlapping_live_ranges(X, Y) &
+  overlapping_live_ranges(X, W) &
+  overlapping_live_ranges(X, U) &
+  overlapping_live_ranges(X, Z) &
+  overlapping_live_ranges(Z, W)
+}
+
+ifsat (all_variables_allocated &
+       constraints)
+  { for (v : variable)
+      v : [ for (r : register) if (is_register(v, r)) r ] }
+                 |}))
+
+      )
+
+  ; "cw1-2024-question3",  "Question 3: Robot World", 5,
+    `MarkerScript {|domain location { Store, Factory, LoadingBay }
+
+domain object { Putty, Widget }
+
+atom robotIn(l : location)
+atom objectIn(l : location, o : object)
+atom robotHolding(o : object)
+
+for // FIXME POINTLESS
+
+define robot_is_somewhere {
+  some (l : location) robotIn(l)
+}
+{ "robotIn":
+       [ for (l : location) if (robotIn(l)) l ] }
+
+define robot_never_in_multiple_places {
+  forall (l1 : location)
+    forall (l2 : location)
+      l1 = l2 | ~robotIn(l1) | ~robotIn(l2)
+}
+{ "robotIn":
+       [ for (l : location) if (robotIn(l)) l ] }
+
+define every_object_is_somewhere {
+  forall (o : object)
+    robotHolding(o) | (some (l : location) objectIn(l, o))
+}
+{    "objectIn":
+       { for (obj : object)
+           obj : [ for (l : location)
+             if(objectIn(l, obj)) l ] },
+    "robotHolding":
+       [ for (o : object)
+       if (robotHolding(o)) o ]
+  }
+
+define objects_never_in_multiple_places {
+  forall (o : object)
+    forall (l1 : location)
+      forall (l2 : location)
+        l1 = l2 | ~objectIn(l1, o) | ~objectIn(l2, o)
+}
+{    "objectIn":
+       { for (obj : object)
+           obj : [ for (l : location)
+             if(objectIn(l, obj)) l ] } }
+
+define objects_never_held_and_not_held {
+  forall (o : object)
+    forall (l : location)
+      ~robotHolding(o) | ~objectIn(l, o)
+}
+{    "objectIn":
+       { for (obj : object)
+           obj : [ for (l : location)
+             if(objectIn(l, obj)) l ] },
+    "robotHolding":
+       [ for (o : object)
+       if (robotHolding(o)) o ]
+  }
+
+|}
+
+  ; "cw1-2024-question4",  "Question 4: Finding paths", 6,
+    `MarkerScript
+{|domain location { Store, Factory, LoadingBay, Road, Yard, WasteHeap }
+
+// The possible timesteps
+domain timestep { T1, T2, T3, T4, T5, Tend }
+
+// This defines the map
+define linked(l1 : location, l2 : location)
+  table {
+    (Store, Factory)
+    (Store, Yard)
+    (Factory, Store)
+    (Factory, LoadingBay)
+    (Yard, Factory)
+    (Yard, Store)
+    (Yard, WasteHeap)
+    (WasteHeap, Road)
+    (WasteHeap, Yard)
+    (LoadingBay, WasteHeap)
+    (LoadingBay, Factory)
+    (LoadingBay, Road)
+  }
+
+// The atoms describing where the robot is
+atom robotIn(t : timestep, l : location)
+
+for
+
+// Constraint 1 : the robot is always somewhere
+define always_somewhere {
+  forall (t : timestep) some (l : location) robotIn(t, l)
+}
+  [ for (t : timestep)
+       [for (loc : location) if (robotIn(t, loc)) loc ] ]
+
+// Constraint 2 : the robot is never in more than one palce
+define never_in_more_than_one_place {
+  forall (t : timestep)
+    forall (l1 : location)
+      forall (l2 : location)
+        l1 = l2 | ~robotIn(t, l1) | ~robotIn(t, l2)
+}
+  [ for (t : timestep)
+       [for (loc : location) if (robotIn(t, loc)) loc ] ]
+
+// Constraint 3 : sequential timesteps' locations are
+// linked in the map
+define good_steps {
+  forall (t1 : timestep)
+    forall (t2 : timestep)
+      forall (src : location)
+        forall (tgt : location)
+           ~next(t1, t2)
+         | ~robotIn(t1, src)
+         | ~robotIn(t2, tgt)
+         | linked(src,tgt)
+}
+  [ for (t : timestep)
+       [for (loc : location) if (robotIn(t, loc)) loc ] ]
+
+// Constraint 4 : the robot is initially in the Store
+define initialState {
+  robotIn(T1, Store)
+}
+  [ for (t : timestep)
+       [for (loc : location) if (robotIn(t, loc)) loc ] ]
+
+// Constraint 5 : the robot is on the Road at 'Tend'
+define targetState {
+  robotIn(Tend, Road)
+}
+  [ for (t : timestep)
+       [for (loc : location) if (robotIn(t, loc)) loc ] ]
+
+// Constraint 6 : the robot never visits the same place twice
+define never_visit_same_place_twice {
+  forall (t1 : timestep)
+    forall (t2 : timestep)
+      forall (l : location)
+        t1 = t2 | ~robotIn(t1, l) | ~robotIn(t2, l)
+}
+  [ for (t : timestep)
+       [for (loc : location) if (robotIn(t, loc)) loc ] ]
+
+ |}
+  ]
+
+let document_of_error =
+  let open Document in
+  function
+  | `Parse err ->
+     [
+       para [
+           textf "I was unable to parse your submission: %s"
+             (Parser_util.Driver.string_of_error_with_location err)
+         ]
+     ]
+  | `Type_error (_loc, msg) ->
+     [para [textf "There was an error trying to interpret your \
+                   submission: %s" msg]
+     ]
+  | `Unexpected_commands ->
+     [para [text "Your submission had unexpected commands in it."]]
+  | `Domain_mismatch ->
+     [para [text
+              "There was a mismatch in the domain definitions, so I \
+               was unable to mark this submission automatically."]]
+  | `Not_enough_solutions expected_json ->
+     [ para [
+           text "Your code does not produce enough solutions. The \
+                 following solution is not generated by your \
+                 constraints:"
+         ];
+       monospace (Json.to_document expected_json)
+     ]
+  | `Too_many_solutions unwanted_json ->
+     [
+       para [
+           text "Your code produces too many solutions. The following \
+                 solution is generated by your constraints, but is not \
+                 required by the solution:"
+         ];
+       monospace (Json.to_document unwanted_json)
+     ]
+  | `Solution_mismatch (expected, submitted) ->
+     [
+       para [
+           text "Your code produces solutions that are not required, \
+                 and misses solutions that are required. The following \
+                 is an example of a solution that your code should \
+                 produce but does not:"
+         ];
+       monospace (Json.to_document expected);
+       para [text "This is an example of a solution that you code \
+                   produces but should not:"];
+       monospace (Json.to_document submitted)
+     ]
+
+  | `Expecting_definition name ->
+      [ para [ textf
+                 "Expecting a definition '%s' in the submitted script, but it \
+                  was either not present or was an atom or table."
+       name]]
+  | `Non_clause_definition name ->
+     [ para [
+           textf
+             "Definition '%s' is present in the submitted script, but \
+              is not of the correct type."
+             name
+         ]
+     ]
+  | `Atom_become_defn name | `Changed_atom (name, _, _) ->
+     [ para [
+           textf "You changed the definition of atom '%s' to a definition, which \
+                  means that the submission could not be marked \
+                  automatically"
+             name]
+     ]
+  | `Missing_atom name ->
+     [ para [
+           textf "The atom '%s' was expected to be in your submission, \
+                  but it wasn't there. This means that it is not \
+                  possible to evaluate your submission for marks."
+             name]
+     ]
+
+
+
+
+let do_question marks comment specimen submission =
+  match
+    let* expected  = parse_and_typecheck specimen in
+    let* submitted = parse_and_typecheck submission in
+    Slakemoth.Compare.do_question expected submitted
+  with
+  | Ok () ->
+     let open Document in
+     marks, [para [text "This solution is correct!"; comment]]
+  | Error err ->
+     0, document_of_error err
+
+let marker_question marker_script submitted_script =
+  let open Slakemoth in
+  match
+    let* marking_script = Reader.parse_marking_script marker_script in
+    let* submitted_script = Reader.parse submitted_script in
+    Marker.check marking_script submitted_script
+  with
+  | Ok results ->
+     let open Document in
+     let process_result (total_given, feedback) = function
+       | name, Ok () ->
+          (total_given + 1,
+           feedback @ [ [ para [textf "%s: correct" name] ] ])
+       | name, Error msg ->
+          (total_given + 0,
+           feedback @ [ [ para [textf "%s :" name] ] @ document_of_error msg ])
+     in
+     let mark, feedback_items =
+       List.fold_left process_result (0, []) results
+     in
+     mark,
+     [enumerate feedback_items]
+  | Error err ->
+     0,
+     document_of_mismatch err
+
+let mark_question submission (question_id, question_title, mark_value, solution) =
+  match List.assoc_opt question_id submission with
+  | None | Some "" ->
+     let open Document in
+     question_id,
+     0,
+     mark_value,
+     section ~title:(Printf.sprintf "%s (0/%d)" question_title mark_value)
+       ~content:[ para [ text "No solution submitted!" ] ]
+       ()
+  | Some submitted ->
+     let rec attempt_solution = function
+       | `Match (mark_value, comment, solution) ->
+          do_question mark_value comment solution submitted
+       | `MarkerScript marker_script ->
+          marker_question marker_script submitted
+       | `Or (sol1, sol2) ->
+          let marks1, message1 = attempt_solution sol1 in
+          let marks2, message2 = attempt_solution sol2 in
+          if marks1 > marks2 then
+            marks1, message1
+          else
+            marks2, message2
+     in
+     let mark, message = attempt_solution solution in
+     let open Document in
+     question_id,
+     mark,
+     mark_value,
+     section ~title:(Printf.sprintf "%s (%d/%d)" question_title mark mark_value)
+       ~content:([ para [ text "Your answer:" ];
+                   preformatted submitted] @ message)
+                   ()
+ *)
+
 
 let get_file_of_dir dirname =
   Sys.readdir dirname
   |> Array.to_seq
   |> Seq.filter (fun entry -> not (String.starts_with ~prefix:"." entry))
-  |> seq_head
-
-let mark_question submission (question_id, question_title, marks, solution) =
-  match List.assoc_opt question_id submission with
-  | None | Some "" ->
-     let open Omd.Ctor in
-     [ h 3 [txt question_title]
-     ; p [txt "No solution submitted!"]
-     ]
-  | Some submitted ->
-     let given_marks, message =
-       match solution with
-       | `One solution ->
-          (match do_question solution submitted with
-           | Ok () -> Some marks, Ok ()
-           | Error err -> Some 0, Error (print_err err))
-       | `Alt (solution1, solution2) ->
-          (match do_question solution1 submitted with
-           | Ok () -> Some marks, Ok ()
-           | Error _err ->
-              match do_question solution2 submitted with
-              | Ok () -> Some marks, Ok ()
-              | Error err -> Some 0, Error (print_err err))
-       | `Show_result ->
-          match evaluate submitted with
-          | Ok jsons ->
-             let open Omd.Ctor in
-             let jsons = List.of_seq jsons in
-             None, Error
-                     [ p [txt "The solutions generated by this code are:"]
-                     ; code_bl (String.concat "\n"
-                                  (List.map Generalities.Json.to_string jsons))
-                     ]
-          | Error err ->
-             Some 0, Error (print_err err)
-     in
-     let open Omd.Ctor in
-     ([ h 3 [txt question_title;
-             txt (Printf.sprintf " (%s/%d)"
-                    (match given_marks with None -> "?" | Some n -> string_of_int n)
-                    marks)]
-      ; p [txt "Your solution"]
-      ; code_bl submitted
-      ]@
-        (match message with
-         | Ok () -> [p [txt "This solution is correct!"]]
-         | Error doc -> doc))
-
-module To_markdown = struct
-  open Omd
-
-  let rec inline b = function
-    | Concat (_, inlines) ->
-       List.iter (inline b) inlines
-    | Text (_, str) ->
-       Buffer.add_string b str
-    | Emph (_, content) ->
-       Buffer.add_string b "*";
-       inline b content;
-       Buffer.add_string b "*"
-    | Strong (_, content) ->
-       Buffer.add_string b "**";
-       inline b content;
-       Buffer.add_string b "**"
-    | Code _ | Hard_break _ | Soft_break _ | Link _ | Image _ | Html _ ->
-       failwith "UNIMPLEMETED"
-
-  let block b = function
-    | Paragraph (_, contents) ->
-       inline b contents;
-       Buffer.add_string b "\n\n"
-    | Heading (_, n, contents) ->
-       Buffer.add_string b (String.make n '#');
-       Buffer.add_string b " ";
-       inline b contents;
-       Buffer.add_string b "\n\n"
-    | Code_block (_, _, code) ->
-       Printf.bprintf b "```\n%s\n```\n\n" code
-    | _ ->
-       failwith "UNIMPLEMENTED"
-
-  let string_of_doc blocks =
-    let b = Buffer.create 8192 in
-    List.iter (block b) blocks;
-    Buffer.contents b
-end
+  |> Seq_ext.head
+  |> Option.to_result ~none:"No file found"
 
 let do_submission dirname outdir entry =
-  let sub_dir = Filename.concat dirname entry in
-  let filename = get_file_of_dir sub_dir in
-  let filename = Filename.concat sub_dir filename in
+  let partnum = String.sub entry 12 7 in
+  let subdir = Filename.concat dirname entry in
+  let outdir = Filename.concat outdir entry in
   try
-    let submission = read_answers_file filename in
-    let doc = List.concat_map (mark_question submission) questions in
-    Sys.mkdir Filename.(concat outdir entry) 0o700;
+    let* filename = get_file_of_dir subdir in
+    let* submission = read_answers_file (Filename.concat subdir filename) in
+    (* for each question, *)
+    let do_question (total_mark, question_marks, feedback) question =
+      let qmark, _qmax, qfeedback =
+        mark_question submission question
+      in
+      (total_mark + qmark,
+       qmark::question_marks,
+       qfeedback :: feedback)
+    in
+    let total_mark, rev_question_marks, rev_feedbacks =
+      List.fold_left do_question (0, [], []) questions
+    in
+    let feedback =
+      Document.document
+        ~title:(Printf.sprintf "CS208 Coursework 1 (%d/%d)" total_mark 20)
+        ~sections:(List.rev rev_feedbacks)
+        ()
+    in
+    let question_marks = List.rev rev_question_marks in
+    if not (Sys.file_exists outdir) then
+      Sys.mkdir outdir 0o700;
     Out_channel.with_open_bin
-      Filename.(concat (concat outdir entry) "feedback.md")
-      (fun ch -> Out_channel.output_string ch (To_markdown.string_of_doc doc))
+      Filename.(concat outdir "feedback.txt")
+      (fun ch ->
+        Pretty.output_to_channel ch
+          (Document.ToPretty.pretty_of_document feedback));
+    Printf.printf "%s,Participant %s,%s,%s,%d,%s\n"
+      entry
+      partnum
+      (List.assoc "cw1-2024-name" submission)
+      (List.assoc "cw1-2024-regnum" submission)
+      total_mark
+      (String.concat "," (List.map string_of_int question_marks));
+    Result.ok ()
   with exn ->
-    Printf.printf "FAILED: %s; %s\n" entry (Printexc.to_string exn)
+    Error ("EXCEPTION: " ^ (Printexc.to_string exn))
 
 let () =
   let dir = Sys.argv.(1) in
@@ -412,14 +1094,22 @@ let () =
   if not (Sys.file_exists outdir) then
     Sys.mkdir outdir 0o700;
   let partnum = if Array.length Sys.argv = 3 then Some Sys.argv.(2) else None in
-  match partnum with
-  | None ->
-     (* do all of them *)
-     Sys.readdir dirname
-     |> Array.to_seq
-     |> Seq.filter (fun entry -> not (String.starts_with ~prefix:"." entry))
-     |> Seq.iter (do_submission dirname outdir)
-  | Some partnum ->
-     (* Just do this one *)
-     let entry = "Participant_" ^ partnum ^ "_assignsubmission_file" in
-     do_submission dirname outdir entry
+  let partnums =
+    match partnum with
+    | None ->
+       (* do all of them *)
+       Sys.readdir dirname
+       |> Array.to_seq
+       |> Seq.filter (fun entry -> not (String.starts_with ~prefix:"." entry))
+    | Some partnum ->
+       let entry = "Participant_" ^ partnum ^ "_assignsubmission_file" in
+       Seq.return entry
+  in
+  partnums
+  |> Seq_ext.Iter.gather_errors (do_submission dirname outdir)
+  |> (function
+      | [] -> ()
+      | errors ->
+         errors |>
+           List.iter (fun (entry, error) ->
+               Printf.eprintf "%s: %s\n" entry error))
