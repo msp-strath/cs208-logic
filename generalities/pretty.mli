@@ -15,6 +15,11 @@ val group : document -> document
 
 val break : document
 
+(** [break_words str] separates the string [str] into words and
+    constructs a document by interspersing [group break] between each
+    word. This has the effect of word wrapping [str]. *)
+val break_words : string -> document
+
 (* FIXME:
    1. configurable output targets
    2. styles (bold, italic, simple colours)
@@ -24,6 +29,8 @@ val break : document
 val print : ?width:int -> document -> unit
 
 val to_string : ?width:int -> document -> string
+
+val output_to_channel : Out_channel.t -> ?width:int -> document -> unit
 
 val to_buffer : ?width:int -> Buffer.t -> document -> unit
 

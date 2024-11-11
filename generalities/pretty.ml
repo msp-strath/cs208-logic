@@ -91,6 +91,16 @@ let group doc =
   }
 
 (******************************************************************************)
+(* Derived *)
+
+let break_words str =
+  str
+  |> Seq_ext.words
+  |> Seq.map text
+  |> Seq_ext.intersperse (group break)
+  |> concat
+
+(******************************************************************************)
 (* Output of documents *)
 
 type output =
@@ -158,6 +168,10 @@ let output ?(width=80) output document =
 
 let print ?width document =
   let o = output_of_channel Out_channel.stdout in
+  output ?width o document
+
+let output_to_channel ch ?width document =
+  let o = output_of_channel ch in
   output ?width o document
 
 let to_buffer ?width b document =
