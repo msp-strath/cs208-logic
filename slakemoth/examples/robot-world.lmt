@@ -1,0 +1,79 @@
+domain location { Store, Factory, LoadingBay }
+
+domain object { Putty, Widget }
+
+atom robotIn(l : location)
+atom objectIn(l : location, o : object)
+atom robotHolding(o : object)
+
+define robot_is_somewhere {
+  some (l : location) robotIn(l)
+}
+
+define robot_never_in_multiple_places {
+  forall (l1 : location)
+    forall (l2 : location)
+      l1 = l2 | ~robotIn(l1) | ~robotIn(l2)
+}
+
+define every_object_is_somewhere {
+  forall (o : object)
+    robotHolding(o) | (some (l : location) objectIn(l, o))
+}
+
+define objects_never_in_multiple_places {
+  forall (o : object)
+    forall (l1 : location)
+      forall (l2 : location)
+        l1 = l2 | ~objectIn(l1, o) | ~objectIn(l2, o)
+}
+
+define objects_never_held_and_not_held {
+  forall (o : object)
+    forall (l : location)
+      ~robotHolding(o) | ~objectIn(l, o)
+}
+
+allsat (robot_is_somewhere &
+        robot_never_in_multiple_places &
+	every_object_is_somewhere &
+	objects_never_in_multiple_places &
+	objects_never_held_and_not_held)
+  { "robotIn":
+       [ for (l : location) if (robotIn(l)) l ],
+    "objectIn":
+       { for (obj : object)
+           obj : [ for (l : location) if(objectIn(l, obj)) l ] },
+    "robotHolding":
+       [ for (o : object) if (robotHolding(o)) o ]
+  }
+
+
+// Actions
+
+// 1. Robot moves Store -> Factory or Factory -> LoadingBay
+// 2. Robot picks up object
+// 3. Robot drops an object
+// 4. Robot exchanges Putty for Widget in the Factory
+
+// define robot_doesnt_move(t1 : timestep, t2 : timestep) {
+//   forall (l : location)
+//     ( (~robotIn(t1, l) | robotIn(t2, l))
+//     & (~robotIn(t2, l) | robotIn(t1, l)))
+// }
+
+// define move_to_factory(t1 : timestep, t2 : timestep) {
+//   // Robot is either in the store or the loading bay
+//      (robotIn(t1, Store) | robotIn(t2, LoadingBay))
+//   // Robot is in the Factory and not in any other room
+//   & robotIn(t2, Factory)
+//   & ~robotIn(t2, Store)
+//   & ~robotIn(t2, LoadingBay)
+//   // Every object stays with the robot
+//   & (forall (o : object)
+//        ~robotHolding(t1,o) | robotHolding(t2,o))
+//   & (forall (o : object)
+//        ~robotHolding(t2,o) | robotHolding(t1,o))
+//   // Every object stays where it is
+//   & (forall (o :
+// }

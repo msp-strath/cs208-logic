@@ -1,0 +1,36 @@
+domain variable { X, Y, Z, W, U, V }
+
+domain register { R1, R2, R3 }
+
+atom allocated(v : variable, r : register)
+
+// Every variable goes in a register
+define all_variables_allocated {
+  forall (v : variable) some (r : register) allocated(v, r)
+}
+
+define all_variables_at_most_one_register {
+  forall (v : variable)
+    forall (r1 : register)
+      forall (r2 : register)
+        (r1 = r2 | ~allocated(v,r1) | ~allocated(v,r2))
+}
+
+define overlapping_live_ranges(v1 : variable, v2 : variable) {
+   forall (r : register)
+     ~allocated(v1, r) | ~allocated(v2, r)
+}
+
+define constraints {
+  overlapping_live_ranges(X, Y) &
+  overlapping_live_ranges(X, W) &
+  overlapping_live_ranges(X, U) &
+  overlapping_live_ranges(X, Z) &
+  overlapping_live_ranges(Z, W)
+}
+
+allsat (all_variables_allocated &
+       all_variables_at_most_one_register &
+       constraints)
+  { for (v : variable)
+      v : [ for (r : register) if (allocated(v, r)) r ] }

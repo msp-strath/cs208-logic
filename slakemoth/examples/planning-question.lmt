@@ -1,0 +1,58 @@
+// Little robot world:
+//
+// - Three "rooms": Store, Factory, LoadingBay
+// - Two objects:   Putty, Widget
+
+domain location {
+  Store, Factory, LoadingBay
+}
+
+domain object {
+  Putty, Widget
+}
+
+domain variable {
+  RobotIn(l : location),
+  ObjectIn(l : location, o : object),
+  RobotHolding(o : object)
+}
+
+atom isSet(t : timestep, v : variable)
+
+define invariants {
+  // Robot is always in some location
+    (some (l : location) isSet(RobotIn(l)))
+
+  // The robot is not in two locations
+  & (forall (l1 : location)
+       forall (l2 : location)
+         l1 = l1 | ~isSet(RobotIn(l1)) | ~isSet(RobotIn(l2)))
+
+  // Every object is either in a location or being held by the robot
+  & (forall (o : object)
+       isSet(RobotHolding(o)) | some (l : location) isSet(ObjectIn(l, o)))
+
+// An object cannot be in two locations
+  & (forall (o : object)
+       forall (l1 : location)
+         forall (l2 : location)
+           l1 = l2 | ~isSet(ObjectIn(l1, o)) | ~isSet(ObjectIn(l2, o)))
+
+  // An object cannot be held by the robot and in a location:
+  & (forall (o : object)
+       forall (l : location)
+         ~isSet(RobotHolding(o)) | ~isSet(ObjectIn(l, o)))
+}
+
+domain action {
+  MoveToFactory,
+  MoveToLoadingBay,
+  MoveTo
+  PickUpPutty,
+  DropWidget,
+  Exchange
+}
+
+define move_to_factory(t1 : timestep, t2 : timestep) {
+  // It must be true that the robot is either in the
+}

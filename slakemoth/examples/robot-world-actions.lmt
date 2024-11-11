@@ -1,0 +1,142 @@
+domain location { Store, Factory, LoadingBay, Road, Yard, WasteHeap }
+
+// This defines the map
+define linked(l1 : location, l2 : location)
+  table {
+    (Store, Factory)
+    (Store, Yard)
+    (Factory, Store)
+    (Factory, LoadingBay)
+    (Yard, Factory)
+    (Yard, Store)
+    (Yard, WasteHeap)
+    (WasteHeap, Road)
+    (WasteHeap, Yard)
+    (LoadingBay, WasteHeap)
+    (LoadingBay, Factory)
+    (LoadingBay, Road)
+  }
+
+// print ([ for (l1 : location) for (l2 : location) if(linked(l1,l2)) [l1,l2] ])
+
+domain timestep { T1, T2, T3, T4, T5, Tend }
+
+// print (next(T1, T2))
+// print (next(T3, T5))
+
+atom robotIn(t : timestep, l : location)
+
+define initialState {
+  robotIn(T1, Store)
+}
+
+define targetState {
+  robotIn(Tend, Road)
+}
+
+define always_somewhere {
+  forall (t : timestep) some (l : location) robotIn(t, l)
+}
+
+define never_in_more_than_one_place {
+  forall (t : timestep)
+    forall (l1 : location)
+      forall (l2 : location)
+        l1 = l2 | ~robotIn(t, l1) | ~robotIn(t, l2)
+}
+
+define good_steps {
+  forall (t1 : timestep)
+    forall (t2 : timestep)
+      forall (src : location)
+        forall (tgt : location)
+	  ~next(t1, t2) | ~robotIn(t1, src) | ~robotIn(t2, tgt) | linked(src,tgt)
+}
+
+define never_visit_same_place_twice {
+  forall (t1 : timestep)
+    forall (t2 : timestep)
+      forall (l : location)
+        t1 = t2 | ~robotIn(t1, l) | ~robotIn(t2, l)
+}
+
+print("All routes from the Store to the Road")
+allsat (always_somewhere &
+        never_in_more_than_one_place &
+        good_steps &
+        initialState &
+        targetState)
+  [ for (t : timestep)
+       [for (loc : location) if (robotIn(t, loc)) loc ] ]
+
+print("All routes from the Store to the Road that never go to the same place twice")
+allsat (always_somewhere &
+        never_in_more_than_one_place &
+        good_steps &
+        initialState &
+        targetState &
+	never_visit_same_place_twice)
+  [ for (t : timestep)
+       [for (loc : location) if (robotIn(t, loc)) loc ] ]
+
+
+
+// define move_effect(t1 : timestep, t2 : timestep, tgt : location) {
+//     (forall (src : location) ~robotIn(t1, src) | linked(src, tgt))
+//   & robotIn(t2, tgt)
+//   & (forall (l : location) l = tgt | ~robotIn(t2,l))
+// }
+
+// atom move(t : timestep, tgt : location)
+
+// // For every time step except the end, make a move
+// define every_timestep_move {
+//   forall (t : timestep)
+//     t = Tend | (some (tgt : location) move(t, tgt))
+// }
+
+// // Every timestep has at most one move
+// define every_timestep_at_most_one_move {
+//   forall (t : timestep)
+//     forall (tgt1 : location)
+//       forall (tgt2 : location)
+//         tgt1 = tgt2 | ~move(t, tgt1) | ~move(t, tgt2)
+// }
+
+// define steps {
+//   forall (t1 : timestep)
+//     forall (t2 : timestep)
+//       forall (tgt : location)
+//         next(t1, t2) ==> // If t1 and t2 are in sequence
+//           move(t1, tgt) ==>  // And we move to 'tgt'
+// 	    move_effect(t1, t2, tgt)   // then that is the effect of this move
+// }
+
+// define robotAt(t : timestep, l : location) {
+//   robotIn(t, l)
+//   & (forall (otherLoc : location) otherLoc = l | ~robotIn(t, otherLoc))
+// }
+
+// define initialState {
+//   robotAt(T1, Store)
+// }
+
+// define targetState {
+//   robotIn(Tend, Road)
+// }
+
+// ifsat (initialState &
+//        targetState &
+//        every_timestep_move &
+//        every_timestep_at_most_one_move &
+//        steps &
+//        never_visit_same_place_twice)
+//   [ for (t : timestep)
+//       [for (loc : location) if (robotIn(t, loc)) loc ] ]
+
+
+// Describing plans and actions:
+// - Is there a sequence of moves with this initial state and that final state?
+// - Is there a sequence of moves that never visits the same place twice?
+// - Is there a sequence of moves that visits place 'X'?
+// - Is there a sequence of moves that
