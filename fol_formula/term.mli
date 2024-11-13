@@ -11,6 +11,8 @@ val to_string : t -> string
 
 val to_doc : t -> Generalities.Pretty.document
 
+val to_doc_prec : int -> t -> Generalities.Pretty.document
+
 val to_latex : t -> string
 
 val pp : Format.formatter -> t -> unit

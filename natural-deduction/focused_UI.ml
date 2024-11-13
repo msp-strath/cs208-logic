@@ -44,17 +44,18 @@ module Renderer = struct
       ~attrs:[ E.onclick (ResetTo pt); A.class_ "resetbutton" ]
       (text "reset")
 
-  let render_box assumps content =
+  let render_box assumps content position =
     let open Ulmus.Html in
-    match assumps with
-    | [] ->
-       content
-    | assumps ->
-       vertical (concat_map render_assumption assumps ^^ content)
+    match assumps, position with
+    | [], _ | _, `Top ->
+       (* Do not render top-level assumptions *)
+       content `Inner
+    | assumps, _ ->
+       vertical (concat_map render_assumption assumps ^^ content `Inner)
 
-  let render =
+  let render t =
     PT.fold
-      (fun pt (content, msg) ->
+      (fun pt (content, msg) _ ->
         let open Ulmus.Html in
         let command_entry =
           input
@@ -71,16 +72,22 @@ module Renderer = struct
             ]
         in
         render_hole ~goal:(PT.goal pt) ~command_entry ~msg)
-      (fun pt rule children ->
+      (fun pt rule children _ ->
+        let children = List.map (fun c -> c `Inner) children in
         render_rule ~resetbutton:(resetbutton pt) ~rule ~children)
       render_box
+      t
+      `Top
 
-  let render_solution =
+  let render_solution t =
     PT.fold
-      (fun _ _ -> Ulmus.Html.empty)
-      (fun _pt rule children ->
+      (fun _ _ _ -> Ulmus.Html.empty)
+      (fun _pt rule children _ ->
+        let children = List.map (fun c -> c `Inner) children in
         render_rule ~resetbutton:Ulmus.Html.empty ~rule ~children)
       render_box
+      t
+      `Top
 end
 
 let num_holes prooftree =
@@ -106,26 +113,16 @@ let render_heading name assumps goal =
               strong (text " : ")
             ]
       );
-      (match assumps with
-       | Either.Left formulas ->
-          text (Focused_proof_renderer.string_of_sequent (formulas, goal))
-       | Right name ->
-          let open Fol_formula in
-          text
-            (match goal with
-             | Checking goal -> name ^ " ⊢ " ^ Formula.to_string goal
-             | Synthesis (focus, goal) ->
-                name ^ " [" ^ Formula.to_string focus ^ "] ⊢ "
-                ^ Formula.to_string goal))
+      br ();
+      pre ~attrs:[A.class_ "statement"]
+        (text (Generalities.Pretty.to_string ~width:100
+               @@ Focused_proof_renderer.pretty_of_sequent (assumps, goal)))
     ]
 
 let render renderer ~showtree ?name ?assumps_name prooftree =
   let open Ulmus.Html in
   let open H in
-  let assumps = match assumps_name with
-    | None -> Either.Left (PT.root_assumptions prooftree)
-    | Some name -> Either.Right name
-  in
+  let assumps = PT.root_assumptions prooftree in
   let goal = PT.root_goal prooftree in
   vertical @| [
       render_heading name assumps goal;

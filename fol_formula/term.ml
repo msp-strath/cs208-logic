@@ -40,8 +40,28 @@ let rec to_doc = function
      Pretty.text "0"
   | Fun (fname, terms) ->
      Pretty.(text fname
-             ^^
-             parens (terms |> List.to_seq |> Seq.map to_doc |> Seq_ext.intersperse (text ", ") |> concat))
+             ^^ parens (terms |> List.to_seq |> Seq.map to_doc |> Seq_ext.intersperse (text ", ") |> concat))
+
+let rec to_doc_prec l = function
+  | Var x ->
+     Pretty.text x
+  | Fun ("0", []) ->
+     Pretty.text "0"
+  | Fun ("add", [x; y]) ->
+     if l > 20 then
+       Pretty.(text "("
+               ^^ to_doc_prec 21 x
+               ^^ Pretty.text " + "
+               ^^ to_doc_prec 20 y
+               ^^ Pretty.text ")")
+     else
+       Pretty.(to_doc_prec 21 x ^^ text " + " ^^ to_doc_prec 20 y)
+  | Fun (fname, terms) ->
+     Pretty.(text fname
+             ^^ parens (terms |> List.to_seq |> Seq.map (to_doc_prec 100) |> Seq_ext.intersperse (text ", ") |> concat))
+
+
+
 
 let rec pp fmt = function
   | Var x -> Format.fprintf fmt "%s" x

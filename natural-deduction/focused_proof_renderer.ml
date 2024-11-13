@@ -1,3 +1,5 @@
+open Generalities
+
 let string_of_sequent (assumptions, goal) =
   let open Focused in
   let open Fol_formula in
@@ -14,6 +16,28 @@ let string_of_sequent (assumptions, goal) =
       assumptions ^ " [" ^ Formula.to_string focus ^ "] ⊢ "
       ^ Formula.to_string goal
 
+let pretty_of_sequent (assumptions, goal) =
+  let open Focused in
+  let open Fol_formula in
+  let open Pretty in
+  let assumptions =
+    assumptions
+    |> List.rev
+    |> List.to_seq
+    |> Seq.map (function
+           | (nm, A_Formula assump) ->
+              text nm ^^ text " :" ^^ nest 4 (group (break ^^ Formula.to_doc assump))
+           | (nm, A_Termvar) ->
+              text nm)
+    |> Seq_ext.intersperse (text "," ^^ break)
+    |> concat
+  in
+  match goal with
+  | Checking goal ->
+     group (assumptions ^^ break ^^ text "⊢" ^^ break ^^ group (Formula.to_doc goal))
+  | Synthesis (focus, goal) ->
+     group (assumptions ^^ break ^^ text "[" ^^ Formula.to_doc focus ^^ text "] ⊢ " ^^ break ^^ Formula.to_doc goal)
+
 module HTML_Bits (Html : Html_sig.S) = struct
   open Html
 
@@ -21,7 +45,11 @@ module HTML_Bits (Html : Html_sig.S) = struct
   let line content = div content
 
   let commentf fmt =
-    Printf.ksprintf (fun s -> div ~attrs:[ A.class_ "comment" ] (text s)) fmt
+    Printf.ksprintf (fun s -> pre ~attrs:[ A.class_ "comment" ] (text s)) fmt
+
+  let comment doc =
+    let txt = Generalities.Pretty.to_string ~width:72 doc in
+    pre ~attrs:[ A.class_ "comment" ] (text txt)
 
   let textf fmt = Printf.ksprintf text fmt
   let indent_box html = div ~attrs:[ A.class_ "indent" ] html
@@ -44,16 +72,26 @@ module Make (Html : Html_sig.S) = struct
         div ~attrs:[ A.class_ "hole" ]
         @@ vertical
              [%concat
-               commentf "{ goal: %s }" (Formula.to_string f);
+               comment
+               Generalities.Pretty.(group
+                                      (nest 4 (text "goal:"
+                                               ^^ break
+                                               ^^ group (Formula.to_doc f))));
                command_entry;
                rendered_msg]
     | Focused.Synthesis (got, want) ->
         div ~attrs:[ A.class_ "focushole hole" ]
         @@ vertical
              [%concat
-               (* FIXME: colour in the formulas? *)
-               commentf "{ focus: %s; goal: %s }" (Formula.to_string got)
-                 (Formula.to_string want);
+                 (* FIXME: colour in the formulas? *)
+                 comment (let open Generalities.Pretty in
+                          group (text "focus:"
+                                 ^^ nest 4 (break
+                                            ^^ group (Formula.to_doc got))
+                                 ^^ break
+                                 ^^ text "goal:"
+                                 ^^ nest 4 (break
+                                            ^^ group (Formula.to_doc want))));
                command_entry;
                rendered_msg]
 
@@ -202,9 +240,16 @@ module Make (Html : Html_sig.S) = struct
 
   let render_assumption = function
     | nm, Focused.A_Formula assump ->
-        commentf "{ assuming ‘%s’ with name ‘%s’ }" (Formula.to_string assump)
-          nm
-    | nm, Focused.A_Termvar -> commentf "{ let ‘%s’ be an entity }" nm
+       let open Generalities.Pretty in
+       comment (group
+                @@ (text "{ "
+                    ^^ align (text "assuming"
+                              ^^ nest 4 (break
+                                         ^^ group (Formula.to_doc assump))
+                              ^^ break
+                              ^^ textf "with name ‘%s’ }" nm)));
+    | nm, Focused.A_Termvar ->
+       comment (Generalities.Pretty.textf "{ let ‘%s’ be an entity }" nm)
 end
 
 module type PROOF_TREE =
