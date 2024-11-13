@@ -9,8 +9,8 @@ let handle_errors = function
      Printf.eprintf "ERROR: %s\n" (Parser_util.Driver.string_of_error err);
      exit 1
   | Error (`Type_error (location, msg)) ->
-     let msg = Printf.sprintf "Problem at %a: %s"
-                 Ast.Location.to_string location
+     let msg = Printf.sprintf "Problem at %s: %s"
+                 (Ast.Location.to_string location)
                  msg
      in
      prerr_endline msg;

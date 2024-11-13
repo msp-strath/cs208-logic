@@ -5,4 +5,4 @@ val of_lexbuf : Lexing.lexbuf -> t
 val generated : t
 val pp : Format.formatter -> t -> unit
 val pp_without_filename : Format.formatter -> t -> unit
-val to_string : unit -> t -> string
+val to_string : t -> string

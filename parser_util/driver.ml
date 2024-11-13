@@ -8,7 +8,7 @@ let string_of_error (location, message, lexeme) =
 let string_of_error_with_location (location, message, lexeme) =
   match lexeme with
   | "" -> Printf.sprintf "At the end of the input, %s" message
-  | _ -> Printf.sprintf "On the input '%s' at %s, %s" lexeme (Location.to_string () location) message
+  | _ -> Printf.sprintf "On the input '%s' at %s, %s" lexeme (Location.to_string location) message
 
 module type PARSER = sig
   type token

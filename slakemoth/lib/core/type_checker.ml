@@ -353,9 +353,9 @@ let check_arg_specs global_env arg_specs =
   in
   match check_duplicates names with
   | Some (duplicate, location1, location2) ->
-     errorf location1 "Parameter name '%s' already used at %a"
+     errorf location1 "Parameter name '%s' already used at %s"
        duplicate
-       Location.to_string location2
+       (Location.to_string location2)
   | None ->
      Ok ()
 
@@ -411,10 +411,10 @@ let check_declaration (env, commands) = function
                     constructor_domains)
            | existing_domain, previous_location ->
               errorf constructor.location
-                "Constructor '%s' previously defined in domain '%s' at %a"
+                "Constructor '%s' previously defined in domain '%s' at %s"
                 constructor.detail
                 existing_domain
-                Location.to_string previous_location)
+                (Location.to_string previous_location))
          env.constructor_domains
          constructors
      in

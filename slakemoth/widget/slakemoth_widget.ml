@@ -125,8 +125,8 @@ let component configuration =
             | Ok commands ->
                Ok commands
             | Error (`Type_error (location, msg)) ->
-               Error (Printf.sprintf "Problem at %a: %s"
-                        Ast.Location.to_string location
+               Error (Printf.sprintf "Problem at %s: %s"
+                        (Ast.Location.to_string location)
                         msg))
         | Error (`Parse err) ->
            Error (Parser_util.Driver.string_of_error err)
