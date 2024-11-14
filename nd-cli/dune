@@ -1,0 +1,8 @@
+(executable
+ (name main)
+ (libraries generalities parser_util natural_deduction))
+
+(menhir
+ (modules parser))
+
+(ocamllex lexer)

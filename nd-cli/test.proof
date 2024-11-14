@@ -1,0 +1,26 @@
+theorem id : "A -> A"
+proof
+  introduce a; use a; done.
+end
+
+theorem swap-or : "(A | B) -> (B | A)"
+proof
+  introduce a-or-b;
+  use a-or-b; cases a b {
+  - right; use a; done.
+  - left; use b; done.
+  }
+end
+
+theorem socrates-is-mortal :
+  "(all x. human(x) -> mortal(x)) -> human(socrates()) -> mortal(socrates())"
+proof
+  introduce all-humans-are-mortal;
+  introduce socrates-is-human;
+  use all-humans-are-mortal;
+  inst "socrates()";
+  apply {
+  - use socrates-is-human; done.
+  - done.
+  }
+end
