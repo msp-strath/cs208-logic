@@ -1,6 +1,6 @@
 open Focused_config
 
-let focusing { name; assumptions; assumptions_name = assumps_name; goal; solution } =
+let focusing { name; assumptions; goal; solution } =
   let solution =
     match solution with
     | None -> None
@@ -33,11 +33,11 @@ let focusing { name; assumptions; assumptions_name = assumps_name; goal; solutio
         div ~attrs:[ A.class_ "vertical" ] @| [
             (match showsolution, solution with
              | true, Some solutiontree ->
-                Focused_UI.render_solution ?name ?assumps_name ~showtree solutiontree
+                Focused_UI.render_solution ?name ~showtree solutiontree
              | _ ->
                 map
                   (fun a -> Edit a)
-                  (Focused_UI.render ?name ?assumps_name ~showtree editor));
+                  (Focused_UI.render ?name ~showtree editor));
             div
               ~attrs:[ A.class_ "horizontal" ] @| [
                 button ~attrs:[ E.onclick ToggleShowtree ]

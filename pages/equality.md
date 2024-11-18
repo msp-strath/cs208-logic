@@ -28,7 +28,6 @@ There's not much one can prove directly from these axioms without making further
 
 ```focused-nd {id=equality-equivrelation}
 (config
- (assumptions-name "symmetry + transitivity")
  (assumptions (symmetry "all x. all y. equiv(x,y) -> equiv(y,x)")
 			  (transitivity "all x. all y. all z. equiv(x,y) -> equiv(y,z) -> equiv(x,z)"))
  (goal "all x. (ex y. equiv(x,y)) -> equiv(x,x)")
@@ -184,7 +183,6 @@ The axioms of an abelian group are:
 
 ```focused-nd {id=equality-abelian1}
 (config
- (assumptions-name "abelian group")
  (assumptions
   (combine-assoc "∀x. ∀y. ∀z. combine(x, combine(y, z)) = combine(combine(x, y), z)")
   (combine-comm "∀x. ∀y. combine(x, y) = combine(y, x)")
@@ -200,7 +198,6 @@ The ‘combine-emp’ axiom works the other way round as well:
 
 ```focused-nd {id=equality-abelian2}
 (config
- (assumptions-name "abelian group")
  (assumptions
   (combine-assoc "∀x. ∀y. ∀z. combine(x, combine(y, z)) = combine(combine(x, y), z)")
   (combine-comm "∀x. ∀y. combine(x, y) = combine(y, x)")
@@ -216,7 +213,6 @@ The ‘combine-inv’ axiom works the other way round as well:
 
 ```focused-nd {id=equality-abelian3}
 (config
- (assumptions-name "abelian group")
  (assumptions
   (combine-assoc "∀x. ∀y. ∀z. combine(x, combine(y, z)) = combine(combine(x, y), z)")
   (combine-comm "∀x. ∀y. combine(x, y) = combine(y, x)")
@@ -232,7 +228,6 @@ This example demonstrates what can go wrong if we have a mismatch between the pr
 
 ```focused-nd {id=equality-intensional1}
 (config
- (assumptions-name "Edinburgh Facts")
  (assumptions
   (edinburgh-has-nine-letters           "has-nine-letters(edinburgh())")
   (capital-of-scotland-not-nine-letters "¬has-nine-letters(capital-of-scotland())")

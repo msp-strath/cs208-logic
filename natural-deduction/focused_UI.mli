@@ -13,14 +13,12 @@ val init :
 val render :
   showtree:bool ->
   ?name:string ->
-  ?assumps_name:string ->
   state ->
   action Ulmus.html
 
 val render_solution :
   showtree:bool ->
   ?name:string ->
-  ?assumps_name:string ->
   state ->
   'a Ulmus.html
 

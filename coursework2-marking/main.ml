@@ -155,8 +155,7 @@ module Focused = struct
         Error (`Msg (Printf.sprintf "Natural Deduction decode error: %s" e))
     | Ok state ->
        (let name = config.name in
-        let assumps_name = config.assumptions_name in
-        let proof_tree = render ?name ?assumps_name state in
+        let proof_tree = render ?name state in
         if num_holes state = 0 then
           Ok (max, proof_tree)
         else

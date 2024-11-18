@@ -42,7 +42,6 @@ With these axioms, we can prove that numbers that are written differently are un
 
 ```focused-nd {id=arith-proof-repr1}
 (config
- (assumptions-name "0 and S axioms")
  (assumptions
   (zero-ne-succ "all x. ¬(0 = S(x))")
   (succ-injective "all x. all y. S(x) = S(y) -> x = y"))
@@ -69,7 +68,6 @@ Peano's axioms assume a function symbol “add(x,y)” intended to represent “
 With these axioms, we can prove simple facts like 2 + 2 = 4:
 ```focused-nd {id=arith-proof-add1}
 (config
- (assumptions-name "Addition axioms")
  (assumptions
   (add-zero "all x. add(0,x) = x")
   (add-succ "all x. all y. add(S(x),y) = S(add(x,y))"))
@@ -95,7 +93,6 @@ With these axioms for multiplication (and the ones for addition), we can prove f
 
 ```focused-nd {id=arith-proof-mul1}
 (config
- (assumptions-name "Addition and Multiplication axioms")
  (assumptions
   (add-zero "all x. add(0,x) = x")
   (add-succ "all x. all y. add(S(x),y) = S(add(x,y))")
@@ -185,7 +182,6 @@ These rules apply when there is a formula in focus. These rules either act upon 
 
    ```focused-nd {id=arith-proof-ind1}
    (config
-    (assumptions-name "Addition axioms")
 	(assumptions
 	 (add-zero "all x. add(0,x) = x")
 	 (add-succ "all x. all y. add(S(x),y) = S(add(x,y))"))
@@ -198,7 +194,6 @@ These rules apply when there is a formula in focus. These rules either act upon 
 
    ```focused-nd {id=arith-proof-ind2}
    (config
-    (assumptions-name "Addition axioms")
 	(assumptions
 	 (add-zero "all x. add(0,x) = x")
 	 (add-succ "all x. all y. add(S(x),y) = S(add(x,y))"))
@@ -210,7 +205,6 @@ These rules apply when there is a formula in focus. These rules either act upon 
 
    ```focused-nd {id=arith-proof-ind3}
    (config
-    (assumptions-name "Addition axioms")
 	(assumptions
 	 (add-zero "all x. add(0,x) = x")
 	 (add-succ "all x. all y. add(S(x),y) = S(add(x,y))"))
@@ -222,7 +216,6 @@ These rules apply when there is a formula in focus. These rules either act upon 
 
    ```focused-nd {id=arith-proof-ind4}
    (config
-    (assumptions-name "Addition axioms + add-x-zero + add-x-succ")
 	(assumptions
 	 (add-zero "all x. add(0,x) = x")
 	 (add-succ "all x. all y. add(S(x),y) = S(add(x,y))")
@@ -236,7 +229,6 @@ These rules apply when there is a formula in focus. These rules either act upon 
 
    ```focused-nd {id=arith-proof-ind5}
    (config
-    (assumptions-name "0 and S axioms")
     (assumptions
      (zero-ne-succ "all x. ¬(0 = S(x))")
      (succ-injective "all x. all y. S(x) = S(y) -> x = y"))
@@ -248,7 +240,6 @@ These rules apply when there is a formula in focus. These rules either act upon 
 
    ```focused-nd {id=arith-proof-ind6}
    (config
-    (assumptions-name "0 and S axioms")
     (assumptions
      (zero-ne-succ "all x. ¬(0 = S(x))")
      (succ-injective "all x. all y. S(x) = S(y) -> x = y"))
@@ -261,7 +252,6 @@ These rules apply when there is a formula in focus. These rules either act upon 
 
    ```focused-nd {id=arith-proof-ind7}
    (config
-    (assumptions-name "Addition axioms")
 	(assumptions
 	 (add-zero "all x. add(0,x) = x")
 	 (add-succ "all x. all y. add(S(x),y) = S(add(x,y))"))
@@ -275,7 +265,6 @@ These rules apply when there is a formula in focus. These rules either act upon 
 
    ```focused-nd {id=arith-proof=ind8}
    (config
-    (assumptions-name "Addition and Multiplication axioms + add-assoc + add-comm")
 	(assumptions
 	 (add-zero "all x. add(0,x) = x")
 	 (add-succ "all x. all y. add(S(x),y) = S(add(x,y))")

@@ -119,7 +119,7 @@ let render_heading name assumps goal =
                @@ Focused_proof_renderer.pretty_of_sequent (assumps, goal)))
     ]
 
-let render renderer ~showtree ?name ?assumps_name prooftree =
+let render renderer ~showtree ?name prooftree =
   let open Ulmus.Html in
   let open H in
   let assumps = PT.root_assumptions prooftree in

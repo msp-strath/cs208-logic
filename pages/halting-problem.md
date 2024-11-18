@@ -168,7 +168,6 @@ FIXME: put a rough plan of the proof here.
 
 ```focused-nd {id=haltingproblem-1}
 (config
- (assumptions-name "Axioms")
  (assumptions
   ; execution axioms
   (exec-loop "all x. all y. ¬exec(loop(), x, y)")
@@ -196,7 +195,6 @@ FIXME: put a rough plan of the proof here
 
 ```focused-nd {id=haltingproblem-2}
 (config
- (assumptions-name "Axioms")
  (assumptions
   ; execution axioms
   (exec-true1 "all x. exec(true(), x, true())")
@@ -240,7 +238,6 @@ We can carry this proof out formally from our axioms of computation and the two 
 
 ```focused-nd {id=haltingproblem-3}
 (config
- (assumptions-name "Axioms")
  (assumptions
   ; What does being a solution mean?
   (solution-says-true-or-false
