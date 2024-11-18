@@ -1,50 +1,12 @@
-module GoalStack = struct
-
-  open Natural_deduction.Focused
-
-  type context_goal =
-    { assumptions : (string * assumption) list
-    ; goal        : goal
-    }
-
-  type stack = context_goal list
-
-  (* FIXME: add push and pop markers??? So we can do something like
-     the Coq-style bullet points. *)
-
-  let apply_to_head rule : stack -> (stack, _) result = function
-    | [] ->
-       Error `Empty_goal_stack
-    | { assumptions; goal } :: tail ->
-       (match apply assumptions rule goal with
-        | Error error ->
-           Error (`Rule_error error)
-        | Ok (subgoals, ()) ->
-           (* FIXME: propagate the update through the tail *)
-           let subgoals =
-             List.map
-               (fun (new_assumps, goal) ->
-                 { assumptions = List.rev_append new_assumps assumptions
-                 ; goal
-               })
-               subgoals
-           in
-           Ok (subgoals @ tail))
-
-  let pop = function
-    | [] ->
-       Error `Empty_goal_stack
-    | g::goals ->
-       Ok (g, goals)
-
-end
-
 open Generalities
 open Result_ext.Syntax
 
 open Ast
 
 open Fol_formula
+
+module GoalStack =
+  Natural_deduction.Goal_stack.Make (Natural_deduction.Focused)
 
 let interpret_command { detail = { head; args }; location } =
   Result.map_error
@@ -95,7 +57,7 @@ let rec execute_proof stack proof =
      let* rule  = interpret_command command in
      let* stack =
        Result.map_error (fun e -> command.location, e)
-         (GoalStack.apply_to_head rule stack)
+         (GoalStack.apply rule stack)
      in
      Result_ext.fold_left_err execute_proof stack sub_proofs
 
@@ -113,8 +75,10 @@ let interpret_item environment = function
          (Formula.of_string formula.detail)
      in
      let goal_stack =
-       [ GoalStack.{ assumptions = environment
-                   ; goal        = Natural_deduction.Focused.Checking formula }
+       [ GoalStack.
+         { assumptions = environment
+         ; goal        = Natural_deduction.Focused.Checking formula
+         }
        ]
      in
      let* remaining_goals = execute_proof goal_stack proof in
