@@ -1,0 +1,5 @@
+(executable
+ (name pp_sexp)
+ (libraries generalities))
+
+(ocamllex sexp_reader)
