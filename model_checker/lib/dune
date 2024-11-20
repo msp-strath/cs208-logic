@@ -10,9 +10,3 @@
  (modules grammar)
  (flags --table --unused-token UNKNOWN)
  (merge_into parser))
-
-; (rule
-;  (targets formula_grammar.mly)
-;  (deps %{lib:fol_formula:grammar.mly})
-;  (action
-;   (copy %{lib:fol_formula:grammar.mly} formula_grammar.mly)))
