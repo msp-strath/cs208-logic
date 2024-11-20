@@ -34,9 +34,6 @@ end = struct
   type goal = formula
   type update = unit
 
-  let unify_with_assumption f1 f2 =
-    if f1 = f2 then Ok () else Error (`Msg "assumption does not match")
-
   type assumption = formula
 
   let empty_update = ()
@@ -79,11 +76,11 @@ end = struct
     | Conj_elim2 f -> Ok [ ([], And (f, formula)) ]
     | Disj_intro1 -> (
         match formula with
-        | Or (f1, f2) -> Ok [ ([], f1) ]
+        | Or (f1, _f2) -> Ok [ ([], f1) ]
         | _ -> Error (`Msg "disj_intro1: formula is not a disjunction"))
     | Disj_intro2 -> (
         match formula with
-        | Or (f1, f2) -> Ok [ ([], f2) ]
+        | Or (_f1, f2) -> Ok [ ([], f2) ]
         | _ -> Error (`Msg "disj_intro2: formula is not a disjunction"))
     | Disj_elim (f1, f2) ->
         Ok
@@ -109,7 +106,7 @@ end = struct
             Ok []
         | _ -> Error (`Msg "lem: formula is not an instance of LEM"))
 
-  let apply assumps rule goal =
+  let apply _assumps rule goal =
     match apply rule goal with
     | Ok subgoals -> Ok (subgoals, ())
     | Error err -> Error err
@@ -139,7 +136,7 @@ end = struct
     | LEM -> "LEM"
     | DNE -> "¬¬-E"
 
-  let left_label_of_rule rule = None
+  let left_label_of_rule _rule = None
 
   type partial =
     | Partial_Implies_elim of string
@@ -164,7 +161,7 @@ end = struct
 
   type selector_group = { group_name : string; rules : rule_selector list }
 
-  let rule_selection assumptions formula =
+  let rule_selection _assumptions formula =
     [
       {
         group_name = "Implication (→)";
@@ -225,7 +222,7 @@ end = struct
       };
     ]
 
-  let elim_assumption ~conclusion ~assumption ~idx = []
+  let elim_assumption ~conclusion:_ ~assumption:_ ~idx:_ = []
 
   module Part_type = struct
     type t = unit

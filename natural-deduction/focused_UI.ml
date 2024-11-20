@@ -64,7 +64,7 @@ module Renderer = struct
               A.value content;
               A.placeholder "<command>";
               E.oninput (fun value -> UpdateHole (pt, (value, msg)));
-              E.onkeydown (fun mods key ->
+              E.onkeydown (fun _mods key ->
                   match key with
                   | Js_of_ocaml.Dom_html.Keyboard_code.Enter ->
                      Some (SendHole (pt, content))

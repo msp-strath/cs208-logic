@@ -78,7 +78,7 @@ module Rule = struct
     | Subst _ -> "Subst"
     | Rewrite `ltr -> "Rewrite→"
     | Rewrite `rtl -> "Rewrite←"
-    | Induction x -> "Induction"
+    | Induction _ -> "Induction"
 end
 
 type error = string

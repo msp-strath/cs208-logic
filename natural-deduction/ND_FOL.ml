@@ -88,11 +88,11 @@ module System = struct
     | Conj_elim2 f -> Ok [ ([], And (f, formula)) ]
     | Disj_intro1 -> (
         match formula with
-        | Or (f1, f2) -> Ok [ ([], f1) ]
+        | Or (f1, _f2) -> Ok [ ([], f1) ]
         | _ -> Error (`Msg "disj_intro1: does not apply here"))
     | Disj_intro2 -> (
         match formula with
-        | Or (f1, f2) -> Ok [ ([], f2) ]
+        | Or (_f1, f2) -> Ok [ ([], f2) ]
         | _ -> Error (`Msg "disj_intro2: does not apply here"))
     | Disj_elim (f1, f2) ->
         Ok
@@ -151,7 +151,7 @@ module Partials = struct
     | Disj_intro2 -> "∨-I2"
     | Disj_elim _ -> "∨-E"
     | Forall_intro -> "∀-I"
-    | Forall_elim (i, t, _) -> "∀-E"
+    | Forall_elim _ -> "∀-E"
     | Exists_intro _ -> "∃-I"
     | Exists_elim _ -> "∃-E"
 
@@ -194,7 +194,7 @@ module Partials = struct
 
   type selector_group = { group_name : string; rules : rule_selector list }
 
-  let rule_selection assumptions formula =
+  let rule_selection _assumptions formula =
     let open Fol_formula in
     [
       {

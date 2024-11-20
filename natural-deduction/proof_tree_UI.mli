@@ -69,8 +69,7 @@ module Make
            and type error = [ `Msg of string ]
 
       val assumption : int -> rule
-    end)
-    (Partial : PARTIALS with module Calculus = Calculus) : sig
+    end) : (PARTIALS with module Calculus = Calculus) -> sig
   type state
 
   val sexp_of_state : state -> Sexplib0.Sexp.t

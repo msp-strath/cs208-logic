@@ -274,6 +274,10 @@ synth LEQAx size 5
 
 **Exercise** This axiomatisation of “less than or equal” generates *forests*. How can you make it generate models where everything is in a line?
 
+### Checking models
+
+As well as synthesising models, we can get the computer to check them.
+
 ### Going further
 
 We have only scratched the surface of the kinds of things that can be expressed using Predicate Logic, and what kinds of models can be captured using axiomatisations. Try using the model synthesiser tool below to try different vocabularies and axiomisations and generate models for them:

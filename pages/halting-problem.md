@@ -136,6 +136,12 @@ To specify when we have a program that solves the halting problem, we use a pred
 
 FIXME: put some quiz questions here.
 
+1. Any solution to the halting problem always halts.
+
+   If we didn't have this property, then there is an easy solution to the halting problem: run the program, if it halts then output 'true', otherwise never give an answer.
+
+2.
+
 ## What if we had a solution to the Halting Problem?
 
 If we had a solution to the halting problem, then we could use it to make larger programs.
@@ -261,6 +267,12 @@ We can carry this proof out formally from our axioms of computation and the two 
  (goal "¬(ex p. solution(p))")
  (solution (Rule(NotIntro solution-exists)((Rule(Use solution-exists)((Rule(ExElim p solution-p)((Rule(Use solution-says-true-or-false)((Rule(Instantiate(Var p))((Rule Implies_elim((Rule(Use solution-p)((Rule Close())))(Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule(Cases p-says-true p-says-false)((Rule(Use spoiler1)((Rule(Instantiate(Var p))((Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule Implies_elim((Rule(Use solution-p)((Rule Close())))(Rule Implies_elim((Rule(Use p-says-true)((Rule Close())))(Rule NotElim((Rule(Use solution-true-means-halts)((Rule(Instantiate(Var p))((Rule Implies_elim((Rule(Use solution-p)((Rule Close())))(Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule Implies_elim((Rule(Use p-says-true)((Rule Close())))(Rule Close())))))))))))))))))))))))))(Rule(Use solution-false-means-doesnt-halt)((Rule(Instantiate(Var p))((Rule Implies_elim((Rule(Use solution-p)((Rule Close())))(Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule Implies_elim((Rule(Use p-says-false)((Rule Close())))(Rule NotElim((Rule(Use spoiler2)((Rule(Instantiate(Var p))((Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule Implies_elim((Rule(Use solution-p)((Rule Close())))(Rule Implies_elim((Rule(Use p-says-false)((Rule Close())))(Rule Close())))))))))))))))))))))))))))))))))))))))))))))
 ```
+
+## What does this proof show?
+
+Ultimately, this proof shows that it is not possible to have the following things simultaneously:
+
+
 
 ## Further reading
 

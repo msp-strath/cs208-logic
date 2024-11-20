@@ -6,8 +6,8 @@ let string_of_sequent (assumptions, goal) =
   let assumptions =
     assumptions |> List.rev
     |> List.map (function
-         | nm, A_Formula assump -> Formula.to_string assump
-         | nm, A_Termvar -> nm)
+         | _nm, A_Formula assump -> Formula.to_string assump
+         | nm,  A_Termvar -> nm)
     |> String.concat ", "
   in
   match goal with
@@ -268,7 +268,7 @@ module LaTeX (PT : PROOF_TREE) =
       let latex_of_assumptions assumps =
         assumps |> List.rev
         |> List.map (function
-             | nm, Focused.A_Formula assump -> Formula.to_latex assump
+             | _nm, Focused.A_Formula assump -> Formula.to_latex assump
              | nm, Focused.A_Termvar -> Printf.sprintf "\\mathit{%s}" nm)
         |> String.concat ", "
 

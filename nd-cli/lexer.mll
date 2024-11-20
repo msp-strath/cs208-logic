@@ -4,7 +4,7 @@
   type token = Parser.token
 }
 
-let ident_char = ['a'-'z' 'A'-'Z' '0'-'9' '-']
+let ident_char = ['a'-'z' 'A'-'Z' '0'-'9' '-' '_']
 
 let white = [' ' '\t']+
 let ident = ['a'-'z''A'-'Z'] ident_char*
@@ -22,7 +22,7 @@ rule token = parse
 | '}'       { RBRACE }
 | '-'       { DASH }
 
-      (* keywords *)
+(* keywords *)
 | "axiom"   { AXIOM }
 | "theorem" { THEOREM }
 | "proof"   { PROOF }

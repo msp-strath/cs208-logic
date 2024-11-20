@@ -13,7 +13,9 @@ proof
 end
 
 theorem socrates-is-mortal :
-  "(all x. human(x) -> mortal(x)) -> human(socrates()) -> mortal(socrates())"
+  "(all x. human(x) -> mortal(x)) ->
+   human(socrates()) ->
+   mortal(socrates())"
 proof
   introduce all-humans-are-mortal;
   introduce socrates-is-human;
@@ -24,3 +26,22 @@ proof
   - done.
   }
 end
+
+// definition "halts-all-inputs(prog)" := "all i. ex o. exec(prog, i, o)"
+// definition "partial(P,prog,Q)" :=
+//   "all i. all o. P(i) -> exec(prog, i, o) -> Q(o)"
+// definition "total(P,prog,Q)" :=
+//   "all i. P(i) -> (ex o. exec(prog, i, o) /\ Q(o))"
+// definition "total-all(P,prog,Q)" :=
+//   "all i. P(i) -> (halts(prog,i)) /\ (all o. exec(prog, i, o) -> Q(o)))"
+
+// axiom exec-loop :
+//   "exec(loop(p,q),x,y) ->
+//     (exec(q,x,y) | (ex z. exec(p, x, z) & exec(loop(p,q),z,y)))"
+
+// Definitions:
+//   Add an assumption type: Definition of int * formula
+//   where 'n' is a number of term arguments.
+// Commands 'unfold <nm>' to unfold a definition in a goal or focus.
+
+//

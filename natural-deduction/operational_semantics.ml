@@ -103,11 +103,11 @@ module Calculus = struct
         else error (Printf.sprintf "Applying 'Mul': %d * %d is not %d" v1 v2 v)
     | Mul _, Eval _ ->
         error "Applying 'Mul': expression is not a multiplication"
-    | IfTrue, Eval (EIf0 (e, e1, e2), v) ->
+    | IfTrue, Eval (EIf0 (e, e1, _e2), v) ->
         Ok ([ ([], Eval (e, 0)); ([], Eval (e1, v)) ], ())
-    | IfFalse 0, Eval (EIf0 (e, e1, e2), v) ->
+    | IfFalse 0, Eval (EIf0 _, _) ->
         error "Applying 'IfFalse': result of test cannot be 0"
-    | IfFalse v', Eval (EIf0 (e, e1, e2), v) ->
+    | IfFalse v', Eval (EIf0 (e, _e1, e2), v) ->
         Ok ([ ([], Eval (e, v')); ([], Eval (e2, v)) ], ())
     | IfTrue, Eval _ -> error "Applying 'IfTrue': expression is a not an 'if'"
     | IfFalse _, Eval _ ->
@@ -160,16 +160,16 @@ module Partials = struct
             | Eval (EMul (e1, e2), v) -> Partial (PMul (e1, "", e2, "", v))
             | _ -> Disabled "Mul");
             (match goal with
-            | Eval (EIf0 (e, e1, e2), v) -> Immediate IfTrue
+            | Eval (EIf0 _, _) -> Immediate IfTrue
             | _ -> Disabled "IfTrue");
             (match goal with
-            | Eval (EIf0 (e, e1, e2), v) -> Partial (PIfFalse (e, "", e2, v))
+            | Eval (EIf0 (e, _e1, e2), v) -> Partial (PIfFalse (e, "", e2, v))
             | _ -> Disabled "IfFalse");
           ];
       };
     ]
 
-  let elim_assumption ~conclusion ~assumption ~idx = assumption.impossible
+  let elim_assumption ~conclusion:_ ~assumption ~idx:_ = assumption.impossible
 
   module Part_type = struct
     type t = unit
@@ -205,7 +205,7 @@ module Partials = struct
     | PMul (e1, a1, e2, _, v) -> PMul (e1, a1, e2, a2, v)
     | PIfFalse (e1, a1, e2, v) -> PIfFalse (e1, a1, e2, v)
 
-  let present_partial goal = function
+  let present_partial _goal = function
     | (PAdd (e1, a1, e2, a2, v) | PMul (e1, a1, e2, a2, v)) as partial -> (
         let premises =
           [

@@ -1,6 +1,6 @@
 type error = Location.t * string * string
 
-let string_of_error (location, message, lexeme) =
+let string_of_error (_location, message, lexeme) =
   match lexeme with
   | "" -> Printf.sprintf "At the end of the input, %s" message
   | _ -> Printf.sprintf "On the input '%s', %s" lexeme message
@@ -129,7 +129,7 @@ end = struct
     let rec loop cp =
       match cp with
       | MI.Accepted a -> Ok a
-      | MI.InputNeeded env ->
+      | MI.InputNeeded _env ->
           let token = Lexer.token lexbuf in
           let spos = Lexing.lexeme_start_p lexbuf in
           let epos = Lexing.lexeme_end_p lexbuf in

@@ -1,5 +1,3 @@
 (library
  (name parser_util)
- (libraries menhirLib)
- (flags
-  (:standard -w -49-9-27)))
+ (libraries menhirLib))

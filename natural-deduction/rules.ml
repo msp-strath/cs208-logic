@@ -252,7 +252,7 @@ end = struct
   let update_goal = Term.apply_subst
   let update_assumption _subst = Impossible.elim
   let combine_update =
-    VarMap.union (fun _ a b -> Some a)
+    VarMap.union (fun _ a _b -> Some a)
 
   type rule = string [@@deriving sexp]
 

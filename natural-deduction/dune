@@ -2,6 +2,4 @@
  (name natural_deduction)
  (libraries ulmus fol_formula html_sig js_of_ocaml generalities widgets)
  (preprocess
-  (pps ppx_monoid ppx_sexp_conv))
- (flags
-  (:standard -w -49-9-27-32-67)))
+  (pps ppx_monoid ppx_sexp_conv)))

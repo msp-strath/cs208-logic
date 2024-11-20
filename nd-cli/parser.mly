@@ -1,6 +1,7 @@
 %{
 open Ast
 open Parser_util
+open Generalities
 %}
 
 %token AXIOM THEOREM PROOF END
@@ -12,20 +13,16 @@ open Parser_util
 
 %%
 
-items: ds=located(item)*; EOF { ds }
+items: ds=item*; EOF { ds }
 
 item:
-| AXIOM; name=identifier; COLON; fmla=quoted
+| AXIOM; name=located(IDENTIFIER); COLON; fmla=located(QUOTED)
   { Axiom (name, fmla) }
-| THEOREM; name=identifier; COLON; fmla=quoted;
+| THEOREM; name=located(IDENTIFIER); COLON; fmla=located(QUOTED);
   PROOF;
     p=located(proof);
-  END
-  { Theorem (name, fmla, p) }
-
-identifier: i=located(IDENTIFIER) { i }
-
-quoted: s=located(QUOTED) { s}
+  x=located(END)
+  { Theorem (name, fmla, p, x) }
 
 proof:
 | name=QIDENT
@@ -46,5 +43,5 @@ command_arg:
 
 (* Add location information to a production *)
 %inline
-located(X): detail=X
-    { { detail; location = Location.mk $startpos $endpos } }
+located(X): x=X
+    { Annotated.add (Location.mk $startpos $endpos) x }

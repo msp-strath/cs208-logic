@@ -68,8 +68,6 @@ module Make
           with type goal = Goal.t
            and type assumption = Assumption.t
            and type error = [ `Msg of string ]
-
-      val assumption : int -> rule
     end)
     (P : PARTIALS with module Calculus = Calculus) =
 struct
@@ -93,7 +91,6 @@ struct
 
   type action =
     | ApplyRule of PT.point * Calculus.rule
-    | ApplyAssumption of PT.point * int
     | Update of PT.point * P.partial
     | ResetTo of PT.point
     | DoNothing
@@ -224,28 +221,6 @@ struct
             div ~attrs:[ A.class_ "rulename" ] (text name)];
         formulabox point (PT.goal point)]
 
-  let render_active_assumption assumption idx point =
-    let conclusion = PT.goal point in
-    let open Drop_down in
-    let options =
-      P.elim_assumption ~conclusion ~assumption ~idx
-      |> List.map (function
-           | label, `ByAssumption ->
-               option ~action:(ApplyAssumption (point, idx)) (text label)
-           | label, `Rule rule ->
-               option ~action:(ApplyRule (point, rule)) (text label)
-           | label, `Partial partial ->
-               option ~action:(Update (point, partial)) (text label))
-    in
-    match options with
-    | [] -> text (Assumption.to_string assumption)
-    | options ->
-        make
-          ~attrs:[ A.title ("Options for " ^ Assumption.to_string assumption) ]
-          (option ~action:DoNothing ~selected:true ~enabled:false ~hidden:true
-             (text (Assumption.to_string assumption))
-          :: options)
-
   let render_box assumptions rendered_subtree =
     match assumptions with
     | [] -> rendered_subtree
@@ -268,14 +243,8 @@ struct
     | ApplyRule (path, rule) -> (
         match PT.apply rule path with
         | Ok prooftree -> prooftree (* FIXME: clear the error state *)
-        | Error (`RuleError (`Msg e)) ->
-            (* FIXME *)
-            prooftree)
-    | ApplyAssumption (point, idx) -> (
-        match PT.apply (Calculus.assumption idx) point with
-        | Ok prooftree -> prooftree (* FIXME: clear error state *)
-        | Error (`RuleError (`Msg e)) ->
-            (* FIXME *)
+        | Error (`RuleError (`Msg _msg)) ->
+            (* FIXME: use the message *)
             prooftree)
     | ResetTo path -> PT.set_hole None path
     | Update (path, partial) -> PT.set_hole (Some partial) path

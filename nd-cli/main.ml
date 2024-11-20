@@ -8,7 +8,7 @@ open Fol_formula
 module GoalStack =
   Natural_deduction.Goal_stack.Make (Natural_deduction.Focused)
 
-let interpret_command { detail = { head; args }; location } =
+let interpret_command Annotated.{ detail = { head; args }; annotation = location } =
   Result.map_error
     (fun e -> location, `Command_interp_error e)
     (Command.parse_command
@@ -16,10 +16,10 @@ let interpret_command { detail = { head; args }; location } =
        (head::args))
 
 let rec execute_proof stack proof =
-  match proof.detail with
+  match proof.Annotated.detail with
   | Hole name ->
      let* { GoalStack.assumptions; goal }, stack =
-       Result.map_error (fun e -> proof.location, e) (GoalStack.pop stack)
+       Result.map_error (fun e -> proof.Annotated.annotation, e) (GoalStack.pop stack)
      in
      let json =
        let open Json in
@@ -56,22 +56,22 @@ let rec execute_proof stack proof =
   | Rule (command, sub_proofs) ->
      let* rule  = interpret_command command in
      let* stack =
-       Result.map_error (fun e -> command.location, e)
+       Result.map_error (fun e -> command.Annotated.annotation, e)
          (GoalStack.apply rule stack)
      in
      Result_ext.fold_left_err execute_proof stack sub_proofs
 
 let interpret_item environment = function
-  | { detail = Axiom (ident, formula); location = _ } ->
+  | Axiom (ident, formula) ->
      let* formula =
-       Result.map_error (fun e -> formula.location, `Formula_error e)
+       Result.map_error (fun e -> formula.Annotated.annotation, `Formula_error e)
          (Formula.of_string formula.detail)
      in
      Ok ((ident.detail, Natural_deduction.Focused.A_Formula formula)
          :: environment)
-  | { detail = Theorem (ident, formula, proof); location } ->
+  | Theorem (ident, formula, proof, end_of_proof) ->
      let* formula =
-       Result.map_error (fun e -> formula.location, `Formula_error e)
+       Result.map_error (fun e -> formula.Annotated.annotation, `Formula_error e)
          (Formula.of_string formula.detail)
      in
      let goal_stack =
@@ -87,7 +87,7 @@ let interpret_item environment = function
          Ok ((ident.detail, Natural_deduction.Focused.A_Formula formula)
              :: environment)
       | _ ->
-         Error (location, `Proof_incomplete))
+         Error (end_of_proof.Annotated.annotation, `Proof_incomplete))
 
 let () =
   let filename = Sys.argv.(1) in

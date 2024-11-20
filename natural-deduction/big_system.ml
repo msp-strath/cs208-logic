@@ -45,8 +45,8 @@ module Make (C : CALCULUS) (D : DOCUMENT) = struct
     match (rule, goal) with
     | Comment, Doc -> Ok ([ ([], CommentDoc); ([], Doc) ], ())
     | Comment, _ -> Error (`Outer "Comment not applicable here")
-    | Text str, CommentDoc -> Ok ([], ())
-    | Text str, _ -> Error (`Outer "Text not applicable here")
+    | Text _str, CommentDoc -> Ok ([], ())
+    | Text _str, _ -> Error (`Outer "Text not applicable here")
     | Theorem (name, statement), Doc ->
         (* FIXME: check freshness of 'name' *)
         Ok
@@ -247,29 +247,29 @@ struct
     | InsertComment pt -> (
         match PT.apply Comment pt with
         | Ok prooftree -> prooftree
-        | Error msg -> prooftree (* FIXME: generic response mechanism *))
+        | Error _msg -> prooftree (* FIXME: generic response mechanism *))
     | SaveText (pt, text) -> (
         (* FIXME: error feedback *)
         let doc = Document.of_string text in
         match PT.apply (Text doc) pt with
         | Ok prooftree -> prooftree
-        | Error msg -> prooftree)
+        | Error _msg -> prooftree)
     | InsertTheorem (pt, name, statement, `Theorem) -> (
         (* FIXME: error feedback *)
         match R.statement_of_string statement with
         | Ok statement -> (
             match PT.apply (Theorem (name, statement)) pt with
             | Ok prooftree -> prooftree
-            | Error msg -> prooftree)
-        | Error msg -> prooftree)
+            | Error _msg -> prooftree)
+        | Error _msg -> prooftree)
     | InsertTheorem (pt, name, statement, `Axiom) -> (
         (* FIXME: error feedback *)
         match R.statement_of_string statement with
         | Ok statement -> (
             match PT.apply (Axiom (name, statement)) pt with
             | Ok prooftree -> prooftree
-            | Error msg -> prooftree)
-        | Error msg -> prooftree)
+            | Error _msg -> prooftree)
+        | Error _msg -> prooftree)
     | SendCommand (pt, command_txt) -> (
         match R.rule_of_string command_txt with
         | Ok rule -> (

@@ -11,7 +11,7 @@ module Make
 struct
   open Html
 
-  let rule_selector assumps point formula = text "???"
+  let rule_selector _assumps _point _formula = text "???"
   (*let open Ulmus.DropDown in
     let options =
       P.rule_selection assumps formula |> List.map
@@ -37,7 +37,7 @@ struct
            (text "Select rule...")
       ::options)*)
 
-  let render_active_assumption assumption idx point =
+  let render_active_assumption assumption _idx _point =
     text (Assumption.to_string assumption ^ ", ")
   (*
     let conclusion = PT.formula point in
@@ -67,7 +67,7 @@ struct
   let proofbox elements = div ~attrs:[ A.class_ "proofbox" ] elements
   let premisebox elements = div ~attrs:[ A.class_ "premisebox" ] elements
 
-  let formulabox point formula =
+  let formulabox _point formula =
     div
       ~attrs:
         [
@@ -81,7 +81,7 @@ struct
   let disabled_rule_button label =
     button ~attrs:[ A.disabled true ] (text ("apply " ^ label))
 
-  let enabled_rule_button label path rule = disabled_rule_button label
+  let enabled_rule_button label _path _rule = disabled_rule_button label
   (* button ~attrs:[E.onclick (ApplyRule (path, rule))]
      (text ("apply " ^ label))*)
 
@@ -96,7 +96,7 @@ struct
             assumptions];
         content]
 
-  let formula_input point value typ update =
+  let formula_input _point value typ _update =
     input
       ~attrs:
         [

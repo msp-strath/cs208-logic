@@ -32,8 +32,11 @@ module Make (Calculus : CALCULUS) (Hole : HOLE with type goal = Calculus.goal)
       assumptions = assumptions;
     }
 
-  let root_goal { subtree = { formula } } = formula
-  let root_assumptions { assumptions } = List.rev assumptions
+  let root_goal { subtree = { formula; _ }; _ } =
+    formula
+
+  let root_assumptions { assumptions; _ } =
+    List.rev assumptions
 
   (* A tree 'turned inside out' to expose a particular point *)
   type steps =
@@ -79,9 +82,11 @@ module Make (Calculus : CALCULUS) (Hole : HOLE with type goal = Calculus.goal)
               Rule { rule; children = List.rev_append before (box :: after) };
           }
 
-  let goal { pt_formula } = pt_formula
+  let goal { pt_formula; _ } =
+    pt_formula
 
-  let assumptions { pt_assumptions } = pt_assumptions
+  let assumptions { pt_assumptions; _ } =
+    pt_assumptions
 
   let fold f_hole f_rule f_box t =
     let rec fold context hered_assumps { formula; status } =
@@ -138,7 +143,9 @@ module Make (Calculus : CALCULUS) (Hole : HOLE with type goal = Calculus.goal)
     | Rule { rule; children } ->
        Rule
          ( rule,
-           List.map (fun { subtree } -> tree_of_status subtree.status) children
+           List.map (fun { subtree; _ } ->
+               tree_of_status subtree.status)
+             children
          )
 
   let subtree_of_point { pt_status; _ } = tree_of_status pt_status
@@ -198,13 +205,13 @@ module Make (Calculus : CALCULUS) (Hole : HOLE with type goal = Calculus.goal)
     reconstruct_steps { formula; status } context
 
   (* FIXME: return an identifier for the new hole so we can focus it *)
-  let apply rule { pt_formula; pt_status; pt_context; pt_assumptions } =
+  let apply rule { pt_formula; pt_status = _; pt_context; pt_assumptions } =
     match Calculus.apply pt_assumptions rule pt_formula with
     | Ok (premises, update) ->
        let formula = Calculus.update_goal update pt_formula in
        let children =
-         List.mapi
-           (fun i (assumptions, goal) ->
+         List.map
+           (fun (assumptions, goal) ->
              let status : status =
                Hole { content = Hole.empty goal }
              in
@@ -239,11 +246,11 @@ module Make (Calculus : CALCULUS) (Hole : HOLE with type goal = Calculus.goal)
        Ok ({ subtree; assumptions } :: boxes, update)
     | _, [] | [], _ -> Error `LengthMismatch
 
-  let insert_tree tree { pt_formula; pt_status; pt_context; pt_assumptions } =
+  let insert_tree tree { pt_formula; pt_status = _; pt_context; pt_assumptions } =
     let* { status; _}, update =
       of_tree Calculus.empty_update pt_assumptions pt_formula tree
     in
-    Ok (reconstruct pt_formula status Calculus.empty_update pt_context)
+    Ok (reconstruct pt_formula status update pt_context)
 
   let of_tree assumptions goal tree =
     let* prooftree, update =
@@ -253,7 +260,7 @@ module Make (Calculus : CALCULUS) (Hole : HOLE with type goal = Calculus.goal)
     let prooftree = update_prooftree update prooftree in
     Ok { assumptions; subtree = prooftree }
 
-  let set_hole content { pt_formula; pt_context } =
+  let set_hole content { pt_formula; pt_context; _ } =
     let status : status = Hole { content } in
     reconstruct pt_formula status Calculus.empty_update pt_context
 end

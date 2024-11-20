@@ -81,11 +81,11 @@ module System = struct
         | None -> Error (`Msg "conj_elim: no such assumption"))
     | Disj_intro1 -> (
         match formula with
-        | Or (f1, f2) -> Ok [ ([], f1) ]
+        | Or (f1, _f2) -> Ok [ ([], f1) ]
         | _ -> Error (`Msg "disj_intro1: does not apply here"))
     | Disj_intro2 -> (
         match formula with
-        | Or (f1, f2) -> Ok [ ([], f2) ]
+        | Or (_f1, f2) -> Ok [ ([], f2) ]
         | _ -> Error (`Msg "disj_intro2: does not apply here"))
     | Disj_elim assump_idx -> (
         match get_assumption assump_idx assumps with
@@ -136,7 +136,7 @@ module Partials = struct
     | Implies_intro -> "→-I"
     | Implies_elim _ -> "→-E"
     | Conj_intro -> "∧-I"
-    | Conj_elim i -> "∧-E"
+    | Conj_elim _ -> "∧-E"
     | Disj_intro1 -> "∨-I1"
     | Disj_intro2 -> "∨-I2"
     | Disj_elim _ -> "∨-E"
@@ -146,7 +146,7 @@ module Partials = struct
     | Exists_elim _ -> "∃-E"
 
   (* FIXME: all the "elim" rules actually need left labels *)
-  let left_label_of_rule rule = None
+  let left_label_of_rule _rule = None
 
   type partial =
     | Partial_Forall_elim of {
@@ -173,7 +173,7 @@ module Partials = struct
 
   type selector_group = { group_name : string; rules : rule_selector list }
 
-  let rule_selection assumptions formula =
+  let rule_selection _assumptions formula =
     let open Fol_formula in
     match formula with
     | True -> [] (* FIXME: do this *)
@@ -221,11 +221,11 @@ module Partials = struct
                   `Partial
                     (Partial_Forall_elim { idx; variable; body; term = "" }) );
               ]
-          | Imp (f1, f2) ->
+          | Imp _ ->
               [ ("use this implication", `Rule (Implies_elim idx)) ]
-          | And (f1, f2) ->
+          | And _ ->
               [ ("decompose this assumption", `Rule (Conj_elim idx)) ]
-          | Or (f1, f2) ->
+          | Or _ ->
               [ ("decompose this assumption", `Rule (Disj_elim idx)) ]
           | Exists _ ->
               [ ("decompose this assumption", `Rule (Exists_elim idx)) ]

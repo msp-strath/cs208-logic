@@ -71,9 +71,6 @@ module Make
       ]
       (text (string_of_goal formula))
 
-  let formulabox_inactive content =
-    div ~attrs:[ A.class_ "formulabox" ] content
-
   let assumption_box ~assumptions content =
     div ~attrs:[ A.class_ "assumptionbox" ]
       begin%concat
@@ -129,7 +126,7 @@ module Make
     div ~attrs:[ A.class_ "worksheet" ]
       (PT.fold render_hole render_rule_application render_box prooftree)
 
-  let update action prooftree =
+  let update action _prooftree =
     match action with
     | ResetTo point ->
        PT.set_hole Hole.void point
