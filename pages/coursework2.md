@@ -143,7 +143,7 @@ The following questions all use the rules for [“for all” and “exists”](p
 
 ## Question 3, Equality (2 marks)
 
-The following proofs all use the rules for [equality](equality.md).
+The following proofs all use the rules for [equality](equality.html).
 
 ### Question 3(a) (1 mark)
 
