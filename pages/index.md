@@ -88,6 +88,8 @@ In Part 2, we strive for truth through proof. We will be using an interactive pr
 
 11. [Arithmetic and Induction](induction.html). Induction allows us to prove facts about infinitely many individuals, as long as those individuals are built up in a “well founded” way. We look specifically at induction on natural numbers, which will allow us to prove facts in the theory of arithmetic as described by Peano's axioms.
 
-12. [Undecidability of the Halting Problem](halting-problem.html). One of the foundational results of Computer Science is that there is no program which can reliably tell if another program will halt on a given input. This page goes through a formal proof of this fact.
+12. [Specifying Properties of Programs](properties-of-programs.html). We can use predicate logic to make precise some statements we can make about programs and how they execute.
 
-13. [Metatheory and Gödel's Incompleteness Theorem](metatheory-automation.html). If we as humans can construct proofs, then could we get a computer to do it? What are the limits of what we can prove?
+13. [Undecidability of the Halting Problem](halting-problem.html). One of the foundational results of Computer Science is that there is no program which can reliably tell if another program will halt on a given input. This page goes through a formal proof of this fact.
+
+14. [Metatheory and Gödel's Incompleteness Theorem](metatheory-automation.html). If we as humans can construct proofs, then could we get a computer to do it? What are the limits of what we can prove?
