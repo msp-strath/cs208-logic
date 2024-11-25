@@ -1,14 +1,14 @@
-This page links to the interactive notes and exercises for Logic part of [CS208 Logic & Algorithms](https://classes.myplace.strath.ac.uk/course/view.php?id=15121), part of the Undergraduate Computer Science degree at the [University of Strathclyde](https://www.strath.ac.uk/science/computerinformationsciences/).
+This page links to the interactive notes and exercises for Logic part of [CS208 Logic & Algorithms](https://classes.myplace.strath.ac.uk/course/view.php?id=15121), part of the Undergraduate BSc (Hons) /MEng Computer Science and BSc (Hons) Software Engineering degrees at the [University of Strathclyde](https://www.strath.ac.uk/science/computerinformationsciences/).
 
-Please send any comments and queries to [Robert Atkey](mailto:robert.atkey@strath.ac.uk) ([Web page](https://bentnib.org)). The source code for these pages in available [on Github](https://github.com/msp-strath/cs208-logic).
+Please send any comments, queries, or corrections to [Robert Atkey](mailto:robert.atkey@strath.ac.uk) ([Web page](https://bentnib.org)). The source code for these pages in available [on Github](https://github.com/msp-strath/cs208-logic).
 
 ## Introduction
 
-In the first semester of the CS208, we will study Symbolic Logic. Symbolic Logic is a fundamental set of the techniques for describing data and processes. It is useful in computing for describing, building, and checking systems, and for solving complicated problems involving many interacting constraints. We will look at how to define logic (syntax and semantics), algorithms for computing with logic, and systems for deriving proofs in formal logic. We will also keep in mind the practical uses of logic in Computer Science.
+In the first semester of CS208, we will study Symbolic Logic. Symbolic Logic is a fundamental set of techniques for describing situations, reasoning, data, and processes. It is useful in computing for describing, building, and checking systems, and for solving complicated problems involving many interacting constraints. We will look at how to define logic (syntax and semantics), algorithms for computing with logic, and systems for deriving proofs in formal logic. We will also keep in mind the practical uses of logic in Computer Science.
 
 This course follows on from CS103 and CS106 in first year.
 
-Please see the [MyPlace page](https://classes.myplace.strath.ac.uk/course/view.php?id=15121) for information on Lectures, Tutorials, and Assessment.
+Please see the [MyPlace page](https://classes.myplace.strath.ac.uk/course/view.php?id=15121) (Strathclyde students only) for information on Lectures, Tutorials, and Assessment.
 
 ### Learning Outcomes
 
@@ -26,7 +26,7 @@ Part 0 of this course is a (re)introduction to the basic concepts of Proposition
 
 1. [Syntax](prop-logic-syntax.html): what are the valid sequences of symbols that we can write down? Which ones are logical formulas?
 
-2. [Semantics](prop-logic-semantics.html): what do those symbols mean? What do formulas made form the symbols mean?
+2. [Semantics](prop-logic-semantics.html): what do those symbols mean? What do formulas made from the symbols mean?
 
 3. [Truth Tables, Satisfiability, and Validity](truth-tables.html): An effective way to compute the meaning of a logical formula, and two kinds of statements we can make about a formula.
 
