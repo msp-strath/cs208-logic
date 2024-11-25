@@ -2,7 +2,7 @@
 
 This repository contains the sources for the course materials for the Logic part of the course CS208 *Logic and Algorithms*. The sources comprise the [markdown sources](pages/), the [site generator](site_gen/main.ml), LaTeX Beamer [sources for the lecture slides](slides/), and OCaml code for the interactive theorem prover and sat solver widgets.
 
-A live version of the course is hosted at [https://personal.cis.strath.ac.uk/robert.atkey/cs208/contents.html](https://personal.cis.strath.ac.uk/robert.atkey/cs208/contents.html). See there for more information about the course content.
+A live version of the course is hosted at [https://personal.cis.strath.ac.uk/robert.atkey/cs208/](https://personal.cis.strath.ac.uk/robert.atkey/cs208/). See there for more information about the course content.
 
 ## Building the site
 
