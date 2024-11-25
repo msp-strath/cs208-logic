@@ -4,12 +4,12 @@
 This page assumes that you have understood the [proof rules for quantifiers](pred-logic-rules.html) and [proof rules for equality](equality.html) pages and completed all the exercises there.
 ```
 
-So far, we have seen at least three ways that logic can be used in Computer Science:
+So far, we have seen at least four ways that logic can be used in Computer Science:
 
 1. Encoding problems in logic means that we can use SAT solvers to find solutions to problems. We looked at this in some depth in [Logical Modelling](logical-modelling-intro.html). It is possible to take these ideas further in Logic Programming languages such as [Prolog](https://www.metalevel.at/prolog).
 2. Predicate Logic has a close connection with databases. We saw this in the definition of [models for Predicate Logic](predicate-logic-semantics.html), where databases can be seen as finite models. Queries on a database are restricted forms of Predicate Logic formula.
-4. If we can express our programs as *equations*, then we can use equational reasoning and induction to prove things about programs. We saw an example of this with [arithmetic and induction](induction.html), where addition and multiplication are defined by two equations each. Programming languages like [Haskell](https://www.haskell.org) are entirely based around making definitions by equations. You will start to learn Haskell CS260 next semester.
-3. [We mentioned in passing](sound-complete-meaning.html) that it is also possible to view proofs as processes or programs transforming evidence. The CS410 *Advanced Functional Programming* course in 4th year develops this idea much further. The video [Propositions as Types](https://www.youtube.com/watch?v=IOiZatlZtGU) (see also [the paper](https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf)) describes the idea in an accessible way.
+3. If we can express our programs as *equations*, then we can use equational reasoning and induction to prove things about programs. We saw an example of this with [arithmetic and induction](induction.html), where addition and multiplication are defined by two equations each. Programming languages like [Haskell](https://www.haskell.org) are entirely based around making definitions by equations. You will start to learn Haskell CS260 next semester.
+4. [We mentioned in passing](sound-complete-meaning.html) that it is also possible to view proofs as processes or programs transforming evidence. The [CS410 *Advanced Functional Programming*](https://github.com/gallais/CS410-2024) course in 4th year develops this idea much further.
 
 In this page [and the next](halting-problem.html), we'll look at another way of talking about programs using Predicate Logic, where we use the logic to state properties of programs' behaviour directly, and the different statements we can make about programs' behaviour even in the simple case of non-interactive programs that consume one input and produce one output.
 
@@ -69,11 +69,11 @@ Equipped with the `exec` predicate symbol, we can use it to state various proper
    1. If the input is an array of numbers, the output is an array of the same numbers, but in sorted order.
    2. If the input is a Java program, the output is Java bytecode that correctly implements the same behaviour as the original program.
    3. If the input is a map and a start and end point, the output is the route from the start to the end point that is “the best”.
-   3. If the input is a description of the obstacles currently visible on the road, the output is instructions to the car's steering, brakes and acceleration that avoids them in the safest way possible.
+   4. If the input is a description of the obstacles currently visible on the road, the output is instructions to the car's steering, brakes and acceleration that avoids them in the safest way possible.
 
    As you can see from these examples, when we get to specifying interesting programs, the specifications get very vague and difficult to write down. Nevertheless, it is possible for some small critical parts of programs to give precise specifications, such as “this method actually sorts arrays”. It is also possible to give specifications about the *absence* of certain kinds of errors:
 
-   1. If the input is not `null`, then this program never throws a `NullPointerExecption`.
+   1. If the input is not `null`, then this program never throws a `NullPointerException`.
 
    In general we call the input/output constraints a “specification”. The program `prog` satisfies a specification if whenever `P` is true for the input, then `Q` is true for any output of the program:
 

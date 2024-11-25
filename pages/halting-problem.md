@@ -8,13 +8,13 @@ One of the foundational results of Computer Science is that there is no program 
 
 This page presents a formal proof of this fact.
 
-The unsolvability of the halting problem means that we can't (for most program languages) write programs that will soundly and completely automatically check a program for some property. E.g.:
+The unsolvability of the halting problem means that we can't (for most programming languages) write programs that will soundly and completely automatically check a program for some property. E.g.:
 
 1. Will this program ever output 1?
 2. Will this program ever output a number between 0 and 100?
 3. Will this program ever issue an instruction to launch the nuclear missles?
 
-If we could solve any of these, we can also solve the halting problem by wrapping the program under test with a test to see if it does do the thing we dynamically and looping indefinitely if it does.
+If we could solve any of these, we can also solve the halting problem by wrapping the program under test with a test to see if it does do the thing we are looking for and looping indefinitely if it does. Then if our halting problem solution says “halts” then we know that the program doesn't have the behaviour we are looking for.
 
 The proof of undecidability is an example of a *diagonalisation* proof, where we prove that a solution cannot exist by assuming that a solution exists and using it *on itself* to construct a contradiction.
 
@@ -294,3 +294,5 @@ It is worth looking at the various assumptions underlying this proof, to see exa
    * The real danger here is *duplication*, because it allows us to construct large inputs from small inputs, meaning that there is no bound on the size of computations. If we restrict the size of computations to some fixed size, then the halting problem becomes solvable by enumerating all possible states of the computation. This does require that we have a machine much larger than the ones we want to simulate, however.
    * Another solution is to prohibit unrestricted looping altogether, or at least to control it in some way. If we restrict our programs to always only loop over the input, or over data structures generated from the input, then we can guarantee termination. Unfortunately, this also means that we miss some functions (because otherwise we would have a solution to the halting problem!).
 2. We assumed that a solution is **sound and complete**. Soundness means that if it says `true` then the program halts. Completeness means that if it says `false`, then the program does not halt. If we drop one of these, then we can make useful approximate solutions. For example, a solution that says `true` in most *useful* cases is an area of intensive research. This is similar to the idea above of restricting programs to a certain form, but approaching it from the other direction.
+
+On the [next page](metatheory-automation.html), we'll look at a similar negative result that it purely about logic: Gödel's Incompleteness Theorem.
