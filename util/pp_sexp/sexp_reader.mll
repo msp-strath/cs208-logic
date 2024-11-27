@@ -29,3 +29,37 @@ and quoted_atom b = parse
 | '\\' '\\' { Buffer.add_char b '\\'; quoted_atom b lexbuf }
 | [^ '\\' '"' '\n']+ { Buffer.add_string b (Lexing.lexeme lexbuf);
                        quoted_atom b lexbuf }
+
+{
+
+open Sexp
+
+(* FIXME: spans *)
+let of_lexbuf lexbuf =
+  let rec scan acc =
+    match token lexbuf with
+    | EOF ->
+       failwith "Unexpected EOF" (* FIXME: say where the opening '(' was *)
+    | RParen ->
+       List.rev acc
+    | LParen ->
+       let list = scan [] in
+       scan (List list :: acc)
+    | BareAtom atom | QuotedAtom atom ->
+       scan (Atom atom :: acc)
+  in
+  let rec to_seq () =
+    match token lexbuf with
+    | EOF ->
+       Seq.Nil
+    | RParen ->
+       failwith "Unopened ')'" (* FIXME: say where *)
+    | LParen ->
+       let list = scan [] in
+       Seq.Cons (List list, to_seq)
+    | BareAtom atom | QuotedAtom atom ->
+       Seq.Cons (Atom atom, to_seq)
+  in
+  to_seq
+
+}
