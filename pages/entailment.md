@@ -1,6 +1,6 @@
 # Entailment
 
-One of the uses of logic is to identify when conclusions do and do not follow from some assumptions. If a conclusion `Q` follows from some assumptions `P₁, P₂...` (in a rigorous way I define below), we will say that the assumptions `P₁, P₂...` *entails* `Q`. I will also write this in symbols:
+One of the uses of logic (and possibly the most important one) is to identify when conclusions do and do not follow from some assumptions. If a conclusion `Q` follows from some assumptions `P₁, P₂...` (in a rigorous way we define below), we will say that the assumptions `P₁, P₂...` *entails* `Q`. I will also write this in symbols:
 
 ```
   P₁, P₂ ... ⊧ Q

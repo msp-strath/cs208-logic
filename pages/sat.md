@@ -46,11 +46,11 @@ The second video describes how to make SAT solvers go faster by using informatio
 
 ## Further Reading
 
-The videos above describe how a relatively simple SAT solver works. Real ones incorporate many more techniques to improve the guessing of valuations, and to do more learning from the problem as the search proceeds. Low-level implementation techniques are also very important.
+The videos above describe how a relatively simple SAT solver works. Real ones incorporate many more techniques to heuristically guess which atoms to guess values for next, and to do more learning from conflict states as the search proceeds. Low-level implementation techniques are also very important to achieve good memory efficiency and speed.
 
 The blog post [Understanding SAT by Implementing a Simple SAT Solver in Python](https://sahandsaba.com/understanding-sat-by-implementing-a-simple-sat-solver-in-python.html) describes the implementation of a slightly more complex (and efficient) SAT solver in Python. It gives a flavour of the kinds of data structures used in real SAT solvers.
 
-An example industrial strength SAT solver is [Picosat](http://fmv.jku.at/picosat/). This is a "industrial strength" SAT solver that is also designed to have a small(ish) implementation in C.
+An example industrial strength SAT solver is [Picosat](http://fmv.jku.at/picosat/). This is a “industrial strength” SAT solver that is also designed to have a small(ish) implementation in C.
 
 There is also a [Python interface](https://github.com/ContinuumIO/pycosat) to Picosat which means that you can build up collections of constraints in a Python program via the API, instead of using a logical modelling tool like we do here. The Pycosat repository gives a [Python implementation](https://github.com/ContinuumIO/pycosat/blob/master/examples/opium.py) of the [Package Installation Problem](packages.html).
 
@@ -58,4 +58,4 @@ There is also a [Python interface](https://github.com/ContinuumIO/pycosat) to Pi
 
 The SAT solver used in the Logical Modelling Tool embedded in these pages is [mSat](https://github.com/Gbury/mSAT) which is written in [OCaml](https://ocaml.org) and compiled to JavaScript for these pages via [Js\_of\_ocaml](https://ocsigen.org/js_of_ocaml/latest/manual/overview).
 
-For more depth and breadth imaginable, this sub-sub-sub-section of The Art of Computer Programming covers SAT Solving algorithms in detail: [The Art of Computer Programming: 7.2.2.2 Satisfiability](https://cs.stanford.edu/~knuth/fasc6a.ps.gz) (You will need a program capable of hanlding PostScript files). Several different algorithms are given and compared on many examples, and their runtime characteristics are studied. *Caution:* reading this requires a lot of time and patience, it is rewarding but not easy read.
+For more depth and breadth than is imaginable, this sub-sub-sub-section of The Art of Computer Programming covers SAT Solving algorithms in detail: [The Art of Computer Programming: 7.2.2.2 Satisfiability](https://cs.stanford.edu/~knuth/fasc6a.ps.gz) (You will need a program capable of hanlding PostScript files, e.g. `evince` on Linux). Several different algorithms are given and compared on many examples, and their runtime characteristics are studied. *Caution:* reading this requires a lot of time and patience, it is a rewarding but not easy read.
