@@ -245,7 +245,7 @@ let do_submission css questions dirname outdir entry =
           | Some answer ->
              match check_proof question_config answer with
              | Error msg ->
-                Printf.eprintf "%s: ERROR: %s\n" question_id msg;
+                Printf.eprintf "%s: %s: ERROR: %s\n" partnum question_id msg;
                 (total_marks, html)
              | Ok (given_marks, qn_html) ->
                 (total_marks+given_marks, Html_static.(^^) html qn_html))
