@@ -34,11 +34,17 @@ module Term : sig
 
   val to_string : ('a -> string) -> 'a t -> string
 
+  type subst
+
+  val empty_subst : subst
+
+  val combine_subst : subst -> subst -> subst
+
   (* FIXME: abstract type of substitutions so we don't ever make a
      circular one. *)
-  val apply_subst : string t VarMap.t -> string t -> string t
+  val apply_subst : subst -> string t -> string t
 
-  val unify : string t -> string t -> string t VarMap.t -> string t VarMap.t option
+  val unify : string t -> string t -> subst -> subst option
 end = struct
   open Result_ext.Syntax
 
@@ -139,6 +145,16 @@ end = struct
     | Var x          -> p x
     | Fun (_, terms) -> Result_ext.traverse_ (traverse_ p) terms
 
+  type subst = string t VarMap.t
+
+  let empty_subst = VarMap.empty
+
+  (* Left-biased combination. Usually, this should only ever be used
+     on disjoint substitutions. FIXME: why isn't this composition of
+     substituions-as-functions? *)
+  let combine_subst s1 s2 =
+    VarMap.union (fun _ a _b -> Some a) s1 s2
+
   let rec apply_subst subst = function
     | Var v ->
        (match VarMap.find v subst with
@@ -153,7 +169,7 @@ end = struct
        if String.equal fnm1 fnm2 then
          unify_terms terms1 terms2 subst
        else
-         None
+         None (* mismatched function symbols *)
     | Var v1, Var v2 when String.equal v1 v2 ->
        Some subst
     | Var v, term | term, Var v ->
@@ -246,13 +262,12 @@ end = struct
 
   type goal = metavar Term.t
   type assumption = Impossible.t
-  type update = string Term.t VarMap.t
+  type update = Term.subst
 
-  let empty_update = VarMap.empty
+  let empty_update = Term.empty_subst
   let update_goal = Term.apply_subst
   let update_assumption _subst = Impossible.elim
-  let combine_update =
-    VarMap.union (fun _ a _b -> Some a)
+  let combine_update = Term.combine_subst
 
   type rule = string [@@deriving sexp]
 
@@ -269,7 +284,7 @@ end = struct
   let apply _assumps rule_name goal =
     let rule_desc = List.assoc rule_name Rules.rules in
     let premises, conclusion = freshen gensym rule_desc in
-    match Term.unify conclusion goal VarMap.empty with
+    match Term.unify conclusion goal Term.empty_subst with
     | Some subst ->
        let subgoals = List.map (fun t -> [], Term.apply_subst subst t) premises in
        Ok (subgoals, subst)
