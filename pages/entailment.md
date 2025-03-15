@@ -1,6 +1,8 @@
 # Entailment
 
-One of the uses of logic (and possibly the most important one) is to identify when conclusions do and do not follow from some assumptions. Logic does not concern itself with whether or not whether or not the assumptions are actualy true, only the question of whether or not the things we are assuming are sufficient to conclude some other property.
+One of the uses of logic (and possibly the most important one) is to identify when conclusions do and do not follow from some assumptions.
+
+Logic does not concern itself with whether or not whether or not the assumptions are actually true, only the question of whether or not the formulas we are assuming are sufficient to conclude some other formula.
 
 If a conclusion `Q` follows from some assumptions `P₁, P₂...` (in a rigorous way we define below), we will say that the assumptions `P₁, P₂...` *entails* `Q`. I will also write this in symbols:
 
@@ -8,7 +10,7 @@ If a conclusion `Q` follows from some assumptions `P₁, P₂...` (in a rigorous
   P₁, P₂ ... ⊧ Q
 ```
 
-The assumptions `P₁, P₂...` may be finitely or infinitely many, though we will usually only be interested in finite numbers of assumptions.
+The assumptions `P₁, P₂...` may be finitely or infinitely many, though we will usually only be interested in finitely many assumptions.
 
 The intuitive definition of entailment is the following:
 
@@ -34,7 +36,7 @@ The following video introduces the idea of entailment by examples.
 
 For Propositional Logic, it is possible to compute entailments by using truth tables. Let's see how to do this by some examples. These examples will also introduce some of the interesting consequences of the definition of entailment.
 
-### A entails A
+### “A” entails “A”
 
 Our first example is the entailment `A \models A`. Inituitively, this entailment ought to hold: if we assume `A`, then we should be able to conclude `A`. Let us check this by writing a truth table. We first write out all the possible values of `A`. These are all our different valuations, so we explicitly mark these columns as our valuation:
 
@@ -59,7 +61,7 @@ Now, to check the entailment we have to check: for every valuation (row), if all
 
 Checking this table, we can see that the entailment holds. In the first row, the assumption is false, so we are OK. In the second row, the assumption is true, but so is the conclusion, so we are OK. After checking every row, we can conclude that `A \models A`.
 
-### A and B entails A
+### “A and B” entails “A”
 
 The entailment `A \land B \models A` is a little more complex because there are two propositional atoms `A` and `B`. I will write out the table all in one go:
 
@@ -83,9 +85,23 @@ Together, for each row, we have that if the assumption is true, then the conclus
 
 TBD
 
-### Modus Ponens
+| A (valuation) | B (valuation) | A \lor B (assumption) | A (conclusion) |
+|---------------|---------------|-----------------------|----------------|
+| F             | F             | F                     | F              |
+| F             | T             | T                     | F              |
+| T             | F             | T                     | T              |
+| T             | T             | T                     | T              |
+
+### Implication internalises entailment
 
 TBD
+
+| A (valuation) | B (valuation) | A \to B (assumption) | A (assumption) | B (conclusion) |
+|---------------|---------------|----------------------|----------------|----------------|
+| F             | F             |                      |                |                |
+| F             | T             |                      |                |                |
+| T             | F             |                      |                |                |
+| T             | T             |                      |                |                |
 
 ### Entailment with no assumptions
 
@@ -94,6 +110,10 @@ TBD
 ### Contradictory assumptions
 
 TBD
+
+| A (valuation) | B (valuation) | A (assumption) | ¬A (assumption) | B (conclusion) |
+|---------------|---------------|----------------|-----------------|----------------|
+|               |               |                |                 |                |
 
 ## Facts about entailment
 
