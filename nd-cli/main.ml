@@ -15,42 +15,49 @@ let interpret_command Annotated.{ detail = { head; args }; annotation = location
        Natural_deduction.Focused_command.commands
        (head::args))
 
+let json_of_assumption =
+  let open Natural_deduction.Focused in
+  let open Json in
+  function
+  | (name, A_Formula fmla) ->
+     JObject
+       [ "name", JString name
+       ; "type", JString "formula"
+       ; "formula", JString (Formula.to_string fmla) ]
+  | (name, A_Termvar) ->
+     JObject
+       [ "name", JString name
+       ; "type", JString "entity" ]
+
+let json_of_goal =
+  let open Natural_deduction.Focused in
+  let open Json in
+  function
+  | Checking goal ->
+     JObject
+       [ "goal", JString (Formula.to_string goal) ]
+  | Synthesis (focus, goal) ->
+     JObject
+       [ "focus", JString (Formula.to_string focus)
+       ; "goal", JString (Formula.to_string goal)
+       ]
+
+let json_of_hole name assumptions goal =
+  let open Json in
+  let open Natural_deduction.Focused in
+  JObject
+    [ "name", JString name
+    ; "assumptions", JArray (List.map json_of_assumption assumptions)
+    ; "goal", json_of_goal goal
+    ]
+
 let rec execute_proof stack proof =
   match proof.Annotated.detail with
   | Hole name ->
      let* { GoalStack.assumptions; goal }, stack =
        Result.map_error (fun e -> proof.Annotated.annotation, e) (GoalStack.pop stack)
      in
-     let json =
-       let open Json in
-       let open Natural_deduction.Focused in
-       JObject
-         [ "name", JString name
-         ; "assumptions",
-           JArray (List.map
-                     (function
-                      | (name, A_Formula fmla) ->
-                         JObject
-                           [ "name", JString name
-                           ; "type", JString "formula"
-                           ; "formula", JString (Formula.to_string fmla) ]
-                      | (name, A_Termvar) ->
-                         JObject
-                           [ "name", JString name
-                           ; "type", JString "entity" ])
-                     assumptions)
-         ; "goal",
-           (match goal with
-            | Checking goal ->
-               JObject
-                 [ "goal", JString (Formula.to_string goal) ]
-            | Synthesis (focus, goal) ->
-               JObject
-                 [ "focus", JString (Formula.to_string focus)
-                 ; "goal", JString (Formula.to_string goal)
-           ])
-         ]
-     in
+     let json = json_of_hole name assumptions goal in
      Pretty.print (Json.to_document json);
      Ok stack
   | Rule (command, sub_proofs) ->
