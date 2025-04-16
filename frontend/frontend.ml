@@ -1,5 +1,3 @@
-open Widgets
-
 module Formula_validator = struct
   open Fol_formula
 
@@ -15,22 +13,25 @@ module Formula_validator = struct
        Error (Parser_util.Driver.string_of_error err)
 end
 
+open Widgets
+
+let components =
+  [ "lmt", Slakemoth_widget.component
+  ; "tickbox", Tickbox.component
+  ; "textbox", Textbox.component
+  ; "selection", Selection.component
+  ; "entrybox", Validating_entry.component (module Validating_entry.Null_Validator)
+  ; "formulaentry", Validating_entry.component (module Formula_validator)
+  ; "rules", Natural_deduction.Rules.from_rules
+  ; "rules-display", Natural_deduction.Rules.display_rules
+  ; "focused-nd", Natural_deduction.Question.focusing_component
+  ; "focused-tree", Natural_deduction.Question.tree_component
+  ; "focused-freeentry", Nd_focusing_widget.component
+  ; "model-checker", Model_checker_widget.component
+  ]
+
 let () =
-  Ulmus.attach_all "lmt" Slakemoth_widget.component;
-  Ulmus.attach_all "tickbox" Tickbox.component;
-  Ulmus.attach_all "textbox" Textbox.component;
-  Ulmus.attach_all "selection" Selection.component;
-  Ulmus.attach_all "entrybox"
-    (Validating_entry.component (module Validating_entry.Null_Validator));
-  Ulmus.attach_all "formulaentry"
-    (Validating_entry.component (module Formula_validator));
-
-  Ulmus.attach_all "rules" Natural_deduction.Rules.from_rules;
-  Ulmus.attach_all "rules-display" Natural_deduction.Rules.display_rules;
-  Ulmus.attach_all "focused-nd" Natural_deduction.Question.focusing_component;
-  Ulmus.attach_all "focused-tree" Natural_deduction.Question.tree_component;
-  Ulmus.attach_all "focused-freeentry" Nd_focusing_widget.component;
-
-  Ulmus.attach_all "model-checker" Model_checker_widget.component;
-
+  List.iter
+    (fun (label, component) -> Ulmus.attach_all label component)
+    components;
   Ulmus.attach_download_button "download"
