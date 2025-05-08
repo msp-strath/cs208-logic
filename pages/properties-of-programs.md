@@ -7,7 +7,7 @@ This page assumes that you have understood the [proof rules for quantifiers](pre
 So far, we have seen at least four ways that logic can be used in Computer Science:
 
 1. Encoding problems in logic means that we can use SAT solvers to find solutions to problems. We looked at this in some depth in [Logical Modelling](logical-modelling-intro.html). It is possible to take these ideas further in Logic Programming languages such as [Prolog](https://www.metalevel.at/prolog).
-2. Predicate Logic has a close connection with databases. We saw this in the definition of [models for Predicate Logic](predicate-logic-semantics.html), where databases can be seen as finite models. Queries on a database are restricted forms of Predicate Logic formula.
+2. Predicate Logic has a close connection with databases. We saw this in the definition of [models for Predicate Logic](pred-logic-semantics.html), where databases can be seen as finite models. Queries on a database are restricted forms of Predicate Logic formula.
 3. If we can express our programs as *equations*, then we can use equational reasoning and induction to prove things about programs. We saw an example of this with [arithmetic and induction](induction.html), where addition and multiplication are defined by two equations each. Programming languages like [Haskell](https://www.haskell.org) are entirely based around making definitions by equations. You will start to learn Haskell CS260 next semester.
 4. [We mentioned in passing](sound-complete-meaning.html) that it is also possible to view proofs as processes or programs transforming evidence. The [CS410 *Advanced Functional Programming*](https://github.com/gallais/CS410-2024) course in 4th year develops this idea much further.
 
@@ -27,7 +27,7 @@ This definition also allows multiple possible answers for the same input, where 
 
 We do not distinguish between things that are program-like and things that are data-like. In particular, a program can take itself as an input. This flexibility of self reference will be crucial for stating the [halting problem and proving that it is undecidable](halting-problem.html).
 
-This definition is highly simplified in many ways. It says nothing about the time, space, or other resources needed to carry out the computation of `output` from `input`. Nor does it directly allow for interactive computation where a program takes input and sends output during execution rather than at the start and end. Nevertheless, it does
+This definition is highly simplified in many ways. It says nothing about the time, space, or other resources needed to carry out the computation of `output` from `input`. Nor does it directly allow for interactive computation where a program takes input and sends output during execution rather than at the start and end. Nevertheless, it does allow us to talk about what computers can and cannot compute.
 
 ### Specifying Properties of Programs
 
