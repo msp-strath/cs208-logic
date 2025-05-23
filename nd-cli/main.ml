@@ -44,7 +44,7 @@ let json_of_goal =
 
 let json_of_hole name assumptions goal =
   let open Json in
-  let open Natural_deduction.Focused in
+  (* let open Natural_deduction.Focused in *)
   JObject
     [ "name", JString name
     ; "assumptions", JArray (List.map json_of_assumption assumptions)
