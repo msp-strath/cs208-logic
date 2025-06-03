@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = github:NixOS/nixpkgs/nixos-24.05;
+    nixpkgs.url = github:NixOS/nixpkgs/nixos-25.05;
     opam-nix.url = "github:tweag/opam-nix";
     opam-nix.inputs.nixpkgs.follows = "nixpkgs";
     opam-repository = {
@@ -43,7 +43,7 @@
         query = devPackagesQuery // {
           ## You can force versions of certain packages here, e.g:
           ## - force the ocaml compiler to be taken from opam-repository:
-          ocaml-base-compiler = "5.2.0";
+          ocaml-base-compiler = "5.3.0";
           ## - or force the compiler to be taken from nixpkgs and be a certain version:
           # ocaml-system = "4.14.0";
           ## - or force ocamlfind to be a certain version:

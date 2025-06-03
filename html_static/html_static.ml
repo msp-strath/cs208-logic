@@ -398,6 +398,7 @@ module A = struct
 
   let colspan value = Attr ("colspan", string_of_int value)
   let rows value = Attr ("rows", string_of_int value)
+  let cols value = Attr ("rows", string_of_int value)
   let align value = Attr ("align", value)
 
   let datetime value = Attr ("datetime", value)
