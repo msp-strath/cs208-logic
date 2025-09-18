@@ -1,0 +1,770 @@
+% -*- TeX-engine: xetex -*-
+
+\documentclass[xetex,aspectratio=169,14pt,hyperref={pdfpagelabels=true,pdflang={en-GB}}]{beamer}
+
+\input{macros}
+
+\weektitle{9}{Automating Logic}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\weeksection{Automating Logic}
+
+\begin{frame}
+  {Introduction}
+
+  TODO: Some introductory text
+\end{frame}
+
+\weeksection{SAT Solvers}
+
+\begin{frame}
+  {SAT solvers}
+
+  SATisfiability solvers.
+
+  \bigskip
+
+  The problem they solve:
+  \begin{itemize}
+  \item Given a formula $P$ (in \emph{conjunctive normal form}), find
+    a valuation $v$ that makes it $\true$ and return
+    $\mathsf{SAT}(v)$, or if there is no such valuation, return
+    $\mathsf{UNSAT}$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Solving SAT}
+
+  \begin{itemize}
+  \item In the worst case, there are $2^n$ cases to check, where $n$
+    is the number of atomic propositions.
+    \begin{itemize}
+    \item Checking each case is quick ... but there are a lot of cases.
+    \end{itemize}
+  \item This is the archetypal NP problem:
+    \begin{itemize}
+    \item If we knew the answer, it would be easy to check \\
+      \qquad (\textbf{P}olynomial time)
+    \item But there are exponentially many to check \\
+      \qquad (\textbf{N}ondeterminism)
+    \end{itemize}
+  \item It is unknown if there is a better way. Does P = NP?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {But SAT is useful: Solving Problems}
+
+  \begin{enumerate}
+  \item Package installations (last lecture) \\
+    \sidenote{satisfying valuation = good package installation}
+  \item Solving Sudoku \\
+    \sidenote{satisfying valuation = correct solution}
+  \item Solving Resource allocations \\
+    \sidenote{satisfying valuation = feasible resource allocation}
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+  {SAT is Useful: Finding Bugs}
+
+  \sidenote{Recall: $P_1 \to P_2 \to Q$ is valid if $\lnot(P_1 \to P_2 \to Q)$ is not satisfiable}
+  \begin{enumerate}
+  \item Finding faults in systems \\
+    \sidenote{satisfying valuation = path to a bad state}
+  \item Finding flaws in Access Control rules \\
+    \sidenote{satisfying valuation = unexpectedly permitted request}
+  \item Verifying hardware \\
+    \sidenote{satisfying valuation = counterexample to correctness}
+  \end{enumerate}
+\end{frame}
+
+
+\begin{frame}
+  {An alluring proposition}
+
+  Instead of writing custom solvers for all these problems, we:
+  \begin{enumerate}
+  \item translate into propositional logic; and
+  \item use an off the shelf SAT solver.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Solving the problem in practice}
+
+  Despite the $2^n$ worst case time, practical SAT solvers are possible:
+  \begin{enumerate}
+  \item Solvers don't blindly check all cases:
+    \begin{itemize}
+    \item Use the formula to guide the search;
+    \item Analyse dead ends to avoid finding them more than once;
+    \item Very efficient data structures.
+    \end{itemize}
+  \item Human-made problems tend to be quite regular.
+  \item Modern SAT solvers can handle
+    \begin{itemize}
+    \item 10s of thousands of variables
+    \item millions of clauses
+    \end{itemize}
+  \item Practical tools for solving real-world problems.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Input for SAT solvers}
+
+  SAT solvers take input in \emph{Conjunctive Normal Form} (CNF):
+  \begin{displaymath}
+    \begin{array}{cl}
+      &(\lnot a \lor \lnot b \lor \lnot c) \\
+      \land&(\lnot b \lor \lnot c \lor \lnot d) \\
+      \land&(\lnot a \lor \lnot b \lor c) \\
+      \land&b
+    \end{array}
+  \end{displaymath}
+  \begin{enumerate}
+  \item Entire formula is a conjunction $C_1 \land C_2 \land \cdots \land C_n$
+  \item where each \emph{clause} $C_i = L_{i,1} \lor L_{i,2} \lor \cdots \lor L_{i,k}$
+  \item where each \emph{literal} $L_{i,j} = x_{i,j}$ or $L_{i,j} = \lnot x_{i,j}$
+  \end{enumerate}
+
+  \raggedleft
+  {\footnotesize \textcolor{black!60}{Every formula can be put into CNF (later)}}
+
+  \raggedright
+
+\end{frame}
+
+\begin{frame}
+  {Conjunctive Normal Form}
+  For the package installation problems, we already have CNF:
+  \begin{displaymath}
+    \begin{array}{ll}
+      \left.
+      \begin{array}{cl}
+        &(\lnot \mathit{libD}_1 \lor \lnot \mathit{libD}_2) \\
+        \land&(\lnot \mathit{libC}_1 \lor \lnot \mathit{libC}_2) \\
+        \land&(\lnot \mathit{progA}_1 \lor \lnot \mathit{progA}_2)
+      \end{array}
+      \right\}
+      &
+        \textsc{Incompat}
+      \\
+      \left.
+      \begin{array}{cl}
+        \land&(\lnot \mathit{progA}_1 \lor \mathit{libC}_1) \\
+        \land&(\lnot \mathit{progA}_2 \lor \mathit{libC}_2) \\
+        \land&(\lnot \mathit{libC}_1 \lor \mathit{libD}_2) \\
+        \land&(\lnot \mathit{libC}_2 \lor \mathit{libD}_2)
+      \end{array}
+               \right\} & \textsc{Dep}
+      \\
+      \left.\begin{array}{cl}
+        \land &(\mathit{progA}_1 \lor \mathit{progA}_2)
+      \end{array}\right.
+    \end{array}
+  \end{displaymath}
+
+\end{frame}
+
+\begin{frame}
+  {A SAT Solver's job}
+
+  Given clauses that look like:
+  \begin{displaymath}
+    \begin{array}{cl}
+      &(\lnot a \lor \lnot b \lor \lnot c) \\
+      \land&(\lnot b \lor \lnot c \lor \lnot d) \\
+      \land&(\lnot a \lor \lnot b \lor c) \\
+      \land&b
+    \end{array}
+  \end{displaymath}
+
+  To find a valuation $v$ for the $a, ...$ such that at least one
+  literal in every clause is true.
+  \begin{displaymath}
+    \textrm{Returns either:} \quad \mathsf{SAT}(v) \qquad \textrm{or} \qquad \mathsf{UNSAT}.
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Basic idea of the algorithm}
+
+  \begin{enumerate}
+  \item The clauses $C_1, \dots, C_n$ to be satisfied are fixed;
+  \item The state is a partial valuation \textcolor{black!60}{(next slide)};
+  \item At each step we pick a way to modify the current partial
+    valuation by choosing from a collection of rules;
+  \item Algorithm terminates when either a satisfying valuation is
+    constructed, or it is clear that this is not possible.
+  \end{enumerate}
+
+  \bigskip
+
+  This is known as the \emph{DPLL Algorithm}.
+\end{frame}
+
+\begin{frame}
+  {Partial Valuations}
+
+  To describe what a SAT solver does, we need \emph{partial valuations}.
+
+  \bigskip
+
+  A \rhighlight{partial valuation} $v^?$ is a:
+  \begin{itemize}
+  \item \emph{sequence} of assignments to atoms; with each one marked
+    \begin{enumerate}
+    \item $d$ecision point, if we guessed this value.
+    \item $f$orced, if we were forced to have this value.
+    \end{enumerate}
+  \end{itemize}
+
+\medskip
+
+  Examples:
+  $\begin{array}[t]{l}
+      v_1^? = [ a \decideto \true, b \decideto \false, c \forcedto \true ] \\
+      v_2^? = [ a \forcedto \false, b \decideto \false ] \\
+    \end{array}$
+\end{frame}
+
+\begin{frame}
+  {Differences with Valuations}
+
+  \begin{enumerate}
+  \item The order matters\\
+    \sidenote{we keep track of what decisions we make during the search}
+  \item Not all atoms need an assignment\\
+    \sidenote{we want to represent partial solutions during the search}
+  \item We mark decision points and forced decisions.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Notation}
+  We write
+  \begin{displaymath}
+    v_1^?, a \decideto x, v_2^?
+  \end{displaymath}
+  for a partial valuation with $a \decideto x$ somewhere in
+  the middle.
+
+  \bigskip
+
+  We write
+  \begin{displaymath}
+    \mathit{decisionfree}(v^?)
+  \end{displaymath}
+  if none of the assignments in $v^?$ are marked $d$ \\
+  \sidenote{i.e., all decisions in $v^?$ are $f$orced}
+\end{frame}
+
+\begin{frame}
+  {1. Initialisation}
+
+  We start with the \emph{empty partial valuation} $v^? = []$.\\
+  \sidenote{We make no commitments}
+
+  \medskip
+
+  We must extend this guess to a valuation that satisfies all the clauses.
+
+\end{frame}
+
+\begin{frame}
+  {2. Guessing}
+
+  If there is an atom $a$ in the clauses that is not in the current
+  partial valuation $v^?$, then we can make a guess. We pick one of:
+  \begin{displaymath}
+    v^?, a \decideto \true \qquad \textrm{or} \qquad v^?, a \decideto \false
+  \end{displaymath}
+  \sidenote{Note: we have marked this as a $d$ecision point}
+
+\end{frame}
+
+\begin{frame}
+  {3. Success}
+
+  If the current $v^?$ makes all the clauses true (for all $i$,
+  $\sem{C_i}v^? = \true$), then stop with $\mathsf{SAT}(v^?)$.
+\end{frame}
+
+\def\doneafter<#1>#2{%
+  \temporal<#1>%
+  {\colorbox{white}{\color{black}$\displaystyle#2$}}%
+  {\colorbox{green!50}{\color{black}$\displaystyle#2$}}%
+  {\colorbox{green!50}{\color{black}$\displaystyle#2$}}}
+
+\def\stuck<#1>#2{%
+  \temporal<#1>%
+  {\colorbox{white}{\color{black}$\displaystyle#2$}}%
+  {\colorbox{red!50}{\color{black}$\displaystyle#2$}}%
+  {\colorbox{white}{\color{black}$\displaystyle#2$}}}
+
+\def\done<#1>#2{%
+  \temporal<#1>%
+  {\colorbox{white}{\color{black}$\displaystyle#2$}}%
+  {\colorbox{green!50}{\color{black}$\displaystyle#2$}}%
+  {\colorbox{white}{\color{black}$\displaystyle#2$}}}
+
+\newcommand{\undet}[1]{\stackrel{\textcolor{white}{\checkmark}}{\colorbox{white}{$#1$}}}
+\newcommand{\failed}[1]{\stackrel{\times}{\colorbox{red!90}{\textcolor{white}{$#1$}}}}
+\newcommand{\satd}[1]{\stackrel{\checkmark}{\colorbox{green!50}{{$#1$}}}}
+
+\begin{frame}
+  {Example}
+  \begin{displaymath}
+    \only<1>{(\undet{\lnot a} \lor \undet{\lnot b} \lor \undet{\lnot c}) \land (\undet{\lnot b} \lor \undet{\lnot c} \lor \undet{\lnot d}) \land (\undet{\lnot a} \lor \undet{\lnot b} \lor \undet{c}) \land \undet{b}}%
+    \only<2>{(\satd{\lnot a} \lor \undet{\lnot b} \lor \undet{\lnot c}) \land (\undet{\lnot b} \lor \undet{\lnot c} \lor \undet{\lnot d}) \land (\satd{\lnot a} \lor \undet{\lnot b} \lor \undet{c}) \land \undet{b}}%
+    \only<3>{(\satd{\lnot a} \lor \failed{\lnot b} \lor \undet{\lnot c}) \land (\failed{\lnot b} \lor \undet{\lnot c} \lor \undet{\lnot d}) \land (\satd{\lnot a} \lor \failed{\lnot b} \lor \undet{c}) \land \satd{b}}%
+    \only<4>{(\satd{\lnot a} \lor \failed{\lnot b} \lor \satd{\lnot c}) \land (\failed{\lnot b} \lor \satd{\lnot c} \lor \undet{\lnot d}) \land (\satd{\lnot a} \lor \failed{\lnot b} \lor \failed{c}) \land \satd{b}}%
+    \only<5->{(\satd{\lnot a} \lor \failed{\lnot b} \lor \satd{\lnot c}) \land (\failed{\lnot b} \lor \satd{\lnot c} \lor \satd{\lnot d}) \land (\satd{\lnot a} \lor \failed{\lnot b} \lor \failed{c}) \land \satd{b}}%
+  \end{displaymath}
+  \sidenote{Need at least one green in every clause}
+
+  \sechead{Sequence of (lucky) guesses}
+  \begin{enumerate}
+  \item $[]$
+  \item<2-> $[a \decideto \false]$
+  \item<3-> $[a \decideto \false, b \decideto \true]$
+  \item<4-> $[a \decideto \false, b \decideto \true, c \decideto \false]$
+  \item<5-> $[a \decideto \false, b \decideto \true, c \decideto \false, d \decideto \false]$, a satisfying valuation.
+  \end{enumerate}
+
+  % \pause\pause\pause\pause\pause
+  % Line 5 is a satisfying valuation.
+
+  % \pause
+  % \bigskip
+
+  % But we can't program ``luck''!
+\end{frame}
+
+\begin{frame}
+  But we can't program ``luck''!
+\end{frame}
+
+\begin{frame}
+  {4. Backtracking}
+
+  If we have a partial valuation:
+  \begin{displaymath}
+    v_1^?, a \decideto x, v_2^?
+  \end{displaymath}
+  and $\mathit{decisionfree}(v_2^?)$ (so $a \assigned x$ was our most recent guess).
+
+  \medskip
+
+  Then we backtrack (throw away $v_2^?$) and change our mind:
+  \begin{displaymath}
+    v_1^?, a \forcedto \lnot x
+  \end{displaymath}
+  marking the assignment as $f$orced.
+
+\end{frame}
+
+\begin{frame}
+  {5. Failure}
+
+  If all decisions are forced ($\mathit{decisionfree}(v^?)$), and
+  there is at least one clause $C_i$ such that $\sem{C}v^? = \false$,
+  then return $\mathsf{UNSAT}$.
+
+\end{frame}
+
+\begin{frame}[t]
+  {\footnotesize
+    $\only<1>{(\undet{\lnot a} \lor \undet{\lnot b} \lor \undet{\lnot c}) \land (\undet{\lnot b} \lor \undet{\lnot c} \lor \undet{\lnot d}) \land (\undet{\lnot a} \lor \undet{\lnot b} \lor \undet{c}) \land \undet{b}}%
+    \only<2>{(\failed{\lnot a} \lor \undet{\lnot b} \lor \undet{\lnot c}) \land (\undet{\lnot b} \lor \undet{\lnot c} \lor \undet{\lnot d}) \land (\failed{\lnot a} \lor \undet{\lnot b} \lor \undet{c}) \land \undet{b}}%
+    \only<3>{(\failed{\lnot a} \lor \failed{\lnot b} \lor \undet{\lnot c}) \land (\failed{\lnot b} \lor \undet{\lnot c} \lor \undet{\lnot d}) \land (\failed{\lnot a} \lor \failed{\lnot b} \lor \undet{c}) \land \satd{b}}%
+    \only<4>{(\failed{\lnot a} \lor \failed{\lnot b} \lor \failed{\lnot c}) \land (\failed{\lnot b} \lor \failed{\lnot c} \lor \undet{\lnot d}) \land (\failed{\lnot a} \lor \failed{\lnot b} \lor \satd{c}) \land \satd{b}}%
+    \only<5>{(\failed{\lnot a} \lor \failed{\lnot b} \lor \satd{\lnot c}) \land (\failed{\lnot b} \lor \satd{\lnot c} \lor \undet{\lnot d}) \land (\failed{\lnot a} \lor \failed{\lnot b} \lor \failed{c}) \land \satd{b}}%
+    \only<6>{(\failed{\lnot a} \lor \satd{\lnot b} \lor \undet{\lnot c}) \land (\satd{\lnot b} \lor \undet{\lnot c} \lor \undet{\lnot d}) \land (\failed{\lnot a} \lor \satd{\lnot b} \lor \undet{c}) \land \failed{b}}%
+    \only<7>{(\satd{\lnot a} \lor \undet{\lnot b} \lor \undet{\lnot c}) \land (\undet{\lnot b} \lor \undet{\lnot c} \lor \undet{\lnot d}) \land (\satd{\lnot a} \lor \undet{\lnot b} \lor \undet{c}) \land \undet{b}}%
+    \only<8>{(\satd{\lnot a} \lor \failed{\lnot b} \lor \undet{\lnot c}) \land (\failed{\lnot b} \lor \undet{\lnot c} \lor \undet{\lnot d}) \land (\satd{\lnot a} \lor \failed{\lnot b} \lor \undet{c}) \land \satd{b}}%
+    \only<9>{(\satd{\lnot a} \lor \failed{\lnot b} \lor \failed{\lnot c}) \land (\failed{\lnot b} \lor \failed{\lnot c} \lor \undet{\lnot d}) \land (\satd{\lnot a} \lor \failed{\lnot b} \lor \satd{c}) \land \satd{b}}%
+    \only<10>{(\satd{\lnot a} \lor \failed{\lnot b} \lor \failed{\lnot c}) \land (\failed{\lnot b} \lor \failed{\lnot c} \lor \failed{\lnot d}) \land (\satd{\lnot a} \lor \failed{\lnot b} \lor \satd{c}) \land \satd{b}}%
+    \only<11>{(\satd{\lnot a} \lor \failed{\lnot b} \lor \failed{\lnot c}) \land (\failed{\lnot b} \lor \failed{\lnot c} \lor \satd{\lnot d}) \land (\satd{\lnot a} \lor \failed{\lnot b} \lor \satd{c}) \land \satd{b}}%
+  $}
+
+{\footnotesize
+  \begin{enumerate}
+  \item $[]$
+    \vspace{-0.5em}
+  \item<2-> $[a \decideto \true]$
+    \vspace{-0.5em}
+  \item<3-> $[a \decideto \true, b \decideto \true]$
+    \vspace{-0.5em}
+  \item<4-> $[a \decideto \true, b \decideto \true, c \decideto \true]$ \qquad \emph{clause 1 failed, backtrack...}
+    \vspace{-0.5em}
+  \item<5-> $[a \decideto \true, b \decideto \true, c \forcedto \false]$ \qquad \emph{clause 3 failed, backtrack...}
+    \vspace{-0.5em}
+  \item<6-> $[a \decideto \true, b \forcedto \false]$ \qquad \emph{clause 4 failed, backtrack...}
+    \vspace{-0.5em}
+  \item<7-> $[a \forcedto \false]$
+    \vspace{-0.5em}
+  \item<8-> $[a \forcedto \false, b \decideto \true]$
+    \vspace{-0.5em}
+  \item<9-> $[a \forcedto \false, b \decideto \true, c \decideto \true]$
+    \vspace{-0.5em}
+  \item<10-> $[a \forcedto \false, b \decideto \true, c \decideto \true, d \decideto \true]$ \qquad \emph{clause 2 failed, backtrack}
+    \vspace{-0.5em}
+  \item<11-> $[a \forcedto \false, b \decideto \true, c \decideto \true, d \decideto \false]$ \qquad $\mathsf{SAT}$
+  \end{enumerate}
+  ~}
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{enumerate}
+  \item SAT solvers are tools that find satisfying valuations for formulas in CNF.
+  \item Having a SAT solver enables solving of problems modelled using logic.
+  \item The core algorithm is a backtracking search.
+  \end{enumerate}
+\end{frame}
+
+\weeksection{Faster SAT by Unit Propagation}
+
+% \begin{frame}
+%   \begin{center}
+%     {\Huge \textcolor{black!60}{Part 4 : }Faster SAT with Unit Propagation}
+%   \end{center}
+% \end{frame}
+
+\begin{frame}
+  {Backtracking is Oblivious}
+
+  The example:
+  \begin{displaymath}
+    ({\lnot a} \lor {\lnot b} \lor {\lnot c}) \land ({\lnot b} \lor {\lnot c} \lor {\lnot d}) \land ({\lnot a} \lor {\lnot b} \lor {c}) \land {b}
+  \end{displaymath}
+
+  Backtracking tries the atoms in some order.
+
+  \bigskip
+
+  But we can see immediately that $b$ must be true.
+
+  \bigskip
+
+  Other forced assignments occur during the search.
+\end{frame}
+
+\begin{frame}
+  {Making the Search less naive}
+
+  If we are in a situation like:
+  \begin{displaymath}
+    (\failed{\lnot b} \lor \failed{\lnot c} \lor \undet{\lnot d})
+  \end{displaymath}
+  then if the current valuation is to succeed in any way, it must be
+  the case that $d \assigned \false$.\\
+  \sidenote{because we need at least one literal in every clause to be true.}
+
+  % \bigskip
+
+  % Similarly, in a situation like:
+  % \begin{displaymath}
+  %   (\failed{\lnot b} \lor \failed{\lnot c} \lor \undet{d})
+  % \end{displaymath}
+  % then if the current valuation is to succeed in any way, it must be
+  % the case that $d \assigned \true$.\\
+
+  \bigskip
+
+  Using this, we can make the search a little less naive.
+\end{frame}
+
+\begin{frame}
+  {6. Unit Propagation Step}
+
+  (a) If there is a clause $C \lor a$and $\sem{C}v^? = \false$, then we
+  extend $v^?$ to:
+  \begin{displaymath}
+    v^?, a \forcedto \true
+  \end{displaymath}
+
+  \medskip
+
+  (b) If there is a clause $C \lor \lnot a$ and $\sem{C}v^? = \false$,
+  then we extend $v^?$ to:
+  \begin{displaymath}
+    v^?, a \forcedto \false
+  \end{displaymath}
+
+  \sidenote{Note: the $a$ needn't necessarily appear at the end of the clause}
+
+\end{frame}
+
+\begin{frame}
+  {\footnotesize
+  \begin{displaymath}
+    \only<1>{(\undet{\lnot a} \lor \undet{\lnot b} \lor \undet{\lnot c}) \land (\undet{\lnot b} \lor \undet{\lnot c} \lor \undet{\lnot d}) \land (\undet{\lnot a} \lor \undet{\lnot b} \lor \undet{c}) \land \undet{b}}%
+    \only<2>{(\undet{\lnot a} \lor \failed{\lnot b} \lor \undet{\lnot c}) \land (\failed{\lnot b} \lor \undet{\lnot c} \lor \undet{\lnot d}) \land (\undet{\lnot a} \lor \failed{\lnot b} \lor \undet{c}) \land \satd{b}}%
+    \only<3>{(\failed{\lnot a} \lor \failed{\lnot b} \lor \undet{\lnot c}) \land (\failed{\lnot b} \lor \undet{\lnot c} \lor \undet{\lnot d}) \land (\failed{\lnot a} \lor \failed{\lnot b} \lor \undet{c}) \land \satd{b}}%
+    \only<4>{(\failed{\lnot a} \lor \failed{\lnot b} \lor \satd{\lnot c}) \land (\failed{\lnot b} \lor \satd{\lnot c} \lor \undet{\lnot d}) \land (\failed{\lnot a} \lor \failed{\lnot b} \lor \failed{c}) \land \satd{b}}%
+    \only<5>{(\satd{\lnot a} \lor \failed{\lnot b} \lor \undet{\lnot c}) \land (\failed{\lnot b} \lor \undet{\lnot c} \lor \undet{\lnot d}) \land (\satd{\lnot a} \lor \failed{\lnot b} \lor \undet{c}) \land \satd{b}}%
+    \only<6>{(\satd{\lnot a} \lor \failed{\lnot b} \lor \failed{\lnot c}) \land (\failed{\lnot b} \lor \failed{\lnot c} \lor \undet{\lnot d}) \land (\satd{\lnot a} \lor \failed{\lnot b} \lor \satd{c}) \land \satd{b}}%
+    \only<7-8>{(\satd{\lnot a} \lor \failed{\lnot b} \lor \failed{\lnot c}) \land (\failed{\lnot b} \lor \failed{\lnot c} \lor \satd{\lnot d}) \land (\satd{\lnot a} \lor \failed{\lnot b} \lor \satd{c}) \land \satd{b}}%
+  \end{displaymath}}
+
+  \begin{enumerate}
+  \item $[]$ \qquad \emph{do unit propagation...}
+  \item<2-> $[b \forcedto \true]$
+  \item<3-> $[b \forcedto \true, a \decideto \true]$ \qquad \emph{do unit propagation...}
+  \item<4-> $[b \forcedto \true, a \decideto \true, c \forcedto \false]$ \qquad \emph{clause 3 failed, backtrack...}
+  \item<5-> $[b \forcedto \true, a \forcedto \false]$
+  \item<6-> $[b \forcedto \true, a \forcedto \false, c \decideto \true]$ \qquad \emph{do unit propagation...}
+  \item<7-> $[b \forcedto \true, a \forcedto \false, c \decideto \true, d \forcedto \false]$ \qquad $\mathsf{SAT}$
+  \end{enumerate}
+
+  \pause\pause\pause\pause\pause\pause\pause
+
+  \bigskip
+
+  One backtrack vs. four without unit propagation.
+\end{frame}
+
+\begin{frame}[t]
+  {2-SAT}
+  If every clause has at most two literals, UP means less backtracking:
+
+  \begin{displaymath}
+    \only<1>{
+      \begin{array}{clcl}
+        &(\undet{\lnot \mathit{libD}_1} \lor \undet{\lnot \mathit{libD}_2})
+        &\land& (\undet{\lnot \mathit{libC}_1} \lor \undet{\lnot \mathit{libC}_2}) \\
+        \land&(\undet{\lnot \mathit{progA}_1} \lor \undet{\lnot \mathit{progA}_2})
+        &\land& (\undet{\lnot \mathit{progA}_1} \lor \undet{\mathit{libC}_1}) \\
+        \land&(\undet{\lnot \mathit{progA}_2} \lor \undet{\mathit{libC}_2})
+        &\land& (\undet{\lnot \mathit{libC}_1} \lor \undet{\mathit{libD}_2}) \\
+        \land&(\undet{\lnot \mathit{libC}_2} \lor \undet{\mathit{libD}_2})
+        &\land&(\undet{\mathit{progA}_1} \lor \undet{\mathit{progA}_2})
+      \end{array}}
+    \only<2>{
+      \begin{array}{clcl}
+        &(\undet{\lnot \mathit{libD}_1} \lor \undet{\lnot \mathit{libD}_2})
+        &\land& (\undet{\lnot \mathit{libC}_1} \lor \undet{\lnot \mathit{libC}_2}) \\
+        \land&(\failed{\lnot \mathit{progA}_1} \lor \undet{\lnot \mathit{progA}_2})
+        &\land& (\failed{\lnot \mathit{progA}_1} \lor \undet{\mathit{libC}_1}) \\
+        \land&(\undet{\lnot \mathit{progA}_2} \lor \undet{\mathit{libC}_2})
+        &\land& (\undet{\lnot \mathit{libC}_1} \lor \undet{\mathit{libD}_2}) \\
+        \land&(\undet{\lnot \mathit{libC}_2} \lor \undet{\mathit{libD}_2})
+        &\land& (\satd{\mathit{progA}_1} \lor \undet{\mathit{progA}_2})
+      \end{array}}
+    \only<3>{
+      \begin{array}{clcl}
+        &(\undet{\lnot \mathit{libD}_1} \lor \undet{\lnot \mathit{libD}_2})
+        &\land& (\undet{\lnot \mathit{libC}_1} \lor \undet{\lnot \mathit{libC}_2}) \\
+        \land&(\failed{\lnot \mathit{progA}_1} \lor \satd{\lnot \mathit{progA}_2})
+        &\land& (\failed{\lnot \mathit{progA}_1} \lor \undet{\mathit{libC}_1}) \\
+        \land&(\satd{\lnot \mathit{progA}_2} \lor \undet{\mathit{libC}_2})
+        &\land& (\undet{\lnot \mathit{libC}_1} \lor \undet{\mathit{libD}_2}) \\
+        \land&(\undet{\lnot \mathit{libC}_2} \lor \undet{\mathit{libD}_2})
+        &\land& (\satd{\mathit{progA}_1} \lor \failed{\mathit{progA}_2})
+      \end{array}}
+    \only<4>{
+      \begin{array}{clcl}
+        &(\undet{\lnot \mathit{libD}_1} \lor \undet{\lnot \mathit{libD}_2})
+        &\land& (\failed{\lnot \mathit{libC}_1} \lor \undet{\lnot \mathit{libC}_2}) \\
+        \land&(\failed{\lnot \mathit{progA}_1} \lor \satd{\lnot \mathit{progA}_2})
+        &\land& (\failed{\lnot \mathit{progA}_1} \lor \satd{\mathit{libC}_1}) \\
+        \land&(\satd{\lnot \mathit{progA}_2} \lor \undet{\mathit{libC}_2})
+        &\land& (\failed{\lnot \mathit{libC}_1} \lor \undet{\mathit{libD}_2}) \\
+        \land&(\undet{\lnot \mathit{libC}_2} \lor \undet{\mathit{libD}_2})
+        &\land& (\satd{\mathit{progA}_1} \lor \failed{\mathit{progA}_2})
+      \end{array}}
+    \only<5>{
+      \begin{array}{clcl}
+        &(\undet{\lnot \mathit{libD}_1} \lor \undet{\lnot \mathit{libD}_2})
+        &\land& (\failed{\lnot \mathit{libC}_1} \lor \satd{\lnot \mathit{libC}_2}) \\
+        \land&(\failed{\lnot \mathit{progA}_1} \lor \satd{\lnot \mathit{progA}_2})
+        &\land& (\failed{\lnot \mathit{progA}_1} \lor \satd{\mathit{libC}_1}) \\
+        \land&(\satd{\lnot \mathit{progA}_2} \lor \failed{\mathit{libC}_2})
+        &\land& (\failed{\lnot \mathit{libC}_1} \lor \undet{\mathit{libD}_2}) \\
+        \land&(\satd{\lnot \mathit{libC}_2} \lor \undet{\mathit{libD}_2})
+        &\land& (\satd{\mathit{progA}_1} \lor \failed{\mathit{progA}_2})
+      \end{array}}
+    \only<6>{
+      \begin{array}{clcl}
+        &(\undet{\lnot \mathit{libD}_1} \lor \failed{\lnot \mathit{libD}_2})
+        &\land& (\failed{\lnot \mathit{libC}_1} \lor \satd{\lnot \mathit{libC}_2}) \\
+        \land&(\failed{\lnot \mathit{progA}_1} \lor \satd{\lnot \mathit{progA}_2})
+        &\land& (\failed{\lnot \mathit{progA}_1} \lor \satd{\mathit{libC}_1}) \\
+        \land&(\satd{\lnot \mathit{progA}_2} \lor \failed{\mathit{libC}_2})
+        &\land& (\failed{\lnot \mathit{libC}_1} \lor \satd{\mathit{libD}_2}) \\
+        \land&(\satd{\lnot \mathit{libC}_2} \lor \satd{\mathit{libD}_2})
+        &\land& (\satd{\mathit{progA}_1} \lor \failed{\mathit{progA}_2})
+      \end{array}}
+    \only<7>{
+      \begin{array}{clcl}
+        &(\satd{\lnot \mathit{libD}_1} \lor \failed{\lnot \mathit{libD}_2})
+        &\land& (\failed{\lnot \mathit{libC}_1} \lor \satd{\lnot \mathit{libC}_2}) \\
+        \land&(\failed{\lnot \mathit{progA}_1} \lor \satd{\lnot \mathit{progA}_2})
+        &\land& (\failed{\lnot \mathit{progA}_1} \lor \satd{\mathit{libC}_1}) \\
+        \land&(\satd{\lnot \mathit{progA}_2} \lor \failed{\mathit{libC}_2})
+        &\land& (\failed{\lnot \mathit{libC}_1} \lor \satd{\mathit{libD}_2}) \\
+        \land&(\satd{\lnot \mathit{libC}_2} \lor \satd{\mathit{libD}_2})
+        &\land& (\satd{\mathit{progA}_1} \lor \failed{\mathit{progA}_2})
+      \end{array}}
+  \end{displaymath}
+
+  \begin{displaymath}
+    \only<1>{[]}
+    \only<2>{[\mathit{progA}_1 \decideto \true]}
+    \only<3>{[\mathit{progA}_1 \decideto \true, \mathit{progA}_2 \forcedto \false]}
+    \only<4>{[\mathit{progA}_1 \decideto \true, \mathit{progA}_2 \forcedto \false, \mathit{libC}_1 \forcedto \true]}
+    \only<5>{[\mathit{progA}_1 \decideto \true, \mathit{progA}_2 \forcedto \false, \mathit{libC}_1 \forcedto \true, \mathit{libC}_2 \forcedto \false]}
+    \only<6>{[\mathit{progA}_1 \decideto \true, \mathit{progA}_2 \forcedto \false, \mathit{libC}_1 \forcedto \true, \mathit{libC}_2 \forcedto \false, \mathit{libD}_2 \forcedto \true]}
+    \only<7>{[\mathit{progA}_1 \decideto \true, \mathit{progA}_2 \forcedto \false, \mathit{libC}_1 \forcedto \true, \mathit{libC}_2 \forcedto \false, \mathit{libD}_2 \forcedto \true, \mathit{libD}_1 \forcedto \false]}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {2-SAT}
+
+  If every clause has at most two literals,
+
+  \begin{itemize}
+  \item UP means at most one backtrack
+  \item Means that we can solve the problem in polynomial time
+  \item So for the $n$-SAT problem:
+    \begin{itemize}
+    \item If $n \leq 2$, there is a fast polynomial time algorithm
+    \item If $n \geq 3$, no known general fast algorithm
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Summary of the Rules 1}
+
+  \begin{displaymath}
+    \begin{array}{@{}llcl@{\qquad}l}
+      \TirName{DecideTrue}    & v^? & \Longrightarrow & v^?, a \decideto \true & \textit{if $a$ is not assigned in $v^?$} \\
+      \\
+      \TirName{DecideFalse}   & v^? & \Longrightarrow & v^?, a \decideto \false & \textit{if $a$ is not assigned in $v^?$} \\
+      \\
+      \TirName{Success}       & v^? & \Longrightarrow & \mathsf{SAT}(v^?) & \textit{if $v^?$ makes all the} \\
+      &&&&\textit{clauses true.} \\
+  \end{array}
+\end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Summary of the Rules 2}
+
+  \begin{displaymath}
+    \begin{array}{@{}llcl@{\qquad}l}
+      \TirName{BackTrack}     & v_1^?, a \decideto x, v_2^? & \Longrightarrow & v_1^?, a \forcedto \lnot x & \textit{if $v_2^?$ is decision free} \\
+      \\
+      \TirName{Fail}          & v^? & \Longrightarrow & \mathsf{UNSAT} & \textit{if $v^?$ is decision free, and}\\
+                              &&&&\textit{makes at least one clause}\\
+      &&&&\textit{false.} \\
+  \end{array}
+\end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Summary of the Rules 3}
+
+  \begin{displaymath}
+    \begin{array}{@{}llcl@{\qquad}l}
+      \TirName{UnitPropTrue}  & v^? & \Longrightarrow & v^?, a \forcedto \true & \textit{if there is a clause $C \lor a$}\\
+      &&&&\textit{and $\sem{C}(v^?) = \false$} \\
+      \\
+      \TirName{UnitPropFalse} & v^? & \Longrightarrow & v^?, a \forcedto \false & \textit{if there is a clause $C \lor \lnot a$}\\
+      &&&&\textit{and $\sem{C}(v^?) = \false$} \\
+  \end{array}
+\end{displaymath}
+\end{frame}
+
+\begin{frame}[t]
+  {Real SAT solvers}
+  Use very efficient data structures.
+  \sidenote{Key is very fast unit propagation}
+
+  \medskip
+
+  Use heuristics to guide the search:
+  \begin{itemize}
+  \item Which atom to try next? (not just $a, b, c, ...$)
+  \item Whether to try $\true$ or $\false$ first?
+  \end{itemize}
+
+  \bigskip
+
+  Incorporate additional rules:
+  \begin{itemize}
+  \item Non-chronological backjumping \\
+    \sidenote{skip several decision points by analysing conflicts}
+  \item Clause learning to avoid doing the same work over again.
+  \item “CDCL” (Conflict Driven Clause Learning)
+  \item Random walk between possible valuations “WalkSAT”.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t]
+  {Further Reading}
+  A blog post with a Python implementation: \\
+  \quad \emph{Understanding SAT by Implementing a Simple SAT Solver in Python} \\
+  \quad \textcolor{black!60}{Sahand Saba} \\
+  \quad {\tiny \url{https://sahandsaba.com/understanding-sat-by-implementing-a-simple-sat-solver-in-python.html}}
+
+  \bigskip
+
+  Another blog post with more formalism: \\
+  \quad \emph{A Primer on Boolean Satisfiability} \\
+  \quad \textcolor{black!60}{Emina Torlak} \\
+  \quad {\tiny \url{https://homes.cs.washington.edu/~emina/blog/2017-06-23-a-primer-on-sat.html}} \\
+  \qquad {\footnotesize See also the links at the end for lots more detail.}
+\end{frame}
+
+\begin{frame}[t]
+  {More Further Reading}
+
+  For more breadth and detail than you could possibly imagine:\\
+  \quad \emph{The Art of Computer Programming: 7.2.2.2 Satisfiability} \\
+  \qquad \emph{Draft: Volume 4B, Pre-fascicle 6A} \\
+  \quad \textcolor{black!60}{Donald E. Knuth} \\
+  \quad {\tiny \url{https://cs.stanford.edu/~knuth/fasc6a.ps.gz}}
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item Unit Propagation speeds up SAT Solving \\
+    \sidenote{by using the structure of the problem}
+  \item This makes 2-SAT very fast
+  \item Real SAT Solvers are very sophisticated.
+  \end{itemize}
+\end{frame}
+
+
+\weeksection{Decidable Theories}
+
+\begin{frame}
+  {Decidable Theories}
+
+  TBD
+\end{frame}
+
+\weeksection{Quantifier Elimination}
+
+\begin{frame}
+  {Fourier-Motzkin Elimination}
+
+  TBD
+\end{frame}
+
+\end{document}

@@ -1,0 +1,1061 @@
+% -*- TeX-engine: xetex -*-
+
+\documentclass[xetex,aspectratio=169,14pt,hyperref={pdfpagelabels=true,pdflang={en-GB}}]{beamer}
+
+\input{macros}
+
+\weektitle{2}{Proof for Propositional Logic}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\weeksection{Natural Deduction}
+
+\begin{frame}[t]
+  {Judgements}
+
+  We want to deduce \emph{judgements} of the form:
+  \begin{displaymath}
+    P_1, \dots, P_n \vdash Q
+  \end{displaymath}
+  meaning:
+  \begin{center}
+    From assumptions $P_1, \dots, P_n$, we can prove $Q$.
+  \end{center}
+
+  \bigskip
+
+  {\bf Soundness}
+  The system will be \emph{sound}, meaning:
+  \begin{displaymath}
+    P_1,\dots,P_n \vdash Q~\textrm{provable}~~\Rightarrow~~P_1, \dots, P_n \models Q
+  \end{displaymath}
+
+  We will make sure it is sound by checking each rule as we go. \\
+  \quad \textcolor{black!60}{If all the premises are valid entailments, then so is the conclusion}
+\end{frame}
+
+\begin{frame}[t]
+  {Judgements}
+
+  The main judgement form is
+  \begin{displaymath}
+    P_1, \dots, P_n \vdash Q
+  \end{displaymath}
+  \qquad \textcolor{black!60}{With assumptions $P_1,\dots,P_n$, can prove $Q$}
+
+  \pause
+  \bigskip
+
+  We will also use an auxiliary judgement:
+  \begin{displaymath}
+    P_1, \dots, P_n~[P] \vdash Q
+  \end{displaymath}
+  \quad \textcolor{black!60}{$\cdot$ With assumptions $P_1,\dots,P_n$, \emph{focusing on} $P$, can prove $Q$}\\
+  \quad \textcolor{black!60}{$\cdot$ Also ``means'' $P_1,\dots,P_n,P \models Q$}\\
+  \quad \textcolor{black!60}{$\cdot$ Having a focus is useful for organising proofs}
+\end{frame}
+
+\begin{frame}[t]
+  {Judgements}
+
+  The main judgement form is
+  \begin{displaymath}
+    P_1, \dots, P_n \vdash Q
+  \end{displaymath}
+
+  \medskip
+
+  We will also use an auxiliary judgement:
+  \begin{displaymath}
+    P_1, \dots, P_n~[P] \vdash Q
+  \end{displaymath}
+
+  \pause
+  \bigskip
+
+  \textbf{Assumption lists}~The list of assumptions
+  $P_1, \dots, P_n$ will appear often. So we
+  will shorten it to $\Gamma$
+  \textcolor{black!60}{$ = P_1, \dots, P_n$}.
+\end{frame}
+
+\newcommand{\pUse}[1]{\texttt{use}~#1\texttt{,}~}
+\newcommand{\pDone}{\texttt{done}}
+\newcommand{\pSplit}[2]{\texttt{split(}#1~\texttt{|}~#2\texttt{)}}
+\newcommand{\pFst}{\texttt{first,}~}
+\newcommand{\pSnd}{\texttt{second,}~}
+\newcommand{\pTrue}{\texttt{true}}
+
+%\titlecard{Basic Rules}
+
+\begin{frame}
+  {Basic Rules}
+
+  \begin{displaymath}
+    \inferrule* [right=Done]
+    { }
+    {\Gamma~[P] \vdash P}
+  \end{displaymath}
+
+  \bigskip
+  \bigskip
+  \pause
+
+  \begin{itemize}
+  \item If we have a focused assumption $P$, then we can prove $P$
+  \item (Remember $\Gamma$ stands for a list of other assumptions)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Basic Rules}
+
+  \begin{displaymath}
+    \inferrule* [right=Use]
+    {P \in \Gamma \\ \Gamma~[P] \vdash Q}
+    {\Gamma \vdash Q}
+  \end{displaymath}
+
+  \bigskip
+  \bigskip
+  \pause
+
+  \begin{itemize}
+  \item $P \in \Gamma$ means ``$P$ is in $\Gamma$''.
+  \item If we have a $P$ in our current assumptions, we can focus on it.
+  \item $P \in \Gamma$ is a \emph{side condition}: it is something we
+    check when we apply the rule, not another judgement to be proved.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t]
+  {A first proof}
+
+  \bigskip
+
+  \begin{minipage}[t][2cm][b]{\textwidth}
+    \begin{displaymath}
+      \only<1>{A \vdash A\quad\quad}%
+      \only<2>{\inferrule* [right=Use] {A~[A] \vdash A} {A \vdash A}}%
+      \only<3>{\inferrule* [right=Use] {\inferrule* [Right=Done] { } {A~[A] \vdash A}} {A \vdash A}}
+    \end{displaymath}
+  \end{minipage}
+
+  \bigskip
+
+  \begin{itemize}
+  \item<2-> First \TirName{Use} the $A$ assumption.
+  \item<3-> Then we are \TirName{Done}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Soundness}
+
+  \begin{mathpar}
+    \inferrule* [right=Done]
+    { }
+    {\Gamma~[P] \vdash P}
+
+    \inferrule* [right=Use]
+    {P \in \Gamma \\ \Gamma~[P] \vdash Q}
+    {\Gamma \vdash Q}
+  \end{mathpar}
+
+  \pause
+  \bigskip
+
+  \TirName{Done} is sound because assuming $P$ entails $P$, and extra
+  assumptions make no difference.
+
+  \pause
+  \bigskip
+
+  \TirName{Use} is sound because if we assuming $P$ twice entails $Q$,
+  then it is okay to assume it once.
+\end{frame}
+
+\begin{frame}
+  {Rules for connectives}
+
+  \bigskip
+
+  The rule \TirName{Done} and \TirName{Use} do not mention the connectives.
+
+  \bigskip
+
+  In Natural Deduction, rules for connectives come in two kinds:
+
+  \bigskip
+
+  \begin{enumerate}
+  \item {\bf Introduction} rules\\
+    \textcolor{black!60}{How to \emph{construct} a proof with the connective}
+  \item {\bf Elimination} rules \\
+    \textcolor{black!60}{How to \emph{use} an assumption with this connective}
+  \end{enumerate}
+
+  \bigskip
+  \pause
+
+  Very rough analogy:\quad \textcolor{black!60}{but can be made very precise}
+  \begin{enumerate}
+  \item Introduction rules are like \emph{constructors} for building objects
+  \item Elimination rules are like \emph{methods} for taking apart objects
+  \end{enumerate}
+\end{frame}
+
+%\titlecard{Rules for Conjunction}
+
+\begin{frame}
+  {``And'' Introduction}
+
+
+  \begin{displaymath}
+    \inferrule* [right=Split]
+    {\Gamma \vdash Q_1 \\ \Gamma \vdash Q_2}
+    {\Gamma \vdash Q_1 \land Q_2}
+  \end{displaymath}
+
+  \bigskip
+  \pause
+
+  \begin{itemize}
+  \item To prove $P_1 \land P_2$ we have to prove $P_1$ and $P_2$
+  \item This rule is often called \TirName{$\land$-Introduction}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \sechead{An example proof}
+
+  \bigskip
+
+  \begin{displaymath}
+    \inferrule* [Right=Split]
+    { \inferrule* [right=Use]
+      {\inferrule* [Right=Done]
+        { } {A, B~[A] \vdash A}}
+      {A, B \vdash A}
+      \\
+      \inferrule* [Right=Use]
+      {\inferrule* [Right=Done]
+        { } {A, B~[B] \vdash B}
+      }
+      {A, B \vdash B}
+    }
+    {A, B \vdash A \land B}
+  \end{displaymath}
+
+  \pause
+  \bigskip
+
+  To prove $A \land B$, we \TirName{Split} into proofs of $A$ and
+  $B$. \\
+  In each case, we \TirName{Use} the corresponding assumption.
+\end{frame}
+
+\begin{frame}
+  {``And'' Elimination}
+
+  \begin{mathpar}
+    \inferrule* [right=First]
+    {\Gamma~[P_1] \vdash Q}
+    {\Gamma~[P_1 \land P_2] \vdash Q}
+
+    \inferrule* [right=Second]
+    {\Gamma~[P_2] \vdash Q}
+    {\Gamma~[P_1 \land P_2] \vdash Q}
+  \end{mathpar}
+
+  \bigskip
+  \pause
+
+  If we are focused on an formula $P_1 \land P_2$, we can select
+  either the \TirName{First} or \TirName{Second} component to focus
+  on.
+\end{frame}
+
+\begin{frame}
+  \sechead{Example proof}
+
+  \begin{displaymath}
+    \inferrule* [Right=Use]
+    {\inferrule* [Right=Second]
+      {\inferrule* [Right=Done]
+        { }
+        {A \land B~[B] \vdash B}
+      }
+      {A \land B~[A \land B] \vdash B}
+    }
+    {A \land B \vdash B}
+  \end{displaymath}
+\end{frame}
+
+%\titlecard{Rules for Truth}
+
+\begin{frame}
+  {``True'' Introduction}
+
+  \bigskip
+
+  \begin{displaymath}
+    \inferrule* [right=True]
+    { }
+    {\Gamma \vdash \true}
+  \end{displaymath}
+
+  \bigskip
+  \pause
+
+  \begin{itemize}
+  \item $\true$ is always provable.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {``True'' Elimination}
+
+  \pause
+  \bigskip
+
+  \begin{center}
+    \emph{No elimination rule!}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item The judgement forms for (focused) Natural Deduction:
+    \begin{mathpar}
+      P_1, \dots, P_n \vdash Q
+
+      P_1, \dots, P_n~[P] \vdash Q
+    \end{mathpar}
+  \item Rules for \TirName{Use} and \TirName{Done}
+  \item Rules for introducing and eliminating $\land$.
+  \end{itemize}
+\end{frame}
+
+\weeksection{Rules for ``Implies''}
+
+\begin{frame}
+  {``Implies'' Introduction}
+
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\Gamma, P \vdash Q}
+    {\Gamma \vdash P \to Q}
+  \end{displaymath}
+
+  \pause
+  \bigskip
+
+  To prove $P \to Q$, we prove $Q$ under the assumption $P$.
+\end{frame}
+
+\begin{frame}
+  {Example: $A \to A$}
+
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\inferrule* [Right=Use]
+      {\inferrule* [Right=Done] { } {A~[A] \vdash A}}
+      {A \vdash A}
+    }
+    {\vdash A \to A}
+  \end{displaymath}
+
+\end{frame}
+
+\begin{frame}
+  {Example : $(A \land B) \to A$}
+
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\inferrule* [Right=Use]
+      {\inferrule* [Right=First]
+        {\inferrule* [Right=Done]
+          { }
+          {\mathrm{A} \land \mathrm{B}~[\mathrm{A}] \vdash \mathrm{A}}
+        }
+        {\mathrm{A} \land \mathrm{B}~[\mathrm{A} \land \mathrm{B}] \vdash \mathrm{A}}
+      }
+      {\mathrm{A} \land \mathrm{B} \vdash \mathrm{A}}
+    }
+    { \vdash (\mathrm{A} \land \mathrm{B}) \to \mathrm{A}}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {``Implies'' Elimination}
+
+  \begin{displaymath}
+    \inferrule* [right=Apply]
+    {\Gamma \vdash P_1 \\ \Gamma~[P_2] \vdash Q}
+    {\Gamma~[P_1 \to P_2] \vdash Q}
+  \end{displaymath}
+
+  \bigskip
+  \pause
+
+  If we have $P_1 \to P_2$ and we can prove $P_1$, then we have $P_2$.
+\end{frame}
+
+\begin{frame}
+  {Example: $A \to (A \to B) \to B$}
+
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\inferrule* [Right=Introduce]
+      {\inferrule* [Right=Use]
+        {\inferrule* [Right=Apply]
+          {\inferrule* [right=Use]
+            {\inferrule* [Right=Done]
+              { }
+              {\mathrm{A}, \mathrm{A} \to \mathrm{B}~[\mathrm{A}] \vdash \mathrm{A}}
+            }
+            {\mathrm{A}, \mathrm{A} \to \mathrm{B} \vdash \mathrm{A}}
+            \\
+            \inferrule* [Right=Done]
+            { }
+            {\mathrm{A}, \mathrm{A} \to \mathrm{B}~[\mathrm{B}] \vdash \mathrm{B}}
+          }
+          {\mathrm{A}, \mathrm{A} \to \mathrm{B}~[\mathrm{A} \to \mathrm{B}] \vdash \mathrm{B}}
+        }
+        {\mathrm{A}, \mathrm{A} \to \mathrm{B} \vdash \mathrm{B}}
+      }
+      {\mathrm{A} \vdash (\mathrm{A} \to \mathrm{B}) \to \mathrm{B}}
+    }
+    { \vdash \mathrm{A} \to (\mathrm{A} \to \mathrm{B}) \to \mathrm{B}}
+  \end{displaymath}
+\end{frame}
+
+
+% \begin{frame}
+
+%   Examples (see scans):
+%   \begin{enumerate}
+%   \item $\vdash A \to (A \lor B)$
+%   \item $\vdash A \to B \to (A \land B)$
+%   \end{enumerate}
+% \end{frame}
+
+% \begin{frame}
+%   Examples (see scans):
+%   \begin{enumerate}
+%   \item $A \to B, A \vdash B$
+%   \item $A \lor B, B \to C \vdash A \lor C$
+%   \item $A \to B \to C \vdash (A \land B) \to C$
+%   \end{enumerate}
+% \end{frame}
+
+\begin{frame}
+  {The Rules so far}
+
+  \begin{mathpar}
+    \inferrule* [right=Done]
+    { }
+    {\Gamma~[P] \vdash P}
+
+    \inferrule* [right=Use]
+    {P \in \Gamma \\ \Gamma~[P] \vdash Q}
+    {\Gamma \vdash Q}
+
+    \inferrule* [right=Split]
+    {\Gamma \vdash Q_1 ~~~~~~ \Gamma \vdash Q_2}
+    {\Gamma \vdash Q_1 \land Q_2}
+    \quad
+    \inferrule* [right=First]
+    {\Gamma~[P_1] \vdash Q}
+    {\Gamma~[P_1 \land P_2] \vdash Q}
+    ~
+    \inferrule* [right=Second]
+    {\Gamma~[P_2] \vdash Q}
+    {\Gamma~[P_1 \land P_2] \vdash Q}
+
+    \inferrule* [right=Introduce]
+    {\Gamma, P \vdash Q}
+    {\Gamma \vdash P \to Q}
+
+    \inferrule* [right=Apply]
+    {\Gamma \vdash P_1 \\ \Gamma~[P_2] \vdash Q}
+    {\Gamma~[P_1 \to P_2] \vdash Q}
+  \end{mathpar}
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item The rules for Implication
+    \begin{mathpar}
+      \inferrule* [right=Introduce]
+      {\Gamma, P \vdash Q}
+      {\Gamma \vdash P \to Q}
+
+      \inferrule* [right=Apply]
+      {\Gamma \vdash P_1 \\ \Gamma~[P_2] \vdash Q}
+      {\Gamma~[P_1 \to P_2] \vdash Q}
+    \end{mathpar}
+  \end{itemize}
+\end{frame}
+
+\weeksection{Rules for ``Or''}
+
+\begin{frame}
+  {``Or'' Introduction}
+
+  \bigskip
+
+  \begin{mathpar}
+    \inferrule* [right=Left]
+    {\Gamma \vdash Q_1}
+    {\Gamma \vdash Q_1 \lor Q_2}
+
+    \inferrule* [right=Right]
+    {\Gamma \vdash Q_2}
+    {\Gamma \vdash Q_1 \lor Q_2}
+  \end{mathpar}
+
+  \bigskip
+  \pause
+
+  To prove $Q_1 \lor Q_2$, \emph{either} we:
+  \begin{enumerate}
+  \item prove $Q_1$, \emph{or}
+  \item prove $Q_2$.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \sechead{Example}
+
+  \bigskip
+
+  \begin{displaymath}
+    \inferrule* [Right=Left]
+    {\inferrule* [Right=Use]
+      {\inferrule* [Right=Done]
+        { } {A~[A] \vdash A}
+      }
+      {A \vdash A}
+    }
+    {A \vdash A \lor B}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}[t]
+  {``Or'' Elimination}
+
+  \begin{displaymath}
+    \inferrule* [right=Cases]
+    {\Gamma, P_1 \vdash Q \\ \Gamma, P_2 \vdash Q}
+    {\Gamma~[P_1 \lor P_2] \vdash Q}
+  \end{displaymath}
+
+  \textcolor{black!60}{$\Gamma, P$ means all the assumptions in $\Gamma$, and $P$}
+
+  \bigskip
+  \pause
+
+  If we are focused on $P_1 \lor P_2$, then:
+  \begin{enumerate}
+  \item Either $P_1$ holds, so we have to prove $Q$ assuming $P_1$; or
+  \item Either $P_2$ holds, so we have to prove $Q$ assuming $P_2$
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[t]
+  {``Or'' Elimination}
+
+  \begin{displaymath}
+    \inferrule* [right=Cases]
+    {\Gamma, P_1 \vdash Q \\ \Gamma, P_2 \vdash Q}
+    {\Gamma~[P_1 \lor P_2] \vdash Q}
+  \end{displaymath}
+
+  \pause
+  \bigskip
+
+  \emph{We} (the provers) don't know which of $P_1$ or $P_2$ is true,
+  so we need to write proofs for both eventualities.
+
+  \pause
+  \bigskip
+
+  This is dual to the case for conjunction: for $P_1 \land P_2$
+  \emph{we} had to provide both sides in the introduction rule, but
+  got to choose in the elimination rule.
+\end{frame}
+
+\begin{frame}
+  \sechead{Example}
+
+  \begin{displaymath}
+    \inferrule* [right=Use]
+    {\inferrule* [Right=Cases]
+      {\inferrule* [right=Right]
+        {\inferrule* [Right=Use]
+          {\inferrule* [Right=Done] { } {A \lor B, A~[A] \vdash A}}
+          {A \lor B, A \vdash A}
+        }
+        {A \lor B, A \vdash B \lor A}
+        \\
+        \inferrule* [Right=Left]
+        {\inferrule* [Right=Use]
+          {\inferrule* [Right=Done] { } {A \lor B, B~[B] \vdash B}}
+          {A \lor B, B \vdash B}
+        }
+        {A \lor B, B \vdash B \lor A}
+      }
+      {A \lor B~[A \lor B] \vdash B \lor A}
+    }
+    {A \lor B \vdash B \lor A}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {``False'' Introduction}
+
+  \bigskip
+
+  \begin{center}
+    \emph{No introduction rule!}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  {``False'' Elimination}
+
+  \bigskip
+
+  \begin{displaymath}
+    \inferrule* [right=False]
+    { }
+    {\Gamma~[\false] \vdash Q}
+  \end{displaymath}
+
+  \bigskip
+  \pause
+
+  If we have a false assumption, we can prove anything.
+\end{frame}
+
+\begin{frame}
+  \sechead{Example}
+
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\inferrule* [Right=Use]
+      {\inferrule* [Right=False]
+        { }
+        {\mathsf{F}~[\mathsf{F}] \vdash \mathrm{A} \land \mathrm{B} \land \mathrm{C}}
+      }
+      {\mathsf{F} \vdash \mathrm{A} \land \mathrm{B} \land \mathrm{C}}
+    }
+    { \vdash \mathsf{F} \to (\mathrm{A} \land \mathrm{B} \land \mathrm{C})}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  \sechead{Example}
+
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\inferrule* [Right=Use]
+      {\inferrule* [Right=Cases]
+        {\inferrule* [right=Use]
+          {\inferrule* [Right=Done]
+            { }
+            {\mathrm{A} \lor \mathsf{F}, \mathrm{A}~[\mathrm{A}] \vdash \mathrm{A}}
+          }
+          {\mathrm{A} \lor \mathsf{F}, \mathrm{A} \vdash \mathrm{A}}
+          \\
+          \inferrule* [Right=Use]
+          {\inferrule* [Right=False]
+            { }
+            {\mathrm{A} \lor \mathsf{F}, \mathsf{F}~[\mathsf{F}] \vdash \mathrm{A}}
+          }
+          {\mathrm{A} \lor \mathsf{F}, \mathsf{F} \vdash \mathrm{A}}
+        }
+        {\mathrm{A} \lor \mathsf{F}~[\mathrm{A} \lor \mathsf{F}] \vdash \mathrm{A}}
+      }
+      {\mathrm{A} \lor \mathsf{F} \vdash \mathrm{A}}
+    }
+    { \vdash (\mathrm{A} \lor \mathsf{F}) \to \mathrm{A}}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item Rules for ``Or'':
+    \begin{mathpar}
+      \inferrule* [right=Left]
+      {\Gamma \vdash Q_1}
+      {\Gamma \vdash Q_1 \lor Q_2}
+
+      \inferrule* [right=Right]
+      {\Gamma \vdash Q_2}
+      {\Gamma \vdash Q_1 \lor Q_2}
+
+      \inferrule* [right=Cases]
+      {\Gamma, P_1 \vdash Q \\ \Gamma, P_2 \vdash Q}
+      {\Gamma~[P_1 \lor P_2] \vdash Q}
+    \end{mathpar}
+  \item ``False'' lets us prove anything:
+    \begin{displaymath}
+      \inferrule* [right=False]
+      { }
+      {\Gamma~[\false] \vdash Q}
+    \end{displaymath}
+  \end{itemize}
+\end{frame}
+
+\weeksection{Rules for ``Not''}
+
+\begin{frame}
+  {Negation}
+
+  We could \emph{define} negation:
+  \begin{displaymath}
+    \lnot P \equiv P \to \false
+  \end{displaymath}
+
+  \bigskip
+
+  Then we wouldn't need any rules for it.
+\end{frame}
+
+\begin{frame}
+  {Rules for Negation: Introduction}
+
+  \textcolor{black!60}{($\lnot P \equiv P \to \false$)}
+
+  \medskip
+
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\Gamma, P \vdash \false}
+    {\Gamma \vdash P \to \false}
+  \end{displaymath}
+
+  \bigskip
+
+  To prove $\lnot P$, we prove that $P$ proves false.
+\end{frame}
+
+\begin{frame}
+  {Rules for Negation: Elimination}
+
+  \textcolor{black!60}{($\lnot P \equiv P \to \false$)}
+
+  \medskip
+
+  \begin{displaymath}
+    \inferrule* [right=Apply]
+    {\Gamma \vdash P \\ \inferrule* [Right=False] { } {\Gamma~[\false] \vdash Q}}
+    {\Gamma~[P \to \false] \vdash Q}
+  \end{displaymath}
+
+  \bigskip
+
+  If we know that $\lnot P$ is true, and we can prove $P$, then we get
+  a contradiction which allows us to prove anything.
+\end{frame}
+
+\begin{frame}
+  {Specialised Rules for Negation}
+
+  Introduction:
+  \begin{displaymath}
+    \inferrule* [right=Not-Intro]
+    {\Gamma, P \vdash \false}
+    {\Gamma \vdash \lnot P}
+  \end{displaymath}
+
+  \bigskip
+
+  Elimination:
+  \begin{displaymath}
+    \inferrule* [right=Not-Elim]
+    {\Gamma \vdash P}
+    {\Gamma~[\lnot P] \vdash Q}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Example: $(A \lor B) \to \lnot A \to B$}
+
+  {\footnotesize
+  \begin{displaymath}
+    \inferrule* [right=Introduce]
+    {\inferrule* [Right=Introduce]
+      {\inferrule* [Right=Use]
+        {\inferrule* [Right=Cases]
+          {\inferrule* [right=Use]
+            {\inferrule* [Right=¬-Elim]
+              {\inferrule* [Right=Use]
+                {\inferrule* [Right=Done]
+                  { }
+                  {\mathrm{A} \lor \mathrm{B}, \lnot \mathrm{A}, \mathrm{A}~[\mathrm{A}] \vdash \mathrm{A}}
+                }
+                {\mathrm{A} \lor \mathrm{B}, \lnot \mathrm{A}, \mathrm{A} \vdash \mathrm{A}}
+              }
+              {\mathrm{A} \lor \mathrm{B}, \lnot \mathrm{A}, \mathrm{A}~[\lnot \mathrm{A}] \vdash \mathrm{B}}
+            }
+            {\mathrm{A} \lor \mathrm{B}, \lnot \mathrm{A}, \mathrm{A} \vdash \mathrm{B}}
+            \\
+            \inferrule* [Right=Use]
+            {\inferrule* [Right=Done]
+              { }
+              {\mathrm{A} \lor \mathrm{B}, \lnot \mathrm{A}, \mathrm{B}~[\mathrm{B}] \vdash \mathrm{B}}
+            }
+            {\mathrm{A} \lor \mathrm{B}, \lnot \mathrm{A}, \mathrm{B} \vdash \mathrm{B}}
+          }
+          {\mathrm{A} \lor \mathrm{B}, \lnot \mathrm{A}~[\mathrm{A} \lor \mathrm{B}] \vdash \mathrm{B}}
+        }
+        {\mathrm{A} \lor \mathrm{B}, \lnot \mathrm{A} \vdash \mathrm{B}}
+      }
+      {\mathrm{A} \lor \mathrm{B} \vdash \lnot \mathrm{A} \to \mathrm{B}}
+    }
+    { \vdash (\mathrm{A} \lor \mathrm{B}) \to \lnot \mathrm{A} \to \mathrm{B}}
+  \end{displaymath}}
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item Negation can be defined in terms of Implication and False
+  \item Nicer to have specific rules:
+    \begin{mathpar}
+      \inferrule*
+      {\Gamma, P \vdash \false}
+      {\Gamma \vdash \lnot P}
+
+      \inferrule*
+      {\Gamma \vdash P}
+      {\Gamma~[\lnot P] \vdash Q}
+    \end{mathpar}
+  \end{itemize}
+\end{frame}
+
+\weeksection{Soundness \& Completeness \& Philosophy}
+% Subtitle: And a little bit of philosophy
+
+\begin{frame}
+  {Soundness and Completeness}
+
+  \textbf{Soundness} : ``Everything that is provable is valid'':
+  \begin{displaymath}
+    P_1, \dots, P_n \vdash Q \quad \Rightarrow P_1, \dots, P_n \models Q
+  \end{displaymath}
+  I've tried, informally, to convince you of this for each rule. If
+  each rule is sound, then the whole system is sound.
+
+  \bigskip
+  \pause
+
+  \textbf{Completeness} : ``Everything that is provable is valid'':
+  \begin{displaymath}
+    P_1, \dots, P_n \models Q \quad \Rightarrow P_1, \dots, P_n \vdash Q
+  \end{displaymath}
+  Does this property hold of the system so far?
+\end{frame}
+
+\begin{frame}
+  {Failure of Completeness}
+  Recall that this entailment is valid:
+  \begin{displaymath}
+    \models A \lor \lnot A
+  \end{displaymath}
+
+  \bigskip
+
+  Can we prove this? \pause Is there a proof of
+  $\vdash A \lor \lnot A$? \\ \pause
+  Have three options:
+  \begin{enumerate}
+  \item Apply \TirName{Use} to use an assumption. \pause\emph{No assumptions!}\pause
+  \item Apply \TirName{Left} and try to prove $\vdash A$, \pause\emph{but
+      this can't be provable, by soundness!}\pause
+  \item Apply \TirName{Right} and try to prove $\vdash \lnot A$,
+    \pause\emph{but this can't be provable, by soundness!}\pause
+  \end{enumerate}
+  So the system so far is {\bf not} complete, with respect to our
+  semantics.
+\end{frame}
+
+\begin{frame}
+  {Fixing completeness}
+  We could add the following rule:
+  \begin{displaymath}
+    \inferrule* [right=ExcludedMiddle]
+    {\Gamma, P \vdash Q \\ \Gamma, \lnot P \vdash Q}
+    {\Gamma \vdash Q}
+  \end{displaymath}
+
+  \pause
+  \bigskip
+
+  To prove $Q$, pick any proposition $P$ and say ``either $P$
+  or $\lnot P$''.
+
+  \bigskip
+  \pause
+
+  This lets us prove $\vdash A \lor \lnot A$.
+
+  \bigskip
+  \pause
+
+  It is \emph{sound}, but is it a good idea?
+\end{frame}
+
+\begin{frame}
+  {Some Philosophy of Mathematics}
+  \emph{Where do mathematical objects live?}\\
+  \sidenote{objects include numbers, shapes, functions, propositions, proofs, ...}
+\end{frame}
+
+\begin{frame}
+  {``Platonism''}
+
+  \begin{center}
+    \includegraphics[width=1.5cm]{800px-Plato_Silanion_Musei_Capitolini_MC1377.jpg}
+  \end{center}
+
+  \begin{itemize}
+  \item Objects exist ``out there'', independently of us.
+  \item There is a universal notion of ``truth''.
+    \begin{itemize}
+    \item Every proposition is either true or false, even if \emph{we}
+      can't see why.
+    \end{itemize}
+  \end{itemize}
+
+  {\tiny
+    \emph{Image: }By Copy of Silanion, Public Domain, \url{https://commons.wikimedia.org/w/index.php?curid=7831217}}
+\end{frame}
+
+\begin{frame}
+  {``Intuitionism''}
+
+  \begin{center}
+    \includegraphics[width=1.5cm]{Luitzen_Egbertus_Jan_Brouwer.jpeg}
+  \end{center}
+
+  \sidenote{L.E.J. Brouwer, ~1900/10/20s}
+  \begin{itemize}
+  \item Objects exist as constructions within our heads.
+  \item Including proofs of propositions
+    \begin{itemize}
+    \item We convince ourselves of the truth of a proposition by
+      constructing evidence for it.
+    \end{itemize}
+  \end{itemize}
+
+  {\tiny
+  \emph{Image: }By Source (WP:NFCC\#4), Fair use, \url{https://en.wikipedia.org/w/index.php?curid=39567913}}
+\end{frame}
+
+\begin{frame}
+  {Evidence based Interpretation}
+
+  \sidenote{Instead of saying $P \mathop\Box Q$ is true when...}
+  \begin{displaymath}
+    \begin{array}{cl}
+      \textrm{Evidence of...}&\textrm{is}\\
+      \hline
+      \true &\textrm{there always evidence of $\true$} \\
+      \false&\textrm{there is no evidence of $\false$} \\
+      P \land Q&\textrm{evidence of $P$ and evidence of $Q$} \\
+      P \lor Q &\textrm{evidence of $P$ or  evidence of $Q$} \\
+      P \to Q  &\textrm{a process converting evidence of $P$ into evidence of $Q$}
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Evidence for Negation}
+
+  We define $\lnot P = P \to \false$.
+  \begin{itemize}
+  \item evidence of $\lnot P$ is a process converting evidence of $P$ to evidence of $\false$
+  \item but there is no evidence of $\false$
+  \item so there can be no evidence of $P$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Excluded Middle?}
+
+  In two valued ($\true, \false$) logic, \emph{excluded middle} is valid for any $P$:
+  \begin{displaymath}
+    P \lor \lnot P
+  \end{displaymath}
+  The proof of validity (via truth tables) makes no commitment to
+  which one is actually true.
+
+  \pause
+  \bigskip
+
+  However, in terms of evidence, we have to \emph{construct} either
+  \begin{enumerate}
+  \item evidence of $P$, or
+  \item evidence of $\lnot P$.
+  \end{enumerate}
+  For an arbitrary proposition $P$, this seems unlikely.
+\end{frame}
+
+\begin{frame}
+  {\textcolor{red}{Failure} of Excluded Middle}
+
+  For instance, if $x$ is a real number (has an arbitrarily long
+  decimal expansion), then, in terms of evidence
+  \begin{displaymath}
+    (x = 0) \lor \lnot (x = 0)
+  \end{displaymath}
+  asks us to determine whether $x$ is $0$.
+
+  \medskip
+
+  But there is no process to do this in finite time.\\
+  \sidenote{Another example: does this Turing Machine halt?}
+\end{frame}
+
+\begin{frame}
+  {Intuitionistic Logic}
+
+  Intuitionistic Logic is the similar to ``Classical'' Logic, except
+  that it does not include the Law of Excluded Middle $P \lor \lnot P$
+  for all propositions $P$.
+
+  \medskip
+
+  \rhighlight{Note:} this does not mean that $\lnot (P \lor \lnot P)$ is
+  provable. There may be some $P$s for which $P \lor \lnot P$ holds.\\
+  \sidenote{For example, $(x = 0) \lor \lnot (x=0)$ when $x$ is an integer}
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item The system was have so far is \emph{sound} but not \emph{complete}
+  \item We can make it complete by adding a rule for \emph{excluded middle}:
+    \begin{displaymath}
+      P \lor \lnot P
+    \end{displaymath}
+  \item But should we? What does Logic mean?
+  \end{itemize}
+\end{frame}
+
+\end{document}

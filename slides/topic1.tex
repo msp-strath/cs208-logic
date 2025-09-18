@@ -1,0 +1,610 @@
+% -*- TeX-engine: xetex -*-
+
+\documentclass[xetex,aspectratio=169,14pt,hyperref={pdfpagelabels=true,pdflang={en-GB}}]{beamer}
+
+\input{macros}
+
+\weektitle{1}{Entailment and Deduction}
+
+%\title[CS208 - Topic 01]{CS208 Topic 01 \\ Entailment and Deduction}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\weeksection{Entailment}
+
+\begin{frame}
+  {Entailment}
+
+  Entailment is a relation between some assumptions:
+  \begin{displaymath}
+    P_1, \dots, P_n
+  \end{displaymath}
+  and a conclusion:
+  \begin{displaymath}
+    Q
+  \end{displaymath}
+
+  \pause
+  \bigskip
+
+  What we want to capture is:
+
+  \medskip
+
+  \qquad \emph{If we assume $P_1$, ..., $P_n$ are all true, then it is safe to conclude $Q$.}
+
+  % \pause
+  % \bigskip
+
+  % \sechead{Note:} Satisfiability and Validity are properties of
+  % individual formulas. Entailment is a \emph{relation} between a
+  % collection of formulas (the assumptions) and a single formula (the
+  % conclusion).
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Is it safe?}
+
+  If we assume
+  \begin{center}
+    it is sunny
+  \end{center}
+  then is it safe to conclude
+  \begin{center}
+    it is sunny
+  \end{center}
+
+  \bigskip
+  \pause
+
+  Yes! \pause There are two cases:
+  \begin{enumerate}
+  \item It is sunny  (i.e., $v(\mathrm{Sunny}) = \true$)
+  \item \strikeafter<4>{It isn't sunny (i.e., $v(\mathrm{Sunny}) = \false$)}
+  \end{enumerate}
+  \pause But we are assuming ``it is sunny'', so the second case
+  doesn't matter.
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Is it safe?}
+
+  If we assume
+  \begin{center}
+    \emph{nothing}
+  \end{center}
+  then is it safe to conclude
+  \begin{center}
+    it is sunny
+  \end{center}
+
+  \bigskip
+  \pause
+
+  No! \pause There are two cases:
+  \begin{enumerate}
+  \item It is sunny  (i.e., $v(\mathrm{Sunny}) = \true$)
+  \item It isn't sunny (i.e., $v(\mathrm{Sunny}) = \false$)
+  \end{enumerate}
+  \pause But we are making no assumptions, so either ``world'' is
+  possible: it might not be sunny.
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Is it safe?}
+
+  If we assume
+  \begin{center}
+    it is raining
+  \end{center}
+  then it is safe to conclude:
+  \begin{center}
+    it is not sunny
+  \end{center}
+
+  \bigskip
+  \pause
+
+  No! \pause There are four cases:
+  \begin{enumerate}
+  \item It is sunny and raining
+  \item \strikeafter<4>{It is sunny and not raining}
+  \item It is not sunny, but is raining
+  \item \strikeafter<4>{It is not sunny and not raining}
+  \end{enumerate}
+  \pause % We are assuming ``it is raining'', so cases 2 and 4 don't
+  % matter, but that still leaves case 1: it may be sunny and raining.
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Is it safe?}
+
+  If we assume
+  \begin{center}
+    it is raining \qquad \emph{and} \qquad if it is raining it is not sunny
+  \end{center}
+  then is it safe to conclude:
+  \begin{center}
+    it is not sunny
+  \end{center}
+
+  \bigskip
+  \pause
+
+  Yes! \pause There are four cases:
+  \begin{enumerate}
+  \item \strikeafter<5>{It is sunny and raining}
+  \item \strikeafter<4>{It is sunny and not raining}
+  \item It is not sunny, but is raining
+  \item \strikeafter<4>{It is not sunny and not raining}
+  \end{enumerate}
+  \pause % We are assuming ``it is raining'', so cases 2 and 4 don't
+  % matter. \pause We are also assuming ``if it is raining, it is not
+  % sunny'', so case 1 is removed too. The only remaining case has ``not
+  % sunny''.
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Is it safe?}
+
+  If we assume
+  \begin{center}
+    \emph{nothing}
+  \end{center}
+  then is it safe to conclude:
+  \begin{center}
+    it is sunny or not sunny
+  \end{center}
+
+  \pause
+  \bigskip
+
+  Yes!. There are two cases:
+  \begin{enumerate}
+  \item It is sunny
+  \item It is not sunny
+  \end{enumerate}
+  \pause In either case the conclusion is true: $A \lor B$ requires at
+  least one of $A$ or $B$ to be true.
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Is it safe?}
+
+  If we assume
+  \begin{center}
+    it is sunny \qquad \emph{and} \qquad it is not sunny
+  \end{center}
+  then is it safe to conclude:
+  \begin{center}
+    the moon is made of spaghetti
+  \end{center}
+
+  \pause
+  \bigskip
+
+  Yes! \pause There are four cases:
+  \begin{enumerate}
+  \item \strikeafter<5>{it is sunny, and the moon is made of spaghetti}
+  \item \strikeafter<4>{it is not sunny, and the moon is made of spaghetti}
+  \item \strikeafter<5>{it is sunny, and the moon is not made of spaghetti}
+  \item \strikeafter<4>{it is not sunny, and the moon is not made of spaghetti}
+  \end{enumerate}
+  \pause\pause
+  % \pause We are assuming ``it is sunny'', so cases 2 and 4 don't
+  % matter. \pause We are \emph{also} assuming ``it is not sunny'', so
+  % cases 1 and 3 don't matter. \pause There are no remaining cases and
+  % ``the moon is made of spaghetti'' is true in all of them.
+\end{frame}
+
+
+  % Idea: step through example by example
+  % - example 0 : assume nothing, then it is sunny?
+  % - example 1 : assume that it is sunny, then it is sunny?
+  % - example 1 : if it is raining, it is not sunny?
+  % - example 2 : if it is raining or sunny and it is not sunny, then it is raining?
+  % - example 3 : if is is raining and (raining implies not sunny), then it is sunny?
+  % - example 4 : if A and (A -> !B), then !B
+  % - example 5 : if A and (A -> B), then B
+  % - example 6 :
+
+  % common feature of ones that are not valid: there is a counterexample where the assumptions are true, but the conclusion isn't
+  % idea: an entailment is valid if
+
+\begin{frame}[t]
+  {Entailment}
+
+  In general, we have $n$ assumptions $P_1, \ldots, P_n$ and
+  conclusion $Q$.
+
+  \bigskip
+  \bigskip
+
+  We are going to say: \qquad $P_1,\ldots,P_n \models Q$
+
+  \hspace{3.5cm} \textcolor{black!60}{Read as $P_1,\ldots,P_n \textit{ entails } Q$}
+
+  \bigskip
+
+  if:\\
+  \quad for all ``situations'' \textcolor{black!60}{(i.e., valuations)}\\
+  \quad \quad that make \textbf{all} the assumptions $P_i$ true,\\
+  \quad \qquad the conclusion $Q$ is true.
+
+\end{frame}
+
+\begin{frame}
+  {Entailment}
+
+  \textbf{With more symbols} \\\qquad for all valuations $v$, if, for
+  all $i$, $\sem{P_i} v = \true$, then $\sem{Q} v = \true$.
+
+  \bigskip
+
+  \textbf{In terms of Semantics}\\ \qquad every valuation in all $\sem{P_i}$
+  is also in $\sem{Q}$ \\ \qquad (in set theory symbols:
+  $(\sem{P_1} \cap \dots \cap \sem{P_n}) \subseteq \sem{Q}$).
+\end{frame}
+
+% \begin{frame}
+%   {Entailment vs Validity}
+
+%   If we have no assumptions, then:
+%   \begin{displaymath}
+%     \models P
+%   \end{displaymath}
+%   exactly when
+%   \begin{displaymath}
+%     \textrm{for all }v.~\sem{P}v = \true
+%   \end{displaymath}
+%   exactly when
+%   \begin{displaymath}
+%     P\textrm{ is valid}
+%   \end{displaymath}
+% \end{frame}
+
+% \begin{frame}
+%   {Deduction Theorem}
+%   \begin{displaymath}
+%     P_1, \ldots, P_n, P \models Q
+%     \qquad \textit{exactly when} \qquad
+%     P_1, \ldots, P_n \models P \to Q
+%   \end{displaymath}
+
+%   \bigskip
+
+%   All these statements are equivalent:
+%   \begin{enumerate}
+%   \item $P_1, \ldots, P_n, P \models Q$
+%   \item for all $v$, if all $\sem{P_i} v = \true$ and $\sem{P}v = \true$, then $\sem{Q}v = \true$
+%   \item for all $v$, if all $\sem{P_i} v = \true$, then (if $\sem{P} v = \true$, then $\sem{Q}v = \true$)
+%   \item for all $v$, if all $\sem{P_i} v = \true$, then $\sem{P \to Q}v = \true$
+%   \item $P_1, \ldots, P_n \models P \to Q$
+%   \end{enumerate}
+% \end{frame}
+
+% \begin{frame}
+%   {Entailment vs satisfiability}
+
+%   So, it is the case that
+%   \begin{displaymath}
+%     P_1,\dots,P_n \models Q
+%   \end{displaymath}
+%   exactly when
+%   \begin{displaymath}
+%     \models P_1 \to \dots \to P_n \to Q
+%   \end{displaymath}
+%   exactly when
+%   \begin{displaymath}
+%     P_1 \to \dots \to P_n \to Q \textrm{ is valid}
+%   \end{displaymath}
+%   exactly when
+%   \begin{displaymath}
+%     \lnot (P_1 \to \dots \to P_n \to Q) \textrm{ is not satisfiable}
+%   \end{displaymath}
+
+%   % FIXME: drive the point home: if we have a satisfiability checker, we have a counterexample finder
+
+% \end{frame}
+
+\weeksection{Deductive Reasoning}
+
+\begin{frame}
+  \sechead{Why have logic(s)?}
+  One reason is to study ``arguments''.
+  \begin{itemize}
+  \item To separate valid and invalid reasoning.
+  \item If we assume $P_1, P_2, P_3$, then when is it valid to conclude $Q$?
+  \end{itemize}
+
+  \pause
+  \bigskip
+
+  \sechead{One answer is ``entailment''}
+  \begin{itemize}
+  \item $P_1, \dots \models Q$ ``is'' valid reasoning from assumptions to a conclusion.
+  \end{itemize}
+  \emph{Entailment} is defined in terms of the semantics of formulas
+  \begin{itemize}
+  \item $P_1, ... \models Q$ if \highlight<3->{for all valuations $v$}, $\sem{P}v = \true$ implies $\sem{Q}v \kern-3pt= \true$
+  \end{itemize}
+
+  \pause
+  \pause
+  \bigskip
+
+  \sechead{This doesn't match how we reason normally.}
+  If we are trying to convince someone, we don't (usually) say: \\
+  \qquad \emph{``let's go through all the combinations of truth values and test each one.''}
+\end{frame}
+
+\begin{frame}
+  \sechead{Chains of Inference}
+  Usually, we might say things like:
+  \begin{enumerate}
+  \item Let's assume that $A, B, C$ are true.
+  \item If we assume $A$ and $B$ imply $D$, then $D$ is true.
+  \item If we assume $C$ and $D$ imply $E$, then $E$ is true.
+  \item So, we can conclude $E$, under the assumptions.
+  \end{enumerate}
+  If our reasoning is sound, then we ought to be able to conclude
+  \begin{displaymath}
+    A, B, C, (A \land B) \to D, (C \land D) \to E \models E
+  \end{displaymath}
+
+  \pause
+  \sechead{We have a form of \emph{modularity}}
+  \begin{itemize}
+  \item We don't check the entailment for every possible truth value of $A, B, C, D, E$ \qquad \textcolor{black!60}{($2^5 = 32$ combinations!)}
+  \item We apply individual reasoning \emph{steps} and chain them together.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Semantic Reasoning doesn't scale}
+
+  In \emph{Propositional Logic}, it is possible (though not always
+  feasible) to check all cases.
+  \begin{itemize}
+  \item If there are $n$ atomic propositions, check $2^n$ combinations.
+  \item SAT solvers are good at only checking the ones that matter.
+  \item But there are still Hard Problems that take too long.
+  \end{itemize}
+
+  \pause
+  \bigskip
+
+  Also, later in the course we will study \emph{Predicate Logic}
+  \begin{itemize}
+  \item Predicate logic allows \emph{universal} statements:
+    \begin{displaymath}
+      \forall x.\forall y.~x+y = y+x
+    \end{displaymath}
+    \emph{``For all (numbers) $x$ and $y$, $x+y$ is equal to $y+x$''}
+  \item Simply not possible to exhaustively check all numbers.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Deductive Systems}
+  To overcome these problems, we use \emph{deductive systems}.
+
+  \bigskip
+
+  A \rhighlight{deductive system} is a collection of \emph{rules} for
+  deriving conclusions from assumptions.
+  \begin{itemize}
+  \item Typically, the rules are ``finitely describable'' \\
+    \sidenote{roughly: we can implement them on a computer}
+  \end{itemize}
+
+  \bigskip
+
+  Typically (but not always), we write
+  \begin{displaymath}
+    P_1, \cdots, P_n \vdash Q
+  \end{displaymath}
+  when we can derive conclusion $Q$ from assumptions $P_1, \cdots, P_n$.
+
+  % \bigskip There are many deductive systems. We will look at a variant
+  % of Natural Deduction.
+
+\end{frame}
+
+\begin{frame}
+  {Soundness and Completeness}
+
+  \textbf{Soundness} : ``Everything that is provable is valid''
+  \begin{displaymath}
+    P_1, \cdots, P_n \vdash Q \qquad \textit{implies} \qquad P_1, \cdots, P_n \models Q
+  \end{displaymath}
+  \sidenote{pretty much a requirement to be useful}
+
+  \bigskip
+
+  \textbf{Completeness} : ``Everything that is valid is provable''
+  \begin{displaymath}
+    P_1, \cdots, P_n \models Q \qquad \textit{implies} \qquad P_1, \cdots, P_n \vdash Q
+  \end{displaymath}
+  \sidenote{not \emph{essential}, but good to have}
+
+\end{frame}
+
+\begin{frame}
+  {Advantages of Deductive Systems}
+
+  \bigskip \emph{1. } We can write computer programs to check our proofs, even
+  when talking about infinitely many things.
+
+  \pause
+  \bigskip
+  \emph{2. }If we remove or alter rules do we get an interesting new logic?
+
+  \pause
+  \bigskip
+  \emph{3. }We can start to ask questions about the proofs:
+  \begin{itemize}
+  \item An entailment $P_1, \cdots, P_n \models Q$ is either valid or invalid. Meh.
+  \item but there may be many proofs (ways of applying the rules).
+  \item Questions:
+    \begin{itemize}
+    \item Do different proofs \emph{mean} different things?
+    \item Is one proof a simplification of another?
+    \item Is there information hidden in proofs that we can extract?
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t]
+  {Inference Rules}
+
+  \begin{displaymath}
+    \inferrule*
+    {\mathit{premise}_1 \\ \cdots \\ \mathit{premise}_n}
+    {\mathit{conclusion}}
+  \end{displaymath}
+
+  The idea:
+  \begin{itemize}
+  \item If we can prove all of $\mathit{premise}_1$ and ... and $\mathit{premise}_n$; then
+  \item we have a proof of $\mathit{conclusion}$.
+  \end{itemize}
+
+  \pause
+  \bigskip
+
+  We might have zero premises, \\
+  \quad in which case the $\mathit{conclusion}$
+  requires no proof (``is an axiom'').
+
+  \pause
+  \bigskip
+
+  Rules are organised into \emph{trees} to make \emph{deductions}.
+\end{frame}
+
+\begin{frame}[t]
+  {Example}
+  \begin{mathpar}
+    \inferrule* [right=Rule1] { } {\textrm{bears}~\textit{are furry}}
+
+    \inferrule* [right=Rule2] { } {\textrm{bears}~\textit{make milk}}
+
+    \inferrule* [right=Rule3]
+    {X~\textit{are furry} \\ X~\textit{make milk}}
+    {X~\textit{are mammals}}
+  \end{mathpar}
+
+  \pause
+  \bigskip
+
+  A deduction:
+  \begin{displaymath}
+    \inferrule* [right=Rule3]
+    {\inferrule* [right=Rule1] { } {\textrm{bears}~\textit{are furry}} \\
+      \inferrule* [Right=Rule2] { } {\textrm{bears}~\textit{make milk}}}
+    {\textrm{bears}~\textit{are mammals}}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Example (cont.)}
+
+  \begin{mathpar}
+    \inferrule* [right=Rule4]
+    {X~\textit{are covered in fibres}}
+    {X~\textit{are furry}}
+
+    \inferrule* [right=Rule5]
+    { }
+    {\textrm{coconuts}~\textit{are covered in fibres}}
+
+    \inferrule* [right=Rule6]
+    { }
+    {\textrm{coconuts}~\textit{make milk}}
+  \end{mathpar}
+
+\end{frame}
+
+\begin{frame}
+  {Example (cont.)}
+
+  Another deduction:
+  \begin{displaymath}
+    \inferrule* [right=R3]
+    {\inferrule* [right=R4]
+      {\inferrule* [Right=R5] { } {\textrm{coconuts}~\textit{are covered in fibres}}}
+      {\textrm{coconuts}~\textit{are furry}}
+      \\
+      \inferrule* [Right=R6]
+      { } {\textrm{coconuts}~\textit{make milk}}}
+    {\textrm{coconuts}~\textit{are mammals}}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}[t]
+  {Example (cont.)}
+  When \emph{building} deductions, we work bottom up:
+
+  \begin{minipage}[t][2cm][b]{\textwidth}
+  \begin{displaymath}
+    \only<2>{\textrm{coconuts}~\textit{are mammals}}%
+    \only<3>{\inferrule* [right=R3]
+      {\textrm{coconuts}~\textit{are furry} \\ \textrm{coconuts}~\textit{make milk}}
+      {\textrm{coconuts}~\textit{are mammals}}}%
+    \only<4>{\inferrule* [right=R3]
+      {\inferrule* [right=R4] {\textrm{coconuts}~\textit{are covered in fibres}} {\textrm{coconuts}~\textit{are furry}}
+        \\
+        \textrm{coconuts}~\textit{make milk}}
+      {\textrm{coconuts}~\textit{are mammals}}}%
+    \only<5>{\inferrule* [right=R3]
+      {\inferrule* [right=R4]
+        {\inferrule* [Right=R5] { } {\textrm{coconuts}~\textit{are covered in fibres}}}
+        {\textrm{coconuts}~\textit{are furry}}
+        \\
+        \textrm{coconuts}~\textit{make milk}}
+      {\textrm{coconuts}~\textit{are mammals}}}%
+    \only<6-7>{\inferrule* [right=R3]
+    {\inferrule* [right=R4]
+      {\inferrule* [Right=R5] { } {\textrm{coconuts}~\textit{are covered in fibres}}}
+      {\textrm{coconuts}~\textit{are furry}}
+      \\
+      \inferrule* [Right=R6]
+      { } {\textrm{coconuts}~\textit{make milk}}}
+      {\textrm{coconuts}~\textit{are mammals}}}
+  \end{displaymath}
+\end{minipage}
+
+\bigskip
+
+  \begin{enumerate}
+  \item<2-> Write down the conclusion
+  \item<3-> Apply rule \TirName{Rule3} ($X$ \emph{are mammals} if $X$ \emph{are furry and make milk})
+  \item<4-> Apply rule \TirName{Rule4} ($X$ \emph{are furry} if they \emph{are covered in fibres})
+  \item<5-> Apply rule \TirName{Rule5} (an axiom)
+  \item<6-> Apply rule \TirName{Rule6} (an axiom)
+  \end{enumerate}
+
+  % \bigskip
+  % \pause\pause\pause\pause\pause\pause
+  % \begin{itemize}
+  % \item A statement with no line above it is an \emph{open goal}
+  % \item A branch of the tree that ends with an axiom is called \emph{closed}
+  % \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item The \emph{why?} of deductive systems.
+  \item Inference rules.
+  \item How to make chains of inference.
+  \end{itemize}
+\end{frame}
+
+
+
+\end{document}

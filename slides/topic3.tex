@@ -1,0 +1,1202 @@
+% -*- TeX-engine: xetex -*-
+
+\documentclass[xetex,aspectratio=169,14pt,hyperref={pdfpagelabels=true,pdflang={en-GB}}]{beamer}
+
+\input{macros}
+
+\weektitle{3}{Predicate Logic}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\weeksection{Introduction}
+
+\begin{frame}
+  So far:
+  \begin{center}
+    \rhighlight{Propositional Logic}
+  \end{center}
+
+  \bigskip
+
+  We can say things like:
+
+  \medskip
+
+  \quad  \emph{``If it is raining or sunny, and it is not sunny, then it is raining''}
+  \begin{displaymath}
+    ((R \lor S) \land \lnot S) \to R
+  \end{displaymath}
+
+  \bigskip
+
+  \emph{``version 1 is installed, or version 2 is installed, or version 3 is installed''}
+  \begin{displaymath}
+    p_1 \lor p_2 \lor p_3
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {What we can't say}
+
+  \emph{``Every day is sunny or rainy, today is not sunny, so today is rainy''}
+  \begin{itemize}
+  \item No way to make \emph{universal} statements\sidenote{``Every day''}
+  \end{itemize}
+
+  \bigskip
+
+  \emph{``Some version of the package is installed''} \\
+  \begin{itemize}
+  \item No way to make \emph{existential} statements\sidenote{``Some version''}
+  \end{itemize}
+
+  \pause
+  \bigskip
+
+  \sechead{Best we can do is list the possibilities}
+  \begin{displaymath}
+    (S_{\mathit{monday}} \lor R_{\mathit{monday}}) \land (S_{\mathit{tuesday}} \lor R_{\mathit{tuesday}}) \land ...
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}[t]
+  {Universal statements}
+
+  \bigskip
+
+  \rhighlight{``Classical'' examples}: \qquad \sidenote{due to Aristole}
+
+  \bigskip
+
+  \begin{enumerate}
+  \item All human are mortal
+  \item Socrates is a human
+  \item Therefore Socrates is mortal
+  \end{enumerate}
+  \sidenote{from the universal to the specific}
+
+  \bigskip
+
+  \begin{enumerate}
+  \item No bird can fly in space
+  \item Owls are birds
+  \item Therefore owls cannot fly in space
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[t]
+  \sechead{Universal and Existential statements are common}
+
+  \bigskip
+
+  \rhighlight{Database queries}:
+
+  \bigskip
+
+  ``Does there exist a customer that has not paid their invoice?''
+
+  \bigskip
+
+  ``Does there exist a player who is within 10 metres of player 1?''
+
+  \bigskip
+
+  ``Are all players logged off?''
+
+  \bigskip
+
+  ``Do we have any customers?''
+\end{frame}
+
+\begin{frame}[t]
+  \sechead{Universal and Existential statements are common}
+
+  \bigskip
+
+  The \rhighlight{semantics of Propositional Logic}:
+
+  \bigskip
+
+  ``$P$ is satisfiable if \emph{there exists} a valuation that makes it true.''
+
+  \bigskip
+
+  ``$P$ is valid if \emph{all} valuations make it true.''
+
+  \bigskip
+
+  ``$P$ entails $Q$ if \emph{for all} valuations, $P$ is true implies $Q$ is true.''
+
+\end{frame}
+
+\begin{frame}[t]
+  \sechead{\highlight{Predicate Logic} upgrades Propositional Logic}
+
+  \begin{enumerate}
+  \item Add \emph{individuals}:
+    \begin{itemize}
+    \item Specific individuals (e.g., $\mathsf{socrates}$, $\mathsf{today}$, $\mathsf{player1}$, $1$, $2$, $3$) \\
+      \sidenote{these ``name'' specific entities in the world}
+    \item General individuals ($x$, $y$, $z$, ...) \\
+      \sidenote{like variables in programming, they stand for ``some'' individual}
+    \end{itemize}
+
+    \bigskip
+
+  \item Add \emph{function symbols}:
+    \begin{itemize}
+    \item $x + y$, $\mathsf{dayAfter}(\mathsf{today})$, $\mathsf{dayAfter}(x)$
+    \end{itemize}
+
+    \bigskip
+
+  \item Add \emph{properties} and \emph{relations}:
+    \begin{itemize}
+    \item Properties: $\mathrm{canFlyInSpace}(\mathsf{owl})$, $\mathsf{paid}(i)$
+    \item Relations: $x = y$, $x \leq 10$, $\mathrm{custInvoice}(c, i)$.
+    \end{itemize}
+
+    \bigskip
+
+  \item Add \emph{Quantifiers}:
+    \begin{itemize}
+    \item Universal quantification: $\forall x. P$
+      \sidenote{``for all'' $x$, it is the case that $P$}
+    \item Existential quantification: $\exists x. P$
+      \sidenote{``there exists'' $x$, such that $P$}
+    \end{itemize}
+
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \sechead{Layered Syntax}
+
+  The syntax of Predicate Logic comes in two layers:
+
+  \bigskip
+
+  \rhighlight{Terms}~ Built from individuals and function symbols:
+  \begin{mathpar}
+    x
+
+    \mathsf{socrates}
+
+    \mathsf{player1}
+
+    \mathsf{dayAfter}(\mathsf{today})
+
+    2x + 3y
+
+    \mathsf{nameOf}(\mathit{cust})
+
+    \mathsf{dayAfter}(\mathsf{dayAfter}(d))
+  \end{mathpar}
+
+  \bigskip
+
+  \rhighlight{Formulas}~ Built from properties and relations,
+  connectives and quantifiers.
+  \begin{displaymath}
+    \begin{array}{l}
+      \exists x.~\mathrm{customer}(x) \land \mathrm{loggedOff}(x)\\
+      \\
+      \forall x.~\mathrm{human}(x) \to \mathrm{mortal}(x)\\
+      \\
+      \forall d.~\mathrm{raining}(d) \to \mathrm{raining}(\mathsf{dayAfter}(d)) \\
+      \\
+      \forall n.\exists k. (n = k + k) \lor (n = k + k + 1)
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\def\hlafter<#1>#2#3{%
+  \temporal<#1>%
+  {\colorbox{white}{\color{black}$\displaystyle#3$}}%
+  {\colorbox{#2}{\color{black}$\displaystyle#3$}}%
+  {\colorbox{#2}{\color{black}$\displaystyle#3$}}}
+
+\begin{frame}
+  {Anatomy of a Formula}
+
+  \bigskip
+
+  ``All humans are mortal''
+  \begin{displaymath}
+    \hlafter<5>{yellow}{\forall x.}~\hlafter<3>{blue!50}{\mathrm{human}}(\hlafter<2>{green!50}{x}) \hlafter<4>{pink}{\to} \hlafter<3>{blue!50}{\mathrm{mortal}}(\hlafter<2>{green!50}{x})
+  \end{displaymath}
+  \begin{enumerate}
+  \item<2-> Variables, standing for general individuals
+  \item<3-> Properties (``Predicates'') of those individuals
+  \item<4-> Connectives, as in Propositional Logic
+  \item<5-> Quantifiers, telling us how to interpret the general individual $x$
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \sechead{Anatomy of a Formula}
+
+  ``Socrates is a human''
+  \begin{displaymath}
+    \hlafter<3>{blue!50}{\mathrm{human}}(\hlafter<2>{green!50}{\mathsf{socrates}})
+  \end{displaymath}
+  \begin{enumerate}
+  \item<2-> A specific individual
+  \item<3-> Property of that individual
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+  \sechead{Anatomy of a Formula}
+
+  \bigskip
+
+  ``No bird can fly in space''
+  \begin{displaymath}
+    \hlafter<4>{pink}{\lnot} (\hlafter<5>{yellow}{\exists x.} \hlafter<3>{blue!50}{\mathrm{bird}}(\hlafter<2>{green!50}{x}) \hlafter<4>{pink}{\land} \hlafter<3>{blue!50}{\mathrm{canFlyInSpace}}(\hlafter<2>{green!50}{x}))
+  \end{displaymath}
+  \begin{enumerate}
+  \item<2-> Variables, standing for general individuals
+  \item<3-> Properties (``Predicates'') of those individuals
+  \item<4-> Connectives, as in Propositional Logic
+  \item<5-> Quantifiers, telling us how to interpret the general individual $x$
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \sechead{Anatomy of a Formula}
+
+  \bigskip
+
+  ``If it is raining on a day, it is raining the day after''
+  \begin{displaymath}
+    \hlafter<6>{yellow}{\forall d.} \hlafter<4>{blue!50}{\mathrm{raining}}(\hlafter<2>{green!50}{d}) \hlafter<5>{pink}{\to} \hlafter<4>{blue!50}{\mathrm{raining}}(\hlafter<3>{purple!50}{\mathsf{dayAfter}}(\hlafter<2>{green!50}{d}))
+  \end{displaymath}
+  \begin{enumerate}
+  \item<2-> Variables, standing for general individuals
+  \item<3-> Function symbols, performing operations on individuals
+  \item<4-> Properties (``Predicates'') of those individuals
+  \item<5-> Connectives, as in Propositional Logic
+  \item<6-> Quantifiers,\kern-0.05pt telling us how to interpret the general individual $d$
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \sechead{Anatomy of a Formula}
+
+  \bigskip
+
+  ``Every number is even or odd''
+  \begin{displaymath}
+    \hlafter<6>{yellow}{\forall n.} \hlafter<6>{yellow}{\exists k.} (\hlafter<2>{green!50}{n} \hlafter<4>{blue!50}{=} \hlafter<2>{green!50}{k} \hlafter<3>{purple!50}{+} \hlafter<2>{green!50}{k}) \hlafter<5>{pink}{\lor} (\hlafter<2>{green!50}{n} \hlafter<4>{blue!50}{=} \hlafter<2>{green!50}{k} \hlafter<3>{purple!50}{+} \hlafter<2>{green!50}{k} \hlafter<3>{purple!50}{+} \hlafter<2>{green!50}{1})
+  \end{displaymath}
+  \begin{enumerate}
+  \item<2-> General ($n$, $k$) and specific ($1$) individuals
+  \item<3-> Function symbols, performing operations on individuals
+  \item<4-> Relations between individuals (here: equality)
+  \item<5-> Connectives, as in Propositional Logic
+  \item<6-> Quantifiers, telling us how to interpret the general individuals $n$ and $k$
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \sechead{More examples}
+
+  ``Every day is raining or sunny''
+  \begin{displaymath}
+    \forall d. \mathrm{raining}(d) \lor \mathrm{sunny}(d)
+  \end{displaymath}
+
+  \bigskip
+
+  ``Does there exist a player within 10 metres of player 1?''
+  \begin{displaymath}
+    \exists p. \mathrm{player}(p) \land \mathsf{distance}(\mathsf{locationOf}(p), \mathsf{locationOf}(\mathsf{player1})) \leq 10
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  \sechead{Examples from Mathematics}
+
+  \bigskip
+
+  \emph{Fermat's Last Theorem}
+  \begin{displaymath}
+    \forall n. n > 2 \to \lnot (\exists a. \exists b. \exists c. a^n + b^n = c^n)
+  \end{displaymath}
+  \sidenote{stated in 1637, not proved until 1994}
+
+  \bigskip
+
+  \emph{Goldbach's Conjecture} \\
+  \sidenote{Every even number greater than 2 is the sum of two primes}
+  \begin{displaymath}
+    \forall n. n > 2 \to \mathrm{even}(n) \to \exists p. \exists q. \mathrm{prime}(p) \land \mathrm{prime}(q) \land p+q = n
+  \end{displaymath}
+
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  Predicate Logic upgrades Propositional Logic, adding:
+  \begin{itemize}
+  \item Individuals $x$, $y$, $z$
+  \item Functions $+$, $\mathsf{dayAfter}$
+  \item Predicates $=$, $\mathrm{even}$, $\mathrm{odd}$
+  \item Quantifiers $\forall$, $\exists$
+  \end{itemize}
+\end{frame}
+
+\weeksection{Saying what you mean}
+
+\begin{frame}[t]
+  \sechead{How to say ``$x$ is a $P$''}
+  \begin{displaymath}
+    P(x)
+  \end{displaymath}
+  For example:
+  \begin{displaymath}
+    \begin{array}{c}
+      \mathrm{human}(x) \\
+      \mathrm{mortal}(x) \\
+      \mathrm{swan}(x) \\
+      \mathrm{golden}(x)
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}[t]
+  \sechead{How to say ``$x$ and $y$ are related by $R$''}
+  \begin{displaymath}
+    R(x,y)
+  \end{displaymath}
+  for example:
+  \begin{displaymath}
+    \begin{array}{c}
+      \mathrm{colour}(x, \mathsf{gold}) \\
+      \mathrm{species}(x, \mathsf{swan}) \\
+      \mathrm{connected}(x,y) \\
+      \mathrm{knows}(\mathsf{pooh},\mathsf{piglet})
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}[t]
+  \sechead{``Everything is P''}
+
+  \begin{center}
+    \emph{everything is boring} \\
+    \emph{everything is wet}
+  \end{center}
+
+  \begin{displaymath}
+    \begin{array}{c}
+      \forall x. \mathrm{boring}(x) \\
+      \forall x. \mathrm{wet}(x) \\
+      \\
+      \forall x. P(x)
+    \end{array}
+  \end{displaymath}
+
+  \bigskip
+
+  Usually not very \emph{useful} if $P$ is atomic, but things like
+  \begin{displaymath}
+    \forall x. \mathrm{even}(x) \lor \mathrm{odd}(x)
+  \end{displaymath}
+  are useful.
+
+\end{frame}
+
+
+\begin{frame}[t]
+  \sechead{``There exists an P''}
+
+  \begin{center}
+    \emph{there is a human} \\
+    \emph{there is a swan} \\
+    \emph{there is an insect}
+  \end{center}
+
+  \begin{displaymath}
+    \begin{array}{c}
+      \exists x. \mathrm{human}(x) \\
+      \exists x. \mathrm{swan}(x) \\
+      \exists x. \mathrm{class}(x,\mathsf{insecta}) \\
+      \\
+      \exists x. P(x)
+    \end{array}
+  \end{displaymath}
+
+  \bigskip
+
+  \emph{there is at least one thing with property $P$}
+
+\end{frame}
+
+
+\begin{frame}[t]
+  \sechead{``All P are Q''}
+
+  \begin{center}
+    \emph{all humans are mortal} \\
+    \emph{all swans are white} \\
+    \emph{all insects have 6 legs}
+  \end{center}
+
+  \begin{displaymath}
+    \begin{array}{c}
+      \forall x. \mathrm{human}(x) \to \mathrm{mortal}(x) \\
+      \forall x. \mathrm{swan}(x) \to \mathrm{white}(x) \\
+      \forall x. \mathrm{insect}(x) \to \mathrm{numLegs}(x,6) \\
+      \\
+      \forall x. P(x) \to Q(x)
+    \end{array}
+  \end{displaymath}
+
+  \begin{center}
+    \emph{for all $x$, if $x$ is $P$, then $x$ is $Q$}
+  \end{center}
+\end{frame}
+
+% \begin{frame}
+%   \rhighlight{To prove} $\forall x. X(x) \to Y(x)$ \\
+%   \quad given an arbitrary $x_0$, we get to assume $X(x_0)$ to prove
+%   $Y(y_0)$.
+
+%   \begin{displaymath}
+%     \inferrule* [right=$\forall$-I]
+%     {\inferrule* [Right=$\to$-I]
+%       { {\begin{array}[b]{c}
+%            [X(x_0)] \\ \vdots \\ Y(x_0)
+%          \end{array}}
+%       }
+%       {X(x_0) \to Y(x_0)}
+%     }
+%     {\forall x. X(x) \to Y(x)}
+%   \end{displaymath}
+
+%   \medskip
+
+%   \rhighlight{To use:} $\forall x. X(x) \to Y(x)$ \\
+%   \quad if we have a $t$ such that $X(t)$, then we
+%   learn $Y(t)$.
+
+%   \begin{displaymath}
+%     \inferrule*
+%     {\inferrule*
+%       { {\begin{array}[b]{c} \vdots\\\forall x. X(x) \to Y(x)\end{array}} }
+%       {X(t) \to Y(t)}
+%       \\
+%       {\begin{array}[b]{c} \vdots \\ X(t) \end{array}}}
+%     {Y(t)}
+%   \end{displaymath}
+% \end{frame}
+
+\begin{frame}[t]
+  \sechead{``Some P is Q''}
+
+  \begin{center}
+    \emph{some human is mortal} \\
+    \emph{some swan is black} \\
+    \emph{some insect has 6 legs}
+  \end{center}
+
+  \begin{displaymath}
+    \begin{array}{c}
+      \exists x. \mathrm{human}(x) \land \mathrm{mortal}(x) \\
+      \exists x. \mathrm{swan}(x) \land \mathrm{colour}(x,\mathsf{black}) \\
+      \exists x. \mathrm{insect}(x) \land \mathrm{numLegs}(x,6)\\
+      \\
+      \exists x. P(x) \land Q(x)
+    \end{array}
+  \end{displaymath}
+
+  \begin{center}
+    \emph{exists $x$, such that $x$ is a $P$ and $x$ is a $Q$}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}[t]
+  \sechead{``All P are Q'' vs ``Some P are Q''}
+
+  \begin{displaymath}
+    \forall x. P(x) \to Q(x)
+  \end{displaymath}
+  uses $\to$, but
+  \begin{displaymath}
+    \exists x. P(x) \land Q(x)
+  \end{displaymath}
+  uses $\land$.
+
+  \pause
+  \bigskip
+
+  Tempting to write:
+  \begin{displaymath}
+    \forall x. P(x) \land Q(x) \quad \textrm{\textcolor{black!60}{everything is both $P$ and $Q$}}
+  \end{displaymath}
+  or
+  \begin{displaymath}
+    \exists x. P(x) \to Q(x) \quad \textrm{\textcolor{black!60}{there is some $x$, such that if $P$ then $Q$}}
+  \end{displaymath}
+  but {\bf almost always not what you want}.
+\end{frame}
+
+\begin{frame}[t]
+  \sechead{``No P is Q''}
+
+  \begin{center}
+    \emph{no swans are blue} \\
+    \emph{no bird can fly in space} \\
+    \emph{no program works}
+  \end{center}
+
+  \begin{displaymath}
+    \begin{array}{c}
+      \forall x. \mathrm{swan}(x) \to \lnot \mathrm{blue}(x) \\
+      \lnot (\exists x. \mathrm{bird}(x) \land \mathrm{canFlyInSpace}(x)) \\
+      \forall x. \mathrm{program}(x) \to \lnot \mathrm{works}(x)
+    \end{array}
+  \end{displaymath}
+
+  \begin{mathpar}
+    \lnot (\exists x. P(x) \land Q(x))
+
+    \textrm{or}
+
+    \forall x. P(x) \to \lnot Q(x)
+  \end{mathpar}
+
+  % TUTORIAL QUESTION
+
+  \bigskip
+
+  The two statements are equivalent.
+\end{frame}
+
+\begin{frame}[t]
+  \sechead{``For every P, there exists a related Q''}
+
+  \begin{center}
+    \emph{every farmer owns a donkey} \\ % ambiguous
+    \emph{every day has a next day} \\
+    \emph{every list has a sorted version} \\
+    \emph{every position has a nearby safe position}
+  \end{center}
+  \begin{displaymath}
+    \begin{array}{c}
+      \forall f. \mathrm{farmer}(f) \to (\exists d. \mathrm{donkey}(d) \land \mathrm{owns}(f,d))\\
+      \forall d. \mathrm{day}(d) \to (\exists d'. \mathrm{day}(d') \land \mathrm{next}(d,d')) \\
+      \forall x. \mathrm{list}(x) \to (\exists y. \mathrm{list}(y) \land \mathrm{sorted}(y) \land \mathrm{sameElements}(x,y)) \\
+      \forall p_1. \exists p_2. \mathrm{nearby}(p_1,p_2) \land \mathrm{safe}(p_2)
+    \end{array}
+  \end{displaymath}
+
+  In steps:
+  \begin{enumerate}
+  \item For every $x$ (they choose),
+  \item There is a $y$ (we choose),
+  \item such that $x$ and $y$ are related.
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}[t]
+  \sechead{``There exists an P such that every Q is related''}
+
+  \begin{center}
+    \emph{every farmer owns a donkey} (!!!) \\
+    \emph{there is someone that everyone loves} \\
+    \emph{there is someone that loves everyone} \\
+  \end{center}
+
+  \begin{displaymath}
+    \begin{array}{c}
+      \exists d. \mathrm{donkey}(d) \land (\forall f. \mathrm{farmer}(f) \to \mathrm{owns}(f,d))\\
+      \exists x. \forall y. \mathrm{loves}(y, x) \\
+      \exists x. \forall y. \mathrm{loves}(x, y) \\
+    \end{array}
+  \end{displaymath}
+
+  In steps:
+  \begin{enumerate}
+  \item there exists an $x$ (we choose), such that
+  \item forall $y$ (they choose),
+  \item it is the case that $x$ and $y$ are related.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[t]
+  \sechead{``For all P, there is a related Q, related to all R''}
+
+  \begin{center}
+%    \emph{every node is connected to a node that is connected to all nodes} \\
+    \emph{everyone knows someone who knows everyone}
+  \end{center}
+
+  \begin{displaymath}
+    \begin{array}{c}
+%      \forall x. \exists y. \mathrm{connected}(x,y) \land (\forall z. \mathrm{connected}(y,z))\\
+      \forall x. \exists y. \mathrm{knows}(x,y) \land (\forall z. \mathrm{knows}(y,z)) \\
+      \\
+      \forall x. P(x) \to (\exists y. Q(x,y) \land (\forall z. \mathrm{R}(x,y,z))
+    \end{array}
+  \end{displaymath}
+
+  In steps:
+  \begin{enumerate}
+  \item for all $x$ (they choose),
+  \item there exists a $y$ (we choose),
+  \item for all $z$ (they choose),
+  \item such that $x$, $y$, $z$ are related.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \sechead{``There exists exactly one X''}
+
+  \begin{center}
+    \emph{there's only one moon} \\
+  \end{center}
+
+  ``Any other individual with the same property is equal''
+  \begin{displaymath}
+    \exists x. \mathrm{moon}(x) \land (\forall y. \mathrm{moon}(y) \to x = y)
+  \end{displaymath}
+  not quite the same, but similar:
+  \begin{displaymath}
+    \forall x. \forall y. (\mathrm{moon}(x) \land \mathrm{moon}(y)) \to x = y
+  \end{displaymath}
+  this says: \emph{at most one moon}, but doesn't say one exists.
+
+\end{frame}
+
+\begin{frame}
+  \sechead{``For every X, there exists exactly one Y''}
+
+  \begin{center}
+    \emph{every train has one driver}
+  \end{center}
+
+  \begin{displaymath}
+    \forall t. \mathrm{train}(t) \to (\exists d.\mathrm{driver}(d,t) \land (\forall d'. \mathrm{driver}(d',t) \to d = d'))
+  \end{displaymath}
+
+\end{frame}
+
+\begin{frame}
+  \sechead{There exists an X such that for all Y there exists a Z}
+
+  \begin{center}
+    \emph{there is a node, such that for all reachable nodes, \\
+      there is a safe node in one step}
+  \end{center}
+
+  \begin{displaymath}
+    \exists a. \forall b. \mathrm{reachable}(a,b) \to (\exists c. \mathrm{safe}(c) \land \mathrm{step}(b,c))
+  \end{displaymath}
+
+  Not the same as:
+
+  \begin{displaymath}
+    \exists a. \exists c. \forall b. \mathrm{reachable}(a,b) \to (\mathrm{safe}(c) \land \mathrm{step}(b,c))
+  \end{displaymath}
+
+  \begin{enumerate}
+  \item First one: $c$ can be different for each $b$.
+  \item Second: the same $c$ for all $b$.
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item Many of the things you want to say in Predicate Logic fall
+    into one of several predefined templates.
+  \item It helps to think of quantifiers as a game
+    \begin{itemize}
+    \item $\forall$ means ``they choose''
+    \item $\exists$ means ``I choose''
+    \end{itemize}
+    (but they switch places under a negation or on the left of an
+    implication!)
+  \end{itemize}
+\end{frame}
+
+\weeksection{Syntax Details}
+
+\begin{frame}
+  {Predicate Logic}
+
+  Predicate Logic upgrades Propositional Logic, adding:
+  \begin{itemize}
+  \item Individuals $x$, $y$, $z$
+  \item Functions $+$, $\mathsf{dayAfter}$
+  \item Predicates $=$, $\mathrm{even}$, $\mathrm{odd}$
+  \item Quantifiers $\forall$, $\exists$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Predicate Logic is for \emph{Modelling}}
+
+  \bigskip
+
+  To state properties of some situation we want to model, we choose:
+  \begin{enumerate}
+  \item Names of specific individuals \\
+    \sidenote{$\mathsf{socrates}, 1, 2, 10000, \mathsf{localhost}, \mathsf{www.strath.ac.uk}$}
+  \item Function symbols \\
+    \sidenote{$+$, $\times$, $\mathsf{nameOf}$}
+  \item Relation symbols \\
+    \sidenote{$\mathrm{human}(x)$, $x=y$, $\mathrm{linksTo}(x,y)$}
+  \item Some axioms \\
+    \sidenote{later ...}
+  \end{enumerate}
+
+  \bigskip
+
+  Usually, we build a vocabulary based on what we want to do.
+\end{frame}
+
+\begin{frame}
+  {Vocabulary for Arithmetic}
+
+  Individuals:
+  \begin{mathpar}
+    0
+
+    1
+
+    2
+
+    3
+
+    \dots
+  \end{mathpar}
+  Functions:
+  \begin{mathpar}
+    t_1 + t_2
+
+    t_1 - t_2
+
+    \dots
+  \end{mathpar}
+  Predicates:
+  \begin{mathpar}
+    t_1 = t_2
+
+    t_1 < t_2
+
+    \dots
+  \end{mathpar}
+\end{frame}
+
+\begin{frame}
+  {Vocabulary for Documents}
+
+  Individuals:
+  \begin{mathpar}
+    \textrm{``Frankenstein''}
+
+    \textrm{``Dracula''}
+
+    \textrm{``Bram Stoker''}
+
+    \textrm{``Mary Shelley''}
+  \end{mathpar}
+  Predicates:
+  \begin{mathpar}
+    \mathrm{linksTo}(\mathit{doc}_1,\mathit{doc}_2)
+
+    \mathrm{authorOf}(\mathit{doc},\mathit{person})
+
+    \mathrm{ownerOf}(\mathit{doc},\mathit{person})
+  \end{mathpar}
+\end{frame}
+
+\begin{frame}
+  {Vocabulary for Programs}
+
+  Individuals
+  \begin{mathpar}
+    \texttt{java.lang.Object}
+
+    \texttt{j.l.String}
+
+    \texttt{j.l.Runnable}
+
+    \texttt{String toString()}
+  \end{mathpar}
+  Relations
+  \begin{mathpar}
+    \mathrm{extends}(\mathit{class}_1,\mathit{class}_2)
+
+    \mathrm{implements}(\mathit{class},\mathit{interface})
+
+    \mathrm{hasMethod}(\mathit{class},\mathit{method})
+
+    \dots
+  \end{mathpar}
+\end{frame}
+
+\begin{frame}
+  {Equality}
+
+  The equality predicate
+  \begin{displaymath}
+    t_1 = t_2
+  \end{displaymath}
+  is treated specially:
+  \begin{itemize}
+  \item and in proofs (Topic 4)
+  \item in the semantics (Topic 8)
+  \end{itemize}
+\end{frame}
+
+% \begin{frame}[t]
+%   {``Universal'' vocabularies?}
+
+%   \bigskip
+
+%   \begin{itemize}
+%   \item Zermelo-Frankel set theory
+%     \begin{itemize}
+%     \item one named individual $\{\}$ -- the empty set
+%     \item one relation $x \in y$ -- set membership
+%     \item 9 axioms (+ optional ``Choice'' axiom)
+%     \item Can define ``all'' of modern mathematics in this system \\
+%       e.g. Metamath \url{http://us.metamath.org/index.html}
+%     \end{itemize}
+
+%     \bigskip
+%   \item DBpedia : \url{https://wiki.dbpedia.org/} \\
+%     \sidenote{structured version of Wikipedia, (partly) used for Google's ``info box'' on searches}
+
+%     \bigskip
+%   \item Cyc : \url{http://www.cyc.com/} \\
+%     \sidenote{building a ``knowledge base'' since 1984}
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   {Existing vocabularies}
+
+%   \begin{itemize}
+%   \item OpenGraph \url{http://ogp.me/} \\
+%     \sidenote{Metadata readable by Facebook}
+%     \begin{displaymath}
+%       \begin{array}{cl}
+%         &\texttt{<meta property="og:title" content="The Rock" />} \\
+%         \approx&\mathrm{title}(\mathit{currentPage}, \mathsf{"The~Rock"})
+%       \end{array}
+%     \end{displaymath}
+
+%     \bigskip
+%   \item DublinCore \url{http://dublincore.org/about/} \\
+%     \sidenote{Standardised metadata for digital objects} \\
+%   \end{itemize}
+% \end{frame}
+
+\begin{frame}
+  {Formal Grammar}
+
+  \begin{displaymath}
+    \begin{array}{lcll}
+      t&::= &x &\textrm{\textcolor{black!60}{variables}} \\
+       &\mid&\mathsf{c} &\textrm{\textcolor{black!60}{constants}}\\
+       &\mid&\mathsf{f}(t_1, \dots, t_n) &\textrm{\textcolor{black!60}{function terms}}\\
+      \\
+      P&::= &R(t_1,\dots,t_n) & \textrm{\textcolor{black!60}{predicates}} \\
+       &\mid&P \land Q \mid P \lor Q \mid P \to Q \mid \lnot P & \textrm{\textcolor{black!60}{connectives}}\\
+       &\mid&\forall x.P \mid \exists x.P & \textrm{\textcolor{black!60}{quantifiers}}
+    \end{array}
+  \end{displaymath}
+
+  \emph{Propositional Logic} as special case: all relation symbols
+  have arity $0$.
+\end{frame}
+
+\begin{frame}
+  {When are two formulas the same?}
+
+  Is there a difference in meaning between these two?
+  \begin{mathpar}
+    \forall x. P(x)
+
+    \textrm{and}
+
+    \forall y. P(y)
+  \end{mathpar}
+
+  \bigskip
+  \pause
+
+  No! They both mean the same thing.
+
+  \bigskip
+  \pause
+
+  So we treat them as identical formulas.
+\end{frame}
+
+\begin{frame}
+  {Free and Bound Variables}
+
+  In the formula:
+  \begin{displaymath}
+    \exists y. R(x,y)
+  \end{displaymath}
+  \begin{enumerate}
+  \item The variable $x$ is \emph{free}
+  \item The variable $y$ is \emph{bound} (by the $\exists$ quantifier)
+  \end{enumerate}
+
+  \bigskip
+
+  The quantifiers are \emph{binders}.
+\end{frame}
+
+\begin{frame}
+  {Free and Bound Variables}
+
+  Pay attention to the bracketing:
+  \begin{displaymath}
+    (\forall x. P(x) \to Q(x)) \land (\exists y. R(x,y))
+  \end{displaymath}
+  The $x$s to the left of the $\land$ are bound (by the $\forall$)
+
+  \bigskip
+
+  The $x$ to the right of the $\land$ is free.
+
+  \bigskip
+
+  When a variable is bound by quantifier, we say that it is in that
+  quantifiers \emph{scope}.
+\end{frame}
+
+\begin{frame}
+  {Identical Formulas, again}
+
+  We can only rename \emph{bound} variables
+  \begin{mathpar}
+    \exists y. R(x,y)
+
+    \textrm{is identical to}
+
+    \exists z. R(x,z)
+  \end{mathpar}
+
+  \bigskip
+
+  but
+  \begin{mathpar}
+    \exists y. R(x,y)
+
+    \textrm{is not identical to}
+
+    \exists y. R(z,y)
+  \end{mathpar}
+
+  because $x$ and $z$ do not have the same ``global'' meaning.
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  Vocabularies define the symbols we can use in our formulas.
+
+  \bigskip
+
+
+  The formal syntax of Predicate Logic is more complex than
+  Propositional Logic
+  \begin{itemize}
+  \item Free and Bound Variables
+  \item Formulas are identical even when renaming bound variables.
+  \end{itemize}
+\end{frame}
+
+\weeksection{Substitution}
+
+\begin{frame}
+  {From General to Specific}
+
+  We will have \emph{general} assumptions like:
+  \begin{displaymath}
+    \forall x. \mathrm{human}(x) \to \mathrm{mortal}(x)
+  \end{displaymath}
+
+  \bigskip
+
+  And we want to \emph{specialise} (or \emph{instantiate}) to:
+  \begin{displaymath}
+    \mathrm{human}(\mathsf{socrates}()) \to \mathrm{mortal}(\mathsf{socrates}())
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Substitution}
+  The notation
+  \begin{displaymath}
+    P[x:=t]
+  \end{displaymath}
+  means ``replace all \emph{free} occurrences of $x$ in $P$ with $t$''.
+  \begin{itemize}
+  \item $x$ is a \emph{variable}
+  \item $P$ is a \emph{formula}
+  \item $t$ is a \emph{term}
+  \end{itemize}
+
+
+  \bigskip
+
+  \textcolor{black!60}{But there is a subtlety...}
+\end{frame}
+
+\begin{frame}
+  {Substitution Examples}
+
+  \begin{displaymath}
+    \begin{array}{cl}
+      &(\mathrm{mortal}(x))[x := \mathsf{socrates}()]\\
+      \Longrightarrow&\mathrm{mortal}(\mathsf{socrates}())\\
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Substitution Examples}
+
+  \begin{displaymath}
+    \begin{array}{cl}
+      &(\forall y. \mathrm{weatherIs}(d,y) \to \mathrm{weatherIs}(\mathsf{dayAfter}(d),y))[d:=\mathsf{tuesday}]\\
+      \Longrightarrow&\forall y. \mathrm{weatherIs}(\mathsf{tuesday},y) \to \mathrm{weatherIs}(\mathsf{dayAfter}(\mathsf{tuesday}),y)\\
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Substitution Examples}
+
+  \begin{displaymath}
+    \begin{array}{cl}
+      &(\exists y. \mathrm{sameElements}(x,y) \land \mathrm{sorted}(y))[x:=\mathsf{cons}(z_1,\mathsf{cons}(z_2,\mathsf{nil}))]\\
+      \Longrightarrow&\exists y. \mathrm{sameElements}(\mathsf{cons}(z_1,\mathsf{cons}(z_2,\mathsf{nil})),y) \land \mathrm{sorted}(y)\\
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Substitution Examples}
+  \begin{displaymath}
+    \begin{array}{cl}
+      &(\forall y. x+y=y+x)[x:=z-z] \\
+      \Longrightarrow&\forall y. (z-z)+y = y+(z-z)
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}[t]
+  {Accidental Name Capture}
+
+  If we substitute naively, then we produce nonsense:
+  \begin{enumerate}
+  \item $\exists y. \mathrm{sameElements}(x,y)$ \\
+    \emph{``there exists a $y$ that has the same elements as $x$''}\\
+    ~\\
+  \item $(\exists y. \mathrm{sameElements}(x,y))[x:=\mathsf{append}(y,[1,2])]$\\
+    \emph{``replace $x$ by the list $\mathsf{append}(y,[1,2])$''}\\
+    ~\\
+  \item $\exists y. \mathrm{sameElements}(\mathsf{append}(y,[1,2]),y)$\\
+    \emph{``there exists a $y$ that has the same elements as $y + [1,2]$?''}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Capture Avoidance}
+
+  \bigskip
+
+  \textbf{Solution: Rename bound variables}
+  \begin{displaymath}
+    \begin{array}{cl}
+      &(\exists y. \mathrm{sameElements}(x,y))[x:=\mathsf{append}(y,[1,2])]\\
+      \Longrightarrow&(\exists z. \mathrm{sameElements}(x,z))[x:=\mathsf{append}(y,[1,2])]\\
+      \Longrightarrow&\exists z. \mathrm{sameElements}(\mathsf{append}(y,[1,2]),z)
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Capture Avoiding Substitution}
+
+  When working out
+  \begin{displaymath}
+    P[x := t]
+  \end{displaymath}
+  If any of the variables in $t$ are bound in $P$ then rename them
+  before doing the substitution.
+\end{frame}
+
+\begin{frame}
+  {Substitution Examples}
+
+  \begin{enumerate}
+  \item $P(x,y)[x:=y+y]$\pause \quad $= P(y+y,y)$
+    \pause
+    \bigskip
+  \item $P(x,y)[y:=y+y]$\pause \quad $= P(x,y+y)$
+    \pause
+    \bigskip
+  \item $(\forall x. P(x,y))[x:=y+y]$\pause \quad $= \forall x. P(x,y)$
+  \end{enumerate}
+\end{frame}
+
+
+\begin{frame}
+  {Substitution Examples}
+
+  \begin{enumerate}
+  \item $(\forall x. P(x,y))[y:=x+x]$\pause \quad $= \forall z. P(z,x+x)$ \\
+    \qquad \textcolor{black!60}{Renaming!}
+    \pause
+    \bigskip
+  \item $(\forall x. P(x,y) \to (\exists z. Q(y,z)))[y:=z+z]$\pause\\
+    $= \forall x. P(x,z+z) \to (\exists w. Q(z+z,w))$\\
+    \qquad \textcolor{black!60}{Renaming!}
+    \pause
+    \bigskip
+  \item $(\forall x. P(x,z) \to (\exists z. Q(y,z)))[z:=x+x]$\pause\\
+    $= \forall w. P(w,x+x) \to (\exists z. Q(y,z))$\\
+    \qquad \textcolor{black!60}{Renaming! and no substitution of the final $z$}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item Substitution
+    \begin{displaymath}
+      P [x := t]
+    \end{displaymath}
+    is how we go from the general $x$ to the specific $t$.
+  \item We need to be careful to rename bound variables to avoid
+    accidental name capture.
+  \end{itemize}
+\end{frame}
+
+
+
+
+\end{document}

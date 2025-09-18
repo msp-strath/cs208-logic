@@ -1,0 +1,637 @@
+% -*- TeX-engine: xetex -*-
+
+\documentclass[xetex,aspectratio=169,14pt,hyperref={pdfpagelabels=true,pdflang={en-GB}}]{beamer}
+
+\input{macros}
+
+\weektitle{8}{Predicate Logic Models}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\weeksection{Models}
+
+\begin{frame}
+  {So far: Syntax and Proof}
+
+  \begin{enumerate}
+  \item The syntax of predicate logic \\
+    \textcolor{black!60}{What sequences of symbols are well formed?}
+  \item Proofs for predicate logic \\
+    \textcolor{black!60}{When are formulas consequences of other formulas?}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Missing so far: \emph{semantics}}
+  \begin{enumerate}
+  \item For Propositional Logic, we defined the \emph{semantics}
+    (``meaning'') of a formula $P$:
+    \begin{itemize}
+    \item For every \emph{valuation} $v$,\\
+      the formula $P$ is assigned a meaning $\sem{P}~v$ which is either $\true$ or $\false$.
+    \end{itemize}
+  \item This definition enabled us to give a definition of
+    \emph{entailment}:
+    \begin{displaymath}
+      P_1, \dots, P_n \models Q
+    \end{displaymath}
+    which defines consequence without using proofs.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Semantics for Predicate Logic}
+
+  The plan:
+  \begin{enumerate}
+  \item Fix a vocabulary
+  \item Define \emph{models} $\mathcal{M}$
+  \item Interpret a formula $P$ in a model $\mathcal{M}$
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Fixing a Vocabulary}
+
+  The function symbols we will use, and their \emph{arities}
+  (number of arguments):
+  \begin{displaymath}
+    \begin{array}{l|l}
+      \textrm{Function name(s)}&\textrm{Arity}\\
+      \hline
+      \mathrm{socrates} & 0 \\
+      \mathrm{dayAfter} & 1 \\
+      +, -              & 2\\
+    \end{array}
+  \end{displaymath}
+  We write ``$\mathrm{func}/n$'' for function symbol $\mathrm{func}$
+  with arity $n$
+\end{frame}
+
+\begin{frame}
+  {Fixing a Vocabulary}
+
+  The predicates / relation symbols we will use, and their arities:
+  \begin{displaymath}
+    \begin{array}{l|l}
+      \textrm{Predicate name(s)}&\textrm{Arity} \\
+      \hline
+      \mathrm{human}, \mathrm{mortal} & 1 \\
+      <, \leq, =                      & 2 \\
+      \mathrm{between}                & 3
+    \end{array}
+  \end{displaymath}
+  We write ``$\mathrm{pred}/n$'' for predicate symbol
+  $\mathrm{pred}$ with arity $n$
+\end{frame}
+
+\begin{frame}
+  \sechead{A simplification}
+
+  \bigskip
+
+  To keep things simple, I'm going to assume that we don't have any
+  function symbols in our vocabulary.
+\end{frame}
+
+\begin{frame}
+  \sechead{Example: Orderings}
+  \begin{itemize}
+  \item $\mathord{\leq}/2$ \quad \textcolor{black!60}{``less than''}
+  \end{itemize}
+
+  \bigskip
+
+  \sechead{Example: Places}
+  \begin{itemize}
+  \item $\mathrm{city}/1$ \quad \textcolor{black!60}{``is a city''}
+  \item $\mathrm{within}/2$ \quad \textcolor{black!60}{``is within''}
+  \end{itemize}
+
+  \bigskip
+
+  \sechead{Example: Forestry and Birdwatching}
+  \begin{itemize}
+  \item $\mathrm{tree}/1$ \quad \textcolor{black!60}{``is a tree''}
+  \item $\mathrm{green}/1$ \quad \textcolor{black!60}{``is green''}
+  \item $\mathrm{bird}/1$ \quad \textcolor{black!60}{``is a bird''}
+  \item $\mathrm{satIn}/2$ \quad \textcolor{black!60}{``has sat in''}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Models}
+
+  With a fixed vocabulary, a \emph{model} $\mathcal{M}$ is:
+  \begin{enumerate}
+  \item A \emph{universe} $U$, which is a set of individuals:
+    \begin{displaymath}
+      U = \{ 1, 2, \mathsf{socrates}, \mathsf{hypatia}, \mathsf{noether}, \mathsf{alexandria}, \mathsf{glasgow}, \dots \}
+    \end{displaymath}
+  \item For each predicate $\mathrm{pred}/n$, an $n$-ary
+    relation on the set $U$.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Relations}
+
+  Several ways of understanding what a relation is:
+  \begin{enumerate}
+  \item For every $n$ elements from $U$, the interpretation of
+    $\mathrm{pred}/n$ assigns the value $\true$ or $\false$.\\
+    \bigskip
+  \item The interpretation of $\mathrm{pred}/n$ is a (possibly
+    infinite) table of elements of $U$ with $n$ columns.
+    \bigskip
+  \item The interpretation of $\mathrm{pred}/n$ is a subset of the
+    $n$-fold \emph{cartesian product}
+    $\underbrace{U \times \dots \times U}_{n~\mathrm{times}}$.\\
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \sechead{Example: Places, interpretation 1}
+  \begin{displaymath}
+    \begin{array}{l@{\hspace{0.3em}}c@{\hspace{0.3em}}l}
+      U &=& \{ \mathsf{aberdeen}, \mathsf{edinburgh}, \mathsf{glasgow}, \mathsf{scotland},  \mathsf{birmingham}, \mathsf{england} \}\\
+      \mathsf{city} &=& \{ (\mathsf{aberdeen}), (\mathsf{edinburgh}), (\mathsf{glasgow}), (\mathsf{birmingham}) \}\\
+      \mathsf{within} &=& \{
+                          \begin{array}[t]{@{}l}
+                            (\mathsf{aberdeen}, \mathsf{scotland}), (\mathsf{edinburgh}, \mathsf{scotland}), \\
+                            (\mathsf{glasgow}, \mathsf{scotland}), (\mathsf{birmingham}, \mathsf{england}) \}
+                          \end{array}
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  \sechead{Example: Places, interpretation 1}
+
+  \bigskip
+
+  \begin{displaymath}
+    U = \{ \mathsf{aberdeen}, \mathsf{edinburgh}, \mathsf{glasgow}, \mathsf{scotland},  \mathsf{birmingham}, \mathsf{england} \}
+  \end{displaymath}
+  As tables:
+  \begin{mathpar}
+    \begin{array}{|c|}
+      \hline
+      \mathrm{city} \\
+      \hline
+      \mathsf{aberdeen} \\
+      \mathsf{edinburgh} \\
+      \mathsf{glasgow} \\
+      \mathsf{birmingham}\\
+      \hline
+    \end{array}
+
+    \begin{array}{|cc|}
+      \hline
+      \multicolumn{2}{|c|}{\mathrm{within}}\\
+      \hline
+      \mathsf{aberdeen} & \mathsf{scotland} \\
+      \mathsf{edinburgh} & \mathsf{scotland} \\
+      \mathsf{glasgow} & \mathsf{scotland} \\
+      \mathsf{birmingham} & \mathsf{england} \\
+      \hline
+    \end{array}
+  \end{mathpar}
+\end{frame}
+
+\begin{frame}
+  \sechead{Example: Places, interpretation 2}
+  \begin{displaymath}
+    \begin{array}{lcl}
+      U &=& \{ \textsf{planet-b} \} \\
+      \mathsf{city} &=& \{ \} \\
+      \mathsf{within} &=& \{ (\textsf{planet-b}, \textsf{planet-b}) \}
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  \sechead{Example: Interpreting ordering with natural numbers}
+  \begin{enumerate}
+  \item $U = \{ 0, 1, 2, \dots \} = \mathbb{N}$ (all positive whole numbers)
+  \item The interpretation of $\mathord{\leq}/2$ is all pairs $(x, y)$ such that $x \leq y$
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \sechead{Example: Interpreting ordering with rational numbers}
+  \begin{enumerate}
+  \item $U = \{ 0, -1, 1, -\frac{1}{2}, \frac{1}{2}, -2, 2, \dots \} = \mathbb{Q}$
+  \item The interpretation of $\mathord{\leq}/2$ is all pairs $(x, y)$ such that $x \leq y$
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \sechead{Example: Interpreting ordering with a small set}
+  \begin{enumerate}
+  \item $U = \{ \mathsf{a}, \mathsf{b}, \mathsf{c} \}$
+  \item The interpretation of $\mathord{\leq}/2$ is the set:
+    \begin{displaymath}
+      \{ (\mathsf{a},\mathsf{b}), (\mathsf{a},\mathsf{c}) \}
+    \end{displaymath}
+    Note! not necessarily what we might think of as $\leq$! Need to
+    add axioms.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Important Points}
+
+
+  Every model $\mathcal{M}$ has
+  \begin{enumerate}
+  \item a universe; and
+  \item a relation for each predicate symbol $\mathrm{pred}/n$,
+  \end{enumerate}
+  but the domain can be empty, or the predicate symbols' interpretations may be empty!
+
+  \bigskip
+
+  The model needn't match our intuition about the symbols!
+  \begin{itemize}
+  \item Will assume formulas that will filter the possible models.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Relationship to Valuations}
+
+  \bigskip
+
+  If all our predicate symbols have arity $0$ (take no arguments),
+  then a model consists of:
+  \begin{enumerate}
+  \item A universe $U$; and
+  \item An assignment of $\true$ or $\false$ to each predicate symbol
+    $\mathrm{pred}/0$.
+  \end{enumerate}
+
+  \bigskip
+
+  Apart from the universe, this is the same as a \emph{valuation} in
+  Propositional Logic (Week 01).
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  We interpret Predicate Logic formulas in a \emph{model} $\mathcal{M}$.
+  \begin{itemize}
+  \item A universe $U$ -- the set of all ``things''.
+  \item A relation between elements of $U$ for every predicate.
+  \end{itemize}
+
+  \bigskip
+
+  Useful intuition: models are (possibly infinite) databases.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\weeksection{Interpreting Formulas}
+
+\begin{frame}
+  {Meaning of free variables}
+
+  Assume a vocabulary $\mathcal{V}$ and model $\mathcal{M}$ are fixed.
+
+  \bigskip
+
+  Consider the formula:
+  \begin{displaymath}
+    \mathrm{city}(x) \land \mathrm{within}(x,y)
+  \end{displaymath}
+  we can't give it a truth value until we know what $x$ and $y$ mean.
+\end{frame}
+
+\begin{frame}
+  {Cities Model}
+  \begin{displaymath}
+    U = \{ \mathsf{aberdeen}, \mathsf{edinburgh}, \mathsf{glasgow}, \mathsf{scotland},  \mathsf{birmingham}, \mathsf{england} \}
+  \end{displaymath}
+  As tables:
+  \begin{mathpar}
+    \begin{array}{|c|}
+      \hline
+      \mathrm{city} \\
+      \hline
+      \mathsf{aberdeen} \\
+      \mathsf{edinburgh} \\
+      \mathsf{glasgow} \\
+      \mathsf{birmingham}\\
+      \hline
+    \end{array}
+
+    \begin{array}{|cc|}
+      \hline
+      \multicolumn{2}{|c|}{\mathrm{within}}\\
+      \hline
+      \mathsf{aberdeen} & \mathsf{scotland} \\
+      \mathsf{edinburgh} & \mathsf{scotland} \\
+      \mathsf{glasgow} & \mathsf{scotland} \\
+      \mathsf{birmingham} & \mathsf{england} \\
+      \hline
+    \end{array}
+  \end{mathpar}
+\end{frame}
+
+\begin{frame}
+  {Meaning of free variables}
+
+  With the cities model, if we set:
+  \begin{mathpar}
+    x = \mathsf{glasgow}
+
+    y = \mathsf{scotland}
+  \end{mathpar}
+  then $\mathrm{city}(x) \land \mathrm{within}(x,y)$ should be assigned the truth value $\true$.
+
+  \bigskip
+  \pause
+
+  If we set:
+  \begin{mathpar}
+    x = \mathsf{scotland}
+
+    y = \mathsf{edinburgh}
+  \end{mathpar}
+  then $\mathrm{city}(x) \land \mathrm{within}(x,y)$ should be assigned the truth value $\false$.
+\end{frame}
+
+\begin{frame}
+  {Interpreting Formulas}
+
+  If we fix:
+  \begin{enumerate}
+  \item a vocabulary $\mathcal{V}$;
+  \item a model $\mathcal{M}$ of that vocabulary;
+  \item an assignment $v$ of elements of $U$ to free variables of $P$.
+  \end{enumerate}
+  then we can give a truth value $\sem{P}({\mathcal{M}},v)$ to $P$.
+\end{frame}
+
+\begin{frame}
+  {Interpreting Formulas}
+
+  Relations:
+  \begin{displaymath}
+    \begin{array}{lcl}
+      \sem{R(x_1, \dots, x_n)}(\mathcal{M},v) &=& \true \quad \mathrm{if}\quad (v(x_1), \dots, v(x_n)) \in \mathrm{R} \\
+                                              &=& \false \quad \textrm{otherwise} \\
+      \sem{x = y}(\mathcal{M},v)              &=& \true \quad \textrm{if}\quad v(x) = v(y) \\
+                                              &=& \false \quad \textrm{otherwise}
+    \end{array}
+  \end{displaymath}
+  where $R$ is one of the relations in $\mathcal{M}$.
+\end{frame}
+
+\begin{frame}
+  {Interpreting Formulas (Example)}
+
+  With the cities model $\mathcal{M}$:
+
+  \bigskip
+
+  \begin{displaymath}
+    \sem{\mathrm{within}(x,y)}(\mathcal{M}, [x\mapsto \mathsf{edinburgh}, y \mapsto \mathsf{scotland}]) = \true
+  \end{displaymath}
+
+  \bigskip
+
+  \begin{displaymath}
+    \sem{\mathrm{within}(x,y)}(\mathcal{M}, [x\mapsto \mathsf{edinburgh}, y \mapsto \mathsf{england}]) = \false
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Interpreting Formulas}
+
+  Quantifiers:
+  \begin{displaymath}
+    \begin{array}{lcl}
+      \sem{\forall x. P}(\mathcal{M},v) & = & \true \quad\textrm{if for all }a \in U,~\sem{P}(\mathcal{M},v[x \mapsto a]) = \true \\
+      & = & \false \quad \textrm{otherwise} \\
+      \sem{\exists x. P}(\mathcal{M},v) & = & \true \quad\textrm{if exists }a \in U,\textrm{ with }\sem{P}(\mathcal{M},v[x \mapsto a]) = \true \\
+      & = & \false \quad \textrm{otherwise} \\
+    \end{array}
+  \end{displaymath}
+  Notation $v[x \mapsto a]$ means the assignment that maps $x$ to $a$
+  and any other variable to whatever $v$ mapped it to.
+\end{frame}
+
+\begin{frame}
+  {Interpreting Formulas (Example)}
+
+  \begin{displaymath}
+    \sem{\forall x. \mathrm{city}(x)}(\mathcal{M},[]) = \false
+  \end{displaymath}
+  because all of the following would need to be $\true$:
+  \begin{displaymath}
+    \begin{array}{lcc}
+      \sem{\mathrm{city}(x)}(\mathcal{M},[x\mapsto\mathsf{aberdeen}]) &=& \true\\
+      \sem{\mathrm{city}(x)}(\mathcal{M},[x\mapsto\mathsf{edinburgh}]) &=& \true\\
+      \sem{\mathrm{city}(x)}(\mathcal{M},[x\mapsto\mathsf{glasgow}]) &=& \true\\
+      \sem{\mathrm{city}(x)}(\mathcal{M},[x\mapsto\mathsf{birmingham}]) &=& \true\\
+      \sem{\mathrm{city}(x)}(\mathcal{M},[x\mapsto\mathsf{scotland}]) &=& \false\\
+      \sem{\mathrm{city}(x)}(\mathcal{M},[x\mapsto\mathsf{england}]) &=& \false\\
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Interpreting Formulas (Example)}
+
+  \begin{displaymath}
+    \sem{\exists x. \mathrm{city}(x)}(\mathcal{M},[]) = \true
+  \end{displaymath}
+  because only one of the following needs to be $\true$:
+  \begin{displaymath}
+    \begin{array}{lcc}
+      \sem{\mathrm{city}(x)}(\mathcal{M},[x\mapsto\mathsf{aberdeen}]) &=& \true\\
+      \sem{\mathrm{city}(x)}(\mathcal{M},[x\mapsto\mathsf{edinburgh}]) &=& \true\\
+      \sem{\mathrm{city}(x)}(\mathcal{M},[x\mapsto\mathsf{glasgow}]) &=& \true\\
+      \sem{\mathrm{city}(x)}(\mathcal{M},[x\mapsto\mathsf{birmingham}]) &=& \true\\
+      \sem{\mathrm{city}(x)}(\mathcal{M},[x\mapsto\mathsf{scotland}]) &=& \false\\
+      \sem{\mathrm{city}(x)}(\mathcal{M},[x\mapsto\mathsf{england}]) &=& \false\\
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Interpreting Formulas}
+
+  Propositional Connectives:
+  \begin{displaymath}
+    \begin{array}{lcl}
+      \sem{P \land Q}(\mathcal{M},v) &=& \sem{P}(\mathcal{M},v) \land \sem{Q}(\mathcal{M},v)\\
+      \sem{P \lor Q}(\mathcal{M},v) &=& \sem{P}(\mathcal{M},v) \lor \sem{Q}(\mathcal{M},v)\\
+      \sem{P \to Q}(\mathcal{M},v) &=& \sem{P}(\mathcal{M},v) \to \sem{Q}(\mathcal{M},v)\\
+      \sem{\lnot P}(\mathcal{M},v) &=& \lnot \sem{P}(\mathcal{M},v)  \\
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Interpreting Formulas (Example)}
+
+  \begin{displaymath}
+    \sem{\mathrm{city}(x) \land \mathrm{within}(x,y)}(\mathcal{M},[x\mapsto\mathsf{edinburgh},y\mapsto\mathsf{scotland}]) = \true
+  \end{displaymath}
+  and
+  \begin{displaymath}
+    \sem{\mathrm{city}(x) \land \mathrm{within}(x,y)}(\mathcal{M},[x\mapsto\mathsf{edinburgh},y\mapsto\mathsf{birmingham}]) = \false
+  \end{displaymath}
+  and
+  \begin{displaymath}
+    \sem{\mathrm{city}(x) \lor \mathrm{within}(x,y)}(\mathcal{M},[x\mapsto\mathsf{edinburgh},y\mapsto\mathsf{birmingham}]) = \true
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Some notation}
+
+  We write
+  \begin{displaymath}
+    \mathcal{M} \models P
+  \end{displaymath}
+  when
+  \begin{displaymath}
+    \sem{P}(\mathcal{M}, []) = \true
+  \end{displaymath}
+  meaning that $\mathcal{M}$ is a model of $P$.
+\end{frame}
+
+\begin{frame}
+  {Examples}
+
+  If $\mathcal{M}$ is the cities model, then
+  \begin{displaymath}
+    \mathcal{M} \models \exists x. \mathrm{city}(x)
+  \end{displaymath}
+  and
+  \begin{displaymath}
+    \mathcal{M} \not\models \forall x. \mathrm{city}(x)
+  \end{displaymath}
+  and
+  \begin{displaymath}
+    \mathcal{M} \models \forall x. \mathrm{city}(x) \to (\exists y. \mathrm{within}(x,y))
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Entailment}
+
+  Relative to a model $\mathcal{M}$:
+  \begin{displaymath}
+    \mathcal{M}; P_1, \dots, P_n \models Q
+  \end{displaymath}
+  exactly when:
+  \begin{center}
+    if all $\sem{P_i}(\mathcal{M},[]) = \true$, then $\sem{Q}(\mathcal{M},[]) = \true$.
+  \end{center}
+
+  \bigskip
+
+  \textcolor{black!60}{If all the assumptions are true, then the conclusion must be true}
+\end{frame}
+
+\begin{frame}
+  {Entailment}
+
+  \begin{displaymath}
+    P_1, \dots, P_n \models Q
+  \end{displaymath}
+  exactly when \emph{for all} $\mathcal{M}$, we have $\mathcal{M};P_1,\dots,P_n \models Q$.
+
+  \bigskip
+
+  Checking this is infeasible (at least naively): there are infinitely
+  many models, and the models themselves may be infinite.
+
+  \bigskip
+
+  Which is one reason to use proof.
+\end{frame}
+
+\begin{frame}
+  {Axiomatisations}
+
+  Some collections of formulas are called \emph{axiomatisations}.
+
+  \bigskip
+
+  For example,
+  \begin{displaymath}
+    \begin{array}{l}
+      \forall x. x \leq x \\
+      \forall x. \forall y. (x \leq y \land y \leq x) \to x = y \\
+      \forall x. \forall y. \forall z. (x \leq y \land y \leq z) \to x \leq z
+    \end{array}
+  \end{displaymath}
+  axiomatises what it means to be a \emph{partial order}.
+\end{frame}
+
+\begin{frame}
+  {Axiomatisations}
+
+  If we write $\Gamma_{\mathit{partial}}$ for those formulas $\land$ed
+  together, then collection of models $\mathcal{M}$ such that:
+  \begin{displaymath}
+    \mathcal{M} \models \Gamma_{\mathit{partial}}
+  \end{displaymath}
+  is the collection of partial orders.
+
+  \bigskip
+
+  And the collection of formulas $Q$ such that
+  \begin{displaymath}
+    \Gamma_{\mathit{partial}} \models Q
+  \end{displaymath}
+  is the collection of facts that are true about all partial orders.
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  We have defined what it means for a Predicate Logic $P$ formula to
+  be true in some model $\mathcal{M}$.
+
+  \begin{itemize}
+  \item Just as with Propositional Logic, this is done by breaking
+    down the formula into its constituent parts
+  \item Care must be taken to ensure that all free variables have an
+    interpretation.
+  \item When a formula is true in some model, we write:
+    \begin{displaymath}
+      \mathcal{M} \models P
+    \end{displaymath}
+  \item Gives us a basis to talk about axiomatisations.
+  \end{itemize}
+\end{frame}
+
+\weeksection{Logic and Databases}
+
+\begin{frame}
+  {Logic and Databases}
+
+  \begin{enumerate}
+  \item Databases are models
+  \item Queries are formulas: which $x,y,z$ satisfy this?
+  \item Which databases make sense?
+    \begin{enumerate}
+    \item ``Foreign key constraints''
+    \item ``Functional constraints''
+    \item ``Check constraints''
+    \end{enumerate}
+  \end{enumerate}
+\end{frame}
+
+\end{document}

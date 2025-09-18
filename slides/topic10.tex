@@ -1,0 +1,320 @@
+% -*- TeX-engine: xetex -*-
+
+\documentclass[xetex,aspectratio=169,14pt,hyperref={pdfpagelabels=true,pdflang={en-GB}}]{beamer}
+
+\input{macros}
+
+\weektitle{10}{Undecidability}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\weeksection{Metatheory}
+
+\begin{frame}
+  \begin{enumerate}
+  \item Is our proof system sound and complete?
+  \item Are our axiomatisations complete enough?
+  \item Can we automate mathematics?
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Soundness}
+
+  The proof system we have seen so far is \emph{sound}:
+  \begin{displaymath}
+    \Gamma \vdash Q \quad \Rightarrow \quad \Gamma \models Q
+  \end{displaymath}
+  \textcolor{black!60}{``Every provable judgement is valid.''}\\
+  \textcolor{black!60}{Can be checked by checking that every rule preserves validity.}
+\end{frame}
+
+\begin{frame}
+  {Completeness}
+
+  If we add a rule for excluded middle ($P \lor \lnot P$ for any formula $P$), then it is \emph{complete}:
+  \begin{displaymath}
+    \Gamma \models Q \quad \Rightarrow \quad \Gamma \vdash Q
+  \end{displaymath}
+  \textcolor{black!60}{``Every valid judgement is provable.''}\\
+  \textcolor{black!60}{This is not a simple fact. ``G{\"o}del's Completeness Theorem''}
+\end{frame}
+
+\begin{frame}
+  {Automating Mathematics?}
+
+  If our proof system is sound and complete, then we should be able to
+  automatically prove things by searching for proofs?
+
+  \bigskip
+
+  This is one of the oldest branches of AI.
+\end{frame}
+
+\begin{frame}
+  {Automating Mathematics?}
+
+  We have seen so far that there are many axiomatisations for
+  describing certain bits of mathematics:
+  \begin{enumerate}
+  \item Monoid axioms: addition with a zero.
+  \item Peano's axioms: arithmetic
+  \item Zermelo-Frankel axioms: set theory
+  \end{enumerate}
+
+  \bigskip
+
+  Are these axiomatisations suitable for finding proofs?
+\end{frame}
+
+\begin{frame}
+  {Syntactic Completeness}
+
+  An axiomatisation $\mathrm{Ax}$ is \emph{syntactically complete} if
+  for all formulas $P$, we can prove one of:
+  \begin{displaymath}
+    \mathrm{Ax} \vdash P
+  \end{displaymath}
+  or
+  \begin{displaymath}
+    \mathrm{Ax} \vdash \lnot P
+  \end{displaymath}
+  if we can prove both, then the theory is \emph{inconsistent}.
+\end{frame}
+
+\begin{frame}
+  {Effectively Generatable}
+
+  An axiomatisation $\mathrm{Ax}$ is \emph{effectively generatable} if
+  we can write a computer program that generates all the valid axioms.
+
+  \bigskip
+
+  There may be infinitely many axioms, but each one will eventually be
+  generated.
+\end{frame}
+
+\begin{frame}
+  {Automation}
+
+  If an axiomatisation $\mathrm{Ax}$ is syntactically complete and
+  effectively generatable, then we can (in principle) write a program
+  to search for a proof of some $P$:
+
+  \bigskip
+
+  \begin{enumerate}
+  \item Search for a proof $\mathrm{Ax} \vdash P$ \\
+    try proofs of size 1, then proofs of size 2, then proofs of size 3...
+  \item Interleaved with this: search for a proof of $\mathrm{Ax} \vdash \lnot P$
+  \end{enumerate}
+
+  \bigskip
+
+  Since one of them is provable, we will eventually terminate.
+\end{frame}
+
+\begin{frame}
+  \begin{center}
+    Is every interesting axiomatisation syntactically complete?
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  {Peano's axioms ($\mathrm{PA}$)}
+
+  \begin{enumerate}
+  \item $\forall x.~\lnot(0 = S(x))$
+  \item $\forall x. \forall y.~S(x) = S(y) \to x = y$
+  \item $\forall x.~add(0,x) = x$
+  \item $\forall x.\forall y.~add(S(x),y) = S(add(x,y))$
+  \item $\forall x.~mul(0,x) = 0$
+  \item $\forall x. \forall y.~mul(S(x),y) = add(y,mul(x,y))$
+  \end{enumerate}
+  $+$ induction
+
+  \bigskip
+
+  is effectively generatable.
+\end{frame}
+
+\begin{frame}
+  {Robinson's axioms ($\mathrm{Q}$)}
+
+  \begin{enumerate}
+  \item $\forall x.~\lnot(0 = S(x))$
+  \item $\forall x. \forall y.~S(x) = S(y) \to x = y$
+  \item $\forall x.~add(0,x) = x$
+  \item $\forall x.\forall y.~add(S(x),y) = S(add(x,y))$
+  \item $\forall x.~mul(0,x) = 0$
+  \item $\forall x. \forall y.~mul(S(x),y) = add(y,mul(x,y))$
+  \item $\forall x. (x = 0) \lor (\exists y. x = S(y))$\qquad {\bf (instead of induction)}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {G{\"o}del's 1st Incompleteness Theorem}
+
+  For any \emph{effectively generatable} consistent set of axioms
+  $\mathrm{Ax}$ that imply those of Robinson arithmetic, there exists
+  a formula $P$ such that it is \textbf{not} possible to prove either
+  of
+  \begin{displaymath}
+    \mathrm{Ax} \vdash P
+  \end{displaymath}
+  or
+  \begin{displaymath}
+    \mathrm{Ax} \vdash \lnot P
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Consequences}
+
+  $\mathrm{PA}$ is not syntactically complete, so our attempt to use
+  it to automate mathematics fails.
+
+  \bigskip
+
+  In fact, provability in $\mathrm{PA}$ is undecidable, so all attempts
+  are doomed.
+\end{frame}
+
+\begin{frame}
+  {Consequences}
+
+  \begin{enumerate}
+  \item $\mathrm{PA}$ is incomplete, so there is a formula $P$ such that neither of:
+    \begin{mathpar}
+      \mathrm{PA} \vdash P
+
+      \textrm{and}
+
+      \mathrm{PA} \vdash \lnot P
+    \end{mathpar}
+    are provable.
+  \item Inspection of G{\"o}del's proof shows that the formula $P$ it
+    generates is actually true in ``the'' natural numbers.
+  \item So we could use the axioms $\mathrm{PA} + P$, but then goto 1.
+  \end{enumerate}
+\end{frame}
+
+% https://stopa.io/post/269
+
+\begin{frame}
+  {Consequences}
+
+  So:
+  \begin{enumerate}
+  \item $\mathrm{PA}$ does not cover everything that is ``true'' about arithmetic
+  \item Every attempt to fix it is doomed
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Consequences}
+
+  \emph{Some people} have said that G{\"o}del's Incompleteness theorem
+  shows that there are fundamental limitations to what computers can
+  reason about.
+
+  \pause
+  \bigskip
+
+  The reasoning (roughly) goes:
+  \begin{enumerate}
+  \item Computers can only use effectively generatable axioms
+  \item This means that there are truths they cannot prove
+  \item Humans can perceive ``real'' truth to see these truths
+  \item Therefore, Humans are better than computers, and AI is impossible.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Consequences}
+
+  Two problems with this:
+
+  \begin{enumerate}
+  \item Humans only know that the formula generated by G{\"o}del's
+    Incompleteness Theorem is true by some \emph{larger}
+    axiomatisation we are (maybe implicitly) using. Computers can use
+    this axiomatisation.
+  \item The theorem depends on the theory being consistent. How do we
+    \emph{know} this? Definitely not obvious for Zermelo-Frankel set
+    theory.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {(In)Completeness?}
+
+  G{\"o}del proved:
+  \begin{enumerate}
+  \item Completeness ``Everything that is true is provable''
+  \item Incompleteness ``There exist true things that are not provable''
+  \end{enumerate}
+
+  \bigskip
+
+  Surely a contradiction?
+\end{frame}
+
+\begin{frame}
+  {(In)Completeness?}
+
+  There is no contradiction.
+
+  \pause
+  \bigskip
+
+  Completeness Theorem says that if something is true in \emph{every}
+  model of the axioms, it is provable.
+
+  \pause
+  \bigskip
+
+  Incompleteness Theorem only gives something that is true for
+  \emph{``the''} natural numbers. It might be false in other models.
+\end{frame}
+
+\begin{frame}
+  {Automating Mathematics?}
+
+  If we can't completely automate arithmetic, then what can we do?
+
+  \begin{enumerate}
+  \item Do proof search with a timeout
+  \item Restrict to weaker systems to gain decidability, e.g.:
+    \begin{itemize}
+    \item Pure equality
+    \item Linear Arithmetic: only addition, no multiplication
+    \end{itemize}
+  \end{enumerate}
+
+  \bigskip
+
+  Automated proof for fragments of logic is a large and ongoing topic
+  of research, with applications in software engineering, computer
+  security, optimisation, ...
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{enumerate}
+  \item Our proof system is sound
+  \item If we add excluded middle, it is complete
+  \item G{\"o}del's Incompleteness theorem:
+    \begin{itemize}
+    \item If some axioms can prove basic facts about arithmetic, then
+      there are statements that it can neither prove nor disprove.
+    \end{itemize}
+  \item Not every theory is decidable, but some useful ones are.
+  \end{enumerate}
+\end{frame}
+
+
+\end{document}
