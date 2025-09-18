@@ -12,17 +12,28 @@ Predicate Logic upgrades Propositional Logic by adding the ability to talk about
 
 In the first video, we look at the syntax of Predicate Logic and how Predicate Logic formulas are constructed.
 
+FIXME: some text expanding on the slides
+
+## Saying what you mean
+
+Predicate Logic is a very expressive language for making complex statements. In video 3.3, we go through a collection of sample statements showing how to express various forms of relationship in Predicate Logic, and point out some common pitfalls.
+
+````comment
+
 ```youtube
-74exPHdSPuA
+2zwqVMWBtJw
 ```
 
-```textbox {id=pred-notes1}
+```textbox {id=pred-notes3}
 Enter any notes to yourself here.
 ```
+````
 
 ## Formal Syntax and Vocabularies
 
 Predicate Logic formulas are built from predicate symbols and function symbols, collectively known as a vocabulary. In the second video this week, we look at some example vocabularies and the formal syntax of Predicate Logic. The key concept to understand when looking at the syntax is the ideas of free and bound variables, and the fact that we can rename bound variables without changing the meaning of a formula.
+
+````comment
 
 ```youtube
 H0OdDzoCHtI
@@ -32,17 +43,7 @@ H0OdDzoCHtI
 Enter any notes to yourself here.
 ```
 
-## Saying what you mean
-
-Predicate Logic is a very expressive language for making complex statements. In video 3.3, we go through a collection of sample statements showing how to express various forms of relationship in Predicate Logic, and point out some common pitfalls.
-
-```youtube
-2zwqVMWBtJw
-```
-
-```textbox {id=pred-notes3}
-Enter any notes to yourself here.
-```
+````
 
 ## Exercises
 

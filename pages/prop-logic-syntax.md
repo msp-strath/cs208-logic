@@ -2,18 +2,6 @@
 
 In this course, we will study Symbolic Logic, where we are primarily concerned with statements written out using formal symbols, rather than statements in natural language. In this page, we will introduce the syntax of the logical formulas that we will look at in the first half of the course.
 
-## Video
-
-```youtube
-s_JkAMdFT8c
-```
-
-```textbox {id=prop-logic-syntax-note}
-Enter any notes to yourself here.
-```
-
-[Slides (PDF)](week01-slides.pdf)
-
 ## Examples
 
 Here is an example of a formula of Propositional Logic:

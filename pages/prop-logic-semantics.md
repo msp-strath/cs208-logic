@@ -10,16 +10,6 @@ For most of this course, we will define the meaning of a formula to be its *trut
 
 Once we have defined the meaning of formulas in terms of the truth values of their atoms, we can define several useful properties of formulas in terms of their truth values. The most important property is [entailment](entailment.html), which is a definition of when a collection of assumptions *entails* some conclusion.
 
-## Video
-
-This video covers the material written in words and symbols below.
-
-```youtube
-xYxPxZe2n98
-```
-
-[Slides (PDF)](week01-slides.pdf)
-
 ## Truth Values
 
 For the logic we are studying, we have two *truth values*:

@@ -2,23 +2,13 @@
 
 We now look at the general idea of deductive systems, collections of inference rules that allow us to derive new facts from existing ones.
 
-This is a radically different approach to the “enumerate all possible truth values” approaches we have taken so far by writing out [truth tables](truth-tables.html) or by using a [SAT solver](sat.html).
+This is a radically different approach to the “enumerate all possible truth values” approaches we have taken so far by writing out [truth tables](truth-tables.html).
 
-Instead, we construct sequences (or, more generally, trees) of rules connected together that lead us step by step from some assumptions to a conclusion.
+Instead, we derive conclusions from assumptions by using rules. By choosing different rules, we can get different logics.
 
-## Video
+## What is Deductive Proof?
 
-[Slides for the video (PDF)](week04-slides.pdf)
-
-```youtube
-KxJ1uu73JSs
-```
-
-```textbox {id=proof-intro-notes}
-Enter any notes to yourself here.
-```
-
-The key idea in the video is that of a *proof rule* which allows us to deduce a *conclusion* from zero or more *premises*:
+**Proof rules** describe which deductions we can make from zero or more *premises* to a *conclusion*. They are usually named (here with “Name”):
 
 ```rules-display
 (config
@@ -38,7 +28,7 @@ Proofs are constructed from rules by arranging them into trees, which we usually
 
 ### Rules
 
-Here are the proof rules used for the small mammalian biology proof system given in the video. There are four axioms A1-A4 that tell us basic facts about bears and coconuts, and two rules R1 and R2 that allow us to make further deductions.
+Here are the proof rules used for a small mammalian biology proof system. There are four axioms A1-A4 that tell us basic facts about bears and coconuts, and two rules R1 and R2 that allow us to make further deductions.
 
 ```rules-display
 (config
@@ -495,6 +485,6 @@ As an example, try to prove that “a” implies “a”. Have a look at the [Wi
 
 (You'll get at least one of the formulas in the proof being left unresolved as `Xnn`, because the proof isn't enough to fully determine exactly how the variables in the axioms are used.)
 
-This proof system is hard to use because it does not allow explicitly for reasoning where we temporarily make assumptions that we later include into our formulas. Every statement in the proof needs to explicitly list all of its assumptions. Indeed, looking at the *S* axiom, we can see that it has the same form as MP, except that (a) it uses implication instead of being a rule, and (b) it has an extra assumption *A* throughout.
+This proof system is hard to use because it does not allow for reasoning where we temporarily make assumptions that are only used in parts of the proof. Every statement in the proof needs to explicitly list all of its assumptions. For example, looking at the *S* axiom, we can see that it has the same form as MP, except that (a) it uses implication instead of being a rule, and (b) it has an extra assumption *A* throughout.
 
 [Natural Deduction](natural-deduction-intro.html) is an alternative proof system that incorporates temporary assumptions into the logic directly, making it much easier to use. Natural Deduction is the kind of system we will use in this course.

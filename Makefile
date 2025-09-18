@@ -26,9 +26,9 @@ $(SITE):
 
 slides: $(SITE)
 	make -C slides -j 8 all
-	for w in 1 2 3 4 5 6 7 8 9 10; do \
-	  outfile=$$(printf "week%02d-slides.pdf" $$w); \
-	  $(INSTALL) -T slides/week$$w.pdf $(SITE)/$$outfile; \
+	for w in 0 1 2 3 4 5 6 7 8 9 10; do \
+	  outfile=$$(printf "topic%02d-slides.pdf" $$w); \
+	  $(INSTALL) -T slides/topic$$w.pdf $(SITE)/$$outfile; \
 	done
 
 html-pages: $(SITE)

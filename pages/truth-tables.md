@@ -1,14 +1,11 @@
 # Truth Tables, Satisfiability and Validity
 
-Truth tables are a way of systematically working out the truth value assigned to a formula for each possible valuation (assignment of truth values to atoms). We work out the value of `〚P〛v` for every possible `v` in a single large table. The overall process for working out a truth table is similar to the above process for working out `〚P〛v` — we break the formula down into subformulas and compute the truth values assigned "bottom up" — but we arrange the work slightly differently. Truth tables are useful for working out truth value assignments for all possible assignments without missing any accidentally.
+```aside
+This page assumes you have understood the [syntax](prop-logic-syntax.html) and [semantics](prop-logic-semantics.html) of Propositional Logic.
 
-## Video
-
-```youtube
-okddmJ1xVgg
 ```
 
-[Slides (PDF)](week01-slides.pdf)
+Truth tables are a way of systematically working out the truth value assigned to a formula for each possible valuation (assignment of truth values to atoms). We work out the value of `〚P〛v` for every possible `v` in a single large table. The overall process for working out a truth table is similar to the above process for working out `〚P〛v` — we break the formula down into subformulas and compute the truth values assigned "bottom up" — but we arrange the work slightly differently. Truth tables are useful for working out truth value assignments for all possible assignments without missing any accidentally.
 
 ## Truth Tables by Example
 
