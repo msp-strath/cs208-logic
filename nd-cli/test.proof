@@ -6,10 +6,60 @@ end
 theorem swap-or : "(A | B) -> (B | A)"
 proof
   introduce a-or-b;
-  use a-or-b; cases a b {
+  use a-or-b;
+  cases a b {
   - right; use a; done.
   - left; use b; done.
   }
+end
+
+proof
+  introduce a-or-b
+  use a-or-b
+  cases
+    left a: right; use a; done.
+    right b: left; use b; done.
+end
+
+axiom sum0 "sum 0 = 0"
+axiom sumS "all i. sum (i + 1) = i + sum i"
+
+program
+  logic_vars x
+  vars X RESULT I
+  precondition "X = x"
+  postcondition "RESULT = sum x"
+  code
+    "X = x"
+    RESULT := 0
+    "RESULT = 0 /\ X = x"
+    I := 0
+    "RESULT = 0 /\ I = 0 /\ X = x"
+    "RESULT = sum I /\ X = x"
+    WHILE I != X
+      "I != X /\ RESULT = SUM I /\ X = x"
+      RESULT := RESULT + I
+      I := I + 1
+      "ex r. ex i. RESULT = r + i /\ r = sum i /\ I = i + 1 /\ X = x"
+      "RESULT = sum I"
+    END
+    "I = X /\ RESULT = sum I /\ X = x"
+    "RESULT = sum x"
+  end
+end
+
+program
+  code
+    RESULT := -1
+    I := 0
+    WHILE I != X:
+      IF A[I] = 0:
+        RESULT := I
+      ELSE:
+        SKIP
+      I := I + 1
+    END
+    "(RESULT = -1 -> all i. 0 <= i -> i <= X -> A[i] != 0) /\ (RESULT != -1 -> A[RESULT] = 0)"
 end
 
 theorem socrates-is-mortal :
