@@ -21,7 +21,7 @@ By the end of semester 1 of the module you should be able to:
 
 ## Topics
 
-The course is divded into 11 topics, each consuming a week of the course.
+The course is divded into 11 topics.
 
 ### Topic 0 : Propositional Logic
 
@@ -32,7 +32,7 @@ Lectures:
 
 Topic 0 of this course is a (re)introduction to the basic concepts of Propositional Logic. We look at the syntax of Propositional Logic (what are the formulas?) and the semantics (what do the formulas mean?).
 
-Propositional Logic is concerned with statements that are true or false (e.g., "It is raining", "I am in Glasgow") and their combination by connectives such as 'and', 'or', 'not', and 'implies'. Propositional Logic is not a very expressive logic, for example it is not possible to directly express relationships between things, but it is useful in its own right, as we shall see.
+Propositional Logic is concerned with statements that are true or false (e.g., “It is raining”, “I am in Glasgow”) and their combination by connectives such as 'and', 'or', 'not', and 'implies'. Propositional Logic is not a very expressive logic, for example it is not possible to directly express relationships between things, but it is useful in its own right, as we shall see.
 
 1. [Syntax](prop-logic-syntax.html): what are the valid sequences of symbols that we can write down? Which ones are logical formulas?
 
@@ -40,9 +40,7 @@ Propositional Logic is concerned with statements that are true or false (e.g., "
 
 3. [Truth Tables, Satisfiability, and Validity](truth-tables.html): Truth tables are an effective way to compute the meaning of a logical formula. Satisfiability and Validity are two categorisations we can make about a formula.
 
-```comment
-2. [Beyond the binary: Three-valued Logic](three-valued-logic.html). We will primarily study *two*-valued logic (`true` and `false`), but what if we have more than two truth values?
-```
+**Tutorial**: [Three-valued logic](tutorial-0-three-valued.html).
 
 ### Topic 1 : Deductive Proof
 

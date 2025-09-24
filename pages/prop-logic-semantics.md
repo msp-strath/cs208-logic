@@ -25,6 +25,8 @@ For the logic we are studying, we have two *truth values*:
 
 Logics with other truth values are also possible. A logic with only one truth value is not very interesting, because all formulas will have the same value so we will have no way of telling them apart. Logics with three or more truth values have been used to model concepts like degrees of truth or missing data. It is also possible to have truth values that are collections of values. For example, the set of states of a system for which the formula is true.
 
+We explore logics with more than two truth values in [questions on three-valued logic](tutorial-0-three-valued.html).
+
 ## The meaning of atoms: Valuations
 
 A *valuation* is a mapping from atomic propositions (`A`, `B`, `C`, ...)  to truth values `T` and `F`. I will use the letter `v` and similar (`v₁`, `v₂`, ...) to stand for valuations. I will write `v(A)` to stand for the truth value assigned to `A` by the valuation `v`. As this notation implies, we can think of a valuation as a *function* from atomic propositions to truth values.
