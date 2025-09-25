@@ -159,7 +159,7 @@ module Make (Html : Html_sig.S) = struct
         | [ arg; elims ] ->
             vertical
               [%concat
-                div (resetbutton ^^ text "apply with:");
+                div (resetbutton ^^ text "apply");
                 indent_box arg;
                 elims]
         | _ -> text "SOMETHING WENT WRONG")
@@ -168,7 +168,7 @@ module Make (Html : Html_sig.S) = struct
         | [ arg ] ->
             vertical
               [%concat
-                div (resetbutton ^^ text "refuted by:");
+                div (resetbutton ^^ text "not-elim");
                 indent_box arg]
         | _ -> text "SOMETHING WENT WRONG")
     | Instantiate term ->

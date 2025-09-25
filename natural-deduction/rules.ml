@@ -58,6 +58,7 @@ end = struct
     | 'A' .. 'Z' -> true
     | _ -> false
 
+  (*
   let is_symbol_char = function
     | 'A' .. 'Z'
     | 'a' .. 'z'
@@ -67,12 +68,13 @@ end = struct
        true
     | _ ->
        false
+   *)
 
   let classify_atom str =
     if String.length str = 0 then
       Error "Not an atom: empty string"
-    else if String.exists (fun c -> not (is_symbol_char c)) str then
-      Error "Not an atom: invalid symbol character"
+    (* else if String.exists (fun c -> not (is_symbol_char c)) str then *)
+    (*   Error "Not an atom: invalid symbol character" *)
     else if is_uppercase_ascii str.[0] then
       Ok (`Var str)
     else
@@ -351,7 +353,7 @@ let display_rules rules =
 
 let component_of_rules rules goal =
   let module Rules = struct let rules = rules end in
-  let module Goal = struct let goal = goal end in
+  let module Goal = struct let assumptions = [] let goal = goal end in
   (module Proof_tree_UI2.Make (UI (Rules)) (Goal) : Ulmus.PERSISTENT)
 
 let from_rules config =

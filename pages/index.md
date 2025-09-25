@@ -61,13 +61,7 @@ Lectures
 
 [The slides for these lectures](topic02-slides.pdf)
 
-1. [Natural Deduction and the rules for And](natural-deduction-intro.html). Natural Deduction is a style of proof system that places a particular emphasis on how assumptions are used, and on how the rules for each connective come in introduction and elimination pairs.
-
-2. [Proof rules for Implication](proof-implication.html). Implication allows us to make conditional statements that we prove by temporarily making assumptions.
-
-3. [Proof rules for Or and Not](proof-or.html), which complete the rules for the connectives of Propositional Logic.
-
-4. [Soundness and Completeness, and some Philosophy](sound-complete-meaning.html). The system so far is sound, but is it complete? Should it be complete? What does mathematics mean?
+[Natural Deduction](natural-deduction-intro.html). Natural Deduction is a style of proof system that places a particular emphasis on how assumptions are used, and on how the rules for each connective come in introduction and elimination pairs.
 
 ### Topic 3 : Predicate Logic
 
@@ -79,7 +73,7 @@ Lectures
 
 1. [Introducing Predicate Logic](pred-logic-intro.html) as an expressive language for making statements in a formalised way. By selecting our vocabulary carefully, we can use Predicate Logic as a modelling tool to describe many situations. FIXME: EXERCISES!
 
-2. [Scoping and Substitution](scope-and-substitution.html). Before we look at proof for Predicate Logic, we need to upgrade our Natural Deduction system to handle assumptions about entities as well as propositions. This brings us to the matters of *scope* and *substitution*.
+2. [Exercises on Scoping and Substitution](scope-and-substitution.html). Before we look at proof for Predicate Logic, we need to upgrade our Natural Deduction system to handle assumptions about entities as well as propositions. This brings us to the matters of *scope* and *substitution*.
 
 ### Topic 4 : Proof for Predicate Logic
 

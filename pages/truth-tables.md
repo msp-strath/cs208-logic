@@ -1,4 +1,4 @@
-# Truth Tables, Satisfiability and Validity
+# Topic 0.3: Truth Tables, Satisfiability and Validity
 
 ```aside
 This page assumes you have understood the [syntax](prop-logic-syntax.html) and [semantics](prop-logic-semantics.html) of Propositional Logic.

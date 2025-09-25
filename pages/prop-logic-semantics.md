@@ -1,4 +1,4 @@
-# Propositional Logic: Semantics
+# Topic 0.2: Propositional Logic: Semantics
 
 ```aside
 This page assumes you have understood the [syntax](prop-logic-syntax.html) of Propositional Logic.

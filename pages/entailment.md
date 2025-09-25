@@ -132,6 +132,9 @@ If we know `A ⊧ B`, then we also know `C, A ⊧ B`.
 
 **Exercise** Write out a truth table to show this.
 
+```textbox {id=entailment-1}
+```
+
 ### Contradictory assumptions
 
 One non-intuitive feature of entailment is that if the assumptions are contradictory, then we can conclude anything. This is demonstrated by the following truth table, which has two assumptions `A` and `¬A`:
@@ -153,7 +156,13 @@ If we know `A ⊧ B` and `B ⊧ C`, then we know that `A ⊧ C`. This allows us 
 
 **Exercise** Write out truth tables to convince yourself of this fact.
 
+```textbox {id=entailment-2}
+```
+
 **Exercise** Deduce this from the properties of implication (`A → B`) described above.
+
+```textbox {id=entailment-3}
+```
 
 ## Towards Proof Systems
 

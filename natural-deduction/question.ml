@@ -87,9 +87,10 @@ let tree_component config =
   match Focused_config.config_p (Sexplib.Sexp.of_string config) with
   | Ok config ->
      (* FIXME: assumptions? *)
-     (module Proof_tree_UI2.Make
+     (module Proof_tree_UI2.Make_no_box
                (Focused_ui2)
-               (struct let goal = Focused.Checking config.goal end)
+               (struct let assumptions = config.assumptions
+                       let goal = Focused.Checking config.goal end)
              : Ulmus.PERSISTENT)
   | Error err ->
      let detail = Generalities.Annotated.detail err in
