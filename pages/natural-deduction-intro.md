@@ -249,7 +249,7 @@ The introduction rule for implication is:
   (conclusion "Γ ⊢ P → Q")))
 ```
 
-In words: to prove `P → Q`, we prove `P` assuming `Q`.
+In words: to prove `P → Q`, we prove `Q` assuming `P`.
 
 When we use the `introduce` rule in the proof editor, we need to name the new assumption that is being added. So the full command is `introduce H`, where `H` is the name of the new assumption. Just as with variable names in programming, it is a good idea to use meaningful names for assumptions and not just `H`.
 
