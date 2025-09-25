@@ -49,7 +49,7 @@ Lectures
 
 [The slides for this lecture](topic01-slides.pdf)
 
-1. [Entailment](entailment.html): **under construction** A generalised form of validity. What does it mean to say a formula is true under some assumptions?
+1. [Entailment](entailment.html): A generalised form of validity. What does it mean to say a formula is true under some assumptions?
 
 2. [Introduction to Deductive Proof](proof-intro.html), which describes the general idea of proof systems, and introduces a small example of a proof system inspired by biology.
 

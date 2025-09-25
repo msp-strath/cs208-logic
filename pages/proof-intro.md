@@ -1,10 +1,10 @@
-# Deductive Proof
+# Topic 1.2: Deductive Proof
 
 We now look at the general idea of deductive systems, collections of inference rules that allow us to derive new facts from existing ones.
 
-This is a radically different approach to the “enumerate all possible truth values” approaches we have taken so far by writing out [truth tables](truth-tables.html).
+This is a radically different approach to the “enumerate all possible truth values” approaches we have taken so far by writing out [truth tables](truth-tables.html) and using them to deduce [entailments](entailment.html).
 
-Instead, we derive conclusions from assumptions by using rules. By choosing different rules, we can get different logics.
+Instead, we derive conclusions from assumptions by using rules. This is much easier than writing out truth tables. Another benefit is that by choosing different rules we can get different logics, and even special purpose logics.
 
 ## What is Deductive Proof?
 
@@ -433,9 +433,15 @@ There are three proofs of migrates(glasgow, inverness). Can you find them all? I
 
 ## Proof Systems for Logic
 
-The systems of proof rules we have looked at above are all for specific cases. In the remainder of the course we will look at a general proof system for Propositional and, later, Predicate Logic. These proof systems are powerful enough that other proof systems can be encoded in them by using implication to move proof rules "into" the logical formulas. We will see an example of this when we come to look at [arithmetic](induction.html) inside Predicate Logic.
+The systems of proof rules we have looked at above are all for specific cases. In the remainder of the course we will look at a general proof system for Propositional and Predicate Logic. These proof systems are powerful enough that other proof systems can be encoded in them by using implication to move proof rules "into" the logical formulas.
 
-There are many ways of giving proof systems for Propositional and Predicate Logic. The way that we will use is a variant of Natural Deduction, called [*Focused* Natural Deduction](natural-deduction-intro.html). There are other proof systems such as Sequent Calculus. One of the simplest, in terms of number of rules and *not* in terms of constructing proofs, are “Hilbert” style proof systems which usually only have one rule (“Modus Ponens” or “MP”) and some axioms.
+```comment
+We will see an example of this when we come to look at [arithmetic](induction.html) inside Predicate Logic.
+```
+
+There are many ways of giving proof systems for Propositional and Predicate Logic. We touched on a specific case by enumerating some of the rules of [entailment](entailment.html). It is also possible to design a collection of rules systematically to make sure that it is modular and (relatively) easy to use.
+
+The system that we will use is a variant of Natural Deduction, called [*Focused* Natural Deduction](natural-deduction-intro.html). There are other proof systems such as Sequent Calculus. One of the simplest, in terms of number of rules and *not* in terms of constructing proofs, are “Hilbert” style proof systems which usually only have one rule (“Modus Ponens” or “MP”) and some axioms.
 
 For a minimal logical system that only includes implication the rule and axioms are: (implication is written as implies(a,b) here, due to limitations with the tool).
 
