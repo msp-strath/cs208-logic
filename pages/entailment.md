@@ -173,6 +173,6 @@ The facts about entailment listed above build up to give a list of things that w
 3. `A → B, A ⊧ B` (above)
 4. If `A, B ⊧ C` then `A ⊧ B → C` (above)
 5. If `A ⊧ B` then `A, C ⊧ B`
-6. If `P1, ..., Pn ⊧ Q` then `P1[A := R], ..., Pn[A := R] ⊧ Q[:= R]` (above)
+6. If `P1, ..., Pn ⊧ Q` then `P1[A := R], ..., Pn[A := R] ⊧ Q[A := R]` (above)
 
 and so on. Once we have enough of these facts, we can chain them together to prove larger properties without having to write out truth tables. This is the motivation for proof systems, which we introduce [next](proof-intro.html).
