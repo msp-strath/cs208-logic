@@ -111,7 +111,7 @@ Using the truth tables above, we can now use the recipe for assigning meaning to
    | F | T      |
    | T | T      |
 
-   In the two-valued regime, this formula is always true so it is *valid*. With three-values, it is only true in the case that the value of `A` is fully determined. We say that the three-valued logic lacks the property of *excluded middle*, where
+   In the two-valued regime, this formula is always true so it is *valid*. With three-values, it is only true in the case that the value of `A` is fully determined. We say that the three-valued logic lacks the property of *excluded middle*, which is the property that the formula `A ∨ ¬A` is always true. We'll see another example of a logic that lacks excluded middle when we look at [intuitionism in proof systems for propositional logic](natural-deduction-intro.html).
    ```
 
 2. **Principle of Contradiction** What are all the truth values of `A ∧ ¬A`? How does this compare to its truth values in two-valued logic?
@@ -307,17 +307,17 @@ We have not yet defined an the semantics of an implication connective on three t
 
 One way to define implication for the three-valued logic is to look at how it is defined for two-valued logic. In two-valued logic, we have that implication is equivalent to `¬P ∨ Q`: `P` implies `Q` exactly when either `P` is false or `Q` is true. Since we have defined `¬` and `∨` we can write down the truth table for `¬P ∨ Q` in three-valued logic:
 
-| P | Q | ¬P | ¬P \/ Q |
-|---|---|----|---------|
-| F | F | T  | T       |
-| F | I | T  | T       |
-| F | T | T  | T       |
-| I | F | I  | I       |
-| I | I | I  | I       |
-| I | T | I  | T       |
-| T | F | F  | F       |
-| T | I | F  | I       |
-| T | T | F  | T       |
+| P | Q | ¬P | ¬P ∨ Q |
+|---|---|----|--------|
+| F | F | T  | T      |
+| F | I | T  | T      |
+| F | T | T  | T      |
+| I | F | I  | I      |
+| I | I | I  | I      |
+| I | T | I  | T      |
+| T | F | F  | F      |
+| T | I | F  | I      |
+| T | T | F  | T      |
 
 We can write this more concisely as a square, with `P` in the left column and `Q` along the top:
 
@@ -344,7 +344,7 @@ As an implication, Kleene's definition behaves very strangely.
 
    No. For example, if `P = I`, then `P → P = I`, which is not `T`.
 
-   We might expect that `P → P` ought to be true, since it says that anything implies itself, but this definition does not make it true. This is related to the fact that
+   We might expect that `P → P` ought to be true, since it says that anything implies itself, but this definition does not make it true. This is related to the fact that there are no valid formulas in the three-valued logic with just `∧`, `∨` and `¬`.
    ```
 
 2. Is it the case that if `P → Q` and `Q → R` are true, then `P → R` is true?

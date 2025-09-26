@@ -114,15 +114,15 @@ There is only one case where all of the assumptions are true: the last row. In t
 There is another connection between implication and entailment. Whenever the entailment `A, B ⊧ C` holds, then so does `A ⊧ B → C`. To see this look at the following table, where the last two columns are filled in with `T` if that entailment holds for this valuation and false otherwise.
 
 | A (valuation) | B (valuation) | C (valuation) | A, B ⊧ C | A ⊧ B → C (conclusion) |
-|---------------|---------------|---------------|----------------|--------------------------------|
-| F             | F             | F             | T              | T                              |
-| F             | F             | T             | T              | T                              |
-| F             | T             | F             | T              | T                              |
-| F             | T             | T             | T              | T                              |
-| T             | F             | F             | T              | T                              |
-| T             | F             | T             | T              | T                              |
-| T             | T             | F             | F              | F                              |
-| T             | T             | T             | T              | T                              |
+|---------------|---------------|---------------|----------|------------------------|
+| F             | F             | F             | T        | T                      |
+| F             | F             | T             | T        | T                      |
+| F             | T             | F             | T        | T                      |
+| F             | T             | T             | T        | T                      |
+| T             | F             | F             | T        | T                      |
+| T             | F             | T             | T        | T                      |
+| T             | T             | F             | F        | F                      |
+| T             | T             | T             | T        | T                      |
 
 Checking the last two columns, we can see that they are equal for all valuations. Therefore, we have an equivalence between `A, B ⊧ C` and `A ⊧ B → C`.
 
