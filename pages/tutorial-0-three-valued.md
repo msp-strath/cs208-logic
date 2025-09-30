@@ -191,7 +191,7 @@ Using the truth tables above, we can now use the recipe for assigning meaning to
 	  | F | T | T     | T  | F  | F        | F       |
 	  | I | F | I     | I  | T  | I        | I       |
 	  | I | I | I     | I  | I  | I        | I       |
-	  | I | T | T     | I  | F  | I        | I       |
+	  | I | T | T     | I  | F  | F        | F       |
 	  | T | F | T     | F  | T  | F        | F       |
 	  | T | I | T     | F  | I  | F        | F       |
 	  | T | T | T     | F  | F  | F        | F       |
