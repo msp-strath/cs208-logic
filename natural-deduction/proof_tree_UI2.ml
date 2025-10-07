@@ -227,7 +227,7 @@ module Make_no_box
             div ~attrs:[ A.class_ "rulename" ] (text name)];
         formulabox point (PT.goal point)]
 
-  let render_box assumptions rendered_subtree =
+  let render_box _assumptions rendered_subtree =
     rendered_subtree
 
   let render_hole point Hole.{ user_input; message } =
