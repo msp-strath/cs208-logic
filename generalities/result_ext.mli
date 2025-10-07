@@ -1,9 +1,5 @@
 (** Extensions to the {!Stdlib.Result} module. *)
 
-(** {2 Success} *)
-
-val ok : 'a -> ('a, 'e) result
-
 (** {2 Failure} *)
 
 val errorf : ('a, unit, string, ('b, string) result) format4 -> 'a
@@ -13,6 +9,7 @@ val annotate_error : 'annot -> ('a, 'e) result -> ('a, ('e, 'annot) Annotated.t)
 val of_predicate : on_error:'e -> ('a -> bool) -> 'a -> ('a, 'e) result
 
 val check_false : on_error:'e -> bool -> (unit, 'e) result
+
 val check_true : on_error:'e -> bool -> (unit, 'e) result
 
 val of_option : on_error:'e -> 'a option -> ('a, 'e) result
