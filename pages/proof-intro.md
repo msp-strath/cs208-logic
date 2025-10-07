@@ -465,7 +465,7 @@ In more normal notation, the *S* axiom is written (A → B → C) → (A → B) 
 
 This system has its roots in Gottlob Frege's book [Begriffsschrift](https://en.m.wikipedia.org/wiki/Begriffsschrift) published in 1879, which was the first attempt to write down a systematic proof system for logic by itself. The idea was later developed by David Hilbert and are often called [Hilbert Systems](https://en.m.wikipedia.org/wiki/Hilbert_system). It is closely related to [Combinatory Logic](https://en.m.wikipedia.org/wiki/Combinatory_logic), one of the many systems that can be used to describe what is computable.
 
-This system is surprisingly expressive, and can be extended to all of propositional logic just by adding extra axioms. Even with just these two rules, it is sound and complete for Intuitionistic Logic when the only connective is implication (see the page on [Soundness & Completeness & Philosophy](sound-complete-meaning.html) for more on Intuitionistic Logic). Because the logic can be easily changed just by using different axioms, systems like these are often used by logicians experimenting with alternative logical systems.
+This system is surprisingly expressive, and can be extended to all of propositional logic just by adding extra axioms. Even with just these two rules, it is sound and complete for Intuitionistic Logic when the only connective is implication (see the section on [Soundness & Completeness & Philosophy](natural-deduction-intro.html) for more on Intuitionistic Logic). Because the logic can be easily changed just by using different axioms, systems like these are often used by logicians experimenting with alternative logical systems.
 
 However, actually *constructing* proofs in this system can be very difficult.
 

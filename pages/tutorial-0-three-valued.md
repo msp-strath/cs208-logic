@@ -428,11 +428,11 @@ As an implication, Kleene's definition behaves very strangely.
 
 This fixes the problem with `P → P`, because now the top-left to bottom-right diagonal is always `T`.
 
-The downside is that the implication in this logic is very different to the implication in two-valued logic. In fact, we get a completely new logic that loses the connection between `∧` and `∨` and implication. We will see a similar situation when we consider [Intuitionistic Logic](sound-complete-meaning.html), which retains a connection between `∧` and implication, but not with `∨`.
+The downside is that the implication in this logic is very different to the implication in two-valued logic. In fact, we get a completely new logic that loses the connection between `∧` and `∨` and implication. We will see a similar situation when we consider [Intuitionistic Logic](natural-deduction-intro.html), which retains a connection between `∧` and implication, but not with `∨`.
 
 ## Further Reading
 
 - The [Wikipedia page](https://en.m.wikipedia.org/wiki/Three-valued_logic) on three-valued logic describes the Kleene and Łukasiewicz variants and some more besides.
 - The general field is known as “multi-valued logic”, and the technical material can get quite deep. A useful variant is when we have *infinitely many* truth values: all real numbers between `0` and `1`. This is known as “fuzzy logic” and has been proposed for use in situations truth is fuzzy. For example, the statement “Bob is tall” isn't a `True`/`False` statement, but one that relies on a fuzzy idea of what tall means. Closely related are probabilistic logics, where the number indicates the probability that we consider this thing to be true.
 - A good introduction to these kinds of logics is Graham Priest's book [An Introduction to Non-Classical Logic](https://www.cambridge.org/core/books/an-introduction-to-nonclassical-logic/61AD69C1D1B88006588B26C37F3A788E).
-- We will look at another “non-classical” but **not** many-valued logic when we consider the [soundness and completeness](sound-complete-meaning.html) of our proof system.
+- We will look at another “non-classical” but **not** many-valued logic when we consider the [soundness and completeness](natural-deduction-intro.html) of our proof system.
