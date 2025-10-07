@@ -271,6 +271,7 @@ end = struct
   let update_assumption _subst = Impossible.elim
   let combine_update = Term.combine_subst
 
+  (* FIXME: rule_of_sexp should check that it is a valid rule! *)
   type rule = string [@@deriving sexp]
 
   let label_of_rule rule =
