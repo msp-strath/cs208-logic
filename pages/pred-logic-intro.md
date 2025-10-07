@@ -6,13 +6,98 @@ This page assumes you have understood the [syntax](prop-logic-syntax.html) and [
 
 Predicate Logic upgrades Propositional Logic by adding the ability to talk about the relationships between things, and whether they are true for all things or for some things.
 
-[Slides for the videos (PDF)](week06-slides.pdf).
+## Motivating Predicate Logic
 
-## Introduction
+With Propositional Logic, we can say things like “If it is raining or sunny, and it is not sunny, then it is raining”. In symbols:
 
-In the first video, we look at the syntax of Predicate Logic and how Predicate Logic formulas are constructed.
+```formula
+((R | S) & ¬S) -> R
+```
 
-FIXME: some text expanding on the slides
+But we can't say things like
+
+1. “*Every* day is sunny or rainy, today is not sunny, so today is rainy”
+2. “*Some* version of the package is installled”
+
+Propositional logic lacks the ability to make *universal* statements (“Every ...”) or *existential* statements (“Some ...”) about individuals. The best we can do is list the possibilities:
+
+```
+(S_monday | R_monday) & (S_tuesday | R_tuesday) & ...
+```
+
+Universal statements are used to say things that are true for a potentially infinite number of individuals. The classical example is:
+
+> All humans are mortal
+
+As we will see later, universal statements are used by instantiating them with specific individuals. In this case, if we assume that “Socrates is human”, then the combination of this and the previous statements allows us to conclude that “Socrates is mortal”.
+
+Existential statements are used to say that something is true for *some* individual. Database queries are often a kind of existential statement. For example:
+
+1. “Do there exist customers that have not paid their invoice?”
+2. “Do there exist players within 10 metres of player 1?”
+3. ”Do there exist players that are logged in?”
+4. “Do we have any customers?”
+
+We have already seen examples of universal and existential statements in the [semantics](truth-tables.html) and [entailment](entailement.html) for Propositional Logic:
+
+1. “`P` is satisfiable if *there exists* a valuation that makes it true”
+2. “`P` is valid if *all* valuations make it true”
+3. “`P` entails `Q` if *for all* valuations, `P` is true implies `Q` is true”
+
+## Syntax of Predicate Logic
+
+The syntax of Predicate Logic is more complex than that of Propositional Logic. A new kind of syntax of **terms** (or **expressions**) is added to the logic to talk about individuals. Terms are things like variables `x`, specific individuals like `socrates()`, or functions applied to individuals, like `dayAfter(x)`, `x + y`, or `nameOf(cust)`. The structure of terms is very simliar to that of expressions in a language like Java or Python. The words `socrates`, `dayAfter`, `nameOf` are *function symbols*. For any paticular use of Predicate Logic, each function symbol has a defined *arity*: the number of arguments it has.
+
+In the **formulas** of Predicate Logic, atomic propositions are replaced by *relations* `R` between `n` individuals (as with function symbols, the number `n` depends on the relation `R` being used). For example `customer(x)` and `customerInvoice(x,i)` or `between(x,y,z)`. We distinguish between relation symbols and function symbols by being clear about which is which for each use of Predicate Logic. Formally, a collection of function symbols and relation symbols is known as a *vocabulary* as we define below.
+
+As with Propositional Logic, Predicate Logic formulas are composed from atoms using the connectives `∧`, `∨`, and `¬`. Predicate Logic also has *quantifiers* that allow universal and existential statements. For example:
+
+- ```formula
+  ex x. customer(x) /\ loggedOff(x)
+  ```
+- ```formula
+  all x. human(x) -> mortal(x)
+  ```
+
+## Anatomy of a Formula
+
+The following statements have been colour-coded
+
+“All humans are mortal”
+```formula
+all x. human(x) -> mortal(x)
+```
+
+“Socrates is human”
+```formula
+human(socrates())
+```
+
+“No bird can fly in space”
+```formula
+¬ (ex x. bird(x) /\ canFlyInSpace(x))
+```
+
+“If is it raining on a day, then it is raining the day after”
+```formula
+all d. raining(d) -> raining(dayAfter(d))
+```
+
+“Even number is even or odd”
+```formula
+all n. ex k. (n = k + k) \/ (n = k + k + 1)
+```
+
+“Every day is raining or sunny”
+```formula
+all d. raining(d) \/ sunny(d)
+```
+
+“There exists a player within 10 metres of player1”
+```formula
+ex p. player(p) /\ distance(locationOf(p), locationOf(player1())) <= 10
+```
+
 
 ## Saying what you mean
 
