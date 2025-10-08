@@ -135,6 +135,100 @@ let to_latex f =
   formula f
 
 (******************************************************************************)
+(* FIXME: depend on a smaller interface than Html_sig.S *)
+module Make_HTML_Formatter (Html : Html_sig.S) = struct
+  module H = Html
+  module A = H.A
+
+  let comma = H.text ", "
+
+  let connective str =
+    H.span ~attrs:[ A.class_ "syn-connective" ] (H.text str)
+  let relation str =
+    H.span ~attrs:[ A.class_ "syn-relation" ] (H.text str)
+  let variable str =
+    H.span ~attrs:[ A.class_ "syn-variable" ] (H.text str)
+  let func str =
+    H.span ~attrs:[ A.class_ "syn-function" ] (H.text str)
+
+  let comma_sep f x =
+    x |> List.to_seq |> Seq.map f |> Seq_ext.intersperse comma |> List.of_seq |> H.concat_list
+
+  let rec html_of_term = function
+    | Term.Var x ->
+       (* FIXME: link to binder! *)
+       variable x
+    | Fun ("0", []) ->
+       func "0"
+    | Fun (func_name, tms) ->
+       H.concat_list
+         [ func func_name
+         ; H.text "("
+         ; comma_sep html_of_term tms
+         ; H.text ")"
+         ]
+
+  let html_of_formula =
+    let rec formula = function
+      | Forall (x, f) ->
+         H.concat_list
+           [ H.span ~attrs:[ A.class_ "syn-quantifier" ] (H.text ("∀" ^ x ^ ". "))
+           ; formula f
+           ]
+      | Exists (x, f) ->
+         H.concat_list
+           [ H.span ~attrs:[ A.class_ "syn-quantifier" ] (H.text ("∃" ^ x ^ ". "))
+           ; formula f
+           ]
+      | Imp _ as f -> imps f
+      | And _ as f -> ands f
+      | Or _ as f -> ors f
+      | Atom _ | True | False | Not _ as f ->
+         base f
+    and imps = function
+      | Imp (f1, f2) -> H.concat_list [ base f1; connective " → "; imps f2 ] | f -> base f
+    and ands = function
+      | And (f1, f2) -> H.concat_list [ base f1; connective " ∧ "; ands f2 ] | f -> base f
+    and ors = function
+      | Or (f1, f2) -> H.concat_list [ base f1; connective " ∨ "; ors f2 ] | f -> base f
+    and base = function
+      | True ->
+         connective "T"
+      | False ->
+         connective "F"
+      | Atom ("=" | "!=" as rel, [t1; t2]) ->
+         H.concat_list
+           [ html_of_term t1
+           ; relation (" " ^ rel ^ " ")
+           ; html_of_term t2
+           ]
+      | Atom (atom, []) ->
+         relation atom
+      | Atom (atom, tms) ->
+         H.concat_list
+           [ relation atom
+           ; H.text "("
+           ; comma_sep html_of_term tms
+           ; H.text ")"
+           ]
+      | Not f ->
+         H.concat_list
+           [ connective "¬"
+           ; base f
+           ]
+      | (Imp _ | And _ | Or _ | Forall _ | Exists _) as f ->
+         H.concat_list
+           [ H.text "("
+           ; formula f
+           ; H.text ")"
+           ]
+    in
+    formula
+
+end
+
+
+(******************************************************************************)
 
 let ( <.> ) f g x = f (g x)
 

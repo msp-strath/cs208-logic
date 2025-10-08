@@ -1,18 +1,23 @@
+open Generalities
+
 module type VALIDATOR = sig
   type config
+
+  val name : string
 
   val read_config : string -> config option
 
   val placeholder : config -> string
 
-  val validate : config -> string -> (string, string) result
+  val validate : config -> string -> (Impossible.t Ulmus.html , string) result
 end
 
 module Null_Validator = struct
   type config = string
+  let name = ""
   let read_config placeholder = Some placeholder
   let placeholder placeholder = placeholder
-  let validate _ _ = Ok ""
+  let validate _ _ = Ok (Ulmus.Html.text "")
 end
 
 let component (type config)
@@ -26,7 +31,7 @@ let component (type config)
        struct
          type state =
            { value  : string
-           ; result : (string, string) result
+           ; result : (Impossible.t Ulmus.html, string) result
            }
 
          type action = Update of string
@@ -37,6 +42,7 @@ let component (type config)
            let module E = H.E in
            H.div ~attrs:[ A.class_ "defnsat" ] @@
              H.concat_list [
+                 H.div (H.b (H.text V.name));
                  H.div ~attrs:[ A.class_ "defnsat-entry" ]
                    (H.input
                       ~attrs:[
@@ -48,10 +54,8 @@ let component (type config)
                    (match result with
                     | Error msg ->
                        H.div ~attrs:[ A.class_ "errormsg" ] (H.text msg)
-                    | Ok "" ->
-                       H.empty
                     | Ok msg ->
-                       H.div ~attrs:[ A.class_ "successmsg" ] (H.text msg))
+                       H.map  Impossible.elim (H.div ~attrs:[ A.class_ "successmsg" ] msg))
                ]
 
          let update action _state =

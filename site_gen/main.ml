@@ -9,6 +9,8 @@
 
 module Of_Omd = Html_of_omd.Make (Html_static)
 
+module Html_of_formula = Fol_formula.Formula.Make_HTML_Formatter (Html_static)
+
 let template ~title:title_text ?(sub_title="") ~script_url body_html =
   let open Html_static in
   let (@|) elem elems = elem (concat_list elems) in
@@ -57,10 +59,11 @@ let template ~title:title_text ?(sub_title="") ~script_url body_html =
 
 let code_render renderer ids attributes kind content =
   match kind with
+  (* FIXME: find a way to synchronise this with frontend.ml *)
   | "lmt" | "tickbox" | "textbox" | "entrybox" | "selection"
   | "rules" | "rules-display" | "focused-nd"
   | "focused-tree" | "focused-freeentry"
-  | "model-checker"
+  | "model-checker" | "ask"
   | "formulaentry" as kind ->
      let open Html_static in
      let id =
@@ -131,12 +134,13 @@ let code_render renderer ids attributes kind content =
      Some (aside (renderer body))
   | "formula" ->
      let open Fol_formula in
-     let open Generalities in
      (match Formula.of_string content with
       | Ok fmla ->
          let open Html_static in
-         Some (pre ~attrs:[ A.class_ "displayedformula" ]
-                 (text (Pretty.to_string ~width:60 (Formula.to_doc fmla))))
+         Some (div ~attrs:[ A.class_ "displayedformula" ]
+               (Html_of_formula.html_of_formula fmla))
+
+                 (* (text (Pretty.to_string ~width:60 (Formula.to_doc fmla)))) *)
       | Error (`Parse err) ->
          (* FIXME: just log the error? *)
          failwith (Parser_util.Driver.string_of_error err))
@@ -144,6 +148,17 @@ let code_render renderer ids attributes kind content =
      Some Html_static.empty
   | _ ->
      None
+
+(* TODO:
+
+   1. Local link rewriting and checking
+   2. Check the widget ids for site-uniqueness
+      - Determine a schema for the site
+   3. More filters:
+      - Syntax highlighted formulas
+      - Better ways of displaying proof rules
+      - Better tables; incl computed truth tables
+ *)
 
 
 let process_file input_dir output_dir filename =

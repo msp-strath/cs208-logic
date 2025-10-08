@@ -62,7 +62,6 @@ let rec to_doc_prec l = function
 
 
 
-
 let rec pp fmt = function
   | Var x -> Format.fprintf fmt "%s" x
   | Fun ("0", []) -> Format.pp_print_string fmt "0"

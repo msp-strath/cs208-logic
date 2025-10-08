@@ -63,6 +63,8 @@ Lectures
 
 [Natural Deduction](natural-deduction-intro.html). Natural Deduction is a style of proof system that places a particular emphasis on how assumptions are used, and on how the rules for each connective come in introduction and elimination pairs.
 
+The questions for the tutorial are in the Natural Deduction page.
+
 ### Topic 3 : Predicate Logic
 
 Lectures
@@ -71,11 +73,11 @@ Lectures
 
 [Slides for these lectures](topic03-slides.pdf)
 
-1. [Introducing Predicate Logic](pred-logic-intro.html) as an expressive language for making statements in a formalised way. By selecting our vocabulary carefully, we can use Predicate Logic as a modelling tool to describe many situations. FIXME: EXERCISES!
-
-2. [Exercises on Scoping and Substitution](scope-and-substitution.html). Before we look at proof for Predicate Logic, we need to upgrade our Natural Deduction system to handle assumptions about entities as well as propositions. This brings us to the matters of *scope* and *substitution*.
+[Introducing Predicate Logic](pred-logic-intro.html) as an expressive language for making statements in a formalised way. By selecting our vocabulary carefully, we can use Predicate Logic as a modelling tool to describe many situations. The syntax of Predicate Logic is more complex that that of Proposition Logic, so this page introduces it, with the concepts of free and bound variables and substitution.
 
 ### Topic 4 : Proof for Predicate Logic
+
+*under construction*
 
 Lectures
 - Friday 17th October 2025

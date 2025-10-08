@@ -1,4 +1,4 @@
-# Predicate Logic: Introduction
+# Topic 3: Predicate Logic
 
 ```aside
 This page assumes you have understood the [syntax](prop-logic-syntax.html) and [semantics](prop-logic-semantics.html) of Propositional Logic.
@@ -6,12 +6,12 @@ This page assumes you have understood the [syntax](prop-logic-syntax.html) and [
 
 Predicate Logic upgrades Propositional Logic by adding the ability to talk about the relationships between things, and whether they are true for all things or for some things.
 
-## Motivating Predicate Logic
+## Why Predicate Logic?
 
 With Propositional Logic, we can say things like “If it is raining or sunny, and it is not sunny, then it is raining”. In symbols:
 
 ```formula
-((R | S) & ¬S) -> R
+((Rainy | Sunny) & ¬Sunny) -> Rainy
 ```
 
 But we can't say things like
@@ -21,8 +21,8 @@ But we can't say things like
 
 Propositional logic lacks the ability to make *universal* statements (“Every ...”) or *existential* statements (“Some ...”) about individuals. The best we can do is list the possibilities:
 
-```
-(S_monday | R_monday) & (S_tuesday | R_tuesday) & ...
+```formula
+(S_mon | R_mon) & (S_tue | R_tue) & (S_wed | R_wed) & (S_thu | R_thu) & (S_fri | R_fri)
 ```
 
 Universal statements are used to say things that are true for a potentially infinite number of individuals. The classical example is:
@@ -46,98 +46,53 @@ We have already seen examples of universal and existential statements in the [se
 
 ## Syntax of Predicate Logic
 
-The syntax of Predicate Logic is more complex than that of Propositional Logic. A new kind of syntax of **terms** (or **expressions**) is added to the logic to talk about individuals. Terms are things like variables `x`, specific individuals like `socrates()`, or functions applied to individuals, like `dayAfter(x)`, `x + y`, or `nameOf(cust)`. The structure of terms is very simliar to that of expressions in a language like Java or Python. The words `socrates`, `dayAfter`, `nameOf` are *function symbols*. For any paticular use of Predicate Logic, each function symbol has a defined *arity*: the number of arguments it has.
+Here are two example formulas in Predicate Logic:
 
-In the **formulas** of Predicate Logic, atomic propositions are replaced by *relations* `R` between `n` individuals (as with function symbols, the number `n` depends on the relation `R` being used). For example `customer(x)` and `customerInvoice(x,i)` or `between(x,y,z)`. We distinguish between relation symbols and function symbols by being clear about which is which for each use of Predicate Logic. Formally, a collection of function symbols and relation symbols is known as a *vocabulary* as we define below.
+1. “There exists an entity that is a customer and is logged off”:
 
-As with Propositional Logic, Predicate Logic formulas are composed from atoms using the connectives `∧`, `∨`, and `¬`. Predicate Logic also has *quantifiers* that allow universal and existential statements. For example:
+   ```formula
+   ex x. customer(x) /\ loggedOff(x)
+   ```
 
-- ```formula
-  ex x. customer(x) /\ loggedOff(x)
-  ```
-- ```formula
-  all x. human(x) -> mortal(x)
-  ```
+   Or, more concisely, “there is a customer that is logged off”.
 
-## Anatomy of a Formula
+2. “For every entity `x`, if `x` is human, then `x` is mortal”:
 
-The following statements have been colour-coded
+   ```formula
+   all x. human(x) -> mortal(x)
+   ```
 
-“All humans are mortal”
-```formula
-all x. human(x) -> mortal(x)
-```
+   More concisely, “all humans are mortal”.
 
-“Socrates is human”
-```formula
-human(socrates())
-```
+As these examples show, the syntax of Predicate Logic is more complex than that of Propositional Logic. The syntax is separated into **terms**, which describe the entities that we are talking about, and **formulas**, which state properties of relationships between entities.
 
-“No bird can fly in space”
-```formula
-¬ (ex x. bird(x) /\ canFlyInSpace(x))
-```
+*Terms* (or *expressions*) are things like variables `x`, specific individuals like `socrates()`, or functions applied to individuals, like `dayAfter(x)`, `x + y`, or `nameOf(cust)`. The structure of terms is very simliar to that of expressions in a language like Java or Python. The words `socrates`, `dayAfter`, `nameOf` are *function symbols*. Each function symbol has a defined *arity*: the number of arguments it has.
 
-“If is it raining on a day, then it is raining the day after”
-```formula
-all d. raining(d) -> raining(dayAfter(d))
-```
+In the *formulas* of Predicate Logic, the atomic propositions of Propositional Logic are replaced by *relations* or *predicates* `R` between `n` individuals (as with function symbols, the number `n` depends on the relation `R` being used). For example `customer(x)` and `customerInvoice(x,i)` or `between(x,y,z)`.
 
-“Even number is even or odd”
-```formula
-all n. ex k. (n = k + k) \/ (n = k + k + 1)
-```
+A collection of function symbols and relation symbols with specified arities is known as a *vocabulary* as we define below.
 
-“Every day is raining or sunny”
-```formula
-all d. raining(d) \/ sunny(d)
-```
+As with Propositional Logic, Predicate Logic formulas are composed from atoms using the connectives `∧`, `∨`, `→`, and `¬`. Predicate Logic also has *quantifiers* that allow universal and existential statements, as we saw in the examples above.
 
-“There exists a player within 10 metres of player1”
-```formula
-ex p. player(p) /\ distance(locationOf(p), locationOf(player1())) <= 10
-```
+## Saying What You Mean
 
+Predicate Logic is an expressive language for stating properties of individuals and their relationships in a precise and unambiguous way, but it can be a bit confusing to start with.
 
-## Saying what you mean
-
-Predicate Logic is a very expressive language for making complex statements. In video 3.3, we go through a collection of sample statements showing how to express various forms of relationship in Predicate Logic, and point out some common pitfalls.
-
-````comment
-
-```youtube
-2zwqVMWBtJw
-```
-
-```textbox {id=pred-notes3}
-Enter any notes to yourself here.
-```
-````
-
-## Formal Syntax and Vocabularies
-
-Predicate Logic formulas are built from predicate symbols and function symbols, collectively known as a vocabulary. In the second video this week, we look at some example vocabularies and the formal syntax of Predicate Logic. The key concept to understand when looking at the syntax is the ideas of free and bound variables, and the fact that we can rename bound variables without changing the meaning of a formula.
-
-````comment
-
-```youtube
-H0OdDzoCHtI
-```
-
-```textbox {id=pred-notes2}
-Enter any notes to yourself here.
-```
-
-````
-
-## Exercises
+This section explains some common patterns and pitfalls.
 
 ### Writing formulas
 
 Write the following English-language statements as Predicate Logic formulas. Invent whatever vocabulary (function and relation symbols) you feel is necessary to write the statement as a formula.
 
+You can practise writing formulas by entering them here. The box underneath the entry box will tell you if there is a problem with your syntax or show you the syntax highlighted version if it is okay:
+
+```formulaentry {id=pred-logic-intro-example}
+```
+
+There are exercises below for you to try to express various properties in Predicate Logic.
+
 ````details
-How to enter formulas
+Syntax for entering formulas
 
 Predicate symbols are any sequence of letters and numbers, where the first character is a letter, followed by their arguments in parentheses. This is similar to the rules for variable names in Java.
 
@@ -161,6 +116,85 @@ Use equality “`x = y`” and disequality “`x != y`” (or “`¬ (x = y)`”
 
 The rules for mixing connectives and parentheses were described Lecture 1.
 ````
+
+### “`x` is a `P`”
+
+Relation symbols with arity 1 are usually used to represent properties of individuals, such as being human, or a swan, or mortal.
+
+If we have a variable `x` standing for some individual, or an expression `e`, then we can say that it has the property `P` by writing `P(x)`. For example:
+
+```formula
+human(x)
+```
+```formula
+mortal(x)
+```
+```formula
+swan(x)
+```
+```formula
+golden(x)
+```
+
+To say that a specific named individual has a property, then we replace the `x` by the function symbol representing that individual:
+
+```formula
+mortal(socrates())
+```
+
+### “`x` and `y` are related by `R`”
+
+Relation symbols with arity 2 express relationships between pairs of entities, such as being connected in a network, or knowing each other in a social graph. For example:
+
+```formula
+colour(x,gold())
+```
+```formula
+species(x,swan())
+```
+```formula
+connected(x,y)
+```
+```formula
+knows(pooh(), piglet())
+```
+
+Properties of individuals are sometimes expressed as having some relationship to a fixed individual. So `colour(x,gold())` could also be expressed as `gold(x)`. Which is more useful depends on how formulas are being used.
+
+### “All `x` are...”
+
+```formula
+all x. boring(x)
+```
+```formula
+all x. wet(x)
+```
+
+It is usually not very useful to say that everything has some specific property `P` without it being a compound formula because if *everything* has some property, then that property does not carry any useful information.
+
+It is more useful to condition the statement to say that “Everything that is `P` is also `Q`”, for example:
+
+```formula
+all x. human(x) → mortal(x)
+```
+```formula
+all x. swan(x) → white(x)
+```
+```formula
+all x. insect(x) -> numLegs(x,6)
+```
+
+The part of the formula to the left of the `→` restricts the scope of the for all quantifier to only those individuals with that property. Usually when writing formulas it is common to always have a similar property just after a `all x.` to restrict the scope.
+
+Another common pattern is when we know that the world we are interested in is partitioned in some way. For example, if we are talking about whole numbers, then it might be useful to say:
+
+```formula
+all x. even(x) \/ odd(x)
+```
+
+#### Exercises
+
+Some of these exercises ask you to mix the new Predicate Logic syntax with the Propositional Logic syntax you have used before.
 
 1. “Every tree is green”.
 
@@ -229,7 +263,82 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    I'm happy with this one.
    ```
 
-3. “There exists a tree that is green”.
+3. “All the leaves are brown, and the sky is grey”.
+
+   ```formulaentry {id=saying-ex4}
+   ```
+
+   ````details
+   Answer...
+
+   One way to write this [lyric](https://www.youtube.com/watch?v=N-aK6JnyFmk) is:
+   ```formula
+   (all l. leaf(t) -> brown(t)) /\ grey(sky())
+   ```
+   Note here I have used a 0-argument function sky() to talk about “the” sky, instead of saying “there exists a thing which is the sky, and it is grey”. When we talk about fixed objects (e.g., “socrates()”), we can use 0-argument function symbols.
+   ````
+
+   ```tickbox {id=saying-tick4}
+   I'm happy with this one.
+   ```
+
+### “Some `x` are ...”
+
+The following formulas all have the shape “there an `x` such that `x` is ...”.
+
+```formula
+ex x. human(x)
+```
+```formula
+ex x. swan(x)
+```
+```formula
+ex x. class(x, insecta())
+```
+
+These kinds of statements are useful to say that at least one thing with some property exists without making any more statements about that thing.
+
+It is often more useful to say that there is some `P`-thing that has a property `Q`, where `P` is intended to be some kind of category or type, and `Q` is some attribute. For example:
+
+1. There is a mortal human:
+   ```formula
+   ex x. human(x) /\ mortal(x)
+   ```
+
+2. There is a black swan:
+   ```formula
+   ex x. swan(x) /\ colour(x,black())
+   ```
+
+3. There is an insect with 6 legs:
+   ```formula
+   ex x. insect(x) /\ numLegs(x,6)
+   ```
+
+#### “All `P` are `Q`” vs “Some `P` are `Q`”
+
+The examples so far have fitted into the following patterns:
+```formula
+all x. P(x) -> Q(x)
+```
+```formula
+ex x. P(x) /\ Q(x)
+```
+
+It is tempting to write similar formulas with the Propositional connectives switched:
+
+```formula
+all x. P(x) /\ Q(x)
+```
+```formula
+ex x. P(x) -> Q(x)
+```
+
+These are almost always not what you want. The first says “everything is both `P` and `Q`”. The second says “there an `x` such that *if* `P` is true for `x` then so is `Q`”, which is hardly ever useful.
+
+#### Exercises
+
+1. “There exists a tree that is green”.
 
    ```formulaentry {id=saying-ex3}
    ```
@@ -264,27 +373,108 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    I'm happy with this one.
    ```
 
-4. “All the leaves are brown, and the sky is grey”.
+2. “There exists a tree that is either red or green”
 
-   ```formulaentry {id=saying-ex4}
+   ```formulaentry {id=saying-ex11}
+   <formula>
    ```
 
    ````details
    Answer...
 
-   One way to write this [lyric](https://www.youtube.com/watch?v=N-aK6JnyFmk) is:
+   The simplest way to write this is:
+
    ```formula
-   (all l. leaf(t) -> brown(t)) /\ grey(sky())
+   ex x. tree(x) /\ (red(x) \/ green(x))
    ```
-   Note here I have used a 0-argument function sky() to talk about “the” sky, instead of saying “there exists a thing which is the sky, and it is grey”. When we talk about fixed objects (e.g., “socrates()”), we can use 0-argument function symbols.
+
+   **Not**:
+
+   ```formula
+   ex x. tree(x) -> (red(x) /\ green(x))
+   ```
+
+   because this means that there exists something, such that if it is a tree, then it is red or green. As above, this is satisfied by anything that is not a tree, as well as red or green trees.
    ````
 
-   ```tickbox {id=saying-tick4}
-   I'm happy with this one.
-   ```
+### “No `P` is `Q`”
 
+To say “no swans are blue”:
+```formula
+all x. swan(x) -> ¬blue(x)
+```
+or
+```formula
+¬(ex x. swan(x) /\ blue(x))
+```
+Both formulas mean the same thing. The first version says “if you can show me a swan, then I can show you it is not blue”. The second says “if you can find a blue swan, then I can prove false”.
 
-5. “For every ‘x’ there is a ‘y’ that is greater than ‘x’”. (You might want to use a predicate symbol like “greaterthan” for this.)
+Similar statements are:
+```formula
+¬(ex x. bird(x) /\ canFlyInSpace(x))
+```
+```formula
+all x. program(p) -> ¬works(p)
+```
+
+#### Exercise
+
+Write a formula that states “no dog is both small and fun”.
+
+```formulaentry {id=saying-ex12}
+```
+
+````details
+Answer...
+
+Possible ways are:
+
+```formula
+all x. dog(x) -> ~(small(x) /\ fun(x))
+```
+```formula
+¬(ex x. dog(x) /\ small(x) /\ fun(x))
+```
+```formula
+all x. dog(x) -> (~small(x) \/ ~fun(x))
+```
+
+````
+
+### “For every `P`, there exists a related `Q`”
+
+All of the above examples have only used one quantifier. More interesting statements can be made when we alternate the quantifiers to say things like “for all `P` there is a `Q`”. For example, *every farmer owns a donkey*:
+```formula
+all f. farmer(f) -> (ex d. donkey(d) /\ owns(f,d))
+```
+This formula combines the structures from above with “for all of some type”, then “there exists of some type”, followed by some relationship between the two.
+
+Another example is *every day has a next day*:
+```formula
+all d. day(d) -> (ex d2. day(d2) /\ next(d,d2))
+```
+or *every list has a sorted version*, where “sorted version” is separated into two parts:
+```formula
+all x. list(x) -> (ex y. list(y) /\ sorted(y) /\ sameElements(x,y))
+```
+Sometimes, we do not need the “type” information (`list`, `day`, `farmer`, etc.) because everything we are talking about is the same. For example, if all we can talk about is positions in a map and their properties we could state *every position has a nearby safe position* as:
+```formula
+all p1. ex p2. nearby(p1,p2) /\ safe(p2)
+```
+
+To understand these kinds of formulas with multiple quantifiers, it helps to think of them as a kind of game. If we are trying to prove one of these properties, we can think of the quantifiers as either player or opponent moves, where a *for all* is an opponent move (they are trying to pick a difficult example that makes us lose) and an *exists* is a player move (we can pick anything we like). The nesting of the quantifiers determines the order of moves.
+
+For these “for all, exists” formulas:
+
+1. For every `x` (they choose)
+2. There is a `y` (we choose)
+3. Such that `x` and `y` are related.
+
+So the `y` we choose can depend on `x`, but we are constrained to have one that is related appropriately to the original `x` which was arbitrarily chosen by the opponent.
+
+#### Exercises
+
+1. “For every ‘x’ there is a ‘y’ that is greater than ‘x’”. (You might want to use a predicate symbol like “greaterthan” for this.)
 
    ```formulaentry {id=saying=ex5}
    ```
@@ -305,8 +495,7 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    I'm happy with this one.
    ```
 
-
-6. “For every tree that is green, there is a tree that is blue”.
+2. “For every tree that is green, there is a tree that is blue”.
 
    ```formulaentry {id=saying-ex6}
    ```
@@ -337,53 +526,124 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    I'm happy with this one.
    ```
 
+### “There exists a `P` such that every `Q` is related”
 
-7. “There is a bird that has sat in every tree”.
+If we switch the order of the quantifiers, then we get formulas that say that there exists one thing that has some relationship to everything. The other reading of *every farmer owns a donkey* is:
+```formula
+ex d. donkey(d) /\ (all f. farmer(f) -> owns(f,d))
+```
+which states that there is *one* donkey that is owned by every farmer.
 
-   ```formulaentry {id=saying-ex7}
-   ```
+Two more examples are *there is someone that everyone loves* and *there is someone that loves everyone*, which differ in the order of the individuals in the final relationship:
 
-   ````details
-   Answer...
+```formula
+ex x. all y. loves(y,x)
+```
+```formula
+ex x. all y. loves(x,y)
+```
 
-   ```formula
-   ex b. bird(b) /\ (all t. tree(t) -> satIn(b,t))
-   ```
-   In words: "there exists a bird b, such that for all trees t, b has sat in t".
+In terms of moves in a game, we have:
+1. there exists an `x` (we choose)
+2. for all `y` (they choose)
+3. it is the case that `x` and `y` are related
 
-   The following expresses something different:
-   ```formula
-   all t. tree(t) -> (ex b. bird (b) /\ satIn(b,t))
-   ```
-   Which says "Every tree has a bird that sits in it". Note that in this sentence there could be a different bird in every tree. The original sentence asks for *one* bird that has sat in every tree.
+Notice that in this alternation, the opponent has much more power because they can choose a `y` that depends on the `x` we chose.
 
-   Another faulty formula is:
-   ```formula
-   all t. ex b. tree(t) /\ bird(b) /\ satIn(b,t)
-   ```
-   which says "for all t, (a) t is a tree, and (b) there exists a bird b that has sat in t". Taking just the (a) part, this formula implies the formula:
-   ```formula
-   all t. tree(t)
-   ```
-   which says that everything is a tree. Indeed, if we assume that there is at least one thing in the universe, we can use the following chain of reasoning:
+#### Exercise
 
-   1. If there is at least one thing in the univese, call it “Sylvester”
-   2. Then using the faulty formula, setting t to be “Sylvester”, we learn that
-	  1. There exists something, call it “Tweety”
-	  2. “Sylvester” is a tree
-	  3. “Tweety” is a bird
-	  4. “Tweety” has sat in “Sylvester”
+“There is a bird that has sat in every tree”.
 
-   The first two formulas above avoid the problem of everything being a tree.
+```formulaentry {id=saying-ex7}
+```
 
-   If you wanted to get way more complicated, then you could attempt to encode the precise meaning of “has” in terms of “there exists a point in time before the current time when the bird sat in the tree”. Whether you do this or just use a predicate like “satIn” depends on what you want to model.
-   ````
+````details
+Answer...
 
-   ```tickbox {id=saying-tick7}
-   I'm happy with this one.
-   ```
+```formula
+ex b. bird(b) /\ (all t. tree(t) -> satIn(b,t))
+```
+In words: "there exists a bird b, such that for all trees t, b has sat in t".
 
-8. “There is exactly one tree that is red”.
+The following expresses something different:
+```formula
+all t. tree(t) -> (ex b. bird (b) /\ satIn(b,t))
+```
+Which says "Every tree has a bird that sits in it". Note that in this sentence there could be a different bird in every tree. The original sentence asks for *one* bird that has sat in every tree.
+
+Another faulty formula is:
+```formula
+all t. ex b. tree(t) /\ bird(b) /\ satIn(b,t)
+```
+which says "for all t, (a) t is a tree, and (b) there exists a bird b that has sat in t". Taking just the (a) part, this formula implies the formula:
+```formula
+all t. tree(t)
+```
+which says that everything is a tree. Indeed, if we assume that there is at least one thing in the universe, we can use the following chain of reasoning:
+
+1. If there is at least one thing in the univese, call it “Sylvester”
+2. Then using the faulty formula, setting t to be “Sylvester”, we learn that
+   1. There exists something, call it “Tweety”
+   2. “Sylvester” is a tree
+   3. “Tweety” is a bird
+   4. “Tweety” has sat in “Sylvester”
+
+The first two formulas above avoid the problem of everything being a tree.
+
+If you wanted to get way more complicated, then you could attempt to encode the precise meaning of “has” in terms of “there exists a point in time before the current time when the bird sat in the tree”. Whether you do this or just use a predicate like “satIn” depends on what you want to model.
+````
+
+```tickbox {id=saying-tick7}
+I'm happy with this one.
+```
+
+### “For all `P`, there is a related `Q`, related to all `R`”
+
+We can keep alternating quantifiers to get longer and longer back and forth games. For example *everyone knows someone who knows everyone*:
+```formula
+all x. ex y. knows(x,y) /\ (all z. knows(y,z))
+```
+
+In moves:
+1. For all `x` (they choose),
+2. there is a `y` (we choose),
+3. for all `z` (they choose),
+4. such that `x`, `y`, `z` are related.
+
+Alternative nesting of quantifiers gives a different sequence of move.
+
+This formula states *there is a node, such that for all nodes reachable from there, there is a safe node in one step*, where the safe node can depend on the reached node:
+```formula
+ex a. all b. reachable(a,b) -> (ex c. safe(c) /\ step(b,c))
+```
+Changing the quantifier order changes it to there being *one* safe node:
+```formula
+ex a. ex c. all b. reachable(a,b) -> (safe(c) /\ step(b,c))
+```
+
+### “There exists exactly one `X`”
+
+A statement like
+```formula
+ex x. P(x)
+```
+only says that there exists at least one `x` such that `P`, but there might be many. Sometimes, we want to say that something exists uniquely. To do so, we will need to use equality as a relation.
+
+To say *there is only one moon*, we can write:
+```formula
+ex x. moon(x) /\ (all y. moon(y) -> x = y)
+```
+which says (a) there is a moon, (b) everything (else) that is a moon is equal to it.
+
+A similar, but different statement is:
+```formula
+all x. all y. moon(x) -> moon(y) -> x = y
+```
+which says *there is at most one moon*, but makes no commitment that one exists.
+
+#### Exercises
+
+1. “There is exactly one tree that is red”.
 
    ```formulaentry {id=saying-ex8}
    ```
@@ -402,7 +662,7 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    I'm happy with this one.
    ```
 
-9. “There is at most one red tree”.
+2. “There is at most one red tree”.
 
    ```formulaentry {id=saying-ex9}
    ```
@@ -420,7 +680,7 @@ The rules for mixing connectives and parentheses were described Lecture 1.
    I'm happy with this one.
    ```
 
-10. “There exist at least two different green trees”.
+3. “There exist at least two different green trees”.
 
 	```formulaentry {id=saying-ex10}
 	<formula>
@@ -440,7 +700,39 @@ The rules for mixing connectives and parentheses were described Lecture 1.
 	```
 
 
-### Same Formulas?
+## When are two formulas the same?
+
+You may have noticed that we have been inconsistent with our use of variable names in formulas. Does the naming of variables actually matter. Do the formulas
+```formula
+all x. P(x)
+```
+and
+```formula
+all y. P(y)
+```
+mean different things?
+
+For Predicate Logic, the answer is **no**. For the purposes of proof and meaning, these two formulas express exactly the same thing. So we literally treat them as the same formula. However, in general, these two formulas are not the same:
+```formula
+P(x)
+```
+and
+```formula
+P(y)
+```
+This is because they refer to different things outside the formula itself. In the two other formulas above, the `x` and the `y` are *bound* within the formula, with the same quantifier at the same position, so they have the same meaning.
+
+If a variable is not bound in a formula then it is *free*. In the formula:
+```formula
+ex y. R(x,y)
+```
+The `x` variable is *free*, but the `y` variable is *bound*. We sometimes refer to the quantifiers as *binders* of the variables, because we think of them as binding a variable with its meaning. We will also say that a variable bound by some quantifier appears in that quantifier's *scope*.
+
+For general formulas, we are free to rename *bound* variables like this as much as we like, as long as we do it consistently.
+
+This is analogous to programs, where we can rename variables within a program, as long as we do it consistently everywhere. However, we cannot rename references to things outside the program (such as into the standard library) because, from the program's point of view, these are free variables.
+
+### Exercises
 
 1. Are these two formulas the same up to renaming of their bound variables?
    ```formula
@@ -555,3 +847,139 @@ The rules for mixing connectives and parentheses were described Lecture 1.
 
    True: the two bound “x”s in the first formula are independent and can be renamed separately.
    ```
+
+## Substitution
+
+If have formulas with free variables, then one basic operation we will want to do is *substitute*, or *plug in* values for those variables. This is analogous to the plugging in of values into formulas in algebra.
+
+Substitution is a fundamental operation in Predicate Logic because it is what allows us to move from *general* statements like:
+```formula
+all x. human(x) -> mortal(x)
+```
+to specific statements like:
+```formula
+human(socrates()) -> mortal(socrates())
+```
+by removing the quantifier and replacing `x` by `socrates()`.
+
+We will write substitution with the following syntax:
+
+```
+       P[x := t]
+```
+which means “replace all *free* occurrences of `x` in `P` with `t`”, where `x` is a variable, `P` is a formula, and `t` is a term.
+
+Substitution is mostly a simple operation, except for a subtlety involving bound variable names.
+
+Substitution into atomic formulas is straightforward. We replace every `x` with the corresponding `t`. For example:
+```
+(mortal(x))[x := socrates()]  =  mortal(socrates())
+```
+
+In most compound formulas, it is similarly straightforward. If we take this formula:
+```formula
+all y. weatherIs(d,y) -> weatherIs(dayAfter(d),y)
+```
+and substitute `tuesday` for `y`, we get:
+```formula
+all y. weatherIs(tuesday(),y) -> weatherIs(dayAfter(tuesday()),y)
+```
+
+However, we can produce nonsense when the thing we are substituting in contains variable names that are already being used as *bound* variables in the formula. If we have the formula:
+```formula
+ex y. x = y
+```
+then we can substitute in any term we like for `x`. Let's choose `add(y,1)`. Doing this naively produces:
+```formula
+ex y. add(y,1) = y
+```
+which is the statement that there exists a number `y` that is equal to itself plus 1, which is probably not what we wanted to say.
+
+The problem here is that the `y` in `add(y,1)` is *different* to the `y` in `ex y. x = y`. The first `y` refers to something outside the formula, but the second is bound inside the formula.
+
+The solution is to rename the bound `y` before doing the substitution. We replace the original formula with:
+```formula
+ex z. x = z
+```
+which has exactly the same meaning as the original formula. We can then substitution `add(y,1)` for `x` without name capture:
+```formula
+ex z. add(y,1) = z
+```
+
+### Exercises
+
+Compute the results of the following substitutions, being careful with renaming to avoid variable capture.
+
+1.
+   ```
+   (∀x. P(x) -> Q(x,y))[x := f(x)]
+   ```
+
+   ```formulaentry {id=subst-ex1}
+   Enter your formula here
+   ```
+
+   ````details
+   Answer...
+
+   ```formula
+   all x. P(x) -> Q(x,y)
+   ```
+
+   There are no free `x`s in this formula, so the substitution does nothing.
+   ````
+
+2. ```
+   (∀x. P(x) -> Q(x,y))[y := f(x)]
+   ```
+
+   ```formulaentry {id=subst-ex2}
+   Enter your formula here
+   ```
+
+   ````details
+   Answer...
+
+   ```formula
+   all z. P(z) -> Q(z,f(x))
+   ```
+
+   The term being substituted in contains an `x`, which also appears bound in the formula. So we have to rename the bound `x` (to `z`, for example) and then do the substitution.
+   ````
+
+
+3. ```
+   (P(x) -> (∃x. Q(x,y)))[x := g(y)]
+   ```
+
+   ```formulaentry {id=subst-ex3}
+   Enter your formula here
+   ```
+
+   ````details
+   Answer...
+
+   ```formula
+   P(g(y)) -> (ex x. Q(x,y))
+   ```
+
+   The first `x` in the formula is free, but the second one is bound by the existential quantifier.
+   ````
+
+4. ```
+   (P(x) -> (∃y. Q(x,y)))[x := g(y)]
+   ```
+
+   ```formulaentry {id=subst-ex4}
+   Enter your formula here
+   ```
+
+   ````details
+   Answer...
+
+   ```formula
+   P(g(y)) -> (ex z. Q(g(y),z))
+   ```
+
+   Both `x`s are free in this formula, but we have had to rename the bound `y` to avoid the `y` used in the term being substituted in.
+   ````

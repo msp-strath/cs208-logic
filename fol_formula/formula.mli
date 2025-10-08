@@ -30,6 +30,8 @@ val to_latex : t -> string
 
 val to_doc : t -> Generalities.Pretty.document
 
+module Make_HTML_Formatter : (Html : Html_sig.S) -> sig val html_of_formula : t -> _ Html.t end
+
 (** {2 Queries} *)
 
 val fv : t -> NameSet.t -> NameSet.t

@@ -11,11 +11,19 @@ input {
     font-family: monospace;
 }
 
-/* Displayed formulas are not centred. */
+/* Displayed formulas are centred. */
 
 .displayedformula {
-    /* text-align: center; */
+    text-align: center;
+    font-family: var(--mono-font);
+    background-color: #fff;
 }
+
+.syn-connective { color: darkmagenta; }
+.syn-relation   { color: blue; }
+.syn-variable   { color: green; }
+.syn-function   { color: red; }
+.syn-quantifier { color: darkgoldenrod; }
 
 /* Code entry stuff */
 
@@ -24,11 +32,15 @@ input {
     grid-template-columns: 4fr 1fr;
     grid-template-rows: auto auto 1fr;
     grid-gap: 0.5em;
+    padding: 0.5em;
+    margin-bottom: 1em;
+    border-radius: 0.5em;
+    border: solid var(--text-light);
 }
 
 .defnsat-entry {
     grid-column: 1 / 3;
-    grid-row: 1;
+    grid-row: 2;
 }
 .defnsat-entry textarea {
     font-family: var(--mono-font);
@@ -41,7 +53,7 @@ input {
 
 .defnsat-parseresult {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 3;
 }
 
 .defnsat-parseresult div {
