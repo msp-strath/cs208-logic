@@ -85,9 +85,7 @@ Lectures
 
 [Slides for these lectures](topic04-slides.pdf)
 
-1. [Proof rules for Predicate Logic](pred-logic-rules.html). Natural deduction rules for “for all” and “exists” allow us to construct proofs of Predicate Logic formulas.
-
-2. [Equality](equality.html). How do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
+[Proof rules for Predicate Logic](pred-logic-rules.html). Natural deduction rules for “for all” and “exists” allow us to construct proofs of Predicate Logic formulas. Also, how do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
 
 ### Topic 5 : Specification and Verification
 
