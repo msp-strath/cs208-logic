@@ -1,6 +1,6 @@
 (library
  (name fol_formula)
- (libraries menhirLib parser_util sexplib0 generalities)
+ (libraries menhirLib parser_util sexplib0 generalities html_sig)
  (preprocess
   (pps ppx_sexp_conv ppx_inline_test))
  (inline_tests)
