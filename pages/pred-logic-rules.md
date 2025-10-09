@@ -673,11 +673,30 @@ This property is known as “substitutivity” or, more philosophically, as “i
 
 Because it applies for all formulas `P` We can't express this property as an axiom in our system, so we add it as a new rule. This is the *elimination* rule for equality:
 
-FIXME: subst rule.
+```rules-display
+(config
+ (rule
+  (name "subst")
+  (premises "Γ ⊢ P[x := t2]")
+  (conclusion "Γ [t1 = t2] ⊢ P[x := t1]")))
+```
+
+In words: if we know `t1 = t2` and we are trying to prove `P[x := t1]`, then it is enough to prove `P[x := t2]`.
 
 The `subst` rule is quite tricky to use because we have to give a formula `P` such that `P[x := t1]` is the formula we start with and `P[x := t2]` is the formula the one we want to end up with. Writing out `P` each time can be tedious. Usually, we want to replace *every* occurrence of `t1` with `t2`. We will write this as `P{t1 |-> t2}`, and use it in two new *rewrite* rules:
 
-FIXME: rewrite rules
+```rules-display
+(config
+ (rule
+  (name "rewrite->")
+  (premises "Γ ⊢ P{t1 |-> t2}")
+  (conclusion "Γ [t1 = t2] ⊢ P"))
+
+ (rule
+  (name "rewrite<-")
+  (premises "Γ ⊢ P{t2 |-> t1}")
+  (conclusion "Γ [t1 = t2] ⊢ P")))
+```
 
 `rewrite<-` can be used to prove this theorem. After introducing the two assumptions, `use` the `a() = b()` assumption with `rewrite<-` to replace the `b()` in the goal with `a()`. The goal will then match the other assumption.
 
@@ -724,8 +743,6 @@ The fundamental problem here is that the statement “‘X’ has N letters” s
 This kind of example crops up in Computer Science whenever we have to make a distinction between the *description* of a process (i.e., the program that implements it) and the *observable behaviour* of a process. In some cases equality should track the implementation (e.g., a text editor application should treat different program texts differently), and in others it should track the behaviour (e.g., an optimising compiler is allowed to change the implementation if it preserves the behaviour). In philosophical jargon, these two aspects are referred to the *intension* (how a thing is built) and *extension* (how a thing acts) of an object.
 
 This example demonstrates what can go wrong if we have a mismatch between the properties we assume of things, and what things are equal. Two things can be equal only if we do not talk about any properties that may separate them. Here is the example with letter counts from above:
-
-FIXME: use string literals?
 
 ```focused-nd {id=equality-intensional1}
 (config
