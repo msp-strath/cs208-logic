@@ -41,6 +41,7 @@ module type HTML = sig
     val src : string -> _ attribute
     val align : string -> _ attribute
     val alt : string -> _ attribute
+    val id : string -> _ attribute
   end
 end
 
@@ -60,6 +61,40 @@ let text_of_inline inline =
   render inline;
   Buffer.contents b
 
+type section =
+  Section of
+    { title       : Omd.attributes Omd.inline
+    ; id          : string option
+    ; subsections : section list
+    }
+
+let toc_of_blocks blocks =
+  let get_id = List.assoc_opt "id" in
+  let rec toc level gathered = function
+    | [] ->
+       List.rev gathered, []
+    | Omd.Heading (attrs, hlevel, inlines) :: blocks as all_blocks ->
+       if hlevel = level then
+         let subsections, blocks = toc (level + 1) [] blocks in
+         let id = get_id attrs in
+         let section = Section { title = inlines; id; subsections } in
+         toc level (section :: gathered) blocks
+       else if hlevel < level then
+         List.rev gathered, all_blocks
+       else
+         (* Insert a blank section heading to make the nesting work out *)
+         let subsections, blocks = toc (level + 1) [] all_blocks in
+         let section = Section { title = Omd.Text ([], ""); id = None; subsections } in
+         toc level (section :: gathered) blocks
+    | (Omd.Paragraph _ | Omd.List _ | Omd.Blockquote _
+       | Omd.Thematic_break _ | Omd.Code_block _ | Omd.Html_block _
+       | Omd.Definition_list _ | Omd.Table _) :: blocks ->
+       toc level gathered blocks
+  in
+  let sections, _ = toc 1 [] blocks in
+  sections
+
+
 module Make (Html : HTML) = struct
   let ( ^^ ) = Html.( ^^ )
 
@@ -69,12 +104,11 @@ module Make (Html : HTML) = struct
     | Right -> [ Html.A.align "right" ]
     | Centre -> [ Html.A.align "center" ]
 
-  let render ?link_proc ?raw_html code_render blocks =
-    let rec of_inline = function
-      | Omd.Concat (_attrs, content) -> Html.concat_map of_inline content
+  let rec render_inline raw_html link_proc = function
+      | Omd.Concat (_attrs, content) -> Html.concat_map (render_inline raw_html link_proc) content
       | Text (_attrs, content) -> Html.text content
-      | Emph (_attrs, content) -> Html.em (of_inline content)
-      | Strong (_attrs, content) -> Html.strong (of_inline content)
+      | Emph (_attrs, content) -> Html.em ((render_inline raw_html link_proc) content)
+      | Strong (_attrs, content) -> Html.strong ((render_inline raw_html link_proc) content)
       | Code (_attrs, content) -> Html.code (Html.text content)
       | Hard_break _attrs -> Html.br ()
       | Soft_break _attrs -> Html.text " "
@@ -85,7 +119,7 @@ module Make (Html : HTML) = struct
             | None -> destination
             | Some proc -> proc `Link destination
           in
-          Html.a ~attrs:[ Html.A.href destination ] (of_inline label)
+          Html.a ~attrs:[ Html.A.href destination ] ((render_inline raw_html link_proc) label)
       | Image (_attrs, { label; destination; title }) ->
           let destination =
             match link_proc with
@@ -105,14 +139,15 @@ module Make (Html : HTML) = struct
           match raw_html with
           | None -> Html.text "Raw HTML not supported"
           | Some fn -> fn string)
-    in
+
+  let render ?link_proc ?raw_html code_render blocks =
     let table_header headers =
       let open Html in
       thead
         (tr
            (concat_map
               (fun (header, alignment) ->
-                th ~attrs:(alignment_attributes alignment) (of_inline header))
+                th ~attrs:(alignment_attributes alignment) (render_inline raw_html link_proc header))
               headers))
     in
     let table_body headers rows =
@@ -123,13 +158,13 @@ module Make (Html : HTML) = struct
              tr
                (concat_map
                   (fun ((_, alignment), cell) ->
-                    td ~attrs:(alignment_attributes alignment) (of_inline cell))
+                    td ~attrs:(alignment_attributes alignment) (render_inline raw_html link_proc cell))
                   (List.combine headers row)))
            rows)
     in
     let rec of_doc blocks = Html.concat_map of_block blocks
     and of_block = function
-      | Omd.Paragraph (_attrs, inline) -> Html.p (of_inline inline)
+      | Omd.Paragraph (_attrs, inline) -> Html.p (render_inline raw_html link_proc inline)
       (* FIXME: handle 'start' for numbered lists; and tight vs loose
          spacing. *)
       | List (_attrs, Ordered (_, _), _, items) ->
@@ -138,13 +173,16 @@ module Make (Html : HTML) = struct
           Html.ul (Html.concat_map (fun doc -> Html.li (of_doc doc)) items)
       | Blockquote (_attrs, doc) -> Html.blockquote (of_doc doc)
       | Thematic_break _attrs -> Html.hr ()
-      | Heading (_attrs, 1, content) -> Html.h1 (of_inline content)
-      | Heading (_attrs, 2, content) -> Html.h2 (of_inline content)
-      | Heading (_attrs, 3, content) -> Html.h3 (of_inline content)
-      | Heading (_attrs, 4, content) -> Html.h4 (of_inline content)
-      | Heading (_attrs, 5, content) -> Html.h5 (of_inline content)
-      | Heading (_attrs, 6, content) -> Html.h6 (of_inline content)
-      | Heading (_attrs, _, content) -> Html.p (of_inline content)
+      | Heading (attrs, level, content) ->
+         (let attrs = match List.assoc_opt "id" attrs with None -> [] | Some name -> [ Html.A.id name ] in
+          match level with
+          | 1 -> Html.h1 ~attrs (render_inline raw_html link_proc content)
+          | 2 -> Html.h2 ~attrs (render_inline raw_html link_proc content)
+          | 3 -> Html.h3 ~attrs (render_inline raw_html link_proc content)
+          | 4 -> Html.h4 ~attrs (render_inline raw_html link_proc content)
+          | 5 -> Html.h5 ~attrs (render_inline raw_html link_proc content)
+          | 6 -> Html.h6 ~attrs (render_inline raw_html link_proc content)
+          | _ -> Html.p (render_inline raw_html link_proc content))
       | Code_block (attrs, kind, content) -> (
           match code_render attrs kind content with
           | None -> Html.pre (Html.code (Html.text content))
@@ -157,8 +195,8 @@ module Make (Html : HTML) = struct
           Html.dl
             (Html.concat_map
                (fun { Omd.term; defs } ->
-                 Html.dt (of_inline term)
-                 ^^ Html.concat_map (fun inl -> Html.dd (of_inline inl)) defs)
+                 Html.dt (render_inline raw_html link_proc term)
+                 ^^ Html.concat_map (fun inl -> Html.dd (render_inline raw_html link_proc inl)) defs)
                defns)
       | Table (_attrs, headers, []) -> Html.table (table_header headers)
       | Table (_attrs, headers, rows) ->

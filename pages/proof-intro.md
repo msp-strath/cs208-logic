@@ -6,7 +6,7 @@ This is a radically different approach to the “enumerate all possible truth va
 
 Instead, we derive conclusions from assumptions by using rules. This is much easier than writing out truth tables. Another benefit is that by choosing different rules we can get different logics, and even special purpose logics.
 
-## What is Deductive Proof?
+## What is Deductive Proof? {id=proof:what-is}
 
 **Proof rules** describe which deductions we can make from zero or more *premises* to a *conclusion*. They are usually named (here with “Name”):
 
@@ -24,9 +24,9 @@ Rules with no premises are called axioms, and are needed to be able to prove any
 
 Proofs are constructed from rules by arranging them into trees, which we usually construct bottom up, applying rules to transform a goal statement to be proved into (hopefully) simpler subgoals that will eventually be proved by means of axioms. The rest of this page uses a small proof editor to interactively build proofs.
 
-## Example: Mammalian Biology
+## Example: Mammalian Biology {id=proof:biology-example}
 
-### Rules
+### Rules {id=proof:biology-example:rules}
 
 Here are the proof rules used for a small mammalian biology proof system. There are four axioms A1-A4 that tell us basic facts about bears and coconuts, and two rules R1 and R2 that allow us to make further deductions.
 
@@ -63,7 +63,7 @@ Here are the proof rules used for a small mammalian biology proof system. There 
   (conclusion (makes-milk coconut))))
 ```
 
-### Example 1
+### Example 1 {id=proof:biology-example:example1}
 
 Enter the name of the rule you want to apply in the input box and press enter (for example, A1 for the “furry(bear)” axiom. If the rule does not apply, because the conclusion of the rule does not match the statement to be proved, the system will not let you apply it. Continue until the proof has no more branches that need proof.
 
@@ -104,7 +104,7 @@ Enter the name of the rule you want to apply in the input box and press enter (f
 
 If you get stuck, click on a statement in the proof tree to reset it to that point.
 
-### Example 2
+### Example 2 {id=proof:biology-example:example2}
 
 ```rules {id=rules-example2}
 (config
@@ -141,7 +141,7 @@ If you get stuck, click on a statement in the proof tree to reset it to that poi
  (goal (mammal coconut)))
 ```
 
-## Example: Arithmetic
+## Example: Arithmetic {id=proof:arithmetic-example}
 
 We can also represent arithmetic on whole numbers as proof rules. For the purposes of this proof system we use a representation of whole numbers starting from 0 in *unary*. This means that we represent 0 as the symbol “z” and every other number *n* as *n* uses of the successor function “s”. For example, *5* is represented as “s(s(s(s(s(z)))))”. Think of using “s” as adding one (or taking the *s*uccessor of a number).
 
@@ -176,7 +176,7 @@ The rules are:
 
 The best way to see how these rules is to use them. As above, type the name of the rule into the box to use it.
 
-### Addition by repeated succession
+### Addition by repeated succession {id=proof:arithmetic-example:addition}
 
 Addition works by stripping *s*uccessors from the first number and the third number until we get down to *z*ero in the first number and the second and third are equal (because 0 + y = y).
 
@@ -239,7 +239,7 @@ Note that if we try to prove an equation that doesn't hold, such as 2 + 2 = 2, t
 
 The **soundness** property of this system is that if we can prove add(x,y,z) then it is actually the case that x + y = z. This system is also **complete**, meaning that if x + y = z, then it is possible to prove add(x,y,z). (Note that this only holds for numbers we can represent using *z*ero and *s*uccessor, the system has nothing to say about negative numbers, or fractions, or any other kind of number.)
 
-### Multiplication by repeated addition
+### Multiplication by repeated addition {id=proof:arithmetic-example:multiplication}
 
 Multiplication is the process of repeated addition. We use the first number to tell us how many times to repeat the addition of the second number:
 
@@ -299,7 +299,7 @@ And 3 * 2 = 0 + 2 + 2 + 2 = 6:
 
 As for addition, the **soundness** property of this system is that if we can prove mul(x,y,z) then it is actually the case that x * y = z. And this system is also **complete**, meaning that if x * y = z, then it is possible to prove mul(x,y,z). (Again, this only holds for whole numbers starting from *0*).
 
-## Example: Haggis Migration
+## Example: Haggis Migration {id=proof:haggis-example}
 
 For many proof systems, there can often be more than one proof for a single statement. One way to think about this is as different "paths" leading to the same conclusion. For some purposes we may only care that the conclusion is reached (so we know that it is justified by our rules). For other purposes, we may care about the exact route taken (often shorter proofs are preferred over longer rules, but sometimes a longer proof may be more meaningful or useful in some way).
 
@@ -338,7 +338,8 @@ Here are the rules:
 
 There are three proofs of migrates(glasgow, inverness). Can you find them all? If you get stuck, clicking on a part of the proof tree resets the proof to that point.
 
-#### Proof 1
+
+**Proof 1:**
 
 ```rules {id=rules-haggis-example1}
 (config
@@ -369,7 +370,7 @@ There are three proofs of migrates(glasgow, inverness). Can you find them all? I
  (goal (migrates glasgow inverness)))
 ```
 
-#### Proof 2
+**Proof 2:**
 
 ```rules {id=rules-haggis-example2}
 (config
@@ -400,7 +401,7 @@ There are three proofs of migrates(glasgow, inverness). Can you find them all? I
  (goal (migrates glasgow inverness)))
 ```
 
-#### Proof 3
+**Proof 3**
 
 ```rules {id=rules-haggis-example3}
 (config
@@ -431,7 +432,7 @@ There are three proofs of migrates(glasgow, inverness). Can you find them all? I
  (goal (migrates glasgow inverness)))
 ```
 
-## Proof Systems for Logic
+## Proof Systems for Logic {id=proof:logic}
 
 The systems of proof rules we have looked at above are all for specific cases. In the remainder of the course we will look at a general proof system for Propositional and Predicate Logic. These proof systems are powerful enough that other proof systems can be encoded in them by using implication to move proof rules "into" the logical formulas.
 

@@ -6,7 +6,7 @@ This page assumes you have understood the [syntax](prop-logic-syntax.html) and [
 
 Predicate Logic upgrades Propositional Logic by adding the ability to talk about the relationships between things, and whether they are true for all things or for some things.
 
-## Why Predicate Logic?
+## Why Predicate Logic? {id=pred-logic:why}
 
 With Propositional Logic, we can say things like “If it is raining or sunny, and it is not sunny, then it is raining”. In symbols:
 
@@ -44,7 +44,7 @@ We have already seen examples of universal and existential statements in the [se
 2. “`P` is valid if *all* valuations make it true”
 3. “`P` entails `Q` if *for all* valuations, `P` is true implies `Q` is true”
 
-## Syntax of Predicate Logic
+## Syntax of Predicate Logic {id=pred-logic:syntax}
 
 Here are two example formulas in Predicate Logic:
 
@@ -74,15 +74,13 @@ A collection of function symbols and relation symbols with specified arities is 
 
 As with Propositional Logic, Predicate Logic formulas are composed from atoms using the connectives `∧`, `∨`, `→`, and `¬`. Predicate Logic also has *quantifiers* that allow universal and existential statements, as we saw in the examples above.
 
-## Saying What You Mean
+## Saying What You Mean {id=pred-logic:saying}
 
 Predicate Logic is an expressive language for stating properties of individuals and their relationships in a precise and unambiguous way, but it can be a bit confusing to start with.
 
 This section explains some common patterns and pitfalls.
 
-### Writing formulas
-
-Write the following English-language statements as Predicate Logic formulas. Invent whatever vocabulary (function and relation symbols) you feel is necessary to write the statement as a formula.
+### Writing formulas {id=pred-logic:saying:writing}
 
 You can practise writing formulas by entering them here. The box underneath the entry box will tell you if there is a problem with your syntax or show you the syntax highlighted version if it is okay:
 
@@ -117,7 +115,7 @@ Use equality “`x = y`” and disequality “`x != y`” (or “`¬ (x = y)`”
 The rules for mixing connectives and parentheses were described Lecture 1.
 ````
 
-### “`x` is a `P`”
+### “`x` is a `P`” {id=pred-logic:saying:property}
 
 Relation symbols with arity 1 are usually used to represent properties of individuals, such as being human, or a swan, or mortal.
 
@@ -142,7 +140,7 @@ To say that a specific named individual has a property, then we replace the `x` 
 mortal(socrates())
 ```
 
-### “`x` and `y` are related by `R`”
+### “`x` and `y` are related by `R`” {id=pred-logic:saying:related}
 
 Relation symbols with arity 2 express relationships between pairs of entities, such as being connected in a network, or knowing each other in a social graph. For example:
 
@@ -161,7 +159,7 @@ knows(pooh(), piglet())
 
 Properties of individuals are sometimes expressed as having some relationship to a fixed individual. So `colour(x,gold())` could also be expressed as `gold(x)`. Which is more useful depends on how formulas are being used.
 
-### “All `x` are...”
+### “All `x` are...” {id=pred-logic:saying:universal}
 
 ```formula
 all x. boring(x)
@@ -192,7 +190,7 @@ Another common pattern is when we know that the world we are interested in is pa
 all x. even(x) \/ odd(x)
 ```
 
-#### Exercises
+#### Exercises {id=pred-logic:saying:universal:exercise}
 
 Some of these exercises ask you to mix the new Predicate Logic syntax with the Propositional Logic syntax you have used before.
 
@@ -282,7 +280,7 @@ Some of these exercises ask you to mix the new Predicate Logic syntax with the P
    I'm happy with this one.
    ```
 
-### “Some `x` are ...”
+### “Some `x` are ...” {id=pred-logic:saying:existential}
 
 The following formulas all have the shape “there an `x` such that `x` is ...”.
 
@@ -315,7 +313,7 @@ It is often more useful to say that there is some `P`-thing that has a property 
    ex x. insect(x) /\ numLegs(x,6)
    ```
 
-#### “All `P` are `Q`” vs “Some `P` are `Q`”
+#### “All `P` are `Q`” vs “Some `P` are `Q`” {id=pred-logic:saying:existential:all-vs-some}
 
 The examples so far have fitted into the following patterns:
 ```formula
@@ -336,7 +334,7 @@ ex x. P(x) -> Q(x)
 
 These are almost always not what you want. The first says “everything is both `P` and `Q`”. The second says “there an `x` such that *if* `P` is true for `x` then so is `Q`”, which is hardly ever useful.
 
-#### Exercises
+#### Exercises {id=pred-logic:saying:existential:exercise}
 
 1. “There exists a tree that is green”.
 
@@ -397,7 +395,7 @@ These are almost always not what you want. The first says “everything is both 
    because this means that there exists something, such that if it is a tree, then it is red or green. As above, this is satisfied by anything that is not a tree, as well as red or green trees.
    ````
 
-### “No `P` is `Q`”
+### “No `P` is `Q`” {id=pred-logic:saying:not-exist}
 
 To say “no swans are blue”:
 ```formula
@@ -417,7 +415,7 @@ Similar statements are:
 all x. program(p) -> ¬works(p)
 ```
 
-#### Exercise
+#### Exercise {id=pred-logic:saying:not-exist:exercise}
 
 Write a formula that states “no dog is both small and fun”.
 
@@ -441,7 +439,7 @@ all x. dog(x) -> (~small(x) \/ ~fun(x))
 
 ````
 
-### “For every `P`, there exists a related `Q`”
+### “For every `P`, there exists a related `Q`” {id=pred-logic:saying:allex}
 
 All of the above examples have only used one quantifier. More interesting statements can be made when we alternate the quantifiers to say things like “for all `P` there is a `Q`”. For example, *every farmer owns a donkey*:
 ```formula
@@ -472,7 +470,7 @@ For these “for all, exists” formulas:
 
 So the `y` we choose can depend on `x`, but we are constrained to have one that is related appropriately to the original `x` which was arbitrarily chosen by the opponent.
 
-#### Exercises
+#### Exercises {id=pred-logic:saying:allex:exercise}
 
 1. “For every ‘x’ there is a ‘y’ that is greater than ‘x’”. (You might want to use a predicate symbol like “greaterthan” for this.)
 
@@ -526,7 +524,7 @@ So the `y` we choose can depend on `x`, but we are constrained to have one that 
    I'm happy with this one.
    ```
 
-### “There exists a `P` such that every `Q` is related”
+### “There exists a `P` such that every `Q` is related” {id=pred-logic:saying:exall}
 
 If we switch the order of the quantifiers, then we get formulas that say that there exists one thing that has some relationship to everything. The other reading of *every farmer owns a donkey* is:
 ```formula
@@ -550,7 +548,7 @@ In terms of moves in a game, we have:
 
 Notice that in this alternation, the opponent has much more power because they can choose a `y` that depends on the `x` we chose.
 
-#### Exercise
+#### Exercise {id=pred-logic:saying:exall:exercise}
 
 “There is a bird that has sat in every tree”.
 
@@ -597,7 +595,7 @@ If you wanted to get way more complicated, then you could attempt to encode the 
 I'm happy with this one.
 ```
 
-### “For all `P`, there is a related `Q`, related to all `R`”
+### “For all `P`, there is a related `Q`, related to all `R`” {id=pred-logic:saying:allexall}
 
 We can keep alternating quantifiers to get longer and longer back and forth games. For example *everyone knows someone who knows everyone*:
 ```formula
@@ -621,7 +619,7 @@ Changing the quantifier order changes it to there being *one* safe node:
 ex a. ex c. all b. reachable(a,b) -> (safe(c) /\ step(b,c))
 ```
 
-### “There exists exactly one `X`”
+### “There exists exactly one `X`” {id=pred-logic:saying:unique-exists}
 
 A statement like
 ```formula
@@ -641,7 +639,7 @@ all x. all y. moon(x) -> moon(y) -> x = y
 ```
 which says *there is at most one moon*, but makes no commitment that one exists.
 
-#### Exercises
+#### Exercises {id=pred-logic:saying:unique-exists:exercise}
 
 1. “There is exactly one tree that is red”.
 
@@ -700,7 +698,7 @@ which says *there is at most one moon*, but makes no commitment that one exists.
 	```
 
 
-## When are two formulas the same?
+## When are two formulas the same? {id=pred-logic:alpha-equiv}
 
 You may have noticed that we have been inconsistent with our use of variable names in formulas. Does the naming of variables actually matter. Do the formulas
 ```formula
@@ -732,7 +730,7 @@ For general formulas, we are free to rename *bound* variables like this as much 
 
 This is analogous to programs, where we can rename variables within a program, as long as we do it consistently everywhere. However, we cannot rename references to things outside the program (such as into the standard library) because, from the program's point of view, these are free variables.
 
-### Exercises
+### Exercises {id=pred-logic:alpha-equiv:exercise}
 
 1. Are these two formulas the same up to renaming of their bound variables?
    ```formula
@@ -848,7 +846,7 @@ This is analogous to programs, where we can rename variables within a program, a
    True: the two bound “x”s in the first formula are independent and can be renamed separately.
    ```
 
-## Substitution
+## Substitution {id=pred-logic:substitution}
 
 If have formulas with free variables, then one basic operation we will want to do is *substitute*, or *plug in* values for those variables. This is analogous to the plugging in of values into formulas in algebra.
 
@@ -906,7 +904,7 @@ which has exactly the same meaning as the original formula. We can then substitu
 ex z. add(y,1) = z
 ```
 
-### Exercises
+### Exercises {id=pred-logic:substitution:exercises}
 
 Compute the results of the following substitutions, being careful with renaming to avoid variable capture.
 

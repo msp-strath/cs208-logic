@@ -4,13 +4,13 @@
 This page assumes that you are familiar with the syntax and semantics of Propositional Logic, and the [general ideas of deductive systems](proof-intro.html).
 ```
 
-After we have [looked at the general idea of deductive systems](proof-intro.html), we focus on the particular system we will be using in this course: *(focused) Natural Deduction*.
+Now that we have looked at [the general idea of deductive systems](proof-intro.html), we focus on the particular system we will be using in this course: *(focused) Natural Deduction*.
 
 The Natural Deduction system was invented by the logician Gerhard Gentzen in 1934 as a way to formalise proofs in logic. We will be using a variant of Gentzen's system that is designed to be easy to use for building proofs interactively.
 
 The key feature of Natural Deduction is its *modularity*. There are two basic rules of the system, `Done` and `Use`, that allow us to manage assumptions. Then there are separate rules for each connective "and", "implies", "or" and "not". For each connective, we have Introduction rules that tell us how to prove a statement using that connective, and Elimination rules that tell us how to use a statement built from that connective. The natural symmetry between introduction and elimination rules gives the whole system a balanced feel.
 
-## Judgements
+## Judgements {id=natural-deduction:judgements}
 
 The proof system we will use allows us to deduce statements that look like this:
 
@@ -40,7 +40,7 @@ This also means “from the assumptions `P₁`, ..., `Pₙ`, and `P` we can prov
 
 Because it is boring and messy to write out `P₁, ..., Pₙ` over and over again, we will use `Γ` as a shorthand to stand for zero or more assumptions. This will make writing the rules much easier.
 
-## The basic rules: done and use
+## The basic rules: `done` and `use` {id=natural-deduction:done-use}
 
 The two basic rules of the system are `done` and `use`. These look like this:
 
@@ -98,7 +98,7 @@ To complete this proof first enter `use H` into the box, and then `done`.
 
 By clicking on the “Show Proof Tree” button, you can see the corresponding proof tree.
 
-## Rules for the Connectives
+## Rules for the Connectives {id=natural-deduction:rules}
 
 The rules `use` and `done` only allow “librarian logic”. If something is already there in the assumptions, then we can prove it.
 
@@ -111,7 +111,7 @@ This separation of rules is analogous to the situation in programming where we c
 
 In our system, *introduction* rules will apply when there is no formula in focus and *elimination* rules will apply when there is a formula is focus. It is the formula that is in focus that we will be eliminating.
 
-### Rules for And
+### Rules for And {id=natural-deduction:rules:and}
 
 The introduction rule for `∧` is:
 
@@ -196,7 +196,7 @@ public class Pair<A,B> {
 ```
 ````
 
-### Rules for True
+### Rules for True {id=natural-deduction:rules:true}
 
 The constant truth value `T` only has an introduction rule:
 
@@ -237,7 +237,7 @@ There is no elimination rule for `T` because a proof of `T` contains no useful i
 	(solution (Rule Split((Rule Truth())(Rule(Use H)((Rule Close())))))))
    ```
 
-### Rules for Implication
+### Rules for Implication {id=natural-deduction:rules:implies}
 
 The introduction rule for implication is:
 
@@ -317,7 +317,7 @@ In words: if we have `P₁ → P₂` in focus, then if we prove `P₁` we can co
 	(solution (Rule(Introduce a-and-b)((Rule(Introduce b-implies-c)((Rule Split((Rule(Use a-and-b)((Rule Conj_elim1((Rule Close())))))(Rule(Use b-implies-c)((Rule Implies_elim((Rule(Use a-and-b)((Rule Conj_elim2((Rule Close())))))(Rule Close())))))))))))))
    ```
 
-### Rules for Or
+### Rules for Or {id=natural-deduction:rules:or}
 
 The introduction rules for `∨` are the near mirror image of the elimination rules for `∧`:
 
@@ -383,7 +383,7 @@ Just as for `introduce`, the rule `cases` introduces new assumptions. This means
 		   (solution (Rule(Use H)((Rule Conj_elim1((Rule(Cases a b)((Rule Left((Rule(Use a)((Rule Close())))))(Rule(Use H)((Rule Conj_elim2((Rule(Cases a c)((Rule Left((Rule(Use a)((Rule Close())))))(Rule Right((Rule Split((Rule(Use b)((Rule Close())))(Rule(Use c)((Rule Close())))))))))))))))))))))
    ```
 
-### Rules for False
+### Rules for False {id=natural-deduction:rules:false}
 
 Just as `T` only has an introduction rule. `F` (for False) only has an elimination rule:
 
@@ -408,7 +408,7 @@ In words: if we have an assumption of `F` in our focus, then we can prove anythi
    (config (goal "A -> (A -> F) -> B"))
    ```
 
-### Rules for Negation
+### Rules for Negation {id=natural-deduction:rules:negation}
 
 Given the rules so far, we could *define* negation as:
 
@@ -474,7 +474,7 @@ In words: if we have `¬P` in focus, then proving `P` will allow us to conclude 
 
    But can we prove the other direction of the double negation equivalence?
 
-## Soundness, Completeness, and Philosophy
+## Soundness, Completeness, and Philosophy {id=natural-deduction:sound-complete}
 
 With the rules we have so far, it is not possible to prove the other direction of the double negation equivalence:
 
@@ -518,7 +518,7 @@ This rule is slightly odd in that it applies to the proof of any formula `Q`, wi
 
 Adding this rule would make the system complete with respect to the two-valued semantics. But is it a good idea to do so?
 
-### Classical vs Intuitionistic Mathematics
+### Classical vs Intuitionistic Mathematics {id=natural-deduction:sound-complete:classical-intuitionistic}
 
 Of course, if we are interested in things that are definitely either true or false, then not having excluded middle is bad. But it is worth having a think about what we are doing with our logic.
 

@@ -10,7 +10,7 @@ For most of this course, we will define the meaning of a formula to be its *trut
 
 Once we have defined the meaning of formulas in terms of the truth values of their atoms, we can define several useful properties of formulas in terms of their truth values. The most important property is [entailment](entailment.html), which is a definition of when a collection of assumptions *entails* some conclusion.
 
-## Truth Values
+## Truth Values {id=prop-logic:semantics:truth-values}
 
 For the logic we are studying, we have two *truth values*:
 
@@ -25,9 +25,9 @@ For the logic we are studying, we have two *truth values*:
 
 Logics with other truth values are also possible. A logic with only one truth value is not very interesting, because all formulas will have the same value so we will have no way of telling them apart. Logics with three or more truth values have been used to model concepts like degrees of truth or missing data. It is also possible to have truth values that are collections of values. For example, the set of states of a system for which the formula is true.
 
-We explore logics with more than two truth values in [questions on three-valued logic](tutorial-0-three-valued.html).
+You can explore logics with more than two truth values in [questions on three-valued logic](tutorial-0-three-valued.html).
 
-## The meaning of atoms: Valuations
+## The meaning of atoms: Valuations {id=prop-logic:semantics:valuations}
 
 A *valuation* is a mapping from atomic propositions (`A`, `B`, `C`, ...)  to truth values `T` and `F`. I will use the letter `v` and similar (`v₁`, `v₂`, ...) to stand for valuations. I will write `v(A)` to stand for the truth value assigned to `A` by the valuation `v`. As this notation implies, we can think of a valuation as a *function* from atomic propositions to truth values.
 
@@ -57,11 +57,11 @@ As you can see from the examples, I have written out valuations as lists of atom
 
 4. If we have `n` atoms (`A₁`, `A₂`, ..., `An`), then there are `2ⁿ` possible valuations assigning truth values to all the atoms. Even for relatively small `n`, `2ⁿ` is a very large number, so trying *all* possible combinations of truth values will be infeasible.
 
-## The meaning of connectives
+## The meaning of connectives {id=prop-logic:semantics:connective-meanings}
 
 A valuation `v` describes what truth values to give to atoms. To assign truth values to whole formulas, we need to describe what effect each of the connectives has on truth values. We do this by writing out tables for each of the connectives.
 
-### AND (Conjunction)
+### AND (Conjunction) {id=prop-logic:semantics:connective-meanings:and}
 
 Here is the table for `P ∧ Q`. Each row is read as "if `P` is this, and `Q` is that, then `P ∧ Q` has the value in the last column".
 
@@ -74,7 +74,7 @@ Here is the table for `P ∧ Q`. Each row is read as "if `P` is this, and `Q` is
 
 So we read this table as saying `F ∧ F = F`, `F ∧ T = F`, `T ∧ F = F`, and `T ∧ T = T`. A good way to remember this table is that `P ∧ Q` is only `T` when *both* its inputs are `T`.
 
-### OR (Disjunction)
+### OR (Disjunction) {id=prop-logic:semantics:connective-meanings:or}
 
 Here is the table for `P ∨ Q`. The table is read in the same way as for `∧`, but the values in the final column are different:
 
@@ -87,7 +87,7 @@ Here is the table for `P ∨ Q`. The table is read in the same way as for `∧`,
 
 A good way to remember this table is that `P ∨ Q` is only `T` when *at least one* of its inputs are `T`.
 
-### NOT (Negation)
+### NOT (Negation) {id=prop-logic:semantics:connective-meanings:not}
 
 Here is the table for `¬ P`. In this case, there is only one input:
 
@@ -98,7 +98,7 @@ Here is the table for `¬ P`. In this case, there is only one input:
 
 A good way to remember this table is that `¬ P` is true only when `P` is false (and vice versa).
 
-### IMPLIES (Implication)
+### IMPLIES (Implication) {id=prop-logic:semantics:connective-meanings:implies}
 
 Finally, this is the table for `P → Q`.
 
@@ -113,7 +113,7 @@ A good way to remember this table is that `P → Q` means "if `P` is true then `
 
 Another way to remember this table is that `P → Q` is true when the value of `P` is less than or equal to the value of `Q`. So you could read `P → Q` as `P ≤ Q`.
 
-## The meaning of formulas
+## The meaning of formulas {id=prop-logic:semantics:formulas}
 
 Given a formula `P` and a valuation `v`, we assign a truth value to `P` by working our way up the tree described by the formula `P` from the atoms at the leaves. I will write `〚P〛v` for "the truth value assigned to `P` with the valuation `v`". The `〚...〛` notation is used to stand for "the semantics of ...". Here I am using it to define the semantics of formulas in terms of their truth values, given a valuation of their atoms.
 
@@ -135,7 +135,7 @@ For formulas built from connectives, we assign truth tables by taking the truth 
 
 This definition may look odd because it looks like we are defining `∧` to mean `∧`, `∨` to mean `∨` and so on. This is only a coincidence of notation though: the connectives inside the `〚...〛` brackets are the *syntax* of propositional logic, just symbols. The connectives outside the `〚...〛` refer to the *meanings* of the connectives as defined by the truth tables above.
 
-### Example
+### Example {id=prop-logic:semantics:formulas:example}
 
 Let's say that we wish to work out the truth value
 assigned to the formula `(A ∨ B) ∧ ¬ A` under the valuation

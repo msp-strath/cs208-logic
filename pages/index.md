@@ -2,7 +2,7 @@ This page links to the interactive notes and exercises for Logic part of [CS208 
 
 Please send any comments, queries, or corrections to [Robert Atkey](mailto:robert.atkey@strath.ac.uk) ([Web page](https://bentnib.org)). The source code for these pages in available [on Github](https://github.com/msp-strath/cs208-logic).
 
-## Introduction
+## Introduction {id=index:introduction}
 
 In the first semester of CS208, we will study Symbolic Logic. Symbolic Logic is a fundamental set of techniques for describing situations, reasoning, data, and processes. It is useful in computing for describing, building, and checking systems, and for solving complicated problems involving many interacting constraints. We will look at how to define logic (syntax and semantics), algorithms for computing with logic, and systems for deriving proofs in formal logic. We will also keep in mind the practical uses of logic in Computer Science.
 
@@ -10,7 +10,7 @@ This course follows on from CS103 and CS106 in first year.
 
 Please see the [MyPlace page](https://classes.myplace.strath.ac.uk/course/view.php?id=15121) (Strathclyde students only) for information on Lectures, Tutorials, and Assessment.
 
-### Learning Outcomes
+## Learning Outcomes {id=index:learning-outcomes}
 
 By the end of semester 1 of the module you should be able to:
 
@@ -19,82 +19,68 @@ By the end of semester 1 of the module you should be able to:
 - Understand how to specify and verify programs using assertions and loop invariants
 - Understand the concept of proof automation and its limits
 
-## Topics
+## Topics {id=index:topics}
 
-The course is divded into 11 topics.
+The course is split into 11 topics, numbered 0 to 10. Each topic corresponds to roughly a week's worth of the course.
 
-### Topic 0 : Propositional Logic
+The pages linked to below contain the lecture notes, covering the material introduced in the lectures. They also contain interactive exercises for you to do.
 
-Lectures:
-- Monday 22nd September
+-  Topic 0 is a (re)introduction to the basic concepts of **Propositional Logic**.
 
-[The slides for this lecture](topic00-slides.pdf)
+   We look at the syntax of Propositional Logic (what are the formulas?) and the semantics (what do the formulas mean?).
 
-Topic 0 of this course is a (re)introduction to the basic concepts of Propositional Logic. We look at the syntax of Propositional Logic (what are the formulas?) and the semantics (what do the formulas mean?).
+   Propositional Logic is concerned with statements that are true or false (e.g., “It is raining”, “I am in Glasgow”) and their combination by connectives such as 'and', 'or', 'not', and 'implies'. Propositional Logic is not a very expressive logic, for example it is not possible to directly express relationships between things, but it is useful in its own right, as we shall see.
 
-Propositional Logic is concerned with statements that are true or false (e.g., “It is raining”, “I am in Glasgow”) and their combination by connectives such as 'and', 'or', 'not', and 'implies'. Propositional Logic is not a very expressive logic, for example it is not possible to directly express relationships between things, but it is useful in its own right, as we shall see.
+   1. [Syntax](prop-logic-syntax.html): what are the valid sequences of symbols that we can write down? Which ones are logical formulas?
 
-1. [Syntax](prop-logic-syntax.html): what are the valid sequences of symbols that we can write down? Which ones are logical formulas?
+   2. [Semantics](prop-logic-semantics.html): what do those symbols mean? What do formulas made from the symbols mean?
 
-2. [Semantics](prop-logic-semantics.html): what do those symbols mean? What do formulas made from the symbols mean?
+   3. [Truth Tables, Satisfiability, and Validity](truth-tables.html): Truth tables are an effective way to compute the meaning of a logical formula. Satisfiability and Validity are two categorisations we can make about a formula.
 
-3. [Truth Tables, Satisfiability, and Validity](truth-tables.html): Truth tables are an effective way to compute the meaning of a logical formula. Satisfiability and Validity are two categorisations we can make about a formula.
+   4. An [extended exercise sheet on Three-valued logic](tutorial-0-three-valued.html).
 
-**Tutorial**: [Three-valued logic](tutorial-0-three-valued.html).
+   [The lecture slides for this topic](topic00-slides.pdf).
 
-### Topic 1 : Deductive Proof
+-  Topic 1 is **Entailment** and **Deduction**.
 
-Lectures
-- Friday 26th September 2025
+   1. [Entailment](entailment.html): A generalised form of validity. What does it mean to say a formula is true under some assumptions?
 
-[The slides for this lecture](topic01-slides.pdf)
+   2. [Introduction to Deductive Proof](proof-intro.html), which describes the general idea of proof systems, and introduces a small example of a proof system inspired by biology.
 
-1. [Entailment](entailment.html): A generalised form of validity. What does it mean to say a formula is true under some assumptions?
+   [The lecture slides for this topic](topic01-slides.pdf).
 
-2. [Introduction to Deductive Proof](proof-intro.html), which describes the general idea of proof systems, and introduces a small example of a proof system inspired by biology.
+-  Topic 2 is **Proof for Propositional Logic**.
 
-### Topic 2 : Proof for Propositional Logic
+   [Natural Deduction](natural-deduction-intro.html). Natural Deduction is a style of proof system that places a particular emphasis on how assumptions are used, and on how the rules for each connective come in introduction and elimination pairs.
 
-Lectures
-- Friday 3rd October 2025
-- Monday 6th October 2025
+   [The lecture slides for this topic](topic02-slides.pdf).
 
-[The slides for these lectures](topic02-slides.pdf)
+- Topic 3 is **Predicate Logic**.
 
-[Natural Deduction](natural-deduction-intro.html). Natural Deduction is a style of proof system that places a particular emphasis on how assumptions are used, and on how the rules for each connective come in introduction and elimination pairs.
+  [Introducing Predicate Logic](pred-logic-intro.html) as an expressive language for making statements in a formalised way. By selecting our vocabulary carefully, we can use Predicate Logic as a modelling tool to describe many situations. The syntax of Predicate Logic is more complex that that of Proposition Logic, so this page introduces it, with the concepts of free and bound variables and substitution.
 
-The questions for the tutorial are in the Natural Deduction page.
 
-### Topic 3 : Predicate Logic
+   [The lecture slides for this topic](topic03-slides.pdf).
 
-Lectures
-- Friday 10th October 2025
-- Monday 13th October 2025
+-  Topic 4 is **Proof for Predicate Logic**.
 
-[Slides for these lectures](topic03-slides.pdf)
+   [Proof rules for Predicate Logic](pred-logic-rules.html). Natural deduction rules for “for all” and “exists” allow us to construct proofs of Predicate Logic formulas. Also, how do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
 
-[Introducing Predicate Logic](pred-logic-intro.html) as an expressive language for making statements in a formalised way. By selecting our vocabulary carefully, we can use Predicate Logic as a modelling tool to describe many situations. The syntax of Predicate Logic is more complex that that of Proposition Logic, so this page introduces it, with the concepts of free and bound variables and substitution.
+   [The lecture slides for this topic](topic04-slides.pdf).
 
-### Topic 4 : Proof for Predicate Logic
 
-*under construction*
+-  Topic 5 will be **Specification and Verification**.
 
-Lectures
-- Friday 17th October 2025
-- Monday 20th October 2025
+-  Topic 6 will be **Programs with Loops**.
 
-[Slides for these lectures](topic04-slides.pdf)
+-  Topic 7 will be **Programs with Arrays**.
 
-[Proof rules for Predicate Logic](pred-logic-rules.html). Natural deduction rules for “for all” and “exists” allow us to construct proofs of Predicate Logic formulas. Also, how do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
+-  Topic 8 will be **Semantics of Predicate Logic**.
 
-### Topic 5 : Specification and Verification
+-  Topic 9 will be **Automating Logic**.
 
-### Topic 6 : Programs with Loops
+-  Topic 10 will be **Undecidability**.
 
-### Topic 7 : Programs with Arrays
+## Further Reading {id=index:further-reading}
 
-### Topic 8 : Models of Formulas
-
-### Topic 9 : Automation
-
-### Topic 10 : Undecidability
+TBD...

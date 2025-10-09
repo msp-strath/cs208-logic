@@ -8,7 +8,7 @@ This page assumes that you have understood [natural deduction for Propositional 
 
 We have seen the proof system of [natural deduction for Propositional Logic](natural-deduction-intro.html). This page describes how we can upgrade this system to [Predicate Logic](pred-logic-intro.html). The syntax of Predicate Logic is complicated by the presence of variables, so we need to alter our definition of judgement to take account of them. After doing this, we can take the basic rules for Propositional Logic unchanged, and add rules for the `∀` and `∃` quantifiers. Perhaps surprisingly, we also need to add special rules for equality `s = t`.
 
-## Managing the Scope of Variables
+## Judgements {id=pred-logic:judgements}
 
 The key difference between Propositional Logic and Predicate Logic is that the latter allows us to name individuals `x`, `y` and so on. To upgrade Natural Deduction to handle Predicate Logic, we need to make sure that we keep track of the names that we are using in our proofs, making sure that our terms and formulas are well-scoped.
 
@@ -37,7 +37,7 @@ The important point about the variables `x` is that a variable appears *before* 
 
 If `Γ` is a context containing variables and assumptions, then we say that a formula `P` is *well-scoped in `Γ`* if all of the free variables of `P` are in `Γ`. A whole context `Γ` is *well-scoped* if every formula in it is well-scoped in the context to its left. Similarly, a whole judgement is well-scoped if the conclusion and focus (if it exists) are well-scoped in the context.
 
-### Exercises
+### Exercises {id=pred-logic:judgements:exercise}
 
 Are these judgements well scoped?
 
@@ -224,7 +224,7 @@ Are these judgements well scoped?
 	**Well Scoped**. The assumption “P(y)” uses the variable “y” which has not been declared.
 	```
 
-## Proof Rules for “for all”
+## Proof Rules for “for all” {id=pred-logic:rules-for-all}
 
 As for any connective, the [Natural Deduction](natural-deduction-intro.html) rules for `∀` have introduction and elimination forms. Before we look at these, let's look at what `∀x. P` means, and what this might mean in terms of proof rules.
 
@@ -278,7 +278,7 @@ To use this rule in the prover, enter `inst` followed by the term in quotes. For
  (goal "(all x. flump(x)) -> flump(you())"))
 ```
 
-### Exercises
+### Exercises {id=pred-logic:rules-for-all:exercise}
 
 These exercises use the new rules for “for all”, as well as the rules for the propositional connectives:
 
@@ -347,7 +347,7 @@ These rules apply when there is a formula in focus. These rules either act upon 
     (goal "(all x. p(x) /\ q(x)) -> (all y. p(y))"))
    ```
 
-## Proof rules for “exists”
+## Proof rules for “exists” {id=pred-logic:rules-exists}
 
 The introduction and elimination rules for `∃x. P` are nearly the mirror image of the rules for `∀x. P`, in the same way that the rules for `P ∨ Q` are the (near) mirror image of the rules for `P ∧ Q`.
 
@@ -391,7 +391,7 @@ In words: if we know `∃x. P`, then we can assume there is some `x0` for which 
 
 Just as for `cases` for `P ∨ Q`, to use this rule in the prover, we need to give a name for the new variable and a name for the new assumption when we use the `unpack` command.
 
-### Exercises
+### Exercises {id=pred-logic:rules-exists:exercises}
 
 These exercises use the new rules for “exists”, as well as the rules for the propositional connectives:
 
@@ -462,7 +462,7 @@ These rules apply when there is a formula in focus. These rules either act upon 
     (goal "(ex x. p(x) \/ q(x)) -> ((ex z. p(z)) \/ (ex z. q(z)))"))
    ```
 
-## Exercises combining ∀ and ∃
+## Exercises combining ∀ and ∃ {id=pred-logic:rules-exercises}
 
 These exercises combine “for all” and “exists”:
 
@@ -622,11 +622,11 @@ These rules apply when there is a formula in focus. These rules either act upon 
 	 (goal "∃p. earth(m) ∧ hollow(m)"))
 	```
 
-## Equality
+## Equality {id=pred-logic:equality}
 
 Equality (`s = t`) is a fundamental relationship between entities. When we state an equality `s = t`, we are saying that there is no way to tell the two individuals `s` and `t` apart from the point of view of the logical setting we are working in.
 
-### Equivalence Relations
+### Equivalence Relations {id=pred-logic:equality:equivrels}
 
 In the exercises above, we have given predicates such as `edge` meaning by adding properties about them (such as “symmetry”) to the list of things we are assuming. We could try to do the same thing for equality.
 
@@ -654,7 +654,7 @@ There's not much one can prove directly from these axioms without making further
 
 (A binary relation that only has symmetry and transitivity is called a *partial equivalence relation*. They are useful for describing the semantics of programming languages.)
 
-### Proof Rules for Equality
+### Proof Rules for Equality {id=pred-logic:equality:rules}
 
 These three axioms are the minimum for a relation `≈` to be considered some form of equivalence. However, they are not enough to properly define equality because they do not specify the effect that two things being equal has on everything else in the system.
 
@@ -713,7 +713,7 @@ The rewrite rules and reflexivity are enough to prove the other two properties *
  (solution (Rule(Introduce x)((Rule(Introduce y)((Rule(Introduce z)((Rule(Introduce x-eq-y)((Rule(Introduce y-eq-z)((Rule(Use x-eq-y)((Rule(Rewrite ltr)((Rule(Use y-eq-z)((Rule Close())))))))))))))))))))
 ```
 
-### What things are equal?
+### What things are equal? {id=pred-logic:equality:what-is-equal}
 
 One consequence of treating equal things as always substitutable for one another is that what we consider to be equality depends on exactly what and how we are modelling. What is considered equal for one application domain might not make sense for another.
 
@@ -745,7 +745,7 @@ More generally, if we have two things that have different properties (one is `P`
  (solution (Rule(Introduce x)((Rule(Introduce y)((Rule(Introduce x-is-p)((Rule(Introduce y-is-not-p)((Rule(NotIntro x-eq-y)((Rule(Use y-is-not-p)((Rule NotElim((Rule(Use x-eq-y)((Rule(Rewrite rtl)((Rule(Use x-is-p)((Rule Close())))))))))))))))))))))))
 ```
 
-### Exercises : Abelian Groups
+### Exercise : Abelian Groups {id=pred-logic:equality:exercise}
 
 An [abelian group](https://en.wikipedia.org/wiki/Abelian_group) is a generalisation of the ideas of addition and multiplication of numbers. We assume there is an operation ‘combine’ that combines two things (e.g., adding or multiplying), an operation ‘inv’ that takes the inverse of a thing (e.g., negation or reciprocal), and a value ‘emp()’ that has no effect when combined with something else (e.g., zero for addition, or one for multiplication). What makes an abelian group *abelian* and not just a group is that it does not matter what order things are combined in: ‘combine(x,y) = combine(y,x)’.
 

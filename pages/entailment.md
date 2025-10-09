@@ -8,6 +8,8 @@ One of the uses of logic (and possibly the most important one) is to identify wh
 
 Logic does not concern itself with whether or not whether or not the assumptions are actually true, only the question of whether or not the formulas we are assuming are sufficient to conclude some other formula.
 
+## Definition {id=entailment:definition}
+
 If a conclusion `Q` follows from some assumptions `P₁, P₂...` (in a rigorous way we define below), we will say that the assumptions `P₁, P₂...` *entails* `Q`. I will also write this in symbols:
 
 ```
@@ -26,11 +28,11 @@ To make this formal, we must be explicit about valuations. So the full definitio
 
 The definition of entailment can be subtle and difficult to understand at first without working through a few examples, so let's do that.
 
-## Example Entailments
+## Example Entailments {id=entailment:examples}
 
 For Propositional Logic, it is possible to compute entailments by using truth tables. Let's see how to do this by some examples. These examples will also introduce some of the interesting consequences of the definition of entailment.
 
-### “A” entails “A”
+### “A” entails “A” {id=entailment:examples:identity}
 
 Our first example is the entailment `A ⊧ A`. Inituitively, this entailment ought to hold: if we assume `A`, then we should be able to conclude `A`. Let us check this by writing a truth table. We first write out all the possible values of `A`. These are all our different valuations, so we explicitly mark these columns as our valuation:
 
@@ -55,7 +57,7 @@ Now, to check the entailment we have to check: for every valuation (row), if all
 
 Checking this table, we can see that the entailment holds. In the first row, the assumption is false, so we are OK. In the second row, the assumption is true, but so is the conclusion, so we are OK. After checking every row, we can conclude that `A ⊧ A`.
 
-### “A and B” entails “A”
+### “A and B” entails “A” {id=entailment:examples:conjunction1}
 
 The entailment `A ∧ B ⊧ A` is a little more complex because there are two propositional atoms `A` and `B`. I will write out the table all in one go:
 
@@ -75,7 +77,7 @@ assumptions are true, the conclusion is true. For this table:
 
 Together, for each row, we have that if the assumption is true, then the conclusion is true. Therefore, the entailment `A ∧ B ⊧ A` is valid.
 
-### “A or B” does not entail “A”
+### “A or B” does not entail “A” {id=entailment:examples:or-fail}
 
 The truth table for this entailment looks like this.
 
@@ -90,15 +92,15 @@ In the second row, we can see that the assumption is `T` but the conclusion is `
 
 Intuitively, this is because if we assume that `A ∨ B` is true, then we cannot safely conclude `A` is definitely true, because it might be that `B` is true and not `A`. This is exactly the situation described in the second row of the table.
 
-### Atomic Propositions stand for any Formula
+### Atomic Propositions stand for any Formula  {id=entailment:examples:subsitution}
 
 If we know that an entailment `P1, ..., Pn ⊧ Q` holds, then we can replace ("substitute") any of the atomic propositions in the `P1`,..., `Pn` and `Q` with any other formula and we still get a valid entailment. We do have to do the same substitution everywhere though, this does not work if we only substitute in some of the assumptions or conclusion.
 
 For example, above we saw that the entailment `A ∧ B ⊧ A` holds. By substituting `C → D` for `A`, we can immediately deduce that `(C → D) ∧ B ⊧ C → D` is a valid entailment.
 
-In general, we have that if `P1, ..., Pn ⊧ Q` then `P1[A := R], ..., Pn[A := R] ⊧ Q[:= R]`, where `P[A := R]` means “replace all `A`s in `P` with `R`”. We will come back to substitution in [Topic 3: Scope and Substitution](scope-and-substitution.html).
+In general, we have that if `P1, ..., Pn ⊧ Q` then `P1[A := R], ..., Pn[A := R] ⊧ Q[:= R]`, where `P[A := R]` means “replace all `A`s in `P` with `R`”. We will come back to substitution in [Topic 3](pred-logic-intro.html#pred-logic:substitution).
 
-### Implication internalises entailment
+### Implication internalises entailment {id=entailment:examples:implication}
 
 The following table shows that if we assume `A → B` and `A`, then we can conclude `B`.
 
@@ -126,7 +128,7 @@ There is another connection between implication and entailment. Whenever the ent
 
 Checking the last two columns, we can see that they are equal for all valuations. Therefore, we have an equivalence between `A, B ⊧ C` and `A ⊧ B → C`.
 
-### Adding assumptions
+### Adding assumptions {id=entailment:examples:weakening}
 
 If we know `A ⊧ B`, then we also know `C, A ⊧ B`.
 
@@ -135,7 +137,7 @@ If we know `A ⊧ B`, then we also know `C, A ⊧ B`.
 ```textbox {id=entailment-1}
 ```
 
-### Contradictory assumptions
+### Contradictory assumptions {id=entailment:examples:contradiction}
 
 One non-intuitive feature of entailment is that if the assumptions are contradictory, then we can conclude anything. This is demonstrated by the following truth table, which has two assumptions `A` and `¬A`:
 
@@ -150,7 +152,7 @@ There are **no** rows where all the assumptions are true, so the entailment `A, 
 
 This is one of the sometimes surprising features of two-valued logic (and of many other logical systems). Intuitively, it should not always be the case. If a database contains two pieces of contradictory evidence (e.g., that the same person is 25 years old and 45 years olds), then it should not be allowed to conclude that the moon is made of cheese. This is the motivation for other logical systems, such as the one discussed in [three-valued logic](tutorial-0-three-valued.html), or for careful logical modelling.
 
-### Chaining entailments
+### Chaining entailments {id=entailment:examples:chaining}
 
 If we know `A ⊧ B` and `B ⊧ C`, then we know that `A ⊧ C`. This allows us to chain together entailments to make chains of reasoning from assumptions to conclusions.
 
@@ -164,7 +166,7 @@ If we know `A ⊧ B` and `B ⊧ C`, then we know that `A ⊧ C`. This allows us 
 ```textbox {id=entailment-3}
 ```
 
-## Towards Proof Systems
+## Towards Proof Systems {id=entailment:towards-proof}
 
 The facts about entailment listed above build up to give a list of things that we know about our logic:
 

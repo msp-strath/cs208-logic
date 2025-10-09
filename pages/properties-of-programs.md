@@ -1,7 +1,7 @@
 # Specifying Properties of Programs
 
 ```aside
-This page assumes that you have understood the [proof rules for quantifiers](pred-logic-rules.html) and [proof rules for equality](equality.html) pages and completed all the exercises there.
+This page assumes that you have understood the [proof rules for predicate-logic](pred-logic-rules.html).
 ```
 
 So far, we have seen at least four ways that logic can be used in Computer Science:

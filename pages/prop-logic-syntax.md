@@ -2,7 +2,7 @@
 
 In this course, we will study Symbolic Logic, where we are primarily concerned with statements written out using formal symbols, rather than statements in natural language. In this page, we will introduce the syntax of the logical formulas that we will look at in the first half of the course.
 
-## Examples
+## Examples {id=prop-logic:syntax:examples}
 
 Here is an example of a formula of Propositional Logic:
 
@@ -24,7 +24,7 @@ We read this as "`A` or `B` implies `B`", or "if `A` or `B`, then `B`". A yet mo
 
 We read this as "if `A` or `B`, then if `A` implies `C`, then if `B` implies `D`, then `C` and `D`". As you can see writing out the formulas in English becomes very cumbersome and possibly ambiguous. For these two reasons, we use a formal syntax.
 
-## Building Formulas
+## Building Formulas {id=prop-logic:syntax:building}
 
 Logical formulas are built up from *atomic propositions* (or
 *atoms*) and *connectives*. In more detail, a propositional
@@ -46,7 +46,7 @@ More concisely, formulas `P`, `Q`, etc. are constructed from the following gramm
 
 where `A` stands for any atomic proposition `A`, `B`, `C` ... .
 
-## Tree Representation
+## Tree Representation {id=prop-logic:syntax:trees}
 
 Graphically, we can think of formulas as trees built from atoms:
 
@@ -113,7 +113,7 @@ represents the formula:
 I will not draw out the tree based representation for each formula explicitly in this course, but it is important to keep in mind that this is what formulas “really are”. The concept of which connective occurs “topmost” in the tree will be important when it comes to working out the [truth values assigned to formulas](prop-logic-semantics.html), [using truth tables](truth-tables.html), and [doing formal proof](natural-deduction-intro.html).
 
 
-## Linear Representation
+## Linear Representation {id=prop-logic:syntax:linear}
 
 Writing formulas as trees is precise, but consumes a lot of space. For conciseness, we write out formulas “linearly” as a sequence of symbols with parentheses, so it looks more like a familiar algebraic notation except with `∧`, `∨` and `¬` instead of `×`, `+` and `-`.
 

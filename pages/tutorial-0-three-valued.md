@@ -10,13 +10,13 @@ One way to explore alternative logics is to think about having different truth v
 
 For this page, we are going to keep the same [syntax](prop-logic-syntax.html) as Propositional Logic, and think about how to extend the semantic of it to alternative sets of truth values.
 
-## One truth value?
+## One truth value? {id=three-valued:one}
 
 Could we have only one truth value? `True` for instance? (It doesn't matter what we call it.)
 
 Having only one truth value leads to a logic that isn't very useful. Every formula gets the same (unique) truth value, so every formula is valid and every formula is satisfiable. Every formula has the same meaning, and so the logic becomes useless as a way of telling the difference between statements expressed as logical formulas.
 
-## Three truth values
+## Three truth values {id=three-valued:three}
 
 Having three truth values leads to a more interesting situation.
 
@@ -32,11 +32,11 @@ Let's write the three truth values as:
 | I     | “indeterminate” or “unknown” |
 | F     | “false”                      |
 
-### Meanings of the Connectives
+### Meanings of the Connectives {id=three-valued:three:meanings}
 
 We now have to extend the meanings of the connectives to the cases when one or both of the inputs are `I`. Let's try doing this for `∧` by using our intuition about what the connectives mean.
 
-#### And, Or, and Not
+#### And, Or, and Not {id=three-valued:three:meanings:andornot}
 
 It makes sense for the connectives to behave the same on `T` and `F`, so we can fill in part of a table for `∧`:
 
@@ -86,7 +86,7 @@ The `¬` connective is easier. If we use the answers for `T` and `F` from two-va
 
 Using the truth tables above, we can now use the recipe for assigning meaning to formulas that we saw before in the [semantics for Propositional Logic](prop-logic-semantics.html). Valuations now assign `T`, `I`, or `F` to each atomic proposition.
 
-##### Exercises
+##### Exercises {id=three-valued:three:meanings:andornot:exercises}
 
 1. **Excluded Middle** What are all the truth values of `A ∨ ¬A`? How does this compare to its truth values in two-valued logic?
 
@@ -212,7 +212,7 @@ Using the truth tables above, we can now use the recipe for assigning meaning to
    Is this a problem? Could we fix it?
    ```
 
-#### Why are these “correct”?
+#### Why are these “correct”? {id=three-valued:three:meanings:correctness}
 
 Above, we used an “intuitive” idea of what the connectives mean and how to interpret `I` to fill in the tables. But is there a more systematic way of working it out?
 
@@ -232,7 +232,7 @@ Negation swaps the order, leaving `I` in the middle.
 
 The interpretation of `∧` and `∨` as maximum and minimum respectively works for ordinary two-valued logic too, with the ordering `F < T`. Ordering truth values and using minimum and maximum for `∧` and `∨` is a general technique for extending logic to more than two truth values.
 
-##### Exercises
+##### Exercises {id=three-valued:three:meanings:correctness:exercises}
 
 What if we had *four* truth values ordered like this:
 
@@ -301,7 +301,7 @@ It also works to have negation swap `I` and `B` as well, but this is less easy t
 Another way to think about four truth values is to think of the truth values as *pairs* of `True` and `False` values. A pair `(A,X)` has a “positive” truth value (`A`) and a negative truth value (`X`). Negation is then defined as swapping `A` and `X`. Can you see how to do the other connectives and to define the ordering in terms of the usual ordering on `True` and `False`?
 ```
 
-#### Kleene's Implication
+#### Kleene's Implication {id=three-valued:three:meanings:kleene}
 
 We have not yet defined an the semantics of an implication connective on three truth values.
 
@@ -327,12 +327,9 @@ We can write this more concisely as a square, with `P` in the left column and `Q
 | I     | I | I | T |
 | T     | F | I | T |
 
-##### Exercises
+##### Exercises {id=three-valued:three:meanings:kleene:exercises}
 
 As an implication, Kleene's definition behaves very strangely.
-
-
-
 
 1. Is it the case that `P → P` is valid?
 
@@ -416,7 +413,7 @@ As an implication, Kleene's definition behaves very strangely.
    Just as for the three-valued logic, we do have that `P → P` is valid, because neither `I` nor `B` imply themselves.
    ```
 
-#### Łukasiewicz's Implication
+#### Łukasiewicz's Implication {id=three-valued:three:meanings:lukasiewicz}
 
 Łukasiewicz's implication is defined by the following table, where the left column is the `P` and the top row is the `Q`. It differs from Kleene's implication only in saying that `I` implies `I` is `T`.
 
@@ -430,7 +427,7 @@ This fixes the problem with `P → P`, because now the top-left to bottom-right 
 
 The downside is that the implication in this logic is very different to the implication in two-valued logic. In fact, we get a completely new logic that loses the connection between `∧` and `∨` and implication. We will see a similar situation when we consider [Intuitionistic Logic](natural-deduction-intro.html), which retains a connection between `∧` and implication, but not with `∨`.
 
-## Further Reading
+## Further Reading {id=three-valued:three:further-reading}
 
 - The [Wikipedia page](https://en.m.wikipedia.org/wiki/Three-valued_logic) on three-valued logic describes the Kleene and Łukasiewicz variants and some more besides.
 - The general field is known as “multi-valued logic”, and the technical material can get quite deep. A useful variant is when we have *infinitely many* truth values: all real numbers between `0` and `1`. This is known as “fuzzy logic” and has been proposed for use in situations truth is fuzzy. For example, the statement “Bob is tall” isn't a `True`/`False` statement, but one that relies on a fuzzy idea of what tall means. Closely related are probabilistic logics, where the number indicates the probability that we consider this thing to be true.

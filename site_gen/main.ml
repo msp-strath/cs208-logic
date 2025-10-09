@@ -11,7 +11,7 @@ module Of_Omd = Html_of_omd.Make (Html_static)
 
 module Html_of_formula = Fol_formula.Formula.Make_HTML_Formatter (Html_static)
 
-let template ~title:title_text ?(sub_title="") ~script_url body_html =
+let template ~title:title_text ?(sub_title="") ~script_url navigation_html body_html =
   let open Html_static in
   let (@|) elem elems = elem (concat_list elems) in
   html @| [
@@ -23,7 +23,6 @@ let template ~title:title_text ?(sub_title="") ~script_url body_html =
           ];
         link ~attrs:[
             A.rel "stylesheet";
-            (* A.href "https://cdn.simplecss.org/simple.min.css" *)
             A.href "simple.min.css"
           ];
         link ~attrs:[
@@ -43,7 +42,10 @@ let template ~title:title_text ?(sub_title="") ~script_url body_html =
                 (* a ~attrs:[A.href "coursework2.html"] (text "Coursework 2"); *)
               ]
           ];
-          main body_html;
+          div ~attrs:[ A.class_ "navigation" ] navigation_html;
+
+          main @| [ body_html;
+                  ];
           footer @| [
               text "Source code for these pages ";
               a ~attrs:[A.href "https://github.com/msp-strath/cs208-logic"]
@@ -139,8 +141,6 @@ let code_render renderer ids attributes kind content =
          let open Html_static in
          Some (div ~attrs:[ A.class_ "displayedformula" ]
                (Html_of_formula.html_of_formula fmla))
-
-                 (* (text (Pretty.to_string ~width:60 (Formula.to_doc fmla)))) *)
       | Error (`Parse err) ->
          (* FIXME: just log the error? *)
          failwith (Parser_util.Driver.string_of_error err))
@@ -160,6 +160,23 @@ let code_render renderer ids attributes kind content =
       - Better tables; incl computed truth tables
  *)
 
+let rec html_of_toc sections =
+  let open Html_static in
+  let render_inlines = Of_Omd.render_inline None None in
+  ul (concat_map
+        (fun (Html_of_omd.Section { title; id; subsections }) ->
+          let title = match id with
+            | None -> render_inlines title
+            | Some id ->
+               a ~attrs:[ A.href ("#" ^ id) ] (render_inlines title)
+          in
+          li (title ^^ html_of_toc subsections))
+        sections)
+
+let rec remove_toplevel = function
+  | [] -> []
+  | Html_of_omd.Section { subsections; _ } :: rest ->
+     subsections @ remove_toplevel rest
 
 let process_file input_dir output_dir filename =
   let input_path = Filename.concat input_dir filename in
@@ -169,6 +186,7 @@ let process_file input_dir output_dir filename =
       Omd.of_channel
   in
   let ids = ref [] in
+  let toc = remove_toplevel (Html_of_omd.toc_of_blocks doc) in
   let rec renderer doc =
     Of_Omd.render (code_render renderer ids) doc
   in
@@ -177,6 +195,10 @@ let process_file input_dir output_dir filename =
       ~title:"CS208 Logic & Algorithms"
       ~sub_title:"Semester 1: Logic"
       ~script_url:"frontend.bc.js"
+      (Html_static.(concat_list [
+                        b (text "Contents");
+                        html_of_toc toc
+                      ]))
       (renderer doc)
   in
   Printf.printf "Page: %s; ids: [ %s ]\n" filename (String.concat ", " !ids);

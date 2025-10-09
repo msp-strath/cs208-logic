@@ -7,7 +7,7 @@ This page assumes you have understood the [syntax](prop-logic-syntax.html) and [
 
 Truth tables are a way of systematically working out the truth value assigned to a formula for each possible valuation (assignment of truth values to atoms). We work out the value of `〚P〛v` for every possible `v` in a single large table. The overall process for working out a truth table is similar to the above process for working out `〚P〛v` — we break the formula down into subformulas and compute the truth values assigned "bottom up" — but we arrange the work slightly differently. Truth tables are useful for working out truth value assignments for all possible assignments without missing any accidentally.
 
-## Truth Tables by Example
+## Truth Tables by Example {id=prop-logic:truth-tables:by-example}
 
 Let's see how truth tables work by example. Let's say we want to write
 a truth table for the formula:
@@ -95,7 +95,7 @@ Note that now the truth values may not appear in the same order as they do in th
 
 Which is the complete truth table for this formula.
 
-### Summary
+## Step-by-step {id=prop-logic:truth-tables:step-by-step}
 
 Steps for writing out a truth table for a formula `P`:
 
@@ -109,7 +109,7 @@ Steps for writing out a truth table for a formula `P`:
 
 5. Finally, add a column for the whole formula at the end and fill in the column in the same way as for the subformulas.
 
-## Satisfiability
+## Satisfiability {id=prop-logic:truth-tables:satisfiability}
 
 A formula `P` is *satisfiable* if there exists at least one valuation `v` that makes it true. In other words, there is at least one valuation `v` such that `〚P〛v = T`. A valuation that makes a formula true is called a *satisfying valuation* (or *satisfying assignment*).
 
@@ -141,7 +141,7 @@ If we change the formula by adding `∧ ¬ B`, then we get the formula `(A ∨ B
 
 Now none of the rows has a `T` in the final column. Therefore we say that this formula is **not** satisfiable.
 
-## Validity
+## Validity {id=prop-logic:truth-tables:validity}
 
 A formula `P` is *valid* if **all valuations `v` make it true**. In other words, if for all valuations `v`, we have `〚P〛v = T`, then `P` is valid. Valid formulas are also called *tautologies*.
 
@@ -171,7 +171,7 @@ The formula `((A ∨ B) ∧ ¬ A) → B` is valid, because every row's final col
 
 Validity defines when a formula is "true" in itself. More generally, we will want to know what it means for a formula *under some assumptions*. This is the idea behind [entailment](entailment.html).
 
-## Relationship between Satisfiability and Validity
+## Relationship between Satisfiability and Validity {id=prop-logic:truth-tables:sat-vs-valid}
 
 The following relationship between satisfiability and validity is often useful. Especially when we have [SAT solvers](sat-solvers.html) for automatically determining whether or not a formula is satisfiable.
 
