@@ -7,9 +7,12 @@ This page assumes that you have understood the [proof rules for predicate-logic]
 So far, we have seen at least four ways that logic can be used in Computer Science:
 
 1. Encoding problems in logic means that we can use SAT solvers to find solutions to problems. We looked at this in some depth in [Logical Modelling](logical-modelling-intro.html). It is possible to take these ideas further in Logic Programming languages such as [Prolog](https://www.metalevel.at/prolog).
+
 2. Predicate Logic has a close connection with databases. We saw this in the definition of [models for Predicate Logic](pred-logic-semantics.html), where databases can be seen as finite models. Queries on a database are restricted forms of Predicate Logic formula.
+
 3. If we can express our programs as *equations*, then we can use equational reasoning and induction to prove things about programs. We saw an example of this with [arithmetic and induction](induction.html), where addition and multiplication are defined by two equations each. Programming languages like [Haskell](https://www.haskell.org) are entirely based around making definitions by equations. You will start to learn Haskell CS260 next semester.
-4. [We mentioned in passing](natural-deduction-intro.html) FIXME: better link; that it is also possible to view proofs as processes or programs transforming evidence. The [CS410 *Advanced Functional Programming*](https://github.com/gallais/CS410-2024) course in 4th year develops this idea much further.
+
+4. [We mentioned in passing](natural-deduction-intro.html#natural-deduction:sound-complete:classical-intuitionistic) that it is also possible to view proofs as processes or programs transforming evidence. The [CS410 *Advanced Functional Programming*](https://github.com/gallais/CS410-2024) course in 4th year develops this idea much further.
 
 In this page [and the next](halting-problem.html), we'll look at another way of talking about programs using Predicate Logic, where we use the logic to state properties of programs' behaviour directly, and the different statements we can make about programs' behaviour even in the simple case of non-interactive programs that consume one input and produce one output.
 
