@@ -177,7 +177,7 @@ module Make (Html : Html_sig.S) = struct
             div
               [%concat
                 resetbutton;
-                text ("instantiate with “" ^ Term.to_string term ^ "”,")];
+                text ("inst \"" ^ Term.to_string term ^ "\"")];
             concat_list boxes]
     | Conj_elim1 ->
         vertical
