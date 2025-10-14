@@ -113,9 +113,15 @@ Steps for writing out a truth table for a formula `P`:
 
 A formula `P` is *satisfiable* if there exists at least one valuation `v` that makes it true. In other words, there is at least one valuation `v` such that `〚P〛v = T`. A valuation that makes a formula true is called a *satisfying valuation* (or *satisfying assignment*).
 
-If we think of valuations as "possible states of the world", then a formula `P` being satisfiable means that there is at least one state of the world where this formula is true. By encoding "real-world" problems as logical formulas, finding satisfying valuations amounts to finding solutions to those problems, as we shall see in [Part 1 : Logical Modelling](logical-modelling-intro.html).
+If we think of valuations as "possible states of the world", then a formula `P` being satisfiable means that there is at least one state of the world where this formula is true. For example, by encoding "real-world" problems as logical formulas, finding satisfying valuations amounts to finding solutions to those problems
+```comment
+, as we shall see in [Part 1 : Logical Modelling](logical-modelling-intro.html).
+```
 
-If you are asked to show that a formula is satisfiable, then what you have to do is find a valuation `v` (i.e., a value for each of the atoms) that makes the formula true. There are several ways to find such a valuation. There are specialised programs, called *SAT Solvers* whose job is to find satisfying assignments for very large formulas. [SAT Solvers](sat-solvers.html) have their own page.
+If you are asked to show that a formula is satisfiable, then what you have to do is find a valuation `v` (i.e., a value for each of the atoms) that makes the formula true. There are several ways to find such a valuation. There are specialised programs, called *SAT Solvers* whose job is to find satisfying assignments for very large formulas.
+```comment
+[SAT Solvers](sat-solvers.html) have their own page.
+```
 
 One systematic way to check that a formula is satisfiable by hand is to write out its truth table. **If there is at least one line where the formula is given the truth value `T`, then the formula is satisfiable**.
 
@@ -169,11 +175,14 @@ If we modify the formula to be `((A ∨ B) ∧ ¬ A) → B`, then we get the tru
 
 The formula `((A ∨ B) ∧ ¬ A) → B` is valid, because every row's final column is `T`. Intuitively, we can see why: an implication `P → Q` is true if, whenever `P` is true, then `Q` is true. Looking at the previous truth table above, we can see that whenever `(A ∨ B) ∧ ¬ A` is true, then `B` is true. Therefore, the formula `((A ∨ B) ∧ ¬ A) → B` is valid.
 
-Validity defines when a formula is "true" in itself. More generally, we will want to know what it means for a formula *under some assumptions*. This is the idea behind [entailment](entailment.html).
+Validity defines when a formula is "true" in itself. More generally, we will want to know what it means for a formula *under some assumptions*. This is the idea behind [entailment](entailment.md).
 
 ## Relationship between Satisfiability and Validity {id=prop-logic:truth-tables:sat-vs-valid}
 
-The following relationship between satisfiability and validity is often useful. Especially when we have [SAT solvers](sat-solvers.html) for automatically determining whether or not a formula is satisfiable.
+The following relationship between satisfiability and validity is often useful.
+```comment
+Especially when we have [SAT solvers](sat-solvers.html) for automatically determining whether or not a formula is satisfiable.
+```
 
 > A formula `P` is valid exactly when `¬ P` is **not** satisfiable.
 

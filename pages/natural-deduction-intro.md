@@ -4,7 +4,7 @@
 This page assumes that you are familiar with the syntax and semantics of Propositional Logic, and the [general ideas of deductive systems](proof-intro.html).
 ```
 
-Now that we have looked at [the general idea of deductive systems](proof-intro.html), we focus on the particular system we will be using in this course: *(focused) Natural Deduction*.
+Now that we have looked at [the general idea of deductive systems](proof-intro.md), we focus on the particular system we will be using in this course: *(focused) Natural Deduction*.
 
 The Natural Deduction system was invented by the logician Gerhard Gentzen in 1934 as a way to formalise proofs in logic. We will be using a variant of Gentzen's system that is designed to be easy to use for building proofs interactively.
 
@@ -20,7 +20,7 @@ The proof system we will use allows us to deduce statements that look like this:
 
 We read this as “from the assumptions `P₁`, ..., and `Pₙ`, we can prove `Q`”.
 
-This looks and sounds similar to the statement `P₁, ..., Pₙ ⊧ Q` that indicates [entailment](entailment.html), but now we use the symbol `⊢` to indicate *provability* instead of semantic entailment (“semantic” meaning worked out in terms of the meanings of the formulas).
+This looks and sounds similar to the statement `P₁, ..., Pₙ ⊧ Q` that indicates [entailment](entailment.md), but now we use the symbol `⊢` to indicate *provability* instead of semantic entailment (“semantic” meaning worked out in terms of the meanings of the formulas).
 
 These two symbols are connected by the important definition of **Soundness**:
 
@@ -540,7 +540,7 @@ We have already discussed the similarity of the rules for `∧` and those for a 
 
 The evidence interpretation of logic shows immediately that excluded middle (and therefore double negation elimination) is not sound for this interpretation. To produce evidence of `A ∨ (A → F)` for any `A`, then we would need to be able to look at `A` and *decide* whether or not it is true. As we shall see later in the course, there are some problems that are undecidable by any computer program.
 
-**Exercise** The [three-valued](tutorial-0-three-valued.html) interpretation also does not have excluded middle. Is it a suitable interpretation for the proof system we have built in this page?
+**Exercise** The [three-valued](tutorial-0-three-valued.md) interpretation also does not have excluded middle. Is it a suitable interpretation for the proof system we have built in this page?
 
 ```details
 Answer...

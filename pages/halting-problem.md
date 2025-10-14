@@ -33,7 +33,7 @@ We will only need to assume this minimal set of function symbols for building pr
 
 ### The Execution Predicate
 
-We use the execution predicate we was when [specifying properties of programs](properties-of-programs.html):
+We use the execution predicate we was when [specifying properties of programs](properties-of-programs.md):
 
 1. `exec(program, input, output)` -- meaning that when we run `program` on `input` the result is `output`.
 
@@ -105,7 +105,7 @@ Why do we need “both directions” for the axioms for `duplicate` and `if`? Th
 
 ## What does it mean for a program to halt?
 
-As we saw when [Specifying Properties of Programs](properties-of-programs.html), we can use the `exec` predicate to define what it means for a program to halt. A program `prog` halts on an input `x` if there exists an answer `y` that executing `prog` with input `x` gives the output `y`:
+As we saw when [Specifying Properties of Programs](properties-of-programs.md), we can use the `exec` predicate to define what it means for a program to halt. A program `prog` halts on an input `x` if there exists an answer `y` that executing `prog` with input `x` gives the output `y`:
 
 ```formula
 ex y. exec(prog,x,y)
@@ -295,4 +295,4 @@ It is worth looking at the various assumptions underlying this proof, to see exa
    * Another solution is to prohibit unrestricted looping altogether, or at least to control it in some way. If we restrict our programs to always only loop over the input, or over data structures generated from the input, then we can guarantee termination. Unfortunately, this also means that we miss some functions (because otherwise we would have a solution to the halting problem!).
 2. We assumed that a solution is **sound and complete**. Soundness means that if it says `true` then the program halts. Completeness means that if it says `false`, then the program does not halt. If we drop one of these, then we can make useful approximate solutions. For example, a solution that says `true` in most *useful* cases is an area of intensive research. This is similar to the idea above of restricting programs to a certain form, but approaching it from the other direction.
 
-On the [next page](metatheory-automation.html), we'll look at a similar negative result that it purely about logic: Gödel's Incompleteness Theorem.
+On the [next page](metatheory-automation.md), we'll look at a similar negative result that it purely about logic: Gödel's Incompleteness Theorem.

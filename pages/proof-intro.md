@@ -2,7 +2,7 @@
 
 We now look at the general idea of deductive systems, collections of inference rules that allow us to derive new facts from existing ones.
 
-This is a radically different approach to the “enumerate all possible truth values” approaches we have taken so far by writing out [truth tables](truth-tables.html) and using them to deduce [entailments](entailment.html).
+This is a radically different approach to the “enumerate all possible truth values” approaches we have taken so far by writing out [truth tables](truth-tables.md) and using them to deduce [entailments](entailment.md).
 
 Instead, we derive conclusions from assumptions by using rules. This is much easier than writing out truth tables. Another benefit is that by choosing different rules we can get different logics, and even special purpose logics.
 
@@ -437,12 +437,12 @@ There are three proofs of migrates(glasgow, inverness). Can you find them all? I
 The systems of proof rules we have looked at above are all for specific cases. In the remainder of the course we will look at a general proof system for Propositional and Predicate Logic. These proof systems are powerful enough that other proof systems can be encoded in them by using implication to move proof rules "into" the logical formulas.
 
 ```comment
-We will see an example of this when we come to look at [arithmetic](induction.html) inside Predicate Logic.
+We will see an example of this when we come to look at [arithmetic](induction.md) inside Predicate Logic.
 ```
 
-There are many ways of giving proof systems for Propositional and Predicate Logic. We touched on a specific case by enumerating some of the rules of [entailment](entailment.html). It is also possible to design a collection of rules systematically to make sure that it is modular and (relatively) easy to use.
+There are many ways of giving proof systems for Propositional and Predicate Logic. We touched on a specific case by enumerating some of the rules of [entailment](entailment.md). It is also possible to design a collection of rules systematically to make sure that it is modular and (relatively) easy to use.
 
-The system that we will use is a variant of Natural Deduction, called [*Focused* Natural Deduction](natural-deduction-intro.html). There are other proof systems such as Sequent Calculus. One of the simplest, in terms of number of rules and *not* in terms of constructing proofs, are “Hilbert” style proof systems which usually only have one rule (“Modus Ponens” or “MP”) and some axioms.
+The system that we will use is a variant of Natural Deduction, called [*Focused* Natural Deduction](natural-deduction-intro.md). There are other proof systems such as Sequent Calculus. One of the simplest, in terms of number of rules and *not* in terms of constructing proofs, are “Hilbert” style proof systems which usually only have one rule (“Modus Ponens” or “MP”) and some axioms.
 
 For a minimal logical system that only includes implication the rule and axioms are: (implication is written as implies(a,b) here, due to limitations with the tool).
 
@@ -466,7 +466,7 @@ In more normal notation, the *S* axiom is written (A → B → C) → (A → B) 
 
 This system has its roots in Gottlob Frege's book [Begriffsschrift](https://en.m.wikipedia.org/wiki/Begriffsschrift) published in 1879, which was the first attempt to write down a systematic proof system for logic by itself. The idea was later developed by David Hilbert and are often called [Hilbert Systems](https://en.m.wikipedia.org/wiki/Hilbert_system). It is closely related to [Combinatory Logic](https://en.m.wikipedia.org/wiki/Combinatory_logic), one of the many systems that can be used to describe what is computable.
 
-This system is surprisingly expressive, and can be extended to all of propositional logic just by adding extra axioms. Even with just these two rules, it is sound and complete for Intuitionistic Logic when the only connective is implication (see the section on [Soundness & Completeness & Philosophy](natural-deduction-intro.html) for more on Intuitionistic Logic). Because the logic can be easily changed just by using different axioms, systems like these are often used by logicians experimenting with alternative logical systems.
+This system is surprisingly expressive, and can be extended to all of propositional logic just by adding extra axioms. Even with just these two rules, it is sound and complete for Intuitionistic Logic when the only connective is implication (see the section on [Soundness & Completeness & Philosophy](natural-deduction-intro.md#natural-deduction:sound-complete) for more on Intuitionistic Logic). Because the logic can be easily changed just by using different axioms, systems like these are often used by logicians experimenting with alternative logical systems.
 
 However, actually *constructing* proofs in this system can be very difficult.
 
@@ -494,4 +494,4 @@ As an example, try to prove that “a” implies “a”. Have a look at the [Wi
 
 This proof system is hard to use because it does not allow for reasoning where we temporarily make assumptions that are only used in parts of the proof. Every statement in the proof needs to explicitly list all of its assumptions. For example, looking at the *S* axiom, we can see that it has the same form as MP, except that (a) it uses implication instead of being a rule, and (b) it has an extra assumption *A* throughout.
 
-[Natural Deduction](natural-deduction-intro.html) is an alternative proof system that incorporates temporary assumptions into the logic directly, making it much easier to use. Natural Deduction is the kind of system we will use in this course.
+[Natural Deduction](natural-deduction-intro.md) is an alternative proof system that incorporates temporary assumptions into the logic directly, making it much easier to use. Natural Deduction is the kind of system we will use in this course.

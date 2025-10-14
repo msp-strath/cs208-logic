@@ -4,11 +4,11 @@
 This page assumes you have understood the [syntax](prop-logic-syntax.html) of Propositional Logic.
 ```
 
-In the [previous section](prop-logic-syntax.html) I described what logical formulas look like, but not their *semantics*: what the formulas *mean*.
+In the [previous section](prop-logic-syntax.md) I described what logical formulas look like, but not their *semantics*: what the formulas *mean*.
 
 For most of this course, we will define the meaning of a formula to be its *truth value*, assuming that we know truth values of its atoms (a *valuation*).
 
-Once we have defined the meaning of formulas in terms of the truth values of their atoms, we can define several useful properties of formulas in terms of their truth values. The most important property is [entailment](entailment.html), which is a definition of when a collection of assumptions *entails* some conclusion.
+Once we have defined the meaning of formulas in terms of the truth values of their atoms, we can define several useful properties of formulas in terms of their truth values. The most important property is [entailment](entailment.md), which is a definition of when a collection of assumptions *entails* some conclusion.
 
 ## Truth Values {id=prop-logic:semantics:truth-values}
 
@@ -25,7 +25,7 @@ For the logic we are studying, we have two *truth values*:
 
 Logics with other truth values are also possible. A logic with only one truth value is not very interesting, because all formulas will have the same value so we will have no way of telling them apart. Logics with three or more truth values have been used to model concepts like degrees of truth or missing data. It is also possible to have truth values that are collections of values. For example, the set of states of a system for which the formula is true.
 
-You can explore logics with more than two truth values in [questions on three-valued logic](tutorial-0-three-valued.html).
+You can explore logics with more than two truth values in [questions on three-valued logic](tutorial-0-three-valued.md).
 
 ## The meaning of atoms: Valuations {id=prop-logic:semantics:valuations}
 
@@ -202,4 +202,4 @@ By all these steps, we have worked out that:
 
 Of course, it is not always necessary to carry out all these steps explicitly by hand. However, it is important to notice that there is a difference between the symbols of formal logic and their meaning. Using the `〚...〛` brackets moves us from the syntax to the semantics. The special status of syntax will become more important when we look at deductive proof systems for logic.
 
-In the [next section](truth-tables.html), we look at using truth tables to compute the semantics of formulas systematically for all valuations of their atoms.
+In the [next section](truth-tables.md), we look at using truth tables to compute the semantics of formulas systematically for all valuations of their atoms.

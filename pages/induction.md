@@ -4,7 +4,7 @@
 This page assumes that you have understood the [proof rules for quantifiers](pred-logic-rules.html) and [proof rules for equality](equality.html) pages and completed all the exercises there.
 ```
 
-Now we can talk about [equality](equality.html) in our proof system, we can start to talk about useful things like numbers and arithmetic, and make statements like the fact that addition is commutative (i.e., it doesn't matter which way round we add things):
+Now we can talk about equality in our proof system, we can start to talk about useful things like numbers and arithmetic, and make statements like the fact that addition is commutative (i.e., it doesn't matter which way round we add things):
 
 ```formula
 ∀ x. ∀ y. add(x,y) = add(y,x)
@@ -236,7 +236,7 @@ These rules apply when there is a formula in focus. These rules either act upon 
 	(solution (Rule(Introduce x)((Rule(Induction x)((Rule Left((Rule Refl())))(Rule Right((Rule(Exists(Var x1))((Rule Refl())))))))))))
    ```
 
-6. For all numbers *x* and *y*, either they are equal, or they are not. If we assume [excluded middle](soundness-complete-meaning.html), then this fact is immediate from the fact that every proposition is either true or false. If we do not however, we have to construct a proof. The proof proceeds very similarly to how one might construct a computer program to decide whether two numbers are equal: first check if the first number is zero or successor and then check the second; if they are both zero then they are equal, if one is zero and one is a successor then they are not equal, and they are both successors then check the two smaller numbers.
+6. For all numbers *x* and *y*, either they are equal, or they are not. If we assume [excluded middle](natural-deduction-intro.md#natural-deduction:sound-complete), then this fact is immediate from the fact that every proposition is either true or false. If we do not however, we have to construct a proof. The proof proceeds very similarly to how one might construct a computer program to decide whether two numbers are equal: first check if the first number is zero or successor and then check the second; if they are both zero then they are equal, if one is zero and one is a successor then they are not equal, and they are both successors then check the two smaller numbers.
 
    ```focused-nd {id=arith-proof-ind6}
    (config

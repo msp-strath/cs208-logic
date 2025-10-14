@@ -6,17 +6,21 @@ This page assumes that you have understood the [proof rules for predicate-logic]
 
 So far, we have seen at least four ways that logic can be used in Computer Science:
 
-1. Encoding problems in logic means that we can use SAT solvers to find solutions to problems. We looked at this in some depth in [Logical Modelling](logical-modelling-intro.html). It is possible to take these ideas further in Logic Programming languages such as [Prolog](https://www.metalevel.at/prolog).
+```comment
 
-2. Predicate Logic has a close connection with databases. We saw this in the definition of [models for Predicate Logic](pred-logic-semantics.html), where databases can be seen as finite models. Queries on a database are restricted forms of Predicate Logic formula.
+1. Encoding problems in logic means that we can use SAT solvers to find solutions to problems. We looked at this in some depth in [Logical Modelling](logical-modelling-intro.md). It is possible to take these ideas further in Logic Programming languages such as [Prolog](https://www.metalevel.at/prolog).
 
-3. If we can express our programs as *equations*, then we can use equational reasoning and induction to prove things about programs. We saw an example of this with [arithmetic and induction](induction.html), where addition and multiplication are defined by two equations each. Programming languages like [Haskell](https://www.haskell.org) are entirely based around making definitions by equations. You will start to learn Haskell CS260 next semester.
+```
 
-4. [We mentioned in passing](natural-deduction-intro.html#natural-deduction:sound-complete:classical-intuitionistic) that it is also possible to view proofs as processes or programs transforming evidence. The [CS410 *Advanced Functional Programming*](https://github.com/gallais/CS410-2024) course in 4th year develops this idea much further.
+2. Predicate Logic has a close connection with databases. We saw this in the definition of [models for Predicate Logic](pred-logic-semantics.md), where databases can be seen as finite models. Queries on a database are restricted forms of Predicate Logic formula.
 
-In this page [and the next](halting-problem.html), we'll look at another way of talking about programs using Predicate Logic, where we use the logic to state properties of programs' behaviour directly, and the different statements we can make about programs' behaviour even in the simple case of non-interactive programs that consume one input and produce one output.
+3. If we can express our programs as *equations*, then we can use equational reasoning and induction to prove things about programs. We saw an example of this with [arithmetic and induction](induction.md), where addition and multiplication are defined by two equations each. Programming languages like [Haskell](https://www.haskell.org) are entirely based around making definitions by equations. You will start to learn Haskell CS260 next semester.
 
-On [the next page](halting-problem.html), we'll see how to prove that there are some problems that are unsolvable by any program.
+4. [We mentioned in passing](natural-deduction-intro.md#natural-deduction:sound-complete:classical-intuitionistic) that it is also possible to view proofs as processes or programs transforming evidence. The [CS410 *Advanced Functional Programming*](https://github.com/gallais/CS410-2024) course in 4th year develops this idea much further.
+
+In this page [and the next](halting-problem.md), we'll look at another way of talking about programs using Predicate Logic, where we use the logic to state properties of programs' behaviour directly, and the different statements we can make about programs' behaviour even in the simple case of non-interactive programs that consume one input and produce one output.
+
+On [the next page](halting-problem.md), we'll see how to prove that there are some problems that are unsolvable by any program.
 
 ## The Execution Predicate
 
@@ -28,7 +32,7 @@ There may be no output for a given input, which we would observe by a program â€
 
 This definition also allows multiple possible answers for the same input, where we could have `exec(program, input, output1)` and `exec(program, input, output2)` both being true with `output1 != output2`. This can be used to talk about programs where some part is left unspecified, such as an exact ordering of data in a container (see, for example, how the [Go Programming Language enforces that programs should not rely on the order of data stored in hashmaps](https://nathanleclaire.com/blog/2014/04/27/a-surprising-feature-of-golang-that-colored-me-impressed/)).
 
-We do not distinguish between things that are program-like and things that are data-like. In particular, a program can take itself as an input. This flexibility of self reference will be crucial for stating the [halting problem and proving that it is undecidable](halting-problem.html).
+We do not distinguish between things that are program-like and things that are data-like. In particular, a program can take itself as an input. This flexibility of self reference will be crucial for stating the [halting problem and proving that it is undecidable](halting-problem.md).
 
 This definition is highly simplified in many ways. It says nothing about the time, space, or other resources needed to carry out the computation of `output` from `input`. Nor does it directly allow for interactive computation where a program takes input and sends output during execution rather than at the start and end. Nevertheless, it does allow us to talk about what computers can and cannot compute.
 

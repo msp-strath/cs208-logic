@@ -6,7 +6,7 @@ This page assumes that you have understood [natural deduction for Propositional 
 
 **THIS PAGE IS UNDER CONSTRUCTION**
 
-We have seen the proof system of [natural deduction for Propositional Logic](natural-deduction-intro.html). This page describes how we can upgrade this system to [Predicate Logic](pred-logic-intro.html). The syntax of Predicate Logic is complicated by the presence of variables, so we need to alter our definition of judgement to take account of them. After doing this, we can take the basic rules for Propositional Logic unchanged, and add rules for the `∀` and `∃` quantifiers. Perhaps surprisingly, we also need to add special rules for equality `s = t`.
+We have seen the proof system of [natural deduction for Propositional Logic](natural-deduction-intro.md). This page describes how we can upgrade this system to [Predicate Logic](pred-logic-intro.md). The syntax of Predicate Logic is complicated by the presence of variables, so we need to alter our definition of judgement to take account of them. After doing this, we can take the basic rules for Propositional Logic unchanged, and add rules for the `∀` and `∃` quantifiers. Perhaps surprisingly, we also need to add special rules for equality `s = t`.
 
 ## Judgements {id=pred-logic:judgements}
 
@@ -226,7 +226,7 @@ Are these judgements well scoped?
 
 ## Proof Rules for “for all” {id=pred-logic:rules-for-all}
 
-As for any connective, the [Natural Deduction](natural-deduction-intro.html) rules for `∀` have introduction and elimination forms. Before we look at these, let's look at what `∀x. P` means, and what this might mean in terms of proof rules.
+As for any connective, the [Natural Deduction](natural-deduction-intro.md) rules for `∀` have introduction and elimination forms. Before we look at these, let's look at what `∀x. P` means, and what this might mean in terms of proof rules.
 
 There are (at least) two possible answers for what `∀x. P` can mean, depending on whether we are thinking about *consuming* or *producing* a statement of this shape:
 
@@ -604,7 +604,6 @@ These rules apply when there is a formula in focus. These rules either act upon 
 
 	```focused-nd {id=pred-proof-allex11}
 	(config
-	 (name "Question 2(a)")
 	 (assumptions
 	  (every-dragon-has-a-child "∀i. dragon(i) → (∃c. child(c) ∧ rides(c, i))")
 	  (exists-a-dragon "∃i. dragon(i)"))
@@ -615,7 +614,6 @@ These rules apply when there is a formula in focus. These rules either act upon 
 
 	```focused-nd {id=pred-proof-allex12}
 	(config
-	 (name "Question 2(b)")
 	 (assumptions
 	  (every-child-rides-a-dragon "∀c. child(c) → (∃i. dragon(i) ∧ rides(c, i))")
 	  (exists-child-without-dragon "∃c. child(c) ∧ (∀i. dragon(i) → ¬rides(c, i))"))

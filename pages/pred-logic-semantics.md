@@ -4,7 +4,7 @@
 This page assumes that you have read the [Introduction to Predicate Logic](pred-logic-intro.html). You can also read the [proof rules for predicate logic](pred-logic-rules.html) to get a feel for how the quantifiers in predicate logic work.
 ```
 
-Now that we have seen the proof rules for Predicate Logic, we turn to its semantics. The semantics of Predicate Logic is more complex than the semantics of Propositional Logic that we saw in [Week 1](prop-logic-semantics.html).
+Now that we have seen the proof rules for Predicate Logic, we turn to its semantics. The semantics of Predicate Logic is more complex than the semantics of Propositional Logic that we saw in [Week 1](prop-logic-semantics.md).
 
 This page contains two videos introducing the semantics of Predicate Logic, and then an interactive tool that you can use to explore some (finite) models of Predicate Logic formulas.
 
@@ -120,7 +120,7 @@ synth NothingEqual size 0
 synth NothingEqualAndThing size 3
 ```
 
-With this tool we can only check that individual sizes of model do not exist. To prove that there are *no* models (even infinite ones), we can do a proof that these axioms entail “false” (to do this proof you will need the `refl` command from [the proof rules for equality](equality.html)).
+With this tool we can only check that individual sizes of model do not exist. To prove that there are *no* models (even infinite ones), we can do a proof that these axioms entail “false” (to do this proof you will need the `refl` command from [the proof rules for equality](pred-logic-rules.md)).
 
 ```focused-nd {id=predsem-allunequal-contra}
 (config

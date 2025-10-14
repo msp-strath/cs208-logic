@@ -31,40 +31,40 @@ The pages linked to below contain the lecture notes, covering the material intro
 
    Propositional Logic is concerned with statements that are true or false (e.g., “It is raining”, “I am in Glasgow”) and their combination by connectives such as 'and', 'or', 'not', and 'implies'. Propositional Logic is not a very expressive logic, for example it is not possible to directly express relationships between things, but it is useful in its own right, as we shall see.
 
-   1. [Syntax](prop-logic-syntax.html): what are the valid sequences of symbols that we can write down? Which ones are logical formulas?
+   1. [Syntax](prop-logic-syntax.md): what are the valid sequences of symbols that we can write down? Which ones are logical formulas?
 
-   2. [Semantics](prop-logic-semantics.html): what do those symbols mean? What do formulas made from the symbols mean?
+   2. [Semantics](prop-logic-semantics.md): what do those symbols mean? What do formulas made from the symbols mean?
 
-   3. [Truth Tables, Satisfiability, and Validity](truth-tables.html): Truth tables are an effective way to compute the meaning of a logical formula. Satisfiability and Validity are two categorisations we can make about a formula.
+   3. [Truth Tables, Satisfiability, and Validity](truth-tables.md): Truth tables are an effective way to compute the meaning of a logical formula. Satisfiability and Validity are two categorisations we can make about a formula.
 
-   4. An [extended exercise sheet on Three-valued logic](tutorial-0-three-valued.html).
+   4. An [extended exercise sheet on Three-valued logic](tutorial-0-three-valued.md).
 
    [The lecture slides for this topic](topic00-slides.pdf).
 
 -  Topic 1 is **Entailment** and **Deduction**.
 
-   1. [Entailment](entailment.html): A generalised form of validity. What does it mean to say a formula is true under some assumptions?
+   1. [Entailment](entailment.md): A generalised form of validity. What does it mean to say a formula is true under some assumptions?
 
-   2. [Introduction to Deductive Proof](proof-intro.html), which describes the general idea of proof systems, and introduces a small example of a proof system inspired by biology.
+   2. [Introduction to Deductive Proof](proof-intro.md), which describes the general idea of proof systems, and introduces a small example of a proof system inspired by biology.
 
    [The lecture slides for this topic](topic01-slides.pdf).
 
 -  Topic 2 is **Proof for Propositional Logic**.
 
-   [Natural Deduction](natural-deduction-intro.html). Natural Deduction is a style of proof system that places a particular emphasis on how assumptions are used, and on how the rules for each connective come in introduction and elimination pairs.
+   [Natural Deduction](natural-deduction-intro.md). Natural Deduction is a style of proof system that places a particular emphasis on how assumptions are used, and on how the rules for each connective come in introduction and elimination pairs.
 
    [The lecture slides for this topic](topic02-slides.pdf).
 
 - Topic 3 is **Predicate Logic**.
 
-  [Introducing Predicate Logic](pred-logic-intro.html) as an expressive language for making statements in a formalised way. By selecting our vocabulary carefully, we can use Predicate Logic as a modelling tool to describe many situations. The syntax of Predicate Logic is more complex that that of Proposition Logic, so this page introduces it, with the concepts of free and bound variables and substitution.
+  [Introducing Predicate Logic](pred-logic-intro.md) as an expressive language for making statements in a formalised way. By selecting our vocabulary carefully, we can use Predicate Logic as a modelling tool to describe many situations. The syntax of Predicate Logic is more complex that that of Proposition Logic, so this page introduces it, with the concepts of free and bound variables and substitution.
 
 
    [The lecture slides for this topic](topic03-slides.pdf).
 
 -  Topic 4 is **Proof for Predicate Logic**.
 
-   **Under construction** [Proof rules for Predicate Logic](pred-logic-rules.html). Natural deduction rules for “for all” and “exists” allow us to construct proofs of Predicate Logic formulas. Also, how do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
+   **Under construction** [Proof rules for Predicate Logic](pred-logic-rules.md). Natural deduction rules for “for all” and “exists” allow us to construct proofs of Predicate Logic formulas. Also, how do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
 
    [The lecture slides for this topic](topic04-slides.pdf).
 

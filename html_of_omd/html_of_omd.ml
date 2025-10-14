@@ -69,14 +69,13 @@ type section =
     }
 
 let toc_of_blocks blocks =
-  let get_id = List.assoc_opt "id" in
   let rec toc level gathered = function
     | [] ->
        List.rev gathered, []
     | Omd.Heading (attrs, hlevel, inlines) :: blocks as all_blocks ->
        if hlevel = level then
          let subsections, blocks = toc (level + 1) [] blocks in
-         let id = get_id attrs in
+         let id = List.assoc_opt "id" attrs in
          let section = Section { title = inlines; id; subsections } in
          toc level (section :: gathered) blocks
        else if hlevel < level then
@@ -94,9 +93,49 @@ let toc_of_blocks blocks =
   let sections, _ = toc 1 [] blocks in
   sections
 
+module type CUSTOM = sig
+  module Html : HTML
 
-module Make (Html : HTML) = struct
+  val raw_html : string -> _ Html.t
+  val link_href : string -> string (* Should produce a link for an href *)
+  val img_href : string -> string
+  val code : self:(Omd.doc -> 'a Html.t) -> attributes:(string * string) list -> kind:string -> string -> 'a Html.t
+end
+
+module Make (Html : HTML) (Custom : CUSTOM with module Html = Html) = struct
   let ( ^^ ) = Html.( ^^ )
+
+  let rec of_inline = function
+    | Omd.Concat (_attrs, content) ->
+       Html.concat_map of_inline content
+    | Text (_attrs, content) ->
+       Html.text content
+    | Emph (_attrs, content) ->
+       Html.em (of_inline content)
+    | Strong (_attrs, content) ->
+       Html.strong (of_inline content)
+    | Code (_attrs, content) ->
+       (* FIXME: upadte this *)
+       Html.code (Html.text content)
+    | Hard_break _attrs ->
+       Html.br ()
+    | Soft_break _attrs ->
+       Html.text " "
+    | Link (_attrs, { label; destination; title = _ }) ->
+          (* FIXME: buttons with Event handlers? *)
+          let destination = Custom.link_href destination in
+          Html.a ~attrs:[ Html.A.href destination ] (of_inline label)
+    | Image (_attrs, { label; destination; title }) ->
+       let destination = Custom.img_href destination in
+       let attrs = [ Html.A.src destination; Html.A.alt (text_of_inline label) ] in
+       let attrs =
+         match title with
+         | None -> attrs
+         | Some title -> Html.A.title title :: attrs
+       in
+       Html.img ~attrs
+    | Html (_attrs, string) ->
+      Custom.raw_html string
 
   let alignment_attributes = function
     | Omd.Default -> []
@@ -104,103 +143,63 @@ module Make (Html : HTML) = struct
     | Right -> [ Html.A.align "right" ]
     | Centre -> [ Html.A.align "center" ]
 
-  let rec render_inline raw_html link_proc = function
-      | Omd.Concat (_attrs, content) -> Html.concat_map (render_inline raw_html link_proc) content
-      | Text (_attrs, content) -> Html.text content
-      | Emph (_attrs, content) -> Html.em ((render_inline raw_html link_proc) content)
-      | Strong (_attrs, content) -> Html.strong ((render_inline raw_html link_proc) content)
-      | Code (_attrs, content) -> Html.code (Html.text content)
-      | Hard_break _attrs -> Html.br ()
-      | Soft_break _attrs -> Html.text " "
-      | Link (_attrs, { label; destination; title = _ }) ->
-          (* FIXME: buttons with Event handlers? *)
-          let destination =
-            match link_proc with
-            | None -> destination
-            | Some proc -> proc `Link destination
-          in
-          Html.a ~attrs:[ Html.A.href destination ] ((render_inline raw_html link_proc) label)
-      | Image (_attrs, { label; destination; title }) ->
-          let destination =
-            match link_proc with
-            | None -> destination
-            | Some proc -> proc `Img destination
-          in
-          let attrs =
-            [ Html.A.src destination; Html.A.alt (text_of_inline label) ]
-          in
-          let attrs =
-            match title with
-            | None -> attrs
-            | Some title -> Html.A.title title :: attrs
-          in
-          Html.img ~attrs
-      | Html (_attrs, string) -> (
-          match raw_html with
-          | None -> Html.text "Raw HTML not supported"
-          | Some fn -> fn string)
+  let table_header headers =
+    Html.thead
+      (Html.tr
+         (Html.concat_map
+            (fun (header, alignment) ->
+              Html.th ~attrs:(alignment_attributes alignment) (of_inline header))
+            headers))
 
-  let render ?link_proc ?raw_html code_render blocks =
-    let table_header headers =
-      let open Html in
-      thead
-        (tr
-           (concat_map
-              (fun (header, alignment) ->
-                th ~attrs:(alignment_attributes alignment) (render_inline raw_html link_proc header))
-              headers))
-    in
-    let table_body headers rows =
-      let open Html in
-      tbody
-        (concat_map
-           (fun row ->
-             tr
-               (concat_map
-                  (fun ((_, alignment), cell) ->
-                    td ~attrs:(alignment_attributes alignment) (render_inline raw_html link_proc cell))
-                  (List.combine headers row)))
-           rows)
-    in
-    let rec of_doc blocks = Html.concat_map of_block blocks
-    and of_block = function
-      | Omd.Paragraph (_attrs, inline) -> Html.p (render_inline raw_html link_proc inline)
-      (* FIXME: handle 'start' for numbered lists; and tight vs loose
-         spacing. *)
-      | List (_attrs, Ordered (_, _), _, items) ->
-          Html.ol (Html.concat_map (fun doc -> Html.li (of_doc doc)) items)
-      | List (_attrs, Bullet _, _, items) ->
-          Html.ul (Html.concat_map (fun doc -> Html.li (of_doc doc)) items)
-      | Blockquote (_attrs, doc) -> Html.blockquote (of_doc doc)
-      | Thematic_break _attrs -> Html.hr ()
-      | Heading (attrs, level, content) ->
-         (let attrs = match List.assoc_opt "id" attrs with None -> [] | Some name -> [ Html.A.id name ] in
-          match level with
-          | 1 -> Html.h1 ~attrs (render_inline raw_html link_proc content)
-          | 2 -> Html.h2 ~attrs (render_inline raw_html link_proc content)
-          | 3 -> Html.h3 ~attrs (render_inline raw_html link_proc content)
-          | 4 -> Html.h4 ~attrs (render_inline raw_html link_proc content)
-          | 5 -> Html.h5 ~attrs (render_inline raw_html link_proc content)
-          | 6 -> Html.h6 ~attrs (render_inline raw_html link_proc content)
-          | _ -> Html.p (render_inline raw_html link_proc content))
-      | Code_block (attrs, kind, content) -> (
-          match code_render attrs kind content with
-          | None -> Html.pre (Html.code (Html.text content))
-          | Some html -> html)
-      | Html_block (_attrs, html_str) -> (
-          match raw_html with
-          | None -> Html.text "Raw HTML not supported"
-          | Some fn -> fn html_str)
-      | Definition_list (_attrs, defns) ->
-          Html.dl
-            (Html.concat_map
-               (fun { Omd.term; defs } ->
-                 Html.dt (render_inline raw_html link_proc term)
-                 ^^ Html.concat_map (fun inl -> Html.dd (render_inline raw_html link_proc inl)) defs)
-               defns)
-      | Table (_attrs, headers, []) -> Html.table (table_header headers)
-      | Table (_attrs, headers, rows) ->
-          Html.table (table_header headers ^^ table_body headers rows)
-    in
-    of_doc blocks
+  let table_body headers rows =
+    Html.tbody
+      (Html.concat_map
+         (fun row ->
+           Html.tr
+             (Html.concat_map
+                (fun ((_, alignment), cell) ->
+                  Html.td ~attrs:(alignment_attributes alignment) (of_inline cell))
+                (List.combine headers row)))
+         rows)
+
+  let rec of_doc blocks =
+    Html.concat_map of_block blocks
+
+  and of_block = function
+    | Omd.Paragraph (_attrs, inline) ->
+       Html.p (of_inline inline)
+    (* FIXME: handle 'start' for numbered lists; and tight vs loose
+       spacing. *)
+    | List (_attrs, Ordered (_, _), _, items) ->
+       Html.ol (Html.concat_map (fun doc -> Html.li (of_doc doc)) items)
+    | List (_attrs, Bullet _, _, items) ->
+       Html.ul (Html.concat_map (fun doc -> Html.li (of_doc doc)) items)
+    | Blockquote (_attrs, doc) -> Html.blockquote (of_doc doc)
+    | Thematic_break _attrs ->
+       Html.hr ()
+    | Heading (attrs, level, content) ->
+       (let attrs = match List.assoc_opt "id" attrs with None -> [] | Some name -> [ Html.A.id name ] in
+        match level with
+        | 1 -> Html.h1 ~attrs (of_inline content)
+        | 2 -> Html.h2 ~attrs (of_inline content)
+        | 3 -> Html.h3 ~attrs (of_inline content)
+        | 4 -> Html.h4 ~attrs (of_inline content)
+        | 5 -> Html.h5 ~attrs (of_inline content)
+        | 6 -> Html.h6 ~attrs (of_inline content)
+        | _ -> Html.p (of_inline content))
+    | Code_block (attributes, kind, content) ->
+       Custom.code ~self:of_doc ~attributes ~kind content
+    | Html_block (_attrs, html_str) ->
+       Custom.raw_html html_str
+    | Definition_list (_attrs, defns) ->
+       Html.dl
+         (Html.concat_map
+            (fun { Omd.term; defs } ->
+              Html.dt (of_inline term)
+              ^^ Html.concat_map (fun inlines -> Html.dd (of_inline inlines)) defs)
+            defns)
+    | Table (_attrs, headers, []) ->
+       Html.table (table_header headers)
+    | Table (_attrs, headers, rows) ->
+       Html.table (table_header headers ^^ table_body headers rows)
 end

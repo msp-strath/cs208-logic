@@ -38,7 +38,7 @@ Existential statements are used to say that something is true for *some* individ
 3. ”Do there exist players that are logged in?”
 4. “Do we have any customers?”
 
-We have already seen examples of universal and existential statements in the [semantics](truth-tables.html) and [entailment](entailement.html) for Propositional Logic:
+We have already seen examples of universal and existential statements in the [semantics](truth-tables.md) and [entailment](entailment.md) for Propositional Logic:
 
 1. “`P` is satisfiable if *there exists* a valuation that makes it true”
 2. “`P` is valid if *all* valuations make it true”

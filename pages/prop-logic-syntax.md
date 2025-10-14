@@ -110,7 +110,7 @@ represents the formula:
 (A \/ B) /\ ¬A
 ```
 
-I will not draw out the tree based representation for each formula explicitly in this course, but it is important to keep in mind that this is what formulas “really are”. The concept of which connective occurs “topmost” in the tree will be important when it comes to working out the [truth values assigned to formulas](prop-logic-semantics.html), [using truth tables](truth-tables.html), and [doing formal proof](natural-deduction-intro.html).
+I will not draw out the tree based representation for each formula explicitly in this course, but it is important to keep in mind that this is what formulas “really are”. The concept of which connective occurs “topmost” in the tree will be important when it comes to working out the [truth values assigned to formulas](prop-logic-semantics.md), [using truth tables](truth-tables.md), and [doing formal proof](natural-deduction-intro.md).
 
 
 ## Linear Representation {id=prop-logic:syntax:linear}

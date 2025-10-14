@@ -98,7 +98,7 @@ If we know that an entailment `P1, ..., Pn ⊧ Q` holds, then we can replace ("s
 
 For example, above we saw that the entailment `A ∧ B ⊧ A` holds. By substituting `C → D` for `A`, we can immediately deduce that `(C → D) ∧ B ⊧ C → D` is a valid entailment.
 
-In general, we have that if `P1, ..., Pn ⊧ Q` then `P1[A := R], ..., Pn[A := R] ⊧ Q[:= R]`, where `P[A := R]` means “replace all `A`s in `P` with `R`”. We will come back to substitution in [Topic 3](pred-logic-intro.html#pred-logic:substitution).
+In general, we have that if `P1, ..., Pn ⊧ Q` then `P1[A := R], ..., Pn[A := R] ⊧ Q[:= R]`, where `P[A := R]` means “replace all `A`s in `P` with `R`”. We will come back to substitution in [Topic 3](pred-logic-intro.md#pred-logic:substitution).
 
 ### Implication internalises entailment {id=entailment:examples:implication}
 
@@ -150,7 +150,7 @@ One non-intuitive feature of entailment is that if the assumptions are contradic
 
 There are **no** rows where all the assumptions are true, so the entailment `A, ¬A ⊧ B` holds. The proposition `B` is completely arbitrary so it can be anything.
 
-This is one of the sometimes surprising features of two-valued logic (and of many other logical systems). Intuitively, it should not always be the case. If a database contains two pieces of contradictory evidence (e.g., that the same person is 25 years old and 45 years olds), then it should not be allowed to conclude that the moon is made of cheese. This is the motivation for other logical systems, such as the one discussed in [three-valued logic](tutorial-0-three-valued.html), or for careful logical modelling.
+This is one of the sometimes surprising features of two-valued logic (and of many other logical systems). Intuitively, it should not always be the case. If a database contains two pieces of contradictory evidence (e.g., that the same person is 25 years old and 45 years olds), then it should not be allowed to conclude that the moon is made of cheese. This is the motivation for other logical systems, such as the one discussed in [three-valued logic](tutorial-0-three-valued.md), or for careful logical modelling.
 
 ### Chaining entailments {id=entailment:examples:chaining}
 
@@ -177,4 +177,4 @@ The facts about entailment listed above build up to give a list of things that w
 5. If `A ⊧ B` then `A, C ⊧ B`
 6. If `P1, ..., Pn ⊧ Q` then `P1[A := R], ..., Pn[A := R] ⊧ Q[A := R]` (above)
 
-and so on. Once we have enough of these facts, we can chain them together to prove larger properties without having to write out truth tables. This is the motivation for proof systems, which we introduce [next](proof-intro.html).
+and so on. Once we have enough of these facts, we can chain them together to prove larger properties without having to write out truth tables. This is the motivation for proof systems, which we introduce [next](proof-intro.md).
