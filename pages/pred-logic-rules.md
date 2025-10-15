@@ -4,8 +4,6 @@
 This page assumes that you have understood [natural deduction for Propositional Logic](natural-deduction-intro.html) and the [syntax of Predicate Logic](pred-logic-intro.html).
 ```
 
-**THIS PAGE IS UNDER CONSTRUCTION**
-
 We have seen the proof system of [natural deduction for Propositional Logic](natural-deduction-intro.md). This page describes how we can upgrade this system to [Predicate Logic](pred-logic-intro.md). The syntax of Predicate Logic is complicated by the presence of variables, so we need to alter our definition of judgement to take account of them. After doing this, we can take the basic rules for Propositional Logic unchanged, and add rules for the `∀` and `∃` quantifiers. Perhaps surprisingly, we also need to add special rules for equality `s = t`.
 
 ## Judgements {id=pred-logic:judgements}
@@ -253,7 +251,8 @@ You can use `introduce` twice and then `use` and `done` to complete the followin
 
 ```focused-nd {id=pred-logic-rules-example1}
 (config
- (goal "all x. p(x) -> p(x)"))
+ (goal "all x. p(x) -> p(x)")
+ (solution (Rule(Introduce x)((Rule(Introduce x-is-p)((Rule(Use x-is-p)((Rule Close())))))))))
 ```
 
 The elimination rule for `∀x. P` follows the idea in the first point above and works when the formula is in focus:
@@ -275,7 +274,8 @@ To use this rule in the prover, enter `inst` followed by the term in quotes. For
 
 ```focused-nd {id=pred-logic-rules-example2}
 (config
- (goal "(all x. flump(x)) -> flump(you())"))
+ (goal "(all x. flump(x)) -> flump(you())")
+ (solution (Rule(Introduce everything-is-a-flump)((Rule(Use everything-is-a-flump)((Rule(Instantiate(Fun you()))((Rule Close())))))))))
 ```
 
 ### Exercises {id=pred-logic:rules-for-all:exercise}
@@ -374,7 +374,8 @@ Just as with the `inst` rule for `∀`, to use the `exists` rule in the prover i
 
 ```focused-nd {id=pred-logic-rules-example3}
 (config
- (goal "flump(you()) -> (ex x. flump(x))"))
+ (goal "flump(you()) -> (ex x. flump(x))")
+ (solution (Rule(Introduce you-are-a-flump)((Rule(Exists(Fun you()))((Rule(Use you-are-a-flump)((Rule Close())))))))))
 ```
 
 THe first point becomes the elimination rule, where we “unpack” an existential assumption into a variable represening an individual and a property of that individual:
@@ -550,7 +551,8 @@ These rules apply when there is a formula in focus. These rules either act upon 
    (config
 	(assumptions
 	 (symmetry "all x. all y. edge(x,y) -> edge(y,x)"))
-	(goal "(all x. ex y. edge(x,y)) -> (all x. ex y. edge(y,x))"))
+	(goal "(all x. ex y. edge(x,y)) -> (all x. ex y. edge(y,x))")
+	(solution (Rule(Introduce everything-has-outgoing-edge)((Rule(Introduce x)((Rule(Use everything-has-outgoing-edge)((Rule(Instantiate(Var x))((Rule(ExElim y edge-x-y)((Rule(Exists(Var y))((Rule(Use symmetry)((Rule(Instantiate(Var x))((Rule(Instantiate(Var y))((Rule Implies_elim((Rule(Use edge-x-y)((Rule Close())))(Rule Close())))))))))))))))))))))))
    ```
 
 6. “If every time there is an edge from *x* to *y*, there is an edge from *y* to *x*, and there is no edge from a() to b(), then there is no edge from b() to a().”
@@ -559,7 +561,8 @@ These rules apply when there is a formula in focus. These rules either act upon 
    (config
 	(assumptions
 	 (symmetry "all x. all y. edge(x,y) -> edge(y,x)"))
-	(goal "¬edge(a(),b()) -> ¬edge(b(),a())"))
+	(goal "¬edge(a(),b()) -> ¬edge(b(),a())")
+	(solution (Rule(Introduce no-edge-a-b)((Rule(NotIntro edge-b-a)((Rule(Use no-edge-a-b)((Rule NotElim((Rule(Use symmetry)((Rule(Instantiate(Fun b()))((Rule(Instantiate(Fun a()))((Rule Implies_elim((Rule(Use edge-b-a)((Rule Close())))(Rule Close())))))))))))))))))))
    ```
 
 7. “If every time there is edge from *x* to *y* and an edge from *y* to *z*, there is an edge from *x* to *z*, then if there is an edge from a() to b() and an edge from b() to c(), there is an edge from a() to c().”
@@ -568,7 +571,8 @@ These rules apply when there is a formula in focus. These rules either act upon 
    (config
 	(assumptions
 	 (transitivity "all x. all y. all z. edge(x,y) -> edge(y,z) -> edge(x,z)"))
-	(goal "edge(a(),b()) -> edge(b(),c()) -> edge(a(),c())"))
+	(goal "edge(a(),b()) -> edge(b(),c()) -> edge(a(),c())")
+	(solution (Rule(Introduce edge-a-b)((Rule(Introduce edge-b-c)((Rule(Use transitivity)((Rule(Instantiate(Fun a()))((Rule(Instantiate(Fun b()))((Rule(Instantiate(Fun c()))((Rule Implies_elim((Rule(Use edge-a-b)((Rule Close())))(Rule Implies_elim((Rule(Use edge-b-c)((Rule Close())))(Rule Close())))))))))))))))))))
    ```
 
 8. “If every time there is edge from *x* to *y* and an edge from *y* to *z*, there is an edge from *x* to *z*, and if every time there is an edge from *x* to *y* there is an edge from *y* to *x*, and every *x* has an edge to some *y*, then for all *z*, there is an edge from *z* to *z*.”
@@ -578,7 +582,8 @@ These rules apply when there is a formula in focus. These rules either act upon 
 	(assumptions
 	 (transitivity "all x. all y. all z. edge(x,y) -> edge(y,z) -> edge(x,z)")
 	 (symmetry "all x. all y. edge(x,y) -> edge(y,x)"))
-	(goal "(all x. ex y. edge(x,y)) -> (all z. edge(z,z))"))
+	(goal "(all x. ex y. edge(x,y)) -> (all z. edge(z,z))")
+	(solution (Rule(Introduce all-nodes-have-successors)((Rule(Introduce z)((Rule(Use all-nodes-have-successors)((Rule(Instantiate(Var z))((Rule(ExElim y edge-z-y)((Rule(Use transitivity)((Rule(Instantiate(Var z))((Rule(Instantiate(Var y))((Rule(Instantiate(Var z))((Rule Implies_elim((Rule(Use edge-z-y)((Rule Close())))(Rule Implies_elim((Rule(Use symmetry)((Rule(Instantiate(Var z))((Rule(Instantiate(Var y))((Rule Implies_elim((Rule(Use edge-z-y)((Rule Close())))(Rule Close())))))))))(Rule Close())))))))))))))))))))))))))
    ```
 
 9. “If, for all *x* and *y* there is either an edge from *x* to *y* or an edge from *y* to *x*, and there is no edge from a() to b(), then there is an edge from b() to a().”
@@ -587,7 +592,8 @@ These rules apply when there is a formula in focus. These rules either act upon 
    (config
 	(assumptions
 	 (either-edge "∀x. ∀y. edge(x, y) ∨ edge(y, x)"))
-	(goal "¬edge(a(), b()) → edge(b(), a())"))
+	(goal "¬edge(a(), b()) → edge(b(), a())")
+	(solution (Rule(Introduce no-edge-a-b)((Rule(Use either-edge)((Rule(Instantiate(Fun a()))((Rule(Instantiate(Fun b()))((Rule(Cases edge-a-b edge-b-a)((Rule(Use no-edge-a-b)((Rule NotElim((Rule(Use edge-a-b)((Rule Close())))))))(Rule(Use edge-b-a)((Rule Close())))))))))))))))
    ```
 
 10. “If, for all *x* and *y* there is either an edge from *x* to *y* or an edge from *y* to *x*, and for every *x* and *y*, if there is an edge from *x* to *y* there is an edge from *y* to *x*, then for all *x* and *y*, there is an edge from *x* to *y*.”
@@ -597,7 +603,8 @@ These rules apply when there is a formula in focus. These rules either act upon 
 	 (assumptions
 	  (either-edge "∀x. ∀y. edge(x, y) ∨ edge(y, x)")
 	  (symmetry "all x. all y. edge(x,y) -> edge(y,x)"))
-	 (goal "all x. all y. edge(x,y)"))
+	 (goal "all x. all y. edge(x,y)")
+	 (solution (Rule(Introduce x)((Rule(Introduce y)((Rule(Use either-edge)((Rule(Instantiate(Var x))((Rule(Instantiate(Var y))((Rule(Cases edge-x-y edge-y-x)((Rule(Use edge-x-y)((Rule Close())))(Rule(Use symmetry)((Rule(Instantiate(Var y))((Rule(Instantiate(Var x))((Rule Implies_elim((Rule(Use edge-y-x)((Rule Close())))(Rule Close())))))))))))))))))))))))
 	```
 
 11. “If every dragon has a child that rides it, and there exists a dragon, then there exists a child.”
@@ -607,7 +614,8 @@ These rules apply when there is a formula in focus. These rules either act upon 
 	 (assumptions
 	  (every-dragon-has-a-child "∀i. dragon(i) → (∃c. child(c) ∧ rides(c, i))")
 	  (exists-a-dragon "∃i. dragon(i)"))
-	 (goal "∃c. child(c)"))
+	 (goal "∃c. child(c)")
+	 (solution (Rule(Use exists-a-dragon)((Rule(ExElim i dragon-i)((Rule(Use every-dragon-has-a-child)((Rule(Instantiate(Var i))((Rule Implies_elim((Rule(Use dragon-i)((Rule Close())))(Rule(ExElim c child-c-and-rides-c-i)((Rule(Exists(Var c))((Rule(Use child-c-and-rides-c-i)((Rule Conj_elim1((Rule Close())))))))))))))))))))))
 	```
 
 12. “If every child rides a dragon, and there is a child who doesn't ride a dragon, then the earth is hollow.”
@@ -617,7 +625,8 @@ These rules apply when there is a formula in focus. These rules either act upon 
 	 (assumptions
 	  (every-child-rides-a-dragon "∀c. child(c) → (∃i. dragon(i) ∧ rides(c, i))")
 	  (exists-child-without-dragon "∃c. child(c) ∧ (∀i. dragon(i) → ¬rides(c, i))"))
-	 (goal "∃p. earth(m) ∧ hollow(m)"))
+	 (goal "∃p. earth(m) ∧ hollow(m)")
+	 (solution (Rule(Use exists-child-without-dragon)((Rule(ExElim c H)((Rule(Use every-child-rides-a-dragon)((Rule(Instantiate(Var c))((Rule Implies_elim((Rule(Use H)((Rule Conj_elim1((Rule Close())))))(Rule(ExElim i H2)((Rule(Use H)((Rule Conj_elim2((Rule(Instantiate(Var i))((Rule Implies_elim((Rule(Use H2)((Rule Conj_elim1((Rule Close())))))(Rule NotElim((Rule(Use H2)((Rule Conj_elim2((Rule Close())))))))))))))))))))))))))))))
 	```
 
 ## Equality {id=pred-logic:equality}
@@ -700,7 +709,8 @@ The `subst` rule is quite tricky to use because we have to give a formula `P` su
 
 ```focused-nd {id=equality-rewrite-example}
 (config
- (goal "p(a()) -> a() = b() -> p(b())"))
+ (goal "p(a()) -> a() = b() -> p(b())")
+ (solution (Rule(Introduce a-is-p)((Rule(Introduce a-eq-b)((Rule(Use a-eq-b)((Rule(Rewrite rtl)((Rule(Use a-is-p)((Rule Close())))))))))))))
 ```
 
 The introduction rule for equality is *reflexivity*:

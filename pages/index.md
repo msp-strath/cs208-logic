@@ -64,7 +64,7 @@ The pages linked to below contain the lecture notes, covering the material intro
 
 -  Topic 4 is **Proof for Predicate Logic**.
 
-   **Under construction** [Proof rules for Predicate Logic](pred-logic-rules.md). Natural deduction rules for “for all” and “exists” allow us to construct proofs of Predicate Logic formulas. Also, how do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
+   [Proof rules for Predicate Logic](pred-logic-rules.md). Natural deduction rules for “for all” and “exists” allow us to construct proofs of Predicate Logic formulas. Also, how do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
 
    [The lecture slides for this topic](topic04-slides.pdf).
 
