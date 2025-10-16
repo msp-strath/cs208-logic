@@ -8,10 +8,21 @@ type t =
 
 (******************************************************************************)
 
+let is_numeric_constant s =
+  let is_digit = function '0' .. '9' -> true | _ -> false in
+  let rec is_digits idx =
+    idx = String.length s || (is_digit s.[idx] && is_digits (idx+1))
+  in
+  String.length s > 0 &&
+    ((s.[0] = '-' && String.length s > 1 && is_digits 1)
+     || is_digits 0)
+
 let rec to_string = function
   | Var x -> x
-  | Fun ("0", []) -> "0"
-  | Fun (f, tms) -> f ^ "(" ^ String.concat ", " (List.map to_string tms) ^ ")"
+  | Fun (f, []) when is_numeric_constant f ->
+     f
+  | Fun (f, tms) ->
+     f ^ "(" ^ String.concat ", " (List.map to_string tms) ^ ")"
 
 let%test "to_string_var" =
   String.equal (to_string (Var "x")) "x"
