@@ -39,6 +39,7 @@ let components =
   ; "model-checker", Model_checker_widget.component
 
   ; "ask", Natural_deduction.Ask.component
+  ; "hoare", Natural_deduction.Hoare.component
   ]
 
 let () =

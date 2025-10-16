@@ -61,7 +61,9 @@ let code_render ~self ~attributes ~kind content = match kind with
   | "lmt" | "tickbox" | "textbox" | "entrybox" | "selection"
   | "rules" | "rules-display" | "focused-nd"
   | "focused-tree" | "focused-freeentry"
-  | "model-checker" | "ask"
+  | "model-checker"
+  | "ask"
+  | "hoare"
   | "formulaentry" as kind ->
      let open Html_static in
      let id = List.assoc_opt "id" attributes in
