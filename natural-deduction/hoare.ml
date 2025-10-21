@@ -1,3 +1,4 @@
+open Generalities
 open Sexplib0.Sexp_conv
 
 module Syntax = struct
@@ -100,6 +101,13 @@ module Calculus = struct
   type meta_var =
     string
 
+  let gen_meta =
+    let next = ref 0 in
+    fun () ->
+    let id = !next in
+    incr next;
+    "P" ^ string_of_int id
+
   let term_of_expr = function
     | Var var -> Term.Var (Program_var.to_string var)
     | Const i -> Term.Fun (string_of_int i, [])
@@ -124,12 +132,17 @@ module Calculus = struct
     (* | Not p -> *)
     (*    Not (formula_of_boolean_expr p) *)
 
-  type rule =
-    | Done
+  type program_rule =
+    | End
     | Assign of Program_var.t * expr
     | Assert of formula
     | If     of boolean_expr
     | While  of boolean_expr
+  [@@deriving sexp]
+
+  type rule =
+    | Program_rule of program_rule
+    | Proof_rule   of Focused.rule
   [@@deriving sexp]
 
   type formula_or_meta =
@@ -138,13 +151,16 @@ module Calculus = struct
     | Or      of formula_or_meta * formula_or_meta
 
   type goal =
-    | Program of { precond  : formula_or_meta
-                 ; postcond : formula_or_meta
-                 }
+    | Program of
+        { precond  : formula_or_meta
+        ; postcond : formula_or_meta
+        }
+    | Entailment of Focused.goal
 
   type assumption =
     | Program_variable
     | Logic_variable
+    | Assumed_formula of formula
 
 (* Rules (forward reasoning to construct the program)
 
@@ -186,12 +202,13 @@ module Calculus = struct
          { precond = update_formula subst precond
          ; postcond  = update_formula subst postcond
          }
+    | Entailment _ as goal ->
+       goal
   let combine_update s1 s2 =
     MVarMap.union (fun _ a _b -> Some a) s1 s2
 
   type error = string
 
-  open Generalities
   open Result_ext.Syntax
 
   let rec check_program_variable var = function
@@ -237,15 +254,27 @@ module Calculus = struct
     | Forall (x, p) | Exists (x, p) ->
        scope_check_formula (NameSet.add x names) p
 
+  let to_focused_context =
+    List.map
+      (function
+       | (nm, (Program_variable | Logic_variable)) -> (nm, Focused.A_Termvar)
+       | (nm, Assumed_formula f)                   -> (nm, Focused.A_Formula f))
+
+  let of_focused_context =
+    List.map
+      (function
+       | (nm, Focused.A_Termvar)   -> (nm, Logic_variable)
+       | (nm, Focused.A_Formula f) -> (nm, Assumed_formula f))
+
   let apply context rule = function
     | Program { precond = Meta _ | Or _; _ }->
        Error "Cannot work with unknown precondition"
-    | Program { precond = Formula requires; postcond } ->
+    | Program { precond = Formula precond; postcond } ->
        (match rule with
-       | Done ->
+       | Program_rule End ->
           (match postcond with
           | Formula ensures ->
-             if Formula.alpha_equal requires ensures then
+             if Formula.alpha_equal precond ensures then
                Ok ([], empty_update)
              else
                Error "The precondition is not the same as the \
@@ -253,39 +282,51 @@ module Calculus = struct
           | Or _ ->
              Error "INTERNAL ERROR: unexpected Or"
           | Meta v ->
-             Ok ([], MVarMap.singleton v requires))
-       | Assign (program_var, expr) ->
+             Ok ([], MVarMap.singleton v precond))
+       | Program_rule (Assign (program_var, expr)) ->
           let* () = check_program_variable program_var context in
           let* () = check_expr context expr in
           let program_var = Program_var.to_string program_var in
           let logic_var =
             NameSet.fresh_for (name_set_of_context context) (String.lowercase_ascii program_var)
           in
-          let p = Formula.subst program_var (Term.Var logic_var) requires in
+          let p = Formula.subst program_var (Term.Var logic_var) precond in
           let e = Term.subst program_var (Term.Var logic_var) (term_of_expr expr) in
           let precond = Formula (Formula.Exists (logic_var, And (Atom ("=", [Term.Var program_var; e]), p))) in
           Ok ([ [], Program { precond; postcond } ], empty_update)
-       | Assert fmla ->
+       | Program_rule (Assert fmla) ->
           let* () = scope_check_formula (name_set_of_context context) fmla in
           (* FIXME: also check that requires |- fmla !!! Do this for
              equational logic with no functions... *)
-          Ok ([ [], Program { precond = Formula fmla; postcond } ], empty_update)
-       | If bool_expr ->
+          Ok ([ ["H", Assumed_formula precond], Entailment (Focused.Checking fmla)
+              ; [], Program { precond = Formula fmla; postcond } ],
+              empty_update )
+       | Program_rule (If bool_expr) ->
           let* () = check_boolean_expr context bool_expr in
           let cond = formula_of_boolean_expr bool_expr in
-          (* FIXME: generate these! *)
-          let mv1 = "R1" and mv2 = "R2" in
-          Ok ([ [], Program { precond = Formula (And (cond, requires)); postcond = Meta mv1 }
-              ; [], Program { precond = Formula (And (Not cond, requires)); postcond = Meta mv2 }
+          let mv1 = gen_meta () and mv2 = gen_meta () in
+          Ok ([ [], Program { precond = Formula (And (cond, precond)); postcond = Meta mv1 }
+              ; [], Program { precond = Formula (And (Not cond, precond)); postcond = Meta mv2 }
               ; [], Program { precond = Or (Meta mv1, Meta mv2); postcond }
               ],
               empty_update)
-       | While bool_expr ->
+       | Program_rule (While bool_expr) ->
           let* () = check_boolean_expr context bool_expr in
           let cond = formula_of_boolean_expr bool_expr in
-          Ok ([ [], Program { precond = Formula (And (cond, requires)); postcond = Formula requires }
-              ; [], Program { precond = Formula (And (Not cond, requires)); postcond }
-              ], empty_update))
+          Ok ([ [], Program { precond = Formula (And (cond, precond)); postcond = Formula precond }
+              ; [], Program { precond = Formula (And (Not cond, precond)); postcond }
+              ], empty_update)
+       | Proof_rule _ ->
+          Error "Cannot use a proof rule here")
+    | Entailment goal ->
+       (match rule with
+       | Program_rule _ ->
+          Error "Cannot use a program rule here"
+       | Proof_rule rule ->
+          let context = to_focused_context context in
+          let* subgoals, () = Focused.apply context rule goal in
+          Ok (List.map (fun (assumps, subgoal) -> (of_focused_context assumps, Entailment subgoal)) subgoals,
+              empty_update))
 
 end
 
@@ -306,13 +347,16 @@ module UI : Proof_tree_UI2.UI_SPEC with module Calculus = Calculus = struct
         Printf.sprintf "{%s} - {%s}"
           (string_of_formula_or_meta precond)
           (string_of_formula_or_meta postcond)
+    | Calculus.Entailment goal ->
+       Focused_ui2.string_of_goal goal
 
   let string_of_assumption nm = function
     | Calculus.Program_variable -> nm
     | Calculus.Logic_variable -> nm
+    | Calculus.Assumed_formula f -> nm ^ " : " ^ Formula.to_string f
 
-  let label_of_rule = function
-    | Calculus.Done -> "done"
+  let label_of_program_rule = function
+    | Calculus.End -> "end"
     | Calculus.Assign (v, expr) ->
        Printf.sprintf "%s := %s" (Syntax.Program_var.to_string v) (Syntax.string_of_expr expr)
     | Calculus.Assert f ->
@@ -322,33 +366,45 @@ module UI : Proof_tree_UI2.UI_SPEC with module Calculus = Calculus = struct
     | Calculus.While cond ->
        Printf.sprintf "while(%s)" (Syntax.string_of_boolean_expr cond)
 
+  let label_of_rule = function
+    | Calculus.Program_rule rule ->
+       label_of_program_rule rule
+    | Calculus.Proof_rule rule ->
+       Focused_ui2.label_of_rule rule
+
   let string_of_error e = e
 
+  open Result_ext.Syntax
+
   (* FIXME: replace this with a nicer parser that matches the output format. *)
-  let parse_rule str =
+  let parse_rule str =  (* FIXME: allow the parser to depend on the goal? *)
     match Sexplib.Sexp.of_string str with
     | exception _ ->
-       Error "command not understood"
-    | Sexplib.Type.Atom "done" ->
-       Ok Calculus.Done
+       let* rule = Focused_ui2.parse_rule str in
+       Ok (Calculus.Proof_rule rule)
+    | Sexplib.Type.Atom "end" ->
+       Ok (Calculus.Program_rule End)
     | Sexplib.Type.List [ Atom "if"; e ] ->
        (match Syntax.boolean_expr_of_sexp_human e with
        | None   -> Error "invalid boolean expression"
-       | Some e -> Ok (If e))
+       | Some e -> Ok (Program_rule (If e)))
     | Sexplib.Type.List [ Atom "while"; e ] ->
        (match Syntax.boolean_expr_of_sexp_human e with
        | None   -> Error "invalid boolean expression"
-       | Some e -> Ok (While e))
+       | Some e -> Ok (Program_rule (While e)))
     | Sexplib.Type.List [ Atom "assert"; Atom fmla ] ->
        (match Formula.of_string fmla with
-       | Ok fmla -> Ok (Assert fmla)
+       | Ok fmla -> Ok (Program_rule (Assert fmla))
        | Error _ -> Error "invalid formula")
     | Sexplib.Type.List [ Atom ":="; Atom v; e ] ->
        (match Syntax.Program_var.of_string v, Syntax.expr_of_sexp_human e with
        | None, _ | _, None ->
           Error "invalid assignment"
        | Some var, Some e ->
-          Ok (Assign (var, e)))
+          Ok (Program_rule (Assign (var, e))))
+    | Sexplib.Type.Atom atm ->
+       let* rule = Focused_ui2.parse_rule str in
+       Ok (Calculus.Proof_rule rule)
     | _ ->
        Error "command not understood"
 
