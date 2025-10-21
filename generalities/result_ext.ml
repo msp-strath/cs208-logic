@@ -24,6 +24,10 @@ module Syntax = struct
     | Error _ as e, _ -> e
     | _, (Error _ as e) -> e
 
+  let ( let+ ) x f = Result.map f x
+
+  let ( and+ ) = ( and* )
+
 end
 
 open Syntax

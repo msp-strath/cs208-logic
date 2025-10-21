@@ -10,9 +10,9 @@ Need a custom proof layout for ask derivations.
 
 ## Hoare Logic
 
-```hoare
+```hoare {id=hoare-test}
 (hoare
  (program_vars X)
- (requires "X = 10")
- (ensures "X = 10"))
+ (precond "T")
+ (postcond "X = 10"))
 ```

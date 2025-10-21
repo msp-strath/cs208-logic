@@ -90,8 +90,6 @@ module Syntax = struct
          (string_of_expr e1)
          (string_of_rel r)
          (string_of_expr e2)
-
-         (* TODO: from sexps *)
 end
 
 module Calculus = struct
@@ -137,11 +135,12 @@ module Calculus = struct
   type formula_or_meta =
     | Formula of formula
     | Meta    of meta_var
+    | Or      of formula_or_meta * formula_or_meta
 
   type goal =
-    { requires : formula_or_meta
-    ; ensures  : formula_or_meta
-    }
+    | Program of { precond  : formula_or_meta
+                 ; postcond : formula_or_meta
+                 }
 
   type assumption =
     | Program_variable
@@ -171,58 +170,122 @@ module Calculus = struct
 
   let empty_update = MVarMap.empty
   let update_assumption _subst assump = assump
-  let update_formula subst = function
+  let rec update_formula subst = function
     | Formula f -> Formula f
     | Meta v ->
-       match MVarMap.find_opt v subst with
+       (match MVarMap.find_opt v subst with
        | None -> Meta v
-       | Some f -> Formula f
-  let update_goal subst { requires; ensures } =
-    { requires = update_formula subst requires
-    ; ensures  = update_formula subst ensures
-    }
+       | Some f -> Formula f)
+    | Or (p, q) ->
+       (match update_formula subst p, update_formula subst q with
+       | Formula p, Formula q -> Formula (Or (p, q))
+       | p, q -> Or (p, q))
+  let update_goal subst = function
+    | Program { precond; postcond } ->
+       Program
+         { precond = update_formula subst precond
+         ; postcond  = update_formula subst postcond
+         }
   let combine_update s1 s2 =
     MVarMap.union (fun _ a _b -> Some a) s1 s2
 
   type error = string
 
-  let apply _context rule { requires; ensures } =
-    match requires with
-    | Meta _ ->
+  open Generalities
+  open Result_ext.Syntax
+
+  let rec check_program_variable var = function
+    | [] ->
+       Result_ext.errorf "Program variable %s not in scope"
+         (Program_var.to_string var)
+    | (nm, Program_variable)::_ when String.equal (Program_var.to_string var) nm ->
+       Ok ()
+    | _::context ->
+       check_program_variable var context
+
+  let check_expr context = function
+    | Const _ -> Ok ()
+    | Var v   -> check_program_variable v context
+
+  let check_boolean_expr context = function
+    | Rel (e1, _, e2) ->
+       let+ () = check_expr context e1
+       and+ () = check_expr context e2
+       in ()
+
+  let name_set_of_context context =
+    List.fold_right (fun (nm, _) -> NameSet.add nm) context NameSet.empty
+
+  let rec scope_check_term names = function
+    | Term.Var v ->
+       if NameSet.mem v names then Ok ()
+       else Error (Printf.sprintf "Name '%s' has not been declared" v)
+    | Term.Fun (_, args) ->
+       Result_ext.traverse_ (scope_check_term names) args
+
+  let rec scope_check_formula names = function
+    | True | False ->
+       Ok ()
+    | Atom (_, terms) ->
+       Result_ext.traverse_ (scope_check_term names) terms
+    | Imp (p, q) | Or (p, q) | And (p, q) ->
+       let+ () = scope_check_formula names p
+       and+ () = scope_check_formula names q
+       in ()
+    | Not p ->
+       scope_check_formula names p
+    | Forall (x, p) | Exists (x, p) ->
+       scope_check_formula (NameSet.add x names) p
+
+  let apply context rule = function
+    | Program { precond = Meta _ | Or _; _ }->
        Error "Cannot work with unknown precondition"
-    | Formula requires ->
-       match rule with
+    | Program { precond = Formula requires; postcond } ->
+       (match rule with
        | Done ->
-          (match ensures with
+          (match postcond with
           | Formula ensures ->
              if Formula.alpha_equal requires ensures then
                Ok ([], empty_update)
              else
-               Error "Requires is not equal to ensures!"
+               Error "The precondition is not the same as the \
+                      postcondition!"
+          | Or _ ->
+             Error "INTERNAL ERROR: unexpected Or"
           | Meta v ->
              Ok ([], MVarMap.singleton v requires))
        | Assign (program_var, expr) ->
-          (* FIXME: check program_var and expr are well scoped *)
+          let* () = check_program_variable program_var context in
+          let* () = check_expr context expr in
           let program_var = Program_var.to_string program_var in
-          let logic_var = String.lowercase_ascii program_var in
-          (* FIXME: make sure it is fresh for the context *)
+          let logic_var =
+            NameSet.fresh_for (name_set_of_context context) (String.lowercase_ascii program_var)
+          in
           let p = Formula.subst program_var (Term.Var logic_var) requires in
           let e = Term.subst program_var (Term.Var logic_var) (term_of_expr expr) in
-          let requires = Formula (Formula.Exists (logic_var, And (Atom ("=", [Term.Var program_var; e]), p))) in
-          Ok ([ [], { requires; ensures } ], empty_update)
+          let precond = Formula (Formula.Exists (logic_var, And (Atom ("=", [Term.Var program_var; e]), p))) in
+          Ok ([ [], Program { precond; postcond } ], empty_update)
        | Assert fmla ->
-          (* FIXME: Scope check fmla *)
+          let* () = scope_check_formula (name_set_of_context context) fmla in
           (* FIXME: also check that requires |- fmla !!! Do this for
              equational logic with no functions... *)
-          Ok ([ [], { requires = Formula fmla; ensures } ], empty_update)
-       | If _bool_expr ->
-          Error "implement If"
-       | While bool_expr ->
-          (* scope check 'bool_expr' *)
+          Ok ([ [], Program { precond = Formula fmla; postcond } ], empty_update)
+       | If bool_expr ->
+          let* () = check_boolean_expr context bool_expr in
           let cond = formula_of_boolean_expr bool_expr in
-          Ok ([ [], { requires = Formula (And (cond, requires)); ensures = Formula requires }
-              ; [], { requires = Formula (And (Not cond, requires)); ensures }
-              ], empty_update)
+          (* FIXME: generate these! *)
+          let mv1 = "R1" and mv2 = "R2" in
+          Ok ([ [], Program { precond = Formula (And (cond, requires)); postcond = Meta mv1 }
+              ; [], Program { precond = Formula (And (Not cond, requires)); postcond = Meta mv2 }
+              ; [], Program { precond = Or (Meta mv1, Meta mv2); postcond }
+              ],
+              empty_update)
+       | While bool_expr ->
+          let* () = check_boolean_expr context bool_expr in
+          let cond = formula_of_boolean_expr bool_expr in
+          Ok ([ [], Program { precond = Formula (And (cond, requires)); postcond = Formula requires }
+              ; [], Program { precond = Formula (And (Not cond, requires)); postcond }
+              ], empty_update))
 
 end
 
@@ -232,18 +295,21 @@ module UI : Proof_tree_UI2.UI_SPEC with module Calculus = Calculus = struct
 
   module Calculus = Calculus
 
-  let string_of_formula_or_meta = function
+  let rec string_of_formula_or_meta = function
     | Calculus.Formula f -> Formula.to_string f
     | Calculus.Meta v    -> "?" ^ v
+    | Calculus.Or (p, q) ->
+       "(" ^ string_of_formula_or_meta p ^ ") ∨ (" ^ string_of_formula_or_meta q ^ ")"
 
-  let string_of_goal { Calculus.requires; ensures } =
-    Printf.sprintf "{%s} - {%s}"
-      (string_of_formula_or_meta requires)
-      (string_of_formula_or_meta ensures)
+  let string_of_goal = function
+    | Calculus.Program { precond; postcond } ->
+        Printf.sprintf "{%s} - {%s}"
+          (string_of_formula_or_meta precond)
+          (string_of_formula_or_meta postcond)
 
-  let string_of_assumption _nm = function
-    | Calculus.Program_variable -> "program variable"
-    | Calculus.Logic_variable -> "logic variable"
+  let string_of_assumption nm = function
+    | Calculus.Program_variable -> nm
+    | Calculus.Logic_variable -> nm
 
   let label_of_rule = function
     | Calculus.Done -> "done"
@@ -296,8 +362,8 @@ module Config_parser = struct
   type config =
     { program_vars : Program_var.t list
     ; logic_vars   : string list
-    ; requires     : formula
-    ; ensures      : formula
+    ; precond      : formula
+    ; postcond     : formula
     }
 
   let formula =
@@ -322,11 +388,13 @@ module Config_parser = struct
     tagged "hoare"
       (let+ program_vars = consume_opt "program_vars" (many program_var_p)
        and+ logic_vars   = consume_opt "logic_vars" (many logic_var_p)
-       and+ requires     = consume_one "requires" (one formula)
-       and+ ensures      = consume_one "ensures" (one formula) in
+       and+ precond      = consume_one "precond" (one formula)
+       and+ postcond     = consume_one "postcond" (one formula) in
        let program_vars = Option.value ~default:[] program_vars in
        let logic_vars   = Option.value ~default:[] logic_vars in
-       { program_vars; logic_vars; requires; ensures })
+       (* FIXME: check that requires and ensures are well-scoped in
+          the program and logic vars *)
+       { program_vars; logic_vars; precond; postcond })
 
 end
 
@@ -339,13 +407,16 @@ let component config =
      let detail = Generalities.Annotated.detail err in
      let message = "Configuration failure: " ^ detail in
      Widgets.Error_display.component message
-  | Ok Config_parser.{ requires; ensures; program_vars; logic_vars } ->
+  | Ok Config_parser.{ precond; postcond; program_vars; logic_vars } ->
      let module G = struct
          let assumptions =
            List.map (fun nm -> Syntax.Program_var.to_string nm, Calculus.Program_variable) program_vars
            @ List.map (fun nm -> nm, Calculus.Logic_variable) logic_vars
          let goal =
-           Calculus.{ requires = Formula requires; ensures = Formula ensures }
+           Calculus.Program
+             { precond = Formula precond
+             ; postcond = Formula postcond
+             }
        end
      in
      (module Proof_tree_UI2.Make (UI) (G) : Ulmus.PERSISTENT)
