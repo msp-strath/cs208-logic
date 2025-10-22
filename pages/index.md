@@ -69,7 +69,11 @@ The pages linked to below contain the lecture notes, covering the material intro
    [The lecture slides for this topic](topic04-slides.pdf).
 
 
--  Topic 5 will be **Specification and Verification**.
+-  Topic 5 is **Specification and Verification**.
+
+   [Specification and Verification](specify-verify.md) introduces the topic of how we say what we want programs to do, and how we might go about proving those things. We look at a simple model of programs, and introduce a new logic, Hoare Logic, to prove specifications of programs.
+
+   [The lecture slides for this topic](topic05-slides.pdf).
 
 -  Topic 6 will be **Programs with Loops**.
 

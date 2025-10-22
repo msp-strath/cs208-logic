@@ -315,3 +315,20 @@ input {
     font-style: italic;
     padding-left: 0.5em
 }
+
+/*----------------------------------------------------------------------*/
+/* Animations */
+
+@keyframes fade-in {
+    from {
+	opacity: 0%
+    }
+    to {
+	opacity: 100%
+    }
+}
+
+.hole {
+    animation-duration: 0.4s;
+    animation-name: fade-in;
+}
