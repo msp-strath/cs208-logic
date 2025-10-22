@@ -8,6 +8,16 @@ type config = {
   }
 
 let config_p =
+  let assumption =
+    let+? str = atom in
+    if str = "var" then
+      Ok Focused.A_Termvar
+    else
+      Result.map_error
+        (function `Parse e ->
+           Parser_util.Driver.string_of_error e)
+        (Result.map (fun f -> Focused.A_Formula f) (Fol_formula.Formula.of_string str))
+  in
   let formula =
     let+? str = atom in
     Result.map_error
@@ -15,16 +25,16 @@ let config_p =
          Parser_util.Driver.string_of_error e)
       (Fol_formula.Formula.of_string str)
   in
-  let assumption_p =
+  let named_assumption_p =
     sequence
       (let+ name       = consume_next atom
-       and+ assumption = consume_next formula
+       and+ assumption = consume_next assumption
        and+ ()         = assert_nothing_left in
-       (name, Focused.A_Formula assumption))
+       (name, assumption))
   in
 
   tagged "config"
-    (let+ assumptions = consume_opt "assumptions" (many assumption_p)
+    (let+ assumptions = consume_opt "assumptions" (many named_assumption_p)
      and+ goal        = consume_one "goal" (one formula)
      and+ name        = consume_opt "name" (one atom)
      and+ solution    = consume_opt "solution" (one sexp) in

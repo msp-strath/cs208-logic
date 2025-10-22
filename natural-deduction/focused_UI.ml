@@ -35,7 +35,7 @@ module SequentTreeRenderer =
 module H = Focused_proof_renderer.HTML_Bits (Ulmus.Html)
 
 module Renderer = struct
-  open Focused_proof_renderer.HTML_Bits (Ulmus.Html)
+  open H
   include Focused_proof_renderer.Make (Ulmus.Html)
 
   let resetbutton pt =

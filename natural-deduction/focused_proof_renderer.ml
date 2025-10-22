@@ -41,8 +41,11 @@ let pretty_of_sequent (assumptions, goal) =
 module HTML_Bits (Html : Html_sig.S) = struct
   open Html
 
-  let vertical content = div ~attrs:[ A.class_ "vertical" ] content
-  let line content = div content
+  let vertical content =
+    div ~attrs:[ A.class_ "vertical" ] content
+
+  let line content =
+    div content
 
   let commentf fmt =
     Printf.ksprintf (fun s -> pre ~attrs:[ A.class_ "comment" ] (text s)) fmt
@@ -51,8 +54,12 @@ module HTML_Bits (Html : Html_sig.S) = struct
     let txt = Generalities.Pretty.to_string ~width:72 doc in
     pre ~attrs:[ A.class_ "comment" ] (text txt)
 
-  let textf fmt = Printf.ksprintf text fmt
-  let indent_box html = div ~attrs:[ A.class_ "indent" ] html
+  let textf fmt =
+    Printf.ksprintf text fmt
+
+  let indent_box html =
+    div ~attrs:[ A.class_ "indent" ] html
+
   let nbsp = "\xc2\xa0" (* NBSP in UTF-8 *)
 end
 
@@ -284,3 +291,105 @@ module LaTeX (PT : PROOF_TREE) =
 
       let name_of_rule = Focused.Rule.name
     end)
+
+
+module LambdaTerm = struct
+
+  open Fol_formula
+
+  type lterm =
+    | Use  of string * elim
+    | Lam  of string * lterm
+    | Unit
+    | Split of lterm * lterm
+    | Left  of lterm
+    | Right of lterm
+    | Exists of Term.t * lterm
+    | Refl
+
+  and elim =
+    | Done
+    | App of lterm * elim
+    | Instantiate of Term.t * elim
+    | First of elim
+    | Second of elim
+    | Cases of string * lterm * string * lterm
+    | Unpack of string * string * lterm
+    | Absurd
+
+  type term_or_elim =
+    | Term of lterm
+    | Elim of elim
+    | UNIMPL
+
+  let render_rule ~rule ~children =
+    match rule with
+    | Focused.Introduce x ->
+       (match children with
+       | [ Term term ] -> Term (Lam (x, term))
+       | _        -> failwith "Bad term: Introduce")
+    | Truth ->
+       Term Unit
+    | Split ->
+       (match children with
+       | [ Term term1; Term term2 ] ->
+          Term (Split (term1, term2))
+       | _ -> failwith "Bad term: Split")
+    | Left ->
+       (match children with
+       | [ Term term ] -> Term (Left term)
+       | _ -> failwith "Bad term: Left")
+    | Right ->
+       (match children with
+       | [ Term term ] -> Term (Right term)
+       | _ -> failwith "Bad term: Right")
+    | NotIntro x ->
+       (match children with
+       | [ Term term ] -> Term (Lam (x, term))
+       | _        -> failwith "Bad term: NotIntro")
+    | Exists tm ->
+       (match children with
+       | [ Term term ] -> Term (Exists (tm, term))
+       | _             -> failwith "Bad proof: Exists")
+    | Refl ->
+       Term Refl
+    | Use name ->
+       (match children with
+       | [ Elim elim ] -> Term (Use (name, elim))
+       | _             -> failwith "Bad proof: Use")
+    | Implies_elim ->
+       (match children with
+       | [ Term term; Elim elim ] -> Elim (App (term, elim))
+       | _                        -> failwith "Bad proof: Implies_elim")
+    | Instantiate tm ->
+       (match children with
+       | [ Elim elim ] -> Elim (Instantiate (tm, elim))
+       | _             -> failwith "Bad proof: Instantiate")
+    | NotElim ->
+       (match children with
+       | [ Term term ] -> Elim (App (term, Absurd))
+       | _             -> failwith "Bad proof: NotELim")
+    | ExElim (var_name, hyp_name) ->
+       (match children with
+       | [ Term term ] -> Elim (Unpack (var_name, hyp_name, term))
+       | _             -> failwith "Bad proof: ExElim")
+    | Induction _ | Subst _ | Rewrite _ ->
+       UNIMPL
+    | Conj_elim1 ->
+       (match children with
+       | [ Elim elim ] -> Elim (First elim)
+       | _             -> failwith "Bad proof: Conj_elim1")
+    | Conj_elim2 ->
+       (match children with
+       | [ Elim elim ] -> Elim (Second elim)
+       | _             -> failwith "Bad proof: Conj_elim2")
+    | Cases (x, y) ->
+       (match children with
+       | [ Term term1; Term term2 ] -> Elim (Cases (x, term1, y, term2))
+       | _ -> failwith "Bad proof: Cases")
+    | Absurd ->
+       Elim Absurd
+    | Close ->
+       Elim Done
+
+end

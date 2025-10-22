@@ -32,13 +32,14 @@ module Syntax = struct
     let to_string s = s
   end
 
+  (* FIXME: make this a 'Term' *)
   type expr =
     | Var   of Program_var.t
     | Const of int
-  (*     | Add   of expr * expr *)
+    | Add   of expr * expr
   [@@deriving sexp]
 
-  let expr_of_sexp_human = function
+  let rec expr_of_sexp_human = function
     | Sexplib.Type.Atom atm ->
        (match int_of_string_opt atm with
        | Some i -> Some (Const i)
@@ -46,12 +47,22 @@ module Syntax = struct
           (match Program_var.of_string atm with
           | Some v -> Some (Var v)
           | None -> None))
+    | Sexplib.Type.List [Atom "add"; e1; e2] ->
+       (match expr_of_sexp_human e1, expr_of_sexp_human e2 with
+       | Some e1, Some e2 ->
+          Some (Add (e1, e2))
+       | None, _ | _, None ->
+          None)
     | Sexplib.Type.List _ ->
        None
 
-  let string_of_expr = function
+  let rec string_of_expr = function
     | Var v -> Program_var.to_string v
     | Const i -> string_of_int i
+    | Add (e1, e2) ->
+       Printf.sprintf "add(%s, %s)"
+         (string_of_expr e1)
+         (string_of_expr e2)
 
   type rel =
     | Eq | Ne (* | Lt | Le | Gt | Ge *)
@@ -108,29 +119,17 @@ module Calculus = struct
     incr next;
     "P" ^ string_of_int id
 
-  let term_of_expr = function
+  let rec term_of_expr = function
     | Var var -> Term.Var (Program_var.to_string var)
     | Const i -> Term.Fun (string_of_int i, [])
-    (* | Add (e1, e2) -> *)
-    (*    Term.Fun ("+", [term_of_expr e1; term_of_expr e2]) *)
-
-  let predicate_of_rel = function
-    | Eq -> "="
-    | Ne -> "!="
-    (* | Lt -> "<" *)
-    (* | Le -> "<=" *)
-    (* | Gt -> ">" *)
-    (* | Ge -> ">=" *)
+    | Add (e1, e2) ->
+       Term.Fun ("add", [term_of_expr e1; term_of_expr e2])
 
   let formula_of_boolean_expr = function
-    | Rel (e1, rel, e2) ->
-       Atom (predicate_of_rel rel, [term_of_expr e1; term_of_expr e2])
-    (* | And (p, q) -> *)
-    (*    And (formula_of_boolean_expr p, formula_of_boolean_expr q) *)
-    (* | Or (p, q) -> *)
-    (*    Or (formula_of_boolean_expr p, formula_of_boolean_expr q) *)
-    (* | Not p -> *)
-    (*    Not (formula_of_boolean_expr p) *)
+    | Rel (e1, Eq, e2) ->
+       Atom ("=", [term_of_expr e1; term_of_expr e2])
+    | Rel (e1, Ne, e2) ->
+       Not (Atom ("=", [term_of_expr e1; term_of_expr e2]))
 
   type program_rule =
     | End
@@ -149,6 +148,11 @@ module Calculus = struct
     | Formula of formula
     | Meta    of meta_var
     | Or      of formula_or_meta * formula_or_meta
+
+  let rec pp_formula_or_meta = function
+    | Formula f -> Formula.to_doc f
+    | Meta v    -> Pretty.text ("?" ^ v)
+    | Or (p, q) -> Pretty.(text "(" ^^ pp_formula_or_meta p ^^ text ") ∨ (" ^^  pp_formula_or_meta q ^^ text ")")
 
   type goal =
     | Program of
@@ -220,9 +224,15 @@ module Calculus = struct
     | _::context ->
        check_program_variable var context
 
-  let check_expr context = function
-    | Const _ -> Ok ()
-    | Var v   -> check_program_variable v context
+  let rec check_expr context = function
+    | Const _ ->
+       Ok ()
+    | Var v ->
+       check_program_variable v context
+    | Add (e1, e2) ->
+       let+ () = check_expr context e1
+       and+ () = check_expr context e2
+       in ()
 
   let check_boolean_expr context = function
     | Rel (e1, _, e2) ->
@@ -273,12 +283,12 @@ module Calculus = struct
        (match rule with
        | Program_rule End ->
           (match postcond with
-          | Formula ensures ->
-             if Formula.alpha_equal precond ensures then
+          | Formula postcond ->
+             if Formula.alpha_equal precond postcond then
                Ok ([], empty_update)
              else
-               Error "The precondition is not the same as the \
-                      postcondition!"
+               Ok ([ ["H", Assumed_formula precond ], Entailment (Focused.Checking postcond)
+                   ], empty_update)
           | Or _ ->
              Error "INTERNAL ERROR: unexpected Or"
           | Meta v ->
@@ -296,8 +306,6 @@ module Calculus = struct
           Ok ([ [], Program { precond; postcond } ], empty_update)
        | Program_rule (Assert fmla) ->
           let* () = scope_check_formula (name_set_of_context context) fmla in
-          (* FIXME: also check that requires |- fmla !!! Do this for
-             equational logic with no functions... *)
           Ok ([ ["H", Assumed_formula precond], Entailment (Focused.Checking fmla)
               ; [], Program { precond = Formula fmla; postcond } ],
               empty_update )
@@ -327,6 +335,118 @@ module Calculus = struct
           let* subgoals, () = Focused.apply context rule goal in
           Ok (List.map (fun (assumps, subgoal) -> (of_focused_context assumps, Entailment subgoal)) subgoals,
               empty_update))
+
+end
+
+module Make_renderer (Html : Html_sig.S) = struct
+  open Focused_proof_renderer.HTML_Bits (Html)
+  open Fol_formula
+  open Syntax
+
+  module FR = Focused_proof_renderer.Make (Html)
+
+  let (@|) e es = e (Html.concat_list es)
+
+  let render_hole ~goal ~command_entry ~msg =
+    let open Html in
+    let rendered_msg =
+      match msg with
+      | None -> empty
+      | Some msg -> div ~attrs:[ A.class_ "errormsg" ] (text msg)
+    in
+    match goal with
+    | Calculus.Entailment goal ->
+       FR.render_hole ~goal ~command_entry ~msg
+    | Calculus.Program { precond; postcond } ->
+       div ~attrs:[ A.class_ "hole" ]
+         (vertical @| [
+            comment (Pretty.(group (Calculus.pp_formula_or_meta precond)));
+            command_entry;
+            rendered_msg;
+            comment (Pretty.(group (Calculus.pp_formula_or_meta postcond)))
+          ])
+
+  let render_rule ~resetbutton ~rule ~children:boxes =
+    let open Html in
+    match rule with
+    | Calculus.Program_rule End ->
+       (match boxes with
+       | [] ->
+          div (resetbutton ^^ code (text "end"))
+       | [ proof ] ->
+          vertical @| [
+             div (resetbutton ^^ code (textf "end"));
+             div (textf "Proof:");
+             indent_box proof;
+             div (textf "End proof");
+           ]
+       | _ ->
+          text "SOMETHING WENT WRONG")
+    | Calculus.Program_rule (Assign (var, expr)) ->
+       vertical @| [
+          div (resetbutton ^^ code (textf "%s := %s;" (Program_var.to_string var) (string_of_expr expr)));
+          concat_list boxes
+        ]
+    | Calculus.Program_rule (Assert fmla) ->
+       (match boxes with
+       | [ proof; continuation ] ->
+          (* FIXME: HTML rendering of formula? *)
+          vertical @| [
+             div (resetbutton ^^ code (textf "assert \"%s\";" (Formula.to_string fmla)));
+             div (textf "Proof:");
+             indent_box proof;
+             div (textf "End proof");
+             continuation
+           ]
+       | _ ->
+          text "SOMETHING WENT WRONG")
+    | Calculus.Program_rule (If bool_expr) ->
+       (match boxes with
+       | [ then_case; else_case; continuation ] ->
+          vertical @| [
+             div (resetbutton ^^ code (textf "if (%s) {" (string_of_boolean_expr bool_expr)));
+             indent_box then_case;
+             div (code (text "} else {"));
+             indent_box else_case;
+             div (code (text "}"));
+             continuation
+           ]
+       | _ ->
+          text "SOMETHING WENT WRONG")
+    | Calculus.Program_rule (While bool_expr) ->
+       (match boxes with
+       | [ body; continuation ] ->
+          vertical @| [
+             div (resetbutton ^^ code (textf "while (%s) {" (string_of_boolean_expr bool_expr)));
+             indent_box body;
+             div (code (text "}"));
+             continuation
+           ]
+       | _ ->
+          text "SOMETHING WENT WRONG")
+    | Calculus.Proof_rule rule ->
+       FR.render_rule ~resetbutton ~rule ~children:boxes
+
+  let render_assumption = function
+    | nm, Calculus.Program_variable ->
+       comment Pretty.(textf "{ ‘%s’ is a program variable }" nm)
+    | nm, Calculus.Logic_variable ->
+       FR.render_assumption (nm, Focused.A_Termvar)
+    | nm, Calculus.Assumed_formula fmla ->
+       FR.render_assumption (nm, Focused.A_Formula fmla)
+
+  let prologue = function
+    | Calculus.Program { precond; _ } ->
+       comment Pretty.(group (nest 4 (text "{ requires" ^^ break ^^ Calculus.pp_formula_or_meta precond) ^^ break ^^ text "}"))
+    | _ ->
+       (* SHOULDN'T HAPPEN! *)
+       Html.empty
+
+  let epilogue = function
+    | Calculus.Program { postcond; _ } ->
+       comment Pretty.(group (nest 4 (text "{ ensures" ^^ break ^^ Calculus.pp_formula_or_meta postcond) ^^ break ^^ text "}"))
+    | _ ->
+       Html.empty
 
 end
 
@@ -402,11 +522,148 @@ module UI : Proof_tree_UI2.UI_SPEC with module Calculus = Calculus = struct
           Error "invalid assignment"
        | Some var, Some e ->
           Ok (Program_rule (Assign (var, e))))
-    | Sexplib.Type.Atom atm ->
+    | Sexplib.Type.Atom _atm ->
        let* rule = Focused_ui2.parse_rule str in
        Ok (Calculus.Proof_rule rule)
     | _ ->
        Error "command not understood"
+
+end
+
+(* This is a generic UI for any 'vertical' proof format *)
+module MakeUI
+         (M : sig
+            module Calculus : Proof_tree.CALCULUS
+                   with type error = string
+
+            module Renderer (Html : Html_sig.S) : sig
+              val render_hole : goal:Calculus.goal -> command_entry:'a Html.t -> msg:string option -> 'a Html.t
+              val render_rule : resetbutton:'a Html.t -> rule:Calculus.rule -> children:'a Html.t list -> 'a Html.t
+              val render_assumption : string * Calculus.assumption -> 'a Html.t
+
+              val prologue : Calculus.goal -> 'a Html.t
+              val epilogue : Calculus.goal -> 'a Html.t
+            end
+
+            val parse_rule : string -> (Calculus.rule, string) result
+          end)
+         (Param : sig
+            val assumptions : (string * M.Calculus.assumption) list
+            val goal        : M.Calculus.goal
+          end) :
+sig
+  type state
+
+  type action
+
+  val sexp_of_state : state -> Sexplib.Type.t
+  val state_of_sexp : Sexplib.Type.t -> state option
+
+  val initial : state
+  val render : state -> action Ulmus.html
+  val update : action -> state -> state
+end = struct
+
+  open M
+  open Param
+
+  module Hole = struct
+    type goal = Calculus.goal
+
+    type t =
+      { command : string
+      ; message : string option
+      } [@@deriving sexp]
+
+    let empty _ = { command = ""; message = None }
+  end
+
+  module PT = Proof_tree.Make (Calculus) (Hole)
+
+  type state = PT.t
+
+  let sexp_of_state state = PT.sexp_of_tree (PT.to_tree state)
+
+  let state_of_sexp sexp =
+    match PT.of_tree assumptions goal (PT.tree_of_sexp sexp) with
+    | Ok state -> Some state
+    | Error _ | exception _ -> None
+
+  let initial =
+    PT.init ~assumptions goal
+
+  type action =
+    | UpdateHole of PT.point * Hole.t
+    | SendHole of PT.point * string
+    | ResetTo of PT.point
+
+  module H = Focused_proof_renderer.HTML_Bits (Ulmus.Html)
+  open Renderer (Ulmus.Html)
+
+  let resetbutton pt =
+    let open Ulmus.Html in
+    button
+      ~attrs:[ E.onclick (ResetTo pt); A.class_ "resetbutton" ]
+      (text "reset")
+
+  let render_box assumps content position =
+    let open Ulmus.Html in
+    match assumps, position with
+    | [], _ | _, `Top ->
+       (* Do not render top-level assumptions *)
+       content `Inner
+    | assumps, _ ->
+       H.vertical (concat_map render_assumption assumps ^^ content `Inner)
+
+  let (@|) e es = e (Ulmus.Html.concat_list es)
+
+  let render t =
+    let goal = PT.root_goal t in
+    let open Ulmus.Html in
+    H.vertical @| [
+        prologue goal;
+        PT.fold
+          (fun pt Hole.{ command; message } _ ->
+            let command_entry =
+              input
+                ~attrs:[
+                  A.class_ "commandinput";
+                  A.value command;
+                  A.placeholder "<command>";
+                  E.oninput (fun command -> UpdateHole (pt, { command; message }));
+                  E.onkeydown (fun _mods key ->
+                      match key with
+                      | Js_of_ocaml.Dom_html.Keyboard_code.Enter ->
+                         Some (SendHole (pt, command))
+                      | _ -> None);
+                ]
+            in
+            render_hole ~goal:(PT.goal pt) ~command_entry ~msg:message)
+          (fun pt rule children _ ->
+            let children = List.map (fun c -> c `Inner) children in
+            render_rule ~resetbutton:(resetbutton pt) ~rule ~children)
+          render_box
+          t
+          `Top;
+        epilogue goal
+      ]
+
+  let update action _prooftree =
+    match action with
+    | UpdateHole (pt, hole_data) ->
+       PT.set_hole hole_data pt
+    | SendHole (pt, command) ->
+       (match parse_rule command with
+       | Ok rule ->
+          (match PT.apply rule pt with
+          | Ok prooftree -> prooftree
+          | Error (`RuleError msg) -> PT.set_hole { command; message = Some msg } pt)
+       | Error msg ->
+          PT.set_hole { command; message = Some msg } pt)
+    | ResetTo pt ->
+       (* let tree = PT.subtree_of_point pt in
+          let command = string_of_tee tree in *)
+       PT.set_hole { command = ""; message = None } pt
 
 end
 
@@ -418,6 +675,7 @@ module Config_parser = struct
   type config =
     { program_vars : Program_var.t list
     ; logic_vars   : string list
+    ; assumptions  : (string * formula) list
     ; precond      : formula
     ; postcond     : formula
     }
@@ -440,17 +698,27 @@ module Config_parser = struct
     (* FIXME: lower case *)
     Ok str
 
+    let assumption =
+    sequence
+      (let+ name       = consume_next atom
+       and+ assumption = consume_next formula
+       and+ ()         = assert_nothing_left in
+       (name, assumption))
+
   let config_p =
     tagged "hoare"
       (let+ program_vars = consume_opt "program_vars" (many program_var_p)
        and+ logic_vars   = consume_opt "logic_vars" (many logic_var_p)
+       and+ assumptions  = consume_opt "assumptions" (many assumption)
        and+ precond      = consume_one "precond" (one formula)
        and+ postcond     = consume_one "postcond" (one formula) in
        let program_vars = Option.value ~default:[] program_vars in
        let logic_vars   = Option.value ~default:[] logic_vars in
+       let assumptions  = Option.value ~default:[] assumptions in
        (* FIXME: check that requires and ensures are well-scoped in
-          the program and logic vars *)
-       { program_vars; logic_vars; precond; postcond })
+          the program and logic vars, and that all of the assumptions
+          are closed. *)
+       { program_vars; logic_vars; assumptions; precond; postcond })
 
 end
 
@@ -463,16 +731,31 @@ let component config =
      let detail = Generalities.Annotated.detail err in
      let message = "Configuration failure: " ^ detail in
      Widgets.Error_display.component message
-  | Ok Config_parser.{ precond; postcond; program_vars; logic_vars } ->
-     let module G = struct
-         let assumptions =
-           List.map (fun nm -> Syntax.Program_var.to_string nm, Calculus.Program_variable) program_vars
-           @ List.map (fun nm -> nm, Calculus.Logic_variable) logic_vars
-         let goal =
-           Calculus.Program
-             { precond = Formula precond
-             ; postcond = Formula postcond
-             }
+  | Ok Config_parser.{ precond; postcond; assumptions; program_vars; logic_vars } ->
+     let assumptions =
+       List.map (fun nm -> Syntax.Program_var.to_string nm, Calculus.Program_variable) program_vars
+       @ List.map (fun nm -> nm, Calculus.Logic_variable) logic_vars
+       @ List.map (fun (nm, fmla) -> nm, Calculus.Assumed_formula fmla) assumptions
+     and goal =
+       Calculus.Program
+         { precond = Formula precond
+         ; postcond = Formula postcond
+         }
+     in
+     let module Component = struct
+         module M = struct
+           module Calculus = Calculus
+           module Renderer = Make_renderer
+           let parse_rule = UI.parse_rule
+         end
+         include MakeUI (M) (struct let assumptions = assumptions let goal = goal end)
+
+         let serialise t =
+           Sexplib.Sexp.to_string (sexp_of_state t)
+         let deserialise str =
+           match state_of_sexp (Sexplib.Sexp.of_string str) with
+           | None | exception _ -> None
+           | Some t -> Some t
        end
      in
-     (module Proof_tree_UI2.Make (UI) (G) : Ulmus.PERSISTENT)
+     (module Component : Ulmus.PERSISTENT)
