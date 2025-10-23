@@ -5,7 +5,7 @@ type token = Parser.token
 }
 
 let white   = [' ' '\t' '\n']+
-let ident   = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-']*
+let ident   = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-' '\'']*
 let digit   = ['0'-'9']
 
 rule token = parse
