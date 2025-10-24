@@ -214,7 +214,7 @@ let apply context rule = function
         let* () = check_program_variable program_var context in
         let* () = check_expr context expr in
         let logic_var =
-          NameSet.fresh_for (name_set_of_context context) (String.lowercase_ascii program_var)
+          NameSet.fresh_for (name_set_of_context context) ("old" ^ program_var)
         in
         let p = Formula.subst program_var (Term.Var logic_var) precond in
         let e = Term.subst program_var (Term.Var logic_var) expr in
