@@ -5,6 +5,8 @@ type t =
   | Fun of string * t list
 [@@deriving sexp]
 
+val compare : t -> t -> int
+
 (** {2 Printing} *)
 
 val to_string : t -> string

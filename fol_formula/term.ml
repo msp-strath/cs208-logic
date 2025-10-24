@@ -6,6 +6,17 @@ type t =
   | Fun of string * t list
 [@@deriving sexp]
 
+let rec compare t1 t2 = match t1, t2 with
+  | Var v1, Var v2 -> String.compare v1 v2
+  | Var _,  Fun _  -> -1
+  | Fun _,  Var _  -> 1
+  | Fun (r1, tms1), Fun (r2, tms2) ->
+     let c = String.compare r1 r2 in
+     if c = 0 then
+       List.compare compare tms1 tms2
+     else
+       c
+
 (******************************************************************************)
 
 let is_numeric_constant s =
