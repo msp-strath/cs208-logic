@@ -93,6 +93,9 @@ let commands =
 
   ; "induction",
     (let+ v = var_nm in Induction v)
+
+  ; "auto",
+    plain Auto
   ]
 
 let of_string =

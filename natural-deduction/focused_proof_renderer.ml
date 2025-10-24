@@ -244,6 +244,7 @@ module Make (Html : Html_sig.S) = struct
                    ^ ";"));
             concat_list boxes]
     | Close -> div (resetbutton ^^ text "done.")
+    | Auto -> div (resetbutton ^^ text "auto.")
 
   let render_assumption = function
     | nm, Focused.A_Formula assump ->
@@ -292,7 +293,7 @@ module LaTeX (PT : PROOF_TREE) =
       let name_of_rule = Focused.Rule.name
     end)
 
-
+(*
 module LambdaTerm = struct
 
   open Fol_formula
@@ -393,3 +394,4 @@ module LambdaTerm = struct
        Elim Done
 
 end
+ *)

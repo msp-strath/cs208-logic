@@ -35,6 +35,8 @@ type rule =
   | Subst of string * formula
   | Rewrite of [ `ltr | `rtl ]
   | Close
+
+  | Auto
 [@@deriving sexp]
 
 module Rule : sig
