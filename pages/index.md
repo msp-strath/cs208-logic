@@ -73,6 +73,8 @@ The pages linked to below contain the lecture notes, covering the material intro
 
    [Specification and Verification](specify-verify.md) introduces the topic of how we say what we want programs to do, and how we might go about proving those things. We look at a simple model of programs, and introduce a new logic, Hoare Logic, to prove specifications of programs.
 
+   The [page on Hoare Logic](hoare-logic.md) demonstrates the use of Hoare logic on some small examples.
+
    [The lecture slides for this topic](topic05-slides.pdf).
 
 -  Topic 6 will be **Programs with Loops**.

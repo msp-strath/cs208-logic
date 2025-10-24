@@ -465,7 +465,7 @@
 
   \begin{enumerate}
   \item If the initial state $s_1$ satisfies some predicate $P(s_1)$; and
-  \item the program starts in state $s_1$ and finished in state $s_2$, then
+  \item the program starts in state $s_1$ and finishes in state $s_2$, then
   \item the final state $s_2$ satisfies a predicate $Q(s_2)$.
   \end{enumerate}
 
@@ -489,7 +489,7 @@
   \begin{displaymath}
     \forall s_1. \forall s_2. P(s_1) \to \mathrm{exec}(\mathit{prog},s_1,s_2) \to Q(s_2)
   \end{displaymath}
-  In words: if $P$ is true before executing $\mathit{prog}$, then $Q$ is true afterwards.
+  If $P$ is true before executing $\mathit{prog}$, then $Q$ is true afterwards.
 \end{frame}
 
 \begin{frame}
@@ -523,10 +523,18 @@
   The ``Big idea'' is that (mostly) the structure of the proof follows
   the structure of the program.
 
-  \bigskip
+  % \bigskip
 
-  Topic 6 will use a specific tool for Hoare Logic.
+  % Topic 6 will use a specific tool for Hoare Logic.
 \end{frame}
+
+% \begin{frame}
+%   {A Simple Programming Language}
+
+%   \begin{displaymath}
+
+%   \end{displaymath}
+% \end{frame}
 
 \begin{frame}
   {Hoare Logic: Rules}

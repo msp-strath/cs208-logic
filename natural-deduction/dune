@@ -3,3 +3,9 @@
  (libraries ulmus fol_formula html_sig js_of_ocaml generalities widgets)
  (preprocess
   (pps ppx_monoid ppx_sexp_conv)))
+
+(menhir
+ (flags --unused-token UNKNOWN)
+ (modules hoare_parser))
+
+(ocamllex hoare_lexer)
