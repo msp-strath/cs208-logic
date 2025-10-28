@@ -36,6 +36,7 @@ let template ~title:title_text ?(sub_title="") ~script_url navigation_html body_
             p (text sub_title);
             nav @| [
                 a ~attrs:[A.href "index.html"] (text "Contents");
+                a ~attrs:[A.href "coursework2025-26.html"] (text "Coursework");
               ]
           ];
           div ~attrs:[ A.class_ "navigation" ] navigation_html;
