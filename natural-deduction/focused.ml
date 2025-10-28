@@ -109,6 +109,33 @@ end
 
 module AutoProver = Prover.Make (Prover.Equality_solver)
 
+let do_auto ?focus context goal =
+  let names, assumptions =
+    List.fold_left
+      (fun (names, assumptions) (nm, kind) ->
+        match kind with
+        | A_Termvar -> (NameSet.add nm names, assumptions)
+        | A_Formula f -> (names, (false, f)::assumptions))
+      (NameSet.empty, [])
+      context
+  in
+  let sequent = (true, goal)::assumptions in
+  let sequent = match focus with None -> sequent | Some f -> (false, f)::sequent in
+  match AutoProver.prove names sequent with
+  | `Proved ->
+     Ok ([], ())
+  | `Counter literals ->
+     let string_of_terms tms = String.concat ", " (List.map Term.to_string tms) in
+     let string_of_literal = function
+       | (true, rel, tms) -> rel ^ "(" ^ string_of_terms tms ^ ")"
+       | (false, rel, tms) -> "¬" ^ rel ^ "(" ^ string_of_terms tms ^ ")"
+     in
+     let report =
+       String.concat "; " (List.map string_of_literal literals)
+     in
+     errormsgf "auto: failed with [%s]" report
+
+
 let apply context rule goal =
   match rule with
   | Introduce x -> (
@@ -290,29 +317,7 @@ let apply context rule goal =
           errormsg "done not possible: no formula is currently in focus")
   | Auto ->
      (match goal with
-     | Synthesis _ ->
-        errormsg "auto: only to be used with no formula in focus"
+     | Synthesis (focus, goal) ->
+        do_auto ~focus context goal
      | Checking goal ->
-        let names, assumptions =
-          List.fold_left
-            (fun (names, assumptions) (nm, kind) ->
-              match kind with
-              | A_Termvar -> (NameSet.add nm names, assumptions)
-              | A_Formula f -> (names, (false, f)::assumptions))
-            (NameSet.empty, [])
-            context
-        in
-        let sequent = (true, goal)::assumptions in
-        match AutoProver.prove names sequent with
-        | `Proved ->
-           Ok ([], ())
-        | `Counter literals ->
-           let string_of_terms tms = String.concat ", " (List.map Term.to_string tms) in
-           let string_of_literal = function
-             | (true, rel, tms) -> rel ^ "(" ^ string_of_terms tms ^ ")"
-             | (false, rel, tms) -> "¬" ^ rel ^ "(" ^ string_of_terms tms ^ ")"
-           in
-           let report =
-             String.concat "; " (List.map string_of_literal literals)
-           in
-           errormsgf "auto: failed with [%s]" report)
+        do_auto context goal)
