@@ -58,7 +58,7 @@ module Make_renderer (Html : Html_sig.S) = struct
              FIXME: hiding proofs?
            *)
           vertical @| [
-             div (resetbutton ^^ code (textf "assert \"%s\"" (Formula.to_string fmla)));
+             div (resetbutton ^^ code (textf "assert (%s)" (Formula.to_string fmla)));
              div (textf "Proof:");
              indent_box proof;
              div (textf "End proof");
