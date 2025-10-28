@@ -37,6 +37,7 @@ type rule =
   | Close
 
   | Auto
+  | Store of string
 [@@deriving sexp]
 
 module Rule : sig

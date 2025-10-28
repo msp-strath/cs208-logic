@@ -96,7 +96,10 @@ let commands =
 
   ; "auto",
     plain Auto
-  ]
+
+  ; "store",
+    (let+ nm = assump_nm in Store nm)
+]
 
 let of_string =
   Command.of_string commands

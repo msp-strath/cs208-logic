@@ -51,6 +51,7 @@ type rule =
   | Close
 
   | Auto
+  | Store of string
 [@@deriving sexp]
 
 module Rule = struct
@@ -80,6 +81,7 @@ module Rule = struct
     | Rewrite `rtl -> "Rewrite←"
     | Induction _ -> "Induction"
     | Auto -> "auto"
+    | Store _ -> "Store"
 end
 
 type error = string
@@ -321,3 +323,9 @@ let apply context rule goal =
         do_auto ~focus context goal
      | Checking goal ->
         do_auto context goal)
+  | Store h ->
+     (match goal with
+     | Synthesis (focus, goal) ->
+        Ok ([ ([h, A_Formula focus], Checking goal) ], ())
+     | Checking _ ->
+        errormsg "'store' not usable with no formula in focus")

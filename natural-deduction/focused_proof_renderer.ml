@@ -245,6 +245,12 @@ module Make (Html : Html_sig.S) = struct
             concat_list boxes]
     | Close -> div (resetbutton ^^ text "done.")
     | Auto -> div (resetbutton ^^ text "auto.")
+    | Store h ->
+       vertical
+         [%concat
+             div (resetbutton ^^ textf "store " ^^ em (text h) ^^ text ";");
+          concat_list boxes]
+
 
   let render_assumption = function
     | nm, Focused.A_Formula assump ->
