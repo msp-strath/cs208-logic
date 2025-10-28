@@ -1,14 +1,12 @@
 # Specification and Verification
 
 ```aside
-This page assumes that you have understood the [predicate logic syntax](pred-logic-intro.html] and [proof rules for predicate logic](pred-logic-rules.html).
+This page assumes that you have understood the [predicate logic syntax](pred-logic-intro.html) and [proof rules for predicate logic](pred-logic-rules.html).
 ```
 
-**This page is partially finished... there are exercises at the bottom, but most of the material is on the [slides](topic05-slides.pdf)**
+One of the motivating reasons to use logic in Computer Science is to *specify* what software systems are supposed to do, and to *verify* that they actually do so. But first, we have to learn where specification and verification fit into the overall picture of software development and how formal logic may help.
 
-One of the motivating reasons to use logic in Computer Science is to *specify* what software systems are supposed to do, and to *verify* that they actually do so. But first, we have to learn where specification and verification fit into the overall picture of software development.
-
-## Validation and Verification
+## Validation and Verification {id=specify-verify:valid-verif}
 
 The problem of building a software system that is fit for purpose involves two key questions:
 
@@ -27,16 +25,13 @@ The process of coming up with a specification is not a one-off event. Software s
 
 Software systems are not monolithic entities. A single system (e.g., the Pegasus system used at Strathclyde for student and staff records) will itself be composed of multiple sub-systems (e.g., payroll, admissions, curriculum history, exam boards, course catalogues, ...), and each of those will be built from components (e.g., databases, web frontend frameworks, message queues, reporting tools, ...), built on lower-level components (e.g., programming language implementations, operating systems, networks, ...) right down to the hardware. Each of these sub-systems and components has a specification and the questions of validation and verification need answering.
 
-## Formal Specification
+## Formal Specification and Verification {id=specify-verify:formalspec}
 
 A specification is in some sense a contract between the implementor of a system and its stakeholders. (In some cases this is literally true.) It is therefore of interest to make sure that the specification is consistent and unambiguous, and to provide a method for verifying
 
-In some cases, it is possible to write down parts of a system's specification as statements in formal logic.
+In some cases it is possible to write down parts of a system's specification as statements in formal logic. We explore this over the next few topics by using [Hoare Logic](hoare-logic.md).
 
-Despite the fact that specifications for complete systems are often complex, fast moving, and difficult to write down, there are cases
-
-TODO: finish this section. See [the slides](topic05-slides.pdf) for now.
-
+To use formal logic, however, we need a formal model of the kinds of programs that we want to specify and verify. Let us look at a very simple formal model of programs that will be enough to illustrate the important points of formal verification.
 
 ### A Simple Model of Programs {id=specify-verify:simple-model}
 
@@ -48,22 +43,22 @@ exec(prog, initialState, finalState)
 
 which means “running the program `prog` with the initial state `initialState` can finish with the final state `finalState`”.
 
-1. There may be no output for a given input, meaning that for a fixed `prog` and `initialState`, there may be no `finalState` for which `exec(prog, initialState, finalState)` is true. In terms of execution of real programs, we would observe this by a program “hanging” and never returning an output.
+1. There may be no final state for a given initial state, meaning that for a fixed `prog` and `initialState`, there may be no `finalState` for which `exec(prog, initialState, finalState)` is true. In terms of execution of real programs, we would observe this by a program “hanging” and never returning an output.
 
-2. This definition also allows multiple possible answers for the same input, where we could have `exec(program, input, output1)` and `exec(program, input, output2)` both being true with `output1 != output2`. This can also be used to talk about programs where some part is left unspecified, such as an exact ordering of data in a container (see, for example, how the [Go Programming Language enforces that programs should not rely on the order of data stored in hashmaps](https://nathanleclaire.com/blog/2014/04/27/a-surprising-feature-of-golang-that-colored-me-impressed/)).
+2. This definition also allows multiple possible answers for the same initialState, where we could have `exec(program, initialState, finalState1)` and `exec(program, initialState, finalState2)` both being true with `finalState1 != finalState2`. This can also be used to talk about programs where some part is left unspecified, such as an exact ordering of data in a container (see, for example, how the [Go Programming Language enforces that programs should not rely on the order of data stored in hashmaps](https://nathanleclaire.com/blog/2014/04/27/a-surprising-feature-of-golang-that-colored-me-impressed/)).
 
 3. This definition does not distinguish between things that are program-like and things that are data-like for input and output. In particular, a program can take itself as an input. This flexibility of self reference will be crucial for stating the [halting problem and proving that it is undecidable](halting-problem.md).
 
-4. This definition is highly simplified in many ways. It says nothing about the time, space, or other resources needed to carry out the computation of `output` from `input`. Nor does it allow for interactive computation where a program takes input and sends output during execution rather than at the start and end. Nevertheless, it does allow us to talk about what computers can and cannot compute.
+4. This definition is highly simplified in many ways. It says nothing about the time, space, or other resources needed to carry out the computation of `finalState` from `initialState`. Nor does it allow for interactive computation where a program takes input and sends output during execution rather than at the start and end. Nevertheless, it does allow us to talk about what computers can and cannot compute.
 
-### Properties of Programs
+### Properties of Programs {id=specify-verify:properties-of-programs}
 
 Equipped with the `exec` predicate, we can use it to state various properties of a program `prog`.
 
-1. We can say “the program `prog` halts for the input `input`”:
+1. We can say “the program `prog` halts for the input `initialState`”:
 
    ```formula
-   ex output. exec(prog, input, output)
+   ex finalState. exec(prog, initialState, finalState)
    ```
 
    The word “halts” comes from thinking of a computer as a machine that steps through the computation. A basic question is whether or not the machine runs forever, or halts with an answer. With our `exec` predicate, we are ignoring the details of individual steps, but we can still ask the question of whether or not a program produces an output.
@@ -73,18 +68,18 @@ Equipped with the `exec` predicate, we can use it to state various properties of
 2. “The program `prog` halts for all inputs”:
 
    ```formula
-   all input. ex output. exec(prog, input, output)
+   all initialState. ex finalState. exec(prog, initialState, finalState)
    ```
 
-   This is a stronger statement than the previous one. Instead of asking whether or not a program halts for a specific `input`, it asks whether or not it halts for *all* inputs.
+   This is a stronger statement than the previous one. Instead of asking whether or not a program halts for a specific `initialState`, it asks whether or not it halts for *all* inputs.
 
-3. The program `prog` does not halt on the input `input`:
+3. The program `prog` does not halt on the input `initialState`:
 
    ```formula
-   ¬(ex output. exec(prog, input, output))
+   ¬(ex finalState. exec(prog, initialState, finalState))
    ```
 
-   The negation of the first property states that a `prog` produces no answer on the input `input`.
+   The negation of the first property states that a `prog` produces no answer on the input `initialState`.
 
 4. The `exec` predicate allows for multiple potential outputs for a single initial state, which is referred to as being “non-deterministic”. If we want to specify that a program is “deterministic”, then we need to say that for any two final states from the same initial state, those final states are equal:
 
@@ -92,7 +87,7 @@ Equipped with the `exec` predicate, we can use it to state various properties of
    all s. all s1. all s2. exec(prog, s, s1) -> exec(prog, s, s2) -> s1 = s2
    ```
 
-## Specifying Programs
+## Specifying Programs {id=specify-verify:programs}
 
 The statements about programs we looked at above are quite generic, and don't say much about what programs actually do. Usually we are interested in statements like “if the inital state satisfies `P`, then the final state satisfies `Q`”.
 
@@ -104,7 +99,7 @@ For example:
 
 It is possible to think of “specifications” that are quite difficult to write down. Nevertheless, it is possible for some small critical parts of programs to give precise specifications, such as “this program sorts arrays”, or this “program never throws a `NullPointerException`”.
 
-### Partial and Total Correctness
+### Partial Correctness {id=specify-verify:programs:partial}
 
 We can say that the program `prog` satisfies a specification if whenever `P` is true for the input, then `Q` is true for any output of the program:
 
@@ -120,11 +115,13 @@ This kind of specification is called **partial correctness**: it says that if th
 	{ P } prog { Q }
 ```
 
-called a *Hoare Triple* after C. A. R. Hoare, who invented the Hoare Logic named after him. FIXME: citation.
+called a *Hoare Triple* after C. A. R. Hoare, who invented the Hoare Logic named after him. It was introduced in Hoare's paper [An axiomatic basis for computer programming](https://dl.acm.org/doi/10.1145/363235.363259).
 
 We will look at a proof system for Hoare Triples in [the page on Hoare Logic](hoare-logic.md).
 
-A stronger condition is **total correctness**, which says that if the precondition `P` holds, then the program always halts, and every output the program can generate satisfies the postcondition `Q`:
+### Total Correctness {id=specify-verify:programs:total}
+
+A stronger condition than partial correctness is **total correctness**, which says that if the precondition `P` holds, then the program always halts, and every output the program can generate satisfies the postcondition `Q`:
 
 ```formula
 all s1. P(s1) -> ((ex s2. exec(prog, s1, s2)) /\ (all s2. exec(prog, s1, s2) -> Q(s2)))
@@ -134,6 +131,16 @@ Total Hoare triples are written like this:
 
 ```
 	 [ P ] prog [ Q ]
+```
+
+As you might expect, total correctness implies partial correctness:
+
+```focused-nd {id=specify-verify-total-partial}
+(config
+ (assumptions
+  (prog var)
+  (prog-total-spec "all s1. P(s1) -> ((ex s2. exec(prog, s1, s2)) /\ (all s2. exec(prog, s1, s2) -> Q(s2)))"))
+ (goal "all s1. all s2. P(s1) -> exec(prog,s1,s2) -> Q(s2)"))
 ```
 
 The full specification of total correctness is quite a mouthful, and it seems a bit roundabout that we have to prove that the program halts and separately that all of the answers meet the postcondition. There is a weaker specification, that says that there exists at least one final state that meets the post condition, but leaves open the possibility that it might halt in another state that does not meet it.
