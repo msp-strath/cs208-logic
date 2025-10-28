@@ -46,6 +46,7 @@ The vocabulary we will use is as follows, where in each case `x`, `y`, etc. are 
 7. `employed(x,y)`, meaning that (staff member) `x` is employed on (course) `y`.
 8. `assessmentOf(x,y)`, meaning that (assessment) `x` is for (course) `y`.
 9. `attemptBy(x,y)`, meaning that (attempt) `x` is by (student) `y`.
+10. `attemptOf(x,y)`, meaning that (attempt) `x` is of (assessment) `y`.
 10. `marked(x,y)`, meaning that (attempt) `x` has been marked by (staff member) `y`.
 
 Write the following statements as logical formulas using this vocabulary.
@@ -92,7 +93,7 @@ If you feel that your answer needs some commentary, then enter this in the text 
    ```textbox {id=cw2025-q1f-comment}
    ```
 
-7. Every marked assessment is of an assessment that is attached to a course and is marked by a staff member for that course.
+7. Every marked attempt is of an assessment that is attached to a course and is marked by a staff member for that course.
 
    ```formulaentry {id=cw2025-q1g}
    ```
