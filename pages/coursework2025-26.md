@@ -9,9 +9,9 @@ The questions are on this page, along with places for you to write your answers.
 
 The whole page is marked out of 20.
 
-Once you have completed the questions, please click on the “Download” button to download your answers as a file called `cs208-2025-coursework.answers`. When you are ready to submit your answers, please upload the file to [the MyPlace submission page](https://classes.myplace.strath.ac.uk/mod/assign/view.php?id=1774245).
+Once you have completed the questions, please click on the “Download” button to download your answers as a file called `cs208-2025-coursework.answers`. When you are ready to submit your answers, please upload the file to [the MyPlace submission page](https://classes.myplace.strath.ac.uk/mod/assign/view.php?id=2163360).
 
-The deadline is **17:00 Wednesday 26th November 2025**. All extension requests should be submitted via [MyPlace](https://classes.myplace.strath.ac.uk/mod/assign/view.php?id=1774245).
+The deadline is **17:00 Wednesday 26th November 2025**. All extension requests should be submitted via [MyPlace](https://classes.myplace.strath.ac.uk/mod/assign/view.php?id=2163360).
 
 ```download
 cs208-2025-coursework.answers
