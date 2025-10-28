@@ -71,9 +71,9 @@ The pages linked to below contain the lecture notes, covering the material intro
 
 -  Topic 5 is **Specification and Verification**.
 
-   [Specification and Verification](specify-verify.md) introduces the topic of how we say what we want programs to do, and how we might go about proving those things. We look at a simple model of programs, and introduce a new logic, Hoare Logic, to prove specifications of programs.
+   [Specification and Verification](specify-verify.md) introduces the topic of how we say what we want programs to do, and how we might go about proving those things. We look at a simple model of programs in which we can state some properties of programs.
 
-   The [page on Hoare Logic](hoare-logic.md) demonstrates the use of Hoare logic on some small examples.
+   The [page on Hoare Logic](hoare-logic.md) introduces Hoare Logic, a logic for proving specifications of programs, demonstrates its use on programs without loops.
 
    [The lecture slides for this topic](topic05-slides.pdf).
 

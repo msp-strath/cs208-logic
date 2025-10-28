@@ -101,16 +101,37 @@ module Make_renderer (Html : Html_sig.S) = struct
     | nm, Assumed_formula fmla ->
        FR.render_assumption (nm, Focused.A_Formula fmla)
 
-  let prologue = function
+  let prologue assumptions = function
     | Program { precond; _ } ->
-       comment Pretty.(group (nest 4 (text "{ requires" ^^ break ^^ pp_formula_or_meta precond) ^^ break ^^ text "}"))
+       let logic_vars = List.rev @@ List.filter_map (function (nm, Logic_variable) -> Some nm | _ -> None) assumptions in
+       let prog_vars = List.rev @@ List.filter_map (function (nm, Program_variable) -> Some nm | _ -> None) assumptions in
+       let assumps = List.rev @@ List.filter_map (function (nm, Assumed_formula f) -> Some (nm, f) | _ -> None) assumptions in
+       let open Html in
+       vertical @| [
+           (match logic_vars with
+           | [] -> empty
+           | _ -> div (strong (text "for all ") ^^ text (String.concat ", " logic_vars)));
+           (match assumps with
+           | [] -> empty
+           | _ ->
+              div (strong (text "assuming")) ^^
+                indent_box (vertical (concat_map (fun (nm, f) -> div (text nm ^^ text " : " ^^ text (Formula.to_string f))) assumps)));
+           div (strong (text "var ") ^^ code (text (String.concat ", " prog_vars)));
+           div (strong (text "precondition ")
+                ^^ text (Pretty.to_string ~width: 100 (pp_formula_or_meta precond)))
+         ]
     | _ ->
        (* SHOULDN'T HAPPEN! *)
        Html.empty
 
   let epilogue = function
     | Program { postcond; _ } ->
-       comment Pretty.(group (nest 4 (text "{ ensures" ^^ break ^^ pp_formula_or_meta postcond) ^^ break ^^ text "}"))
+       let open Html in
+       vertical @| [
+          div (strong (text "postcondition ")
+               ^^ text (Pretty.to_string ~width: 100 (pp_formula_or_meta postcond)))
+
+        ]
     | _ ->
        Html.empty
 
@@ -223,7 +244,7 @@ module MakeUI
               val render_rule : resetbutton:'a Html.t -> rule:Calculus.rule -> children:'a Html.t list -> 'a Html.t
               val render_assumption : string * Calculus.assumption -> 'a Html.t
 
-              val prologue : Calculus.goal -> 'a Html.t
+              val prologue : (string * Calculus.assumption) list -> Calculus.goal -> 'a Html.t
               val epilogue : Calculus.goal -> 'a Html.t
             end
 
@@ -300,10 +321,11 @@ end = struct
   let (@|) e es = e (Ulmus.Html.concat_list es)
 
   let render t =
+    let assumptions = PT.root_assumptions t in
     let goal = PT.root_goal t in
     let open Ulmus.Html in
     H.vertical @| [
-        prologue goal;
+        prologue assumptions goal;
         PT.fold
           (fun pt Hole.{ command; message } _ ->
             let command_entry =

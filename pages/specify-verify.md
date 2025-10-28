@@ -38,7 +38,7 @@ Despite the fact that specifications for complete systems are often complex, fas
 TODO: finish this section. See [the slides](topic05-slides.pdf) for now.
 
 
-### A Simple Model of Programs
+### A Simple Model of Programs {id=specify-verify:simple-model}
 
 We define our (simplified) world of programs and their execution via one predicate `exec`:
 
@@ -92,7 +92,7 @@ Equipped with the `exec` predicate, we can use it to state various properties of
    all s. all s1. all s2. exec(prog, s, s1) -> exec(prog, s, s2) -> s1 = s2
    ```
 
-## Hoare Logic for Partial Correctness
+## Specifying Programs
 
 The statements about programs we looked at above are quite generic, and don't say much about what programs actually do. Usually we are interested in statements like “if the inital state satisfies `P`, then the final state satisfies `Q`”.
 
@@ -102,11 +102,11 @@ For example:
    3. If the input is a map and a start and end point, the output is the route from the start to the end point that is “the best”.
    4. If the input is a description of the obstacles currently visible on the road, the output is instructions to the car's steering, brakes and acceleration that avoids them in the safest way possible.
 
-It is possible to think of “specifications” that are quite difficult to write down. Nevertheless, it is possible for some small critical parts of programs to give precise specifications, such as “this program sorts arrays”, or this “program
+It is possible to think of “specifications” that are quite difficult to write down. Nevertheless, it is possible for some small critical parts of programs to give precise specifications, such as “this program sorts arrays”, or this “program never throws a `NullPointerException`”.
 
-Using the `exec` predicate, we can write what it means for
+### Partial and Total Correctness
 
-The program `prog` satisfies a specification if whenever `P` is true for the input, then `Q` is true for any output of the program:
+We can say that the program `prog` satisfies a specification if whenever `P` is true for the input, then `Q` is true for any output of the program:
 
 ```formula
 all input. all output. P(input) -> exec(prog, input, output) -> Q(output)
@@ -114,7 +114,7 @@ all input. all output. P(input) -> exec(prog, input, output) -> Q(output)
 
 The predicate `P` is called the *precondition*, and the predicate `Q` is called the *postcondition*.
 
-This kind of specification is called *partial correctness*: it says that if the precondition holds *and the program halts*, then the postcondition holds for the output. This kind of specification is often written in the form:
+This kind of specification is called **partial correctness**: it says that if the precondition holds *and the program halts*, then the postcondition holds for the output. This kind of specification is often written in the form:
 
 ```
 	{ P } prog { Q }
@@ -122,205 +122,27 @@ This kind of specification is called *partial correctness*: it says that if the 
 
 called a *Hoare Triple* after C. A. R. Hoare, who invented the Hoare Logic named after him. FIXME: citation.
 
-The rules of Hoare Logic come in two groups:
+We will look at a proof system for Hoare Triples in [the page on Hoare Logic](hoare-logic.md).
 
-- Logical rules, which incorporate logical reasoning about pre- and postconditions.
-- Program rules, which
-
-### Fixing a set of programs
-
-```
-prog := skip | seq(prog1,prog2) | update | ifC(prog1,prog2) | whileC(prog)
-```
-
-### Weakening and Strengthening Specifications
-
-```rules-display
-(config
- (rule
-  (name "Consequence")
-  (premises "s, P'(s) |- P(s)" "{ P } prog { Q }" "s, Q'(s) |- Q(s)")
-  (conclusion "{ P' } prog { Q' }")))
-```
-
-```focused-nd {id=specify-verify-partial-correct-consequence}
-(config
- (assumptions
-  (pre "all s. P'(s) -> P(s)")
-  (post "all s. Q(s) -> Q'(s)")
-  (prog var)
-  (prog-spec "all s1. all s2. P(s1) -> exec(prog, s1, s2) -> Q(s2)"))
- (goal "all s1. all s2. P'(s1) -> exec(prog, s1, s2) -> Q'(s2)"))
-```
-
-### Programs that do nothing
-
-**Skip specification**
-```formula
-all s1. all s2. exec(skip(), s1, s2) -> s1 = s2
-```
-
-**Skip rule**
-```rules-display
-(config
- (rule
-  (name "Skip")
-  (conclusion "{ P } skip { Q }")))
-```
-
-```focused-nd {id=specify-verify-partial-correct-skip}
-(config
- (assumptions
-  (exec-skip "all s1. all s2. exec(skip(), s1, s2) -> s1 = s2"))
- (goal "all s1. all s2. P(s1) -> exec(skip(), s1, s2) -> P(s2)"))
-```
-
-### Doing one thing after another
-
-**Sequence Specification**
-```formula
-all p1. all p2. all s1. all s2. exec(seq(p1, p2), s1, s2) -> (ex s. exec(p1, s1, s) /\ exec(p2, s, s2))
-```
-
-**Sequence rule**
-```rules-display
-(config
- (rule
-  (name "Seq")
-  (premises "{ P } prog1 { R }" "{ R } prog2 { Q }")
-  (conclusion "{ P } seq(prog1, prog2) { Q }")))
-```
-
-```focused-nd {id=specify-verify-partial-correct-seq}
-(config
- (assumptions
-  (exec-seq   "all p1. all p2. all s1. all s2. exec(seq(p1, p2), s1, s2) -> (ex s. exec(p1, s1, s) /\ exec(p2, s, s2))")
-  (prog1 var)
-  (prog2 var)
-  (prog1-spec "all s1. all s2. P(s1) -> exec(prog1,s1,s2) -> R(s2)")
-  (prog2-spec "all s1. all s2. R(s1) -> exec(prog2,s1,s2) -> Q(s2)")
- )
- (goal "all s1. all s2. P(s1) -> exec(seq(prog1, prog2), s1, s2) -> Q(s2)"))
-```
-
-### Updating the state
-
-**Updating Specification**
-```formula
-all s1. all s2. exec(update(), s1, s2) -> s2 = doUpdate(s1)
-```
-
-**Update Rule, version 1**
-```rules-display
-(config
- (rule
-  (name "update-1")
-  (conclusion "{ P[s := doUpdate(s)] } update { P }")))
-```
-
-```focused-nd {id=specify-verify-partial-correct-update-bwd}
-(config
- (assumptions
-  (exec-update "all s1. all s2. exec(update(), s1, s2) -> s2 = doUpdate(s1)"))
- (goal "all s1. all s2. P(doUpdate(s1)) -> exec(update(), s1, s2) -> P(s2)"))
-```
-
-**Update Rule, version 2**
-```rules-display
-(config
- (rule
-  (name "update-2")
-  (conclusion "{ P } update { ex o. s = doUpdate(o) /\ P[s := o] }")))
-```
-
-```focused-nd {id=specify-verify-partial-correct-update-fwd}
-(config
- (assumptions
-  (exec-update "all s1. all s2. exec(update(), s1, s2) -> s2 = doUpdate(s1)"))
- (goal "all s1. all s2. P(s1) -> exec(update(), s1, s2) -> (ex oldstate. s2 = doUpdate(oldstate) /\ P(oldstate))"))
-```
-
-### If-then-else
-
-**Specification of if-then-else**
-```formula
-all p1. all p2. all s1. all s2. exec(ifC(p1, p2), s1, s2) -> ((C(s1) /\ exec(p1,s1,s2)) \/ (!C(s1) /\ exec(p2,s1,s2)))
-```
-
-**Rule for If-then-else**
-```rules-display
-(config
- (rule
-  (name "If")
-  (premises "{ C /\ P } prog1 { Q }" "{ ¬C /\ P } prog2 { Q }")
-  (conclusion "{ P } ifC(prog1, prog2) { Q }")))
-```
-
-```focused-nd {id=specify-verify-partial-correct-if}
-(config
- (assumptions
-  (exec-if "all p1. all p2. all s1. all s2. exec(ifC(p1, p2), s1, s2) -> ((C(s1) /\ exec(p1,s1,s2)) \/ (!C(s1) /\ exec(p2,s1,s2)))")
-  (prog1 var)
-	(prog2 var)
-  (prog1-spec "all s1. all s2. (C(s1) /\ P(s1)) -> exec(prog1, s1, s2) -> Q(s2)")
-  (prog2-spec "all s1. all s2. (¬C(s1) /\ P(s1)) -> exec(prog2, s1, s2) -> Q(s2)"))
- (goal "all s1. all s2. P(s1) -> exec(ifC(prog1, prog2), s1, s2) -> Q(s2)"))
-```
-
-Note that the axiom for if implies that excluded middle is true for the predicate `C` whenever the program executes successfully:
-
-FIXME
-
-### While Loops
-
-**Rule for While**
-```rules-display
-(config
- (rule
-  (name "While")
-  (premises "{ C /\ P } prog { P }")
-  (conclusion "{ P } whileC(prog) { ¬C /\ P }")))
-```
-
-```formula
-all p. all s1. all s2. exec(whileC(p),s1,s2) ->
-  ((ex s. C(s1) /\ exec(p,s1,s) /\ exec(whileC(p),s,s2))
-   \/
-   (¬C(s1) /\ s1 = s2))
-```
-
-````comment
-
-Need a fixpoint to make this work, induction principle:
-
-```formula
-(all s1 s s2. C(s1) -> exec(p,s1,s) -> P(s, s2) -> P(s1,s2)) ->
-(all s. ¬C(s) -> P(s,s)) ->
-all s1. all s2.
-exec(whileC(p),s1,s2) -> P(s1,s2)
-```
-
-```focused-nd {id=specify-verify-partial-correct-while}
-(config
- (assumptions
-  (exec-while "all p. all s1. all s1. exec(whileC(
-```
-
-````
-
-## Total Correctness
-
-A stronger condition is *total correctness*, which says that if the precondition `P` holds, then the program always halts, and every output the program can generate satisfies the postcondition `Q`:
+A stronger condition is **total correctness**, which says that if the precondition `P` holds, then the program always halts, and every output the program can generate satisfies the postcondition `Q`:
 
 ```formula
 all s1. P(s1) -> ((ex s2. exec(prog, s1, s2)) /\ (all s2. exec(prog, s1, s2) -> Q(s2)))
 ```
 
-Weaker one, which is equivalent in the presence of determinism:
+Total Hoare triples are written like this:
+
+```
+	 [ P ] prog [ Q ]
+```
+
+The full specification of total correctness is quite a mouthful, and it seems a bit roundabout that we have to prove that the program halts and separately that all of the answers meet the postcondition. There is a weaker specification, that says that there exists at least one final state that meets the post condition, but leaves open the possibility that it might halt in another state that does not meet it.
 
 ```formula
 all s1. P(s1) -> (ex s2. exec(prog, s1, s2) /\ Q(s2))
 ```
+
+The following theorem states that the stronger total correctness implies the weaker one:
 
 ```focused-nd {id=specify-verify-total-equiv1}
 (config
@@ -329,6 +151,8 @@ all s1. P(s1) -> (ex s2. exec(prog, s1, s2) /\ Q(s2))
   (prog-total-spec "all s1. P(s1) -> ((ex s2. exec(prog, s1, s2)) /\ (all s2. exec(prog, s1, s2) -> Q(s2)))"))
  (goal "all s1. P(s1) -> (ex s2. exec(prog, s1, s2) /\ Q(s2))"))
 ```
+
+This theorem states that the weaker one implies the stronger one, if we also assume that the program is deterministic (i.e., has at most one answer):
 
 ```focused-nd {id=specify-verify-total-equiv2}
 (config
@@ -339,164 +163,3 @@ all s1. P(s1) -> (ex s2. exec(prog, s1, s2) /\ Q(s2))
    "all s. all s1. all s2. exec(prog,s,s1) -> exec(prog,s,s2) -> s1 = s2"))
  (goal "all s1. P(s1) -> ((ex s2. exec(prog, s1, s2)) /\ (all s2. exec(prog, s1, s2) -> Q(s2)))"))
 ```
-
-Total Hoare triples are written like this:
-
-```
-	 [ P ] prog [ Q ]
-```
-
-### Weakening and Strengthening Specifications
-
-```rules-display
-(config
- (rule
-  (name "Consequence")
-  (premises "s, P'(s) |- P(s)" "[ P ] prog [ Q ]" "s, Q'(s) |- Q(s)")
-  (conclusion "[ P' ] prog [ Q' ]")))
-```
-
-
-```focused-nd {id=specify-verify-total-correct-consequence}
-(config
- (assumptions
-  (pre "all s. P'(s) -> P(s)")
-  (post "all s. Q(s) -> Q'(s)")
-  (prog var)
-  (prog-spec "all s1. P(s1) -> (ex s2. exec(prog, s1, s2) /\ Q(s2))"))
- (goal "all s1. P'(s1) -> (ex s2. exec(prog, s1, s2) /\ Q'(s2))"))
-```
-
-### Programs that do nothing
-
-**Specification for skip (2)**
-```formula
-all s. exec(skip(), s, s)
-```
-
-**Skip rule**
-```rules-display
-(config
- (rule
-  (name "Skip")
-  (conclusion "[ P ] skip [ Q ]")))
-```
-
-```focused-nd {id=specify-verify-total-correct-skip}
-(config
- (assumptions
-  (exec-skip2 "all s. exec(skip(), s, s)"))
- (goal "all s1. P(s1) -> (ex s2. exec(skip(), s1, s2) /\ P(s2))"))
-```
-
-### Doing one thing after another
-
-**Specification for sequencing (2)**
-```formula
-all p1. all p2. all s1. all s2. (ex s. exec(p1, s1, s) /\ exec (p2, s, s2)) -> exec(seq(p1, p2), s1, s2)
-```
-
-**Sequencing rule (total correctness)**
-```rules-display
-(config
- (rule
-  (name "Seq")
-  (premises "[ P ] prog1 [ R ]" "[ R ] prog2 [ Q ]")
-  (conclusion "[ P ] seq(prog1, prog2) [ Q ]")))
-```
-
-
-```focused-nd {id=specify-verify-total-correct-seq}
-(config
- (assumptions
-  (exec-seq2 "all p1. all p2. all s1. all s2. (ex s. exec(p1, s1, s) /\ exec (p2, s, s2)) -> exec(seq(p1, p2), s1, s2)")
-  (prog1 var)
-  (prog2 var)
-  (prog1-spec "all s1. P(s1) -> (ex s2. exec(prog1, s1, s2) /\ R(s2))")
-  (prog2-spec "all s1. R(s1) -> (ex s2. exec(prog2, s1, s2) /\ Q(s2))"))
- (goal "all s1. P(s1) -> (ex s2. exec(seq(prog1, prog2), s1, s2) /\ Q(s2))"))
-```
-
-### Updating the state
-
-**Specification for update (2)**
-```formula
-all s. exec(update(), s, doUpdate(s))
-```
-
-**Update Rule, version 1**
-```rules-display
-(config
- (rule
-  (name "update-1")
-  (conclusion "[ P[s := doUpdate(s)] ] update [ P ]")))
-```
-
-```focused-nd {id=specify-verify-total-correct-update-bwd}
-(config
- (assumptions
-  (exec-update2 "all s. exec(update(), s, doUpdate(s))"))
- (goal "all s1. P(doUpdate(s1)) -> (ex s2. exec(update(), s1, s2) /\ P(s2))"))
-```
-
-**Update Rule, version 2**
-```rules-display
-(config
- (rule
-  (name "update-2")
-  (conclusion "[ P ] update [ ex o. s = doUpdate(o) /\ P[s := o] ]")))
-```
-
-```focused-nd {id=specify-verify-total-correct-update-fwd}
-(config
- (assumptions
-  (exec-update2 "all s. exec(update(), s, doUpdate(s))"))
- (goal "all s1. P(s1) -> (ex s2. exec(update(), s1, s2) /\ (ex oldState. s2 = doUpdate(oldState) /\ P(oldState)))"))
-```
-
-### If-then-else
-
-**Specification for if-then-else (2)**
-1. ```formula
-   all p1. all p2. all s1. all s2. C(s1) -> exec(p1, s1, s2) -> exec(ifC(p1, p2), s1, s2)
-   ```
-2. ```formula
-   all p1. all p2. all s1. all s2. ¬C(s1) -> exec(p2,s1, s2) -> exec(ifC(p1, p2), s1, s2)
-   ```
-
-**Rule for If-then-else**
-```rules-display
-(config
- (rule
-  (name "If")
-  (premises "[ C /\ P ] prog1 [ Q ]" "[ ¬C /\ P ] prog2 [ Q ]")
-  (conclusion "[ P ] ifC(prog1, prog2) [ Q ]")))
-```
-
-```focused-nd {id=specify-verify-total-correct-if}
-(config
- (assumptions
-  (exec-if2-true "all p1. all p2. all s1. all s2. C(s1) -> exec(p1, s1, s2) -> exec(ifC(p1, p2), s1, s2)")
-  (exec-if2-false "all p1. all p2. all s1. all s2. ¬C(s1) -> exec(p2,s1, s2) -> exec(ifC(p1, p2), s1, s2)")
-  (decide-C "all s. C(s) \/ ¬C(s)")
-  (prog1 var)
-  (prog2 var)
-  (prog1-spec "all s1. (C(s1) /\ P(s1)) -> (ex s2. exec(prog1,s1,s2) /\ Q(s2))")
-  (prog2-spec "all s1. (¬C(s1) /\ P(s1)) -> (ex s2. exec(prog2,s1,s2) /\ Q(s2))"))
- (goal "all s1. P(s1) -> (ex s2. exec(ifC(prog1,prog2),s1,s2) /\ Q(s2))"))
-```
-
-### While
-
-**Rule for While**
-```rules-display
-(config
- (rule "While")
- (premises "∀x. [ C /\ P /\ f(s) = x ] prog [ P /\ f(s) < x ]")
- (goal "[ P ] whileC(prog) [ ¬C /\ P ]"))
-```
-
-
-## Summary
-
-In the above, we have
