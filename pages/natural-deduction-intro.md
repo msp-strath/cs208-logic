@@ -447,7 +447,7 @@ The elimination rule for `¬` is:
  (rule
   (name "not-elim")
   (premises "Γ ⊢ P")
-  (conclusion "Γ [¬P] ̌⊢ Q")))
+  (conclusion "Γ [¬P] ⊢ Q")))
 ```
 
 In words: if we have `¬P` in focus, then proving `P` will allow us to conclude `Q`.
