@@ -284,7 +284,7 @@ Prove that this rule is sound, assuming the update axiom for `exec`:
  (goal "all s1. all s2. P(doUpdate(s1)) -> exec(update(), s1, s2) -> P(s2)"))
 ```
 
-### Question 3(e) : Assignment (backward) (1 mark) {id=cw2025:q3:d}
+### Question 3(e) : Assignment (forward) (1 mark) {id=cw2025:q3:e}
 
 The alternative version of the rule for `update()` reasons forwards. This is the form that is used in the tool. The rule is:
 ```rules-display
@@ -304,7 +304,7 @@ Prove this rule using the same axiom for `update()` as above:
  (goal "all s1. all s2. P(s1) -> exec(update(), s1, s2) -> (ex oldstate. s2 = doUpdate(oldstate) /\ P(oldstate))"))
 ```
 
-### Question 3(f) : If-then-else (1 mark) {id=cw2025:q3:d}
+### Question 3(f) : If-then-else (1 mark) {id=cw2025:q3:f}
 
 If-then-else is more complex than the rules above because it involves branching between two possible outcomes, so there are two premises to the rule.
 
