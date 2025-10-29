@@ -77,7 +77,13 @@ The pages linked to below contain the lecture notes, covering the material intro
 
    [The lecture slides for this topic](topic05-slides.pdf).
 
--  Topic 6 will be **Programs with Loops**.
+-  Topic 6 is **Programs with Loops**.
+
+   [Assertions and Automation](hoare-assert-and-auto.md) introduces some tools for controlling complexity when constructing proofs of programs. In particular, we add human assisted proof automation to our proof tool.
+
+   [Hoare Logic for Loops](hoare-loops.md) introduces the Hoare Logic rule for loops, and the important concept of *loop invariant*.
+
+   There are no lecture slides for this topic.
 
 -  Topic 7 will be **Programs with Arrays**.
 

@@ -1,16 +1,10 @@
 # Hoare Logic for Loops
 
 ```aside
-This page assumes that you have worked through the [page on Hoare Logic for loop-less programs](hoare-logic.html). It also builds on the [syntax of Predicate Logic](pred-logic-intro.html) and [the proof rules](pred-logic-rules.html).
+This page assumes that you have worked through the [page on Hoare Logic for loop-less programs](hoare-logic.html). It also builds on the [syntax of Predicate Logic](pred-logic-intro.html) and [the proof rules](pred-logic-rules.html). It will also be helpful to know about [assertions and automation](hoare-assert-and-auto.html).
 ```
 
-In our [introduction to Hoare Logic](hoare-logic.md), we only looked at simple programs that run from top to bottom, sometimes making decisions on the way. To be a real programming language, we need to be able to process data in a loop. We look at how to prove properties of programs with loops here.
-
-## Making Assertions
-
-Before we do that though, we first look at
-
-
+In our [introduction to Hoare Logic](hoare-logic.md), we only looked at simple programs that run from top to bottom, sometimes making decisions on the way. To be a real programming language, we need to be able to process data in a loop.
 
 ## Loops, and Loop Invariants {id=hoare-loops:loops}
 
@@ -18,15 +12,16 @@ The simple programming language we are using only has one way of doing loops: `w
 
 The meaning of `while(C) { <program> }` is deceptively simple looking: “keep doing `<program>` as long as `C` is true”. Unfortunately, this simplicity is a trap:
 
-1. It is very easy to write programs where `C` never becomes true, which means that the loop never finishes. We will not address this problem here, only mention that the variant of Hoare Logic that we are using here does not prove termination. We would have to switch to [total Hoare logic](hoare-loops.md#hoare-loops:termination)
-2. If we try to prove something about the loop the intuitive steps are:
+Firstly, it is very easy to write programs where `C` never becomes true, which means that the loop never finishes. We will not address this problem here, only mention that the variant of Hoare Logic that we are using here does not prove termination. We would have to switch to [total Hoare logic](hoare-loops.md#hoare-loops:termination).
+
+Secondly, if we try to prove something about the loop the intuitive steps are:
    1. Something is true at the start of the loop: `P0`.
    2. After one step, `P1` is true.
    3. Then `P2` is true
    4. ...
    5. After enough steps, `P` is true, which is what we wanted.
 
-   Unfortunately, this reasoning isn't very rigorous and it is pretty much impossible to pin down when it is sound.
+Unfortunately, this reasoning isn't very rigorous and it is pretty much impossible to pin down when it is sound.
 
 The rigorous way to prove things about a loop is to find a *loop invariant*. This is some `P` that is true when the loop starts, and remains true every time we go round the loop.
 
@@ -34,9 +29,37 @@ This may sound like it cannot possibly work. How can a loop do any useful work i
 
 The answer is that the loop invariant encodes some *relationship* between the current state and the partial work done so far. At the start of the loop, the partial work is non existent, but as the loop progresses it is filled in.
 
-### Adding Up Numbers {id=hoare-loops:loops:sumTo}
+## Warm up {id=hoare-loops:warmup}
 
-Let's look at an example. The following program (where I've omitted the `end`s required by the tool) computes the sum `0 + 1 + 2 + ... + (X-1)` and leaves the answer in `TOTAL`:
+As a warm up, we will prove that the following program sets `X` to be `0`, because the loop never executes. This example will serve to show how loops are entered in the prover.
+
+```
+X := 0
+while (1 != 1) {
+  X := 1
+  end
+}
+end
+```
+
+To enter this program, the first command is `X := 0`. Then to enter a loop, type `while (1 != 1)` (similar to an `if` with its condition). The tool will then generate two subproblems, one for the loop body and one for the continuation after the loop.
+
+Looking at the loop body, the precondition is now `¬1 = 1 ∧ (∃oldX.  X = 0 ∧ T)`. This formula contains the contradictory clause `¬1 = 1`, indicating that this code will never execute. It therefore doesn't matter what code is placed here. Entering `X := 1` and then `end` will drop us into proof mode. The goal is to prove that `X = 0`, but since the assumptions are contradictory we do not have to do anything and can use `auto` to complete the proof.
+
+In the continuation after the loop, the additional assumption is that `1 = 1` (the while loop implementation eliminates the double negation for us), but we also get the result of setting `X` to `0` before the loop. Now `end` and then `auto` completes the proof.
+
+```hoare {id=hoare-loops-warmup}
+(hoare
+ (program_vars X)
+ (precond "T")
+ (postcond "X = 0"))
+```
+
+## Adding Up Numbers {id=hoare-loops:sumTo}
+
+Let's look at a more interesting example that will need more work.
+
+The following program (where I've omitted the `end`s required by the tool) computes the sum `0 + 1 + 2 + ... + (X-1)` and leaves the answer in `TOTAL`:
 
 ```
 TOTAL := 0
@@ -49,14 +72,39 @@ while (I != X) {
 
 We will encode the desired behaviour using a function `sumTo` with two axioms (these are basically how you would encode this problem in `ask`):
 
-1. ```formula
+1. Summing up to `0` is `0`:
+   ```formula
    sumTo(0) = 0
    ```
-2. ```formula
+2. Summing up to `i + 1` is equal to summing up to `i` then adding `i`:
+   ```formula
    all i. sumTo(add(i,1)) = add(sumTo(i),i)
    ```
 
-If you try to prove this program meets the specification
+If you try to prove that this program with precondition `T` satisfies the postcondition `TOTAL = sumTo(X)`, then you will get stuck (try it below!).
+
+The problem is that on entering the while loop the first time we know that `TOTAL = 0` and `I = 0`, but after one step of the loop we now have that `TOTAL = add(0,0)` and `I = add(0,1)`. But the tool is trying to get us to prove that `TOTAL = 0` and `I = 0` again! To be able to go back round the loop, we need to show that the precondition of the loop is also its postcondition. Without this, we cannot execute the loop again.
+
+To fix this, we need to find something involving `TOTAL` and `I` that is true every time the loop goes round. The job of the loop is to compute `sumTo(X)` and it does this by incrementally working up to `X` using the loop counter `I`. Therefore, a reasonable loop invariant is that it is always true that `TOTAL = sumTo(I)`. We can check that this works informally:
+
+1. When the loop starts, both `TOTAL` and `I` are `0`, and we have `sumTo(0) = 0` by our first axiom for `sumTo`.
+2. When the loop goes round, `TOTAL` becomes `add(TOTAL,I)` and `I` becomes `add(I,1)`, which matches our second axiom for `sumTo`.
+3. When the loop ends, `I = X`, so knowing that `TOTAL = sumTo(I)` implies `TOTAL = sumTo(X)`.
+
+With this in mind, we alter the program to `assert` the loop invariant before the loop. We also add another `assert`ion after the update to `TOTAL` that helps make the proof easier by breaking it into two steps.
+
+```
+TOTAL := 0
+I := 0
+assert (TOTAL = sumTo(I))
+while (I != X) {
+  TOTAL := add(TOTAL,I)
+  assert (TOTAL = sumTo(add(I,1)))
+  I := add(I,1)
+}
+```
+
+If you now enter this program into the proof tool below, you will be able to complete the proofs using the two axioms `sum-0` and `sum-plus-1`. You will be able to save quite a bit of time by finding the right instantiations of these axioms using `store` and then using `auto`.
 
 ```hoare {id=hoare-loops-1}
 (hoare
@@ -68,9 +116,9 @@ If you try to prove this program meets the specification
  (postcond "TOTAL = sumTo(X)"))
 ```
 
-### The Rule for Loops {id=hoare-loops:loops:rule}
+## The Rule for Loops {id=hoare-loops:rule}
 
-The rule for `while (C) { ... }` loops is:
+The rule for `while (C) { ... }` loops that is implemented by the tool is:
 
 ```rules-display
 (config
@@ -86,7 +134,9 @@ The body of the loop is permitted to assume that the loop condition `C` is true 
 
 The key point is that it is the combination `¬C /\ P` that will often be able to guide us to the correct loop invariant for the problem.
 
-### Testing a number for Even/Odd {id=hoare-loops:loops:even-odd}
+## Finding Out If A Number Is Even Or Odd {id=hoare-loops:even-odd}
+
+FIXME: explain this
 
 ```
 EVEN := true()
@@ -110,12 +160,17 @@ while (I != X) {
  (postcond "(EVEN = true() /\ isEven(X)) \/ (EVEN = false() /\ ¬isEven(X))"))
 ```
 
-### A Strategy for Finding Loop Invariants {id=hoare-loops:loops:trick}
+## A Strategy for Finding Loop Invariants {id=hoare-loops:strategy}
 
 Finding a suitable loop invariant can be very hard. However, for the kinds of loops we will look at in this course it often works to look at the final postcondition and replace any occurrences of the desired final value (e.g., `X`, `LEN`) with the loop counter (e.g., `I`) that is counting up to that value. For problems where the size of the problem solved so far is indexed by the loop counter, and we are not overwriting our original data, this method works well. We will see in the next topic a situation where we need to keep track of what has *not* changed and we will have to think harder about the loop invariant.
 
-### Searching {id=hoare-loops:loops:search}
+## Searching {id=hoare-loops:search}
 
+A more interesting example of a program with a loop is one that performs a linear search through an array looking for a specific value. The basic specification is that it returns in the `RESULT` variable the index of the value if it is found, and `-1` if it is not.
+
+For the purposes of this example, we assume that there is a function `lookup(I)` that returns the `I`th value of the array. We want to find a position where `lookup(I) = 0` assuming that `I` is between `0` (inclusive) and `LEN` (exclusive).
+
+The basic program is:
 ```
 RESULT := -1
 I := 0
@@ -127,26 +182,100 @@ while (I != LEN) {
 }
 ```
 
-Loop invariant is:
+We will look at three different specifications for this program (decorated with appropriate `assert`s), of increasing informativeness.
+
+### Version 1 {id=hoare-loops:search:v1}
+
+The first specification states exactly what we said above. If the program finishes, then either `RESULT = -1` or `lookup(RESULT) = 0`:
+
 ```formula
-(RESULT = -1 /\ notFound(0,I)) \/ lookup(RESULT) = 0
+RESULT = -1 \/ lookup(RESULT) = 0
 ```
 
-```hoare {id=hoare-loops-search}
+To verify this program we need to provide a loop invariant via an `assert`. The following program is the same as above but with the loop invariant added:
+
+```
+RESULT := -1
+I := 0
+assert (RESULT = -1 \/ lookup(RESULT) = 0)
+while (I != LEN) {
+  if (lookup(I) = 0) {
+    RESULT := I
+  }
+  I := add(I,1)
+}
+```
+
+Entering this program into the tool is straightforward. All of the proofs can be completed using `auto`.
+
+```hoare {id=hoare-loops-search-1}
+(hoare
+ (program_vars RESULT I LEN)
+ (precond "T")
+ (postcond "RESULT = -1 \/ lookup(RESULT) = 0"))
+```
+
+### Version 2 {id=hoare-loops:search:v2}
+
+The specification above states that the program may end with `lookup(RESULT) = 0` indicating that the `RESULT` location contains the value `0`, but it doesn't guarantee that `RESULT` is actually between `0` and `LEN`. To do this we will assume a predicate `between(i,j,k)` that is assumed to mean that `i` is between `j` (inclusive) and `k` (exclusive). We assume that this predicate satisfies the following two axioms:
+
+1. ```formula
+   all i. between(i,0,add(i,1))
+   ```
+2. ```formula
+   all i. all x. between(x, 0, i) -> between(x,0,add(i,1))
+   ```
+
+```
+RESULT := -1
+I := 0
+assert (RESULT = -1 \/ (between(RESULT,0,I) /\ lookup(RESULT) = 0))
+while (I != LEN) {
+  if (lookup(I) = 0) {
+    RESULT := I
+    assert (between(RESULT, 0, add(I, 1)) ∧ lookup(RESULT) = 0)
+  } else {
+    assert (RESULT = -1 /\ (between(RESULT,0,add(I,1)) /\ lookup(RESULT) = 0))
+  }
+  I := add(I,1)
+}
+```
+
+```hoare {id=hoare-loops-search-2}
 (hoare
  (program_vars RESULT I LEN)
  (assumptions
-  (notFound-0 "notFound(0,0)")
-  (notFound-step "all i. notFound(0,i) -> ¬lookup(i) = 0 -> notFound(0,add(i,1))"))
+  (between-start "all i. between(i,0,add(i,1))")
+  (between-step "all i. all x. between(x, 0, i) -> between(x,0,add(i,1))"))
  (precond "T")
- (postcond "(RESULT = -1 /\ notFound(0,LEN)) \/ lookup(RESULT) = 0"))
+ (postcond "RESULT = -1 \/ (between(RESULT,0,LEN) /\ lookup(RESULT) = 0)"))
 ```
 
-Note: not saying that `RESULT` is between `0` and `LEN` in the found case. We can also add some axioms for `between` to fix this.
+### Version 3 {id=hoare-loops:search:v3}
 
-Loop invariant is:
+The specifications so far state that `RESULT = -1` is a possible final state of the program, but does not say what that means. If we want the specification to actually say that there was no element found then we need to add this explicitly.
+
+
+If we strengthen the postcondition, we also have to strengthen the loop invariant to account for it. As usual, we replace the final value `LEN` in the specification with the intermediate counter `I`:
 ```formula
 (RESULT = -1 /\ notFound(0,I)) \/ (between(RESULT, 0, I) /\ lookup(RESULT) = 0)
+```
+
+The annotated program is now:
+```
+RESULT := -1
+I := 0
+assert ((RESULT = -1 ∧ notFound(0, I)) ∨ (between(RESULT, 0, I) ∧ lookup(RESULT) = 0))
+while (I != LEN) {
+  if (lookup(I) = 0) {
+    RESULT := I
+    assert (between(RESULT, 0, add(I, 1)) ∧ lookup(RESULT) = 0)
+  } else {
+    assert ((RESULT = -1 ∧ notFound(0, add(I, 1)))
+            ∨ (between(RESULT, 0, add(I, 1)) ∧ lookup(RESULT) = 0))
+  }
+  I := add(I,1)
+}
 ```
 
 ```hoare {id=hoare-loops-search2}
@@ -161,7 +290,7 @@ Loop invariant is:
  (postcond "(RESULT = -1 /\ notFound(0,LEN)) \/ (between(RESULT,0,LEN) /\ lookup(RESULT) = 0)"))
 ```
 
-### Non-terminating Programs Meet Any Specification {id=hoare-loops:loops:false}
+## Non-terminating Programs Meet Any Specification {id=hoare-loops:false}
 
 The rules that we have been using so far for Hoare Logic are only suitable for *partial correctness*, which means that the postcondition is also guaranteed if the program terminates. Therefore, it is always possible to meet any specification by writing a program that never finishes. Because there is no final state, the question of whether or not it meets the postcondition is void.
 
@@ -181,6 +310,8 @@ Because `1 = 1` is alway true, this program never finishes. We can use this fact
 ```
 
 You can complete the construction by entering `while (1 = 1)` and then `end` and `auto` for the loop body and the continuation.
+
+More insidiously, it is possible to make any of the programs above verify simply by setting the body of each `while` loop to be `end`. The loop invariant is certainly preserved (by doing nothing), but the program will never finish (unless `X = 0` or similar). Therefore, it is important to keep in mind that partial correctness only promises anything if the program actually terminates.
 
 ## Program Verification and Termination {id=hoare-loops:termination}
 
