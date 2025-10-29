@@ -419,7 +419,7 @@ module Config_parser = struct
        let assumptions  = Option.value ~default:[] assumptions in
        (* FIXME: check that requires and ensures are well-scoped in
           the program and logic vars, and that all of the assumptions
-          are closed. *)
+          are well scoped and do not contain program_vars. *)
        { program_vars; logic_vars; assumptions; precond; postcond })
 
 end
