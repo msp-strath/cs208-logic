@@ -427,7 +427,7 @@ We will specify this program using a function called `countTo` which is defined 
    all i. ¬lookup(i) = 0 -> countTo(add(i,1)) = countTo(i)
    ```
 
-Prove that the program above correctly implements `countTo`:
+Prove that the program above correctly implements `countTo`. You can add as many `assert`s as you need.
 
 ```hoare {id=cw2025-q4c marks=2}
 (hoare
