@@ -95,4 +95,16 @@ The pages linked to below contain the lecture notes, covering the material intro
 
 ## Further Reading {id=index:further-reading}
 
-TBD...
+The following books may be useful if you wish to read more about the topics in this course. The links go to either the author's or the publisher's web pages. You might be able to find them cheaper elsewhere, or in the University library.
+
+1. [Logic in Computer Science](https://www.cambridge.org/highereducation/books/logic-in-computer-science/9022E2BE5E7C9F20D259F4A83986236C#overview) by Michael Huth and Mark Ryan. The first two chapters cover Propositional Logic and Predicate Logic as we have done them in this course. They also give a natural deduction system for proof, but in a slightly different form to the one used here. Chapter 4 covers Hoare Logic for partial and total correctness. The book also contains chapters on Temporal Logic and Model checking, which we have not had time to cover in this course.
+
+2. [Software Abstractions](https://softwareabstractions.org/) by Daniel Jackson describes the [Alloy tool](https://alloytools.org/) for building logical models of software systems. If can be used to build and model relatively complex software systems and find design bugs in them.
+
+2. [The Logic Manual](https://users.ox.ac.uk/~logicman/) by Volker Halbach. This is am introduction to formal logic, intended primarily for Philosophy students. It covers Propostiional and Predicate Logic with Natural Deduction proofs, but does not explore applications to Computer Science. It does discuss the connections between formal logic and natural language.
+
+3. [Logical Methods](https://mitpress.mit.edu/9780262544849/logical-methods/) by [Greg Restall](https://consequently.org/) and Shawn Standefer. Also a textbook introduction to formal logic intended for Philosophy students. Covers more topics that *The Logic Manual*, including Modal Logic.
+
+4. [Proofs and Models in Philosophical Logic](https://www.cambridge.org/core/elements/abs/proofs-and-models-in-philosophical-logic/A1907B05C24E1000270CC5B684FA7AAB) by [Greg Restall](https://consequently.org/). More advanced than *Logical Methods*, and includes topics on “non-classical” logics that reject certain principles from the normal two-valued logic.
+
+5. [forall x: Calgary](https://forallx.openlogicproject.org/) by P. D. Magnus, Tim Button, Robert Trueman, and Richard Zach. This is an open textbook on formal logic, again primarily for Philosophy students. It uses the [Carnap](https://carnap.io/) system for building proofs in a web browser, which is another tool for constructing proofs. See the [Carnap book](https://carnap.io/book).
