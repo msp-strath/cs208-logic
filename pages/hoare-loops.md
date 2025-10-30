@@ -23,11 +23,11 @@ Secondly, if we try to prove something about the loop the intuitive steps are:
 
 Unfortunately, this reasoning isn't very rigorous and it is pretty much impossible to pin down when it is sound.
 
-The rigorous way to prove things about a loop is to find a *loop invariant*. This is some `P` that is true when the loop starts, and remains true every time we go round the loop.
+The rigorous way to prove things about a loop is to find a *loop invariant*. Instead of finding a chain of facts `P0`, `P1`, `P2`, ..., we find a single `P` that summarises all of them. This `P` must be true when the loop starts, and remains true every time we go round the loop, and is still true when we exit the loop.
 
 This may sound like it cannot possibly work. How can a loop do any useful work if it is required to keep `P` always true?
 
-The answer is that the loop invariant encodes some *relationship* between the current state and the partial work done so far. At the start of the loop, the partial work is non existent, but as the loop progresses it is filled in.
+The answer is that the loop invariant encodes some *relationship* between the current state and the partial work done so far. At the start of the loop, the partial work is non existent, but as the loop progresses it is filled in. The of this page details some strategies for discovering loop invariants to verify programs against specifications.
 
 ## Warm up {id=hoare-loops:warmup}
 
@@ -132,11 +132,11 @@ In this rule, we take the current precondition `P` as the loop invariant. This m
 
 The body of the loop is permitted to assume that the loop condition `C` is true along with the loop invariant `P`, and must attain that invariant at the end. The program after the loop runs when `¬C` is true and also gets to assume the loop invariant.
 
-The key point is that it is the combination `¬C /\ P` that will often be able to guide us to the correct loop invariant for the problem.
+The fact that the state after the loop is described as `¬C /\ P` will often be able to guide us to the correct loop invariant for the problem. If we know what we want, we can work backwards to find out what we need.
 
 ## Finding Out If A Number Is Even Or Odd {id=hoare-loops:even-odd}
 
-FIXME: explain this
+The following program computes whether or not the value stored in `X` is even or odd by counting up to `X`. As the loop progresses, the variable `EVEN` is `true()` if `I` is even and `false()` if `I` is odd. When the loop ends, `I` is equal to `X` and so `EVEN` tells us whether or not `X` is even.
 
 ```
 EVEN := true()
@@ -147,13 +147,48 @@ while (I != X) {
 }
 ```
 
+To specify this program, we assume a predicate `isEven(n)` that is true when `n` is even and false if it is not. This predicate is assumed to satisfy the following axioms:
+1. Axiom `even-0`:
+   ```formula
+   isEven(0)
+   ```
+2. Axiom `even-odd`:
+   ```formula
+   all n. isEven(n) -> ¬isEven(add(n,1))
+   ```
+3. Axiom `odd-even`:
+   ```formula
+   all n. ¬isEven(n) -> isEven(add(n,1))
+   ```
+
+The postcondition we want to prove is:
+```formula
+(EVEN = true() /\ isEven(X)) \/ (EVEN = false() /\ ¬isEven(X))
+```
+which states as a formula the informal specification we wrote above.
+
+In order to verify this program meets the specification, we need to add `assert`ions to the program that establish the loop invariant. We also add an assertion after the update to `EVEN` inside the loop that helps break the proof down:
+
+```
+EVEN := true()
+I := 0
+assert ((EVEN = true() /\ isEven(I)) \/ (EVEN = false() /\ ¬isEven(I)))
+while (I != X) {
+  EVEN := not(EVEN)
+  assert ((EVEN = true() /\ isEven(add(I,1))) \/ (EVEN = false() /\ ¬isEven(add(I,1))))
+  I := add(I,1)
+}
+```
+
+With this annotated program, the axioms about `isEven`, and two axioms establishing how `not` works, we can verify this program. To prove the `assert` inside the loop, you will need to instantiate the `even-odd` and `odd-even` axioms with `store` and then use `auto`.
+
 ```hoare {id=hoare-loops-even-odd}
 (hoare
  (program_vars EVEN I X)
  (assumptions
   (even-0 "isEven(0)")
-  (even-ax1 "all n. isEven(n) -> ¬isEven(add(n,1))")
-  (even-ax2 "all n. ¬isEven(n) -> isEven(add(n,1))")
+  (even-odd "all n. isEven(n) -> ¬isEven(add(n,1))")
+  (odd-even "all n. ¬isEven(n) -> isEven(add(n,1))")
   (not-1 "not(false()) = true()")
   (not-2 "not(true()) = false()"))
  (precond "T")
@@ -162,9 +197,9 @@ while (I != X) {
 
 ## A Strategy for Finding Loop Invariants {id=hoare-loops:strategy}
 
-Finding a suitable loop invariant can be very hard. However, for the kinds of loops we will look at in this course it often works to look at the final postcondition and replace any occurrences of the desired final value (e.g., `X`, `LEN`) with the loop counter (e.g., `I`) that is counting up to that value. For problems where the size of the problem solved so far is indexed by the loop counter, and we are not overwriting our original data, this method works well. We will see in the next topic a situation where we need to keep track of what has *not* changed and we will have to think harder about the loop invariant.
+Finding a suitable loop invariant can be very hard. However, for the kinds of loops we will look at in this course it often works to look at the final postcondition and replace any occurrences of the desired final value (e.g., `X`, `LEN`) with the loop counter (e.g., `I`) that is counting up to that value. For problems where the size of the problem solved so far is indexed by the loop counter, and we are not overwriting our original data, this method works well. We will see in the [next topic](hoare-arrays.md) a situation where we need to keep track of what has *not* changed and we will have to think harder about the loop invariant.
 
-## Searching {id=hoare-loops:search}
+## Specifying and Verifying Linear Search {id=hoare-loops:search}
 
 A more interesting example of a program with a loop is one that performs a linear search through an array looking for a specific value. The basic specification is that it returns in the `RESULT` variable the index of the value if it is found, and `-1` if it is not.
 
@@ -219,13 +254,24 @@ Entering this program into the tool is straightforward. All of the proofs can be
 
 The specification above states that the program may end with `lookup(RESULT) = 0` indicating that the `RESULT` location contains the value `0`, but it doesn't guarantee that `RESULT` is actually between `0` and `LEN`. To do this we will assume a predicate `between(i,j,k)` that is assumed to mean that `i` is between `j` (inclusive) and `k` (exclusive). We assume that this predicate satisfies the following two axioms:
 
-1. ```formula
+1. The axiom `between-start` states that `i` is between `0` and `i + 1` (for simplicity, we are assuming that `i` is greater than or equal to `0`):
+   ```formula
    all i. between(i,0,add(i,1))
    ```
-2. ```formula
+2. The axiom `between-step` states that if `x` is between `0` and `i`, then it is between `0` and `i+1`:
+   ```formula
    all i. all x. between(x, 0, i) -> between(x,0,add(i,1))
    ```
 
+The postcondition we want to prove that the program meets is:
+```formula
+RESULT = -1 \/ (between(RESULT,0,LEN) /\ lookup(RESULT) = 0)
+```
+which improves over the previous one by stating that when a `0` is found, it is found between `0` and `LEN`.
+
+To prove that the program meets this upgraded specification, we also need to upgrade our loop invariant. We use the same trick as before and replace `LEN`, which indicates “all of the array”, with `I`, indicating that a partial job has been done.
+
+The fully annotated program looks like this, where additional `assert`s have been used to summarise the effect of each branch of the if-then-else and help the proof construction go through easier:
 ```
 RESULT := -1
 I := 0
@@ -240,7 +286,7 @@ while (I != LEN) {
   I := add(I,1)
 }
 ```
-
+The proof can now be completed on the annotated program, but `auto` will need help in instantiating the axioms:
 ```hoare {id=hoare-loops-search-2}
 (hoare
  (program_vars RESULT I LEN)
@@ -255,13 +301,48 @@ while (I != LEN) {
 
 The specifications so far state that `RESULT = -1` is a possible final state of the program, but does not say what that means. If we want the specification to actually say that there was no element found then we need to add this explicitly.
 
-
-If we strengthen the postcondition, we also have to strengthen the loop invariant to account for it. As usual, we replace the final value `LEN` in the specification with the intermediate counter `I`:
+We can state what it means for there to be no `0` between `start` and `end` by the formula:
 ```formula
-(RESULT = -1 /\ notFound(0,I)) \/ (between(RESULT, 0, I) /\ lookup(RESULT) = 0)
+all i. between(i,start,end) -> ¬lookup(i) = 0
 ```
+We could now alter the postcondition of our specification to include this formula directly. This will work (if we add another two axioms for `between`, see below), but it makes the proof unnecessarily messy. To reduce the mess, we prefer to abbreviate this formula to just `notFound(start,end)` and prove two properties of it. When verifying the program, we forget the actual definition of `notFound` and only use the properties.
 
-The annotated program is now:
+1. The property `notFound-0` states that the value is not found between `0` and `0` (remember that the upper bound is exclusive):
+   ```formula
+   notFound(0,0)
+   ```
+2. The property `notFound-step` states that if the value was not found up to `i` and also not at `i`, then it is not found up to `i + 1`:
+   ```formula
+   all i. notFound(0,i) -> ¬lookup(i) = 0 -> notFound(0,add(i,1))
+   ```
+
+To prove these properties, we will need two additional axioms for `between(i,start,end)`, which are in some sense the “elimination” rules for `between` where the above are the “introduction” rules:
+1. Nothing is between `0` and `0`:
+   ```formula
+   all i. ¬between(i, 0, 0)
+   ```
+2. If something is between `0` and `i + 1` then it is either between `0` and `i` or equal to `i`.
+   ```formula
+   all x. all i. between(x, 0, add(i,1)) -> (between(x,0,i) \/ x = i)
+   ```
+
+We can now prove them in the prover:
+1. ```focused-nd {id=hoare-loops-notFound-1}
+   (config
+    (name "notFound-0")
+	(assumptions
+	 (between-empty "all i. ¬between(i, 0, 0)"))
+	(goal "all i. between(i,0,0) -> ¬lookup(i) = 0"))
+   ```
+2. ```focused-nd {id=hoare-loops-notFound-2}
+   (config
+    (name "notFound-step")
+	(assumptions
+	 (between-elim "all x. all i. between(x, 0, add(i,1)) -> (between(x,0,i) \/ x = i)"))
+	(goal "all i. (all x. between(x,0,i) -> ¬lookup(x) = 0) -> ¬lookup(i) = 0 -> (all x. between(x,0,add(i,1)) -> ¬lookup(x) = 0)"))
+   ```
+
+Using the `notFound` predicate, the complete annotated program is:
 ```
 RESULT := -1
 I := 0
@@ -277,6 +358,8 @@ while (I != LEN) {
   I := add(I,1)
 }
 ```
+
+And the proof can be completed using the axioms given:
 
 ```hoare {id=hoare-loops-search2}
 (hoare
