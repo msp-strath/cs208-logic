@@ -4,13 +4,17 @@
 This page assumes that you have read the [Introduction to Predicate Logic](pred-logic-intro.html). You can also read the [proof rules for predicate logic](pred-logic-rules.html) to get a feel for how the quantifiers in predicate logic work.
 ```
 
-Now that we have seen the proof rules for Predicate Logic, we turn to its semantics. The semantics of Predicate Logic is more complex than the semantics of Propositional Logic that we saw in [Week 1](prop-logic-semantics.md).
+Now that we have seen the proof rules for Predicate Logic, we turn to its semantics. The semantics of Predicate Logic is more complex than the semantics of [Propositional Logic](prop-logic-semantics.md), due to the additional layers of terms and quantifiers.
 
-This page contains two videos introducing the semantics of Predicate Logic, and then an interactive tool that you can use to explore some (finite) models of Predicate Logic formulas.
+The semantics of Predicate Logic is more complex than the semantics of Propositional Logic that we saw in Topic 0. To interpret a Predicate Logic formula, we need to upgrade the idea of a valuation (the mapping from atomic propositions to true/false values) to a model. Models come in two parts: (1) a set of all the things in the universe; and (2) the meanings of all the predicate symbols in our vocabulary as relations on the universe. A useful intuition to think about models is as databases: each predicate symbol is interpreted as a (possibly infinite) table of related elements of the universe.
 
-[Slides for the videos below](week08-slides.pdf)
+Once we have a definition of model, we can interpret Predicate Logic formulas. We do this in the same way as we did for Propositional Logic: by breaking the formula down into its constituent parts, working out their meaning and then combining the meanings together.
 
-## Models
+Armed with an interpretation of formulas, we can define entailment for Predicate Logic. As with Propositional Logic, entailment means that for all models, if all the assumptions are true then the conclusion is true. Now there are infinitely many models, and each one may itself be infinite; so checking them all is no longer feasible. This is why proof for Predicate Logic is more essential than for Propositional Logic.
+
+The semantics of Predicate Logic shows the tight connection between Logic and Databases. We can think of the semantics of a formula as a database table representing all the values of its variables that make it true. Database queries are essentially the same thing as logical formulas.
+
+## Models {id=pred-sem:models}
 
 To interpret a Predicate Logic formula, we need to upgrade the idea of a valuation (the mapping from atomic propositions to true/false values) to a *model*. Models come in two parts:
 
@@ -18,6 +22,8 @@ To interpret a Predicate Logic formula, we need to upgrade the idea of a valuati
 2. the meanings of all the predicate symbols in our vocabulary as relations on the universe.
 
 A useful intuition to think about models is as databases: each predicate symbol is interpreted as a (possibly infinite) table of related elements of the universe.
+
+````comment
 
 Models are explained in this video:
 
@@ -29,11 +35,15 @@ oxUbCksb-aw
 Enter any notes to yourself here.
 ```
 
-## Interpretation of Formulas
+````
+
+## Interpretation of Formulas {id=pred-sem:interp}
 
 Once we have a definition of model, we can interpret Predicate Logic formulas. We do this in the same way as we did for Propositional Logic: by breaking the formula down into its constituent parts, working out their meaning and then combining the meanings together.
 
 Armed with an interpretation of formulas, we can define *entailment* for Predicate Logic. As with Propositional Logic, entailment means that for all models, if all the assumptions are true then the conclusion is true. Now there are infinitely many models, and each model may itself be infinite; so checking them all is no longer feasible. This is why proof for Predicate Logic is more essential than for Propositional Logic.
+
+````comment
 
 The interpretation of Predicate Logic formulas in a model, and the definition of entailment in predicate logic, are discussed in this video:
 
@@ -44,6 +54,8 @@ NivY9vERSmA
 ```textbox {id=pred-semantics-note2}
 Enter any notes to yourself here.
 ```
+
+````
 
 ## Examples
 
