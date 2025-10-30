@@ -10,7 +10,7 @@ In our [introduction to Hoare Logic](hoare-logic.md), we only looked at simple p
 
 The simple programming language we are using only has one way of doing loops: `while(C) { <program> }`. More exotic loops, such as `do { ... } while(C)` or `for(...) { ... }` can be expressed using `while` and some auxillary variables.
 
-The meaning of `while(C) { <program> }` is deceptively simple looking: “keep doing `<program>` as long as `C` is true”. Unfortunately, this simplicity is a trap:
+The meaning of `while(C) { <program> }` is deceptively simple looking: “keep doing `<program>` as long as `C` is true”. This appearance of simplicity is a trap.
 
 Firstly, it is very easy to write programs where `C` never becomes true, which means that the loop never finishes. We will not address this problem here, only mention that the variant of Hoare Logic that we are using here does not prove termination. We would have to switch to [total Hoare logic](hoare-loops.md#hoare-loops:termination).
 
@@ -27,7 +27,7 @@ The rigorous way to prove things about a loop is to find a *loop invariant*. Ins
 
 This may sound like it cannot possibly work. How can a loop do any useful work if it is required to keep `P` always true?
 
-The answer is that the loop invariant encodes some *relationship* between the current state and the partial work done so far. At the start of the loop, the partial work is non existent, but as the loop progresses it is filled in. The of this page details some strategies for discovering loop invariants to verify programs against specifications.
+The answer is that the loop invariant `P` encodes some *relationship* between the current state and the partial work done so far. At the start of the loop, the partial work is non existent, but as the loop progresses it is filled in. The rest of this page details some strategies for discovering loop invariants to verify programs against specifications.
 
 ## Warm up {id=hoare-loops:warmup}
 
