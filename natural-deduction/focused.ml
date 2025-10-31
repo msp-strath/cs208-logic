@@ -127,15 +127,31 @@ let do_auto ?focus context goal =
   | `Proved ->
      Ok ([], ())
   | `Counter literals ->
-     let string_of_terms tms = String.concat ", " (List.map Term.to_string tms) in
-     let string_of_literal = function
-       | (true, rel, tms) -> rel ^ "(" ^ string_of_terms tms ^ ")"
-       | (false, rel, tms) -> "¬" ^ rel ^ "(" ^ string_of_terms tms ^ ")"
+     let string_of_atom rel tms =
+       match rel, tms with
+       | "=", [t1; t2] ->
+          Term.to_string t1 ^ " = " ^ Term.to_string t2
+       | rel, tms ->
+          rel ^ "(" ^ String.concat ", " (List.map Term.to_string tms) ^ ")"
      in
-     let report =
-       String.concat "; " (List.map string_of_literal literals)
+     let assumptions =
+       literals
+       |> List.filter_map
+            (function
+             | (true, rel, tms) -> Some (string_of_atom rel tms)
+             | (false, _, _)    -> None)
+       |> (fun l -> if List.is_empty l then "T" else String.concat ", " l)
+     and goal =
+       literals
+       |> List.filter_map
+            (function
+             | (false, rel, tms) -> Some (string_of_atom rel tms)
+             | (true, _, _)      -> None)
+       |> (fun l -> if List.is_empty l then "F" else String.concat " ∨ " l)
      in
-     errormsgf "auto: failed with [%s]" report
+     errormsgf "auto: failed trying to prove %s from assumptions \
+                %s. Maybe try instantiating a universal assumption."
+       goal assumptions
 
 
 let apply context rule goal =
