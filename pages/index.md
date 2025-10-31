@@ -95,16 +95,40 @@ The pages linked to below contain the lecture notes, covering the material intro
 
 ## Further Reading {id=index:further-reading}
 
-The following books may be useful if you wish to read more about the topics in this course. The links go to either the author's or the publisher's web pages. You might be able to find them cheaper elsewhere, or in the University library.
+The following books and online resources may be useful if you wish to read more about the topics in this course. The links go to either the material itself if is available online, or the author's or the publisher's web pages. You might be able to find them cheaper at well-known online retailers, or in the University library.
+
+Two books that are recommended:
 
 1. [Logic in Computer Science](https://www.cambridge.org/highereducation/books/logic-in-computer-science/9022E2BE5E7C9F20D259F4A83986236C#overview) by Michael Huth and Mark Ryan. The first two chapters cover Propositional Logic and Predicate Logic as we have done them in this course. They also give a natural deduction system for proof, but in a slightly different form to the one used here. Chapter 4 covers Hoare Logic for partial and total correctness. The book also contains chapters on Temporal Logic and Model checking, which we have not had time to cover in this course.
 
-2. [Software Abstractions](https://softwareabstractions.org/) by Daniel Jackson describes the [Alloy tool](https://alloytools.org/) for building logical models of software systems. If can be used to build and model relatively complex software systems and find design bugs in them.
+2. [Mechanizing Proof](https://direct.mit.edu/books/monograph/2641/Mechanizing-ProofComputing-Risk-and-Trust) by Donald MacKenzie. This is not a technical book. It is a sociological history of the idea of doing proofs on computers and about computer hardware and software. Recommended to get a perspective on why the world of software is the way it is.
 
-2. [The Logic Manual](https://users.ox.ac.uk/~logicman/) by Volker Halbach. This is am introduction to formal logic, intended primarily for Philosophy students. It covers Propostiional and Predicate Logic with Natural Deduction proofs, but does not explore applications to Computer Science. It does discuss the connections between formal logic and natural language.
+There are many software tools for doing interactive proofs with logic that are like the tool we have used in this course, but which allow much larger . The following links are to material for learning various provers and other logic tools. There are many more.
 
-3. [Logical Methods](https://mitpress.mit.edu/9780262544849/logical-methods/) by [Greg Restall](https://consequently.org/) and Shawn Standefer. Also a textbook introduction to formal logic intended for Philosophy students. Covers more topics that *The Logic Manual*, including Modal Logic.
+1. The [Rocq prover](https://rocq-prover.org) (formerly known as Coq) is an industrial strength interative theorem prover that has been used for proofs about software and for research in Computer Science and  Mathematics. A major project in Rocq is the [CompCert](https://compcert.org/) verified C compiler. The free online book [Software Foundations](https://softwarefoundations.cis.upenn.edu/) is an introduction to using Rocq for verifying software.
 
-4. [Proofs and Models in Philosophical Logic](https://www.cambridge.org/core/elements/abs/proofs-and-models-in-philosophical-logic/A1907B05C24E1000270CC5B684FA7AAB) by [Greg Restall](https://consequently.org/). More advanced than *Logical Methods*, and includes topics on “non-classical” logics that reject certain principles from the normal two-valued logic.
+2. The [Lean prover](https://lean-lang.org) is an interactive theorem prover that is more tightly focused on mathematics. There is currently underway a project to prove [Fermat's Last Theorem](https://github.com/ImperialCollegeLondon/FLT) is Lean.
 
-5. [forall x: Calgary](https://forallx.openlogicproject.org/) by P. D. Magnus, Tim Button, Robert Trueman, and Richard Zach. This is an open textbook on formal logic, again primarily for Philosophy students. It uses the [Carnap](https://carnap.io/) system for building proofs in a web browser, which is another tool for constructing proofs. See the [Carnap book](https://carnap.io/book).
+3. The [Agda prover](https://agda.readthedocs.io/en/v2.8.0/) is another interactive prover than is more like a programming language similar to Haskell that you will using in CS260. The [CS410 Advanced Functional Programming](https://github.com/msp-strath/cs410-advanced-functional-programming/) course in 4th year uses Agda. There is an online introductory textbook [Programming Language Foundations in Agda](https://plfa.github.io/) that serves as a gentle introduction.
+
+4. The [Idris programming language](https://www.idris-lang.org/) is a programming language that has theorem proving features.
+
+5. [Dafny](https://dafny.org/) is a programming language and verification environment that is a fully fleshed out version of the [Hoare Logic](hoare-logic.md) tool that you have been using in this course.
+
+6. [Why3](https://www.why3.org/) is another more capable version of the Hoare Logic tool, focused a bit more on research applications.
+
+7. The book [Software Abstractions](https://softwareabstractions.org/) by Daniel Jackson describes the [Alloy tool](https://alloytools.org/) for building logical models of software systems. If can be used to build and model relatively complex software systems and find design bugs in them.
+
+Formal Logic has its roots in Philosophy. There are many books aimed at Philosophy students that are interesting to read to learn about the assumptions underlying logic. Some good ones are:
+
+1. [The Logic Manual](https://users.ox.ac.uk/~logicman/) by Volker Halbach. This is am introduction to formal logic, intended primarily for Philosophy students. It covers Propostiional and Predicate Logic with Natural Deduction proofs, but does not explore applications to Computer Science. It does discuss the connections between formal logic and natural language.
+
+2. [Logical Methods](https://mitpress.mit.edu/9780262544849/logical-methods/) by [Greg Restall](https://consequently.org/) and Shawn Standefer. Also a textbook introduction to formal logic intended for Philosophy students. Covers more topics that *The Logic Manual*, including Modal Logic.
+
+3. [Proofs and Models in Philosophical Logic](https://www.cambridge.org/core/elements/abs/proofs-and-models-in-philosophical-logic/A1907B05C24E1000270CC5B684FA7AAB) by [Greg Restall](https://consequently.org/). More advanced than *Logical Methods*, and includes topics on “non-classical” logics that reject certain principles from the normal two-valued logic.
+
+4. [forall x: Calgary](https://forallx.openlogicproject.org/) by P. D. Magnus, Tim Button, Robert Trueman, and Richard Zach. This is an open textbook on formal logic, again primarily for Philosophy students. It uses the [Carnap](https://carnap.io/) system for building proofs in a web browser, which is another tool for constructing proofs. See the [Carnap book](https://carnap.io/book).
+
+Finally, the study of logic itself is interesting in its own right, and leads to deep connections to computability and results like Gödel's Incompleteness Theorem. The main textbook for this material is:
+
+1. [Computability and Logic](https://www.cambridge.org/core/books/computability-and-logic/440B4178B7CBF1C241694233716AB271) by George S. Boolos, John P. Burgess, and Richard C. Jeffery.

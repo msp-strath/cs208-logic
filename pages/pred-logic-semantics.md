@@ -290,6 +290,12 @@ synth LEQAx size 5
 
 As well as synthesising models, we can get the computer to check them.
 
+### Models and Proof
+
+FIXME: explain the connection between provability and the existence of models, do some examples and give some exercises.
+
+
+
 ### Going further
 
 We have only scratched the surface of the kinds of things that can be expressed using Predicate Logic, and what kinds of models can be captured using axiomatisations. Try using the model synthesiser tool below to try different vocabularies and axiomisations and generate models for them:

@@ -321,9 +321,9 @@ To prove these properties, we will need two additional axioms for `between(i,sta
    ```formula
    all i. ¬between(i, 0, 0)
    ```
-2. If something is between `0` and `i + 1` then it is either between `0` and `i` or equal to `i`.
+2. If something is between `0` and `i + 1` then it is either between `0` and `i` and not equal to `i`, or it is equal to `i`.
    ```formula
-   all x. all i. between(x, 0, add(i,1)) -> (between(x,0,i) \/ x = i)
+   all x. all i. between(x, 0, add(i,1)) -> ((between(x,0,i) /\ ¬(x = i)) \/ x = i)
    ```
 
 We can now prove them in the prover:
@@ -338,8 +338,10 @@ We can now prove them in the prover:
    (config
     (name "notFound-step")
 	(assumptions
-	 (between-elim "all x. all i. between(x, 0, add(i,1)) -> (between(x,0,i) \/ x = i)"))
-	(goal "all i. (all x. between(x,0,i) -> ¬lookup(x) = 0) -> ¬lookup(i) = 0 -> (all x. between(x,0,add(i,1)) -> ¬lookup(x) = 0)"))
+	 (between-elim
+	  "all x. all i. between(x, 0, add(i,1)) -> ((between(x,0,i) /\ !(x = i)) \/ x = i)"))
+	(goal
+	 "all i. (all x. between(x,0,i) -> ¬lookup(x) = 0) -> ¬lookup(i) = 0 -> (all x. between(x,0,add(i,1)) -> ¬lookup(x) = 0)"))
    ```
 
 Using the `notFound` predicate, the complete annotated program is:
