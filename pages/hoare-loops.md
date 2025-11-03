@@ -281,7 +281,7 @@ while (I != LEN) {
     RESULT := I
     assert (between(RESULT, 0, add(I, 1)) ∧ lookup(RESULT) = 0)
   } else {
-    assert (RESULT = -1 /\ (between(RESULT,0,add(I,1)) /\ lookup(RESULT) = 0))
+    assert (RESULT = -1 \/ (between(RESULT,0,add(I,1)) /\ lookup(RESULT) = 0))
   }
   I := add(I,1)
 }
