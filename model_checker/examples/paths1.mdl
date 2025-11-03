@@ -3,7 +3,7 @@ vocab V {
 }
 
 model I1 for V {
-  universe = { a, b, c },
+  universe = { a, b, c }
   path = { (a,b), (b,a), (a,a), (b,b) }
 }
 

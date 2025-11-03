@@ -18,6 +18,105 @@
   TODO: Some introductory text
 \end{frame}
 
+\weeksection{Proof Search}
+
+\begin{frame}
+  Judgements:
+
+  \begin{displaymath}
+    x_1, \cdots, x_n \vdash G \Rightarrow \Sigma
+  \end{displaymath}
+  where:
+  \begin{itemize}
+  \item $x_1, \cdots, x_n$ is the list of variable in scope
+  \item $G$ is a list of \emph{goals}
+  \item $\Sigma$ is a list of literals
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \begin{mathpar}
+    \inferrule*
+    {+P, G \\ +Q, G}
+    {+(P \land Q), G}
+
+    \inferrule*
+    {-P, -Q, G}
+    {-(P \land Q), G}
+
+    \inferrule*
+    {+P, +Q, G}
+    {+(P \lor Q), G}
+
+    \inferrule*
+    {-P, G \\ -Q, G}
+    {-(P \lor Q), G}
+  \end{mathpar}
+\end{frame}
+
+\begin{frame}
+  Negation:
+  \begin{mathpar}
+    \inferrule*
+    {-P, G}
+    {+(\lnot P), G}
+
+    \inferrule*
+    {+P, G}
+    {-(\lnot P), G}
+  \end{mathpar}
+
+  Implication:
+  \begin{mathpar}
+    \inferrule*
+    {-P, +Q, G}
+    {+(P \to Q), G}
+
+    \inferrule*
+    {+P, G \\ -Q, G}
+    {-(P \to Q), G}
+  \end{mathpar}
+\end{frame}
+
+\begin{frame}
+  Universal quantifier:
+  \begin{mathpar}
+    \inferrule*
+    {x_0 \vdash +(P[x := x_0]), G}
+    {+(\forall x. P), G}
+
+    \inferrule*
+    {G}
+    {-(\forall x. P), G}
+  \end{mathpar}
+
+  Existential quantifier:
+  \begin{mathpar}
+    \inferrule*
+    {G}
+    {+(\exists x. P)}
+
+    \inferrule*
+    {x_0 \vdash -(P[x := x_0]), G}
+    {-(\exists x. P), G}
+  \end{mathpar}
+\end{frame}
+
+\begin{frame}
+  \begin{mathpar}
+    \inferrule*
+    {G \Rightarrow +- A, \Sigma}
+    {+- A, G \Rightarrow \Sigma}
+  \end{mathpar}
+
+  Axiom:
+  \begin{mathpar}
+    \inferrule*
+    {+A \in \Sigma \\ -A \in \Sigma}
+    {G \Rightarrow \Sigma}
+  \end{mathpar}
+\end{frame}
+
 \weeksection{SAT Solvers}
 
 \begin{frame}

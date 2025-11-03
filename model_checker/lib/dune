@@ -1,6 +1,6 @@
 (library
  (name model_checker)
- (libraries fol_formula menhirLib parser_util msat msat.sat)
+ (libraries fol_formula menhirLib parser_util msat msat.sat generalities)
  (flags
   (:standard -w -30)))
 

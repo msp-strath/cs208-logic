@@ -14,6 +14,10 @@ Armed with an interpretation of formulas, we can define entailment for Predicate
 
 The semantics of Predicate Logic shows the tight connection between Logic and Databases. We can think of the semantics of a formula as a database table representing all the values of its variables that make it true. Database queries are essentially the same thing as logical formulas.
 
+## Vocabularies {id=pred-sem:vocabs}
+
+FIXME: replicate the slides
+
 ## Models {id=pred-sem:models}
 
 To interpret a Predicate Logic formula, we need to upgrade the idea of a valuation (the mapping from atomic propositions to true/false values) to a *model*. Models come in two parts:
@@ -23,39 +27,11 @@ To interpret a Predicate Logic formula, we need to upgrade the idea of a valuati
 
 A useful intuition to think about models is as databases: each predicate symbol is interpreted as a (possibly infinite) table of related elements of the universe.
 
-````comment
-
-Models are explained in this video:
-
-```youtube
-oxUbCksb-aw
-```
-
-```textbox {id=pred-semantics-note1}
-Enter any notes to yourself here.
-```
-
-````
-
 ## Interpretation of Formulas {id=pred-sem:interp}
 
 Once we have a definition of model, we can interpret Predicate Logic formulas. We do this in the same way as we did for Propositional Logic: by breaking the formula down into its constituent parts, working out their meaning and then combining the meanings together.
 
 Armed with an interpretation of formulas, we can define *entailment* for Predicate Logic. As with Propositional Logic, entailment means that for all models, if all the assumptions are true then the conclusion is true. Now there are infinitely many models, and each model may itself be infinite; so checking them all is no longer feasible. This is why proof for Predicate Logic is more essential than for Propositional Logic.
-
-````comment
-
-The interpretation of Predicate Logic formulas in a model, and the definition of entailment in predicate logic, are discussed in this video:
-
-```youtube
-NivY9vERSmA
-```
-
-```textbox {id=pred-semantics-note2}
-Enter any notes to yourself here.
-```
-
-````
 
 ## Examples
 
@@ -121,7 +97,7 @@ axioms NothingEqual for EmptyVocab {
 }
 
 axioms NothingEqualAndThing for EmptyVocab {
-  nothing-equal: "all x. x != x",
+  nothing-equal: "all x. x != x"
   something-exists: "ex x. T"
 }
 
@@ -132,7 +108,7 @@ synth NothingEqual size 0
 synth NothingEqualAndThing size 3
 ```
 
-With this tool we can only check that individual sizes of model do not exist. To prove that there are *no* models (even infinite ones), we can do a proof that these axioms entail “false” (to do this proof you will need the `refl` command from [the proof rules for equality](pred-logic-rules.md)).
+With this tool we can only check that individual sizes of model do not exist. To prove that there are *no* models (even infinite ones), we can do a proof that these axioms entail “false” (to do this proof you will need the `refl` command from [the proof rules for equality](pred-logic-rules.md#pred-logic:equality)).
 
 ```focused-nd {id=predsem-allunequal-contra}
 (config

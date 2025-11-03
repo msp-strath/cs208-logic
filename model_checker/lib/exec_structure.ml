@@ -210,7 +210,7 @@ let exec_item env =
          (let axioms = IdentMap.fold (fun _ -> List.cons) axioms [] in
           match Generator.generate cardinality vocab axioms with
           | Ok model ->
-             let msg = Format_util.str "@[<v0>%a@]" Model.pp model in
+             let msg = Pretty.to_string ~width:80 (Model.pp model) in
              Ok (env, Message msg)
           | Error msg ->
              let msg = Format_util.str "Synthesis failed: %s@," msg in

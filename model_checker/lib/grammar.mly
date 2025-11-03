@@ -23,11 +23,11 @@ structure:
     { items }
 
 item:
-  | VOCAB; name=IDENT; LBRACE; arities=separated_list(COMMA,arity_defn); RBRACE
+  | VOCAB; name=IDENT; LBRACE; arities=list(arity_defn); RBRACE
     { Vocab { name; arities } }
-  | MODEL; name=IDENT; FOR; vocab_name=IDENT; LBRACE; defns=separated_list(COMMA,set_defn); RBRACE
+  | MODEL; name=IDENT; FOR; vocab_name=IDENT; LBRACE; defns=list(set_defn); RBRACE
     { Model { name; vocab_name; defns } }
-  | AXIOMATISATION; name=IDENT; FOR; vocab=IDENT; LBRACE; formulas=separated_list(COMMA,named_formula); RBRACE
+  | AXIOMATISATION; name=IDENT; FOR; vocab=IDENT; LBRACE; formulas=list(named_formula); RBRACE
     { Axioms { name; vocab; formulas } }
   | CHECK; model_name=IDENT; MODELS; formula=QUOTED
     { Check { model_name; formula } }

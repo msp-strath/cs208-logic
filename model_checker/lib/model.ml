@@ -1,11 +1,15 @@
-open Format_util
+open Generalities
+
+let parens doc = Pretty.(text "(" ^^ doc ^^ text ")")
+let curly doc = Pretty.(text "{" ^^ doc ^^ text "}")
+let comma = Pretty.text ", "
 
 module Entity = struct
   type t = string
 
   let equal = String.equal
   let compare = String.compare
-  let pp fmt s = Format.fprintf fmt "‘%s’" s
+  let pp s = Pretty.textf "‘%s’" s
   let to_string s = Printf.sprintf "‘%s’" s
 end
 
@@ -22,21 +26,63 @@ module Tuple = struct
     | x :: xs, y :: ys -> (
         match Entity.compare x y with 0 -> compare xs ys | c -> c)
 
-  let pp fmt =
-    Format.fprintf fmt "(%a)"
-      (Format.pp_print_list ~pp_sep:pp_comma_spc Entity.pp)
+  let pp = function
+    | [ x ] ->
+       Entity.pp x
+    | xs ->
+       parens
+         (xs |> List.to_seq |> Seq.map Entity.pp |> Seq_ext.intersperse comma |> Pretty.concat)
 
   let to_string e = "(" ^ String.concat "," (List.map Entity.to_string e) ^ ")"
 end
 
+let pp_as_set items_seq =
+  let open Pretty in
+  text "{"
+  ^^ group
+       (nest 2
+          (break
+           ^^ (items_seq
+               |> Seq_ext.intersperse Pretty.(comma ^^ group break)
+               |> Pretty.concat)))
+  ^^ break ^^ text "}"
+
 module TupleSet = Set.Make (Tuple)
 
-type t = { universe : Entity.t list; relations : TupleSet.t PredicateMap.t }
+let pp_tupleset tupleset =
+  pp_as_set (tupleset |> TupleSet.to_seq |> Seq.map Tuple.pp)
+
+type t =
+  { universe : Entity.t list
+  ; relations : TupleSet.t PredicateMap.t
+  }
 
 let contains r tuple interp =
   match PredicateMap.find r interp.relations with
   | set -> TupleSet.mem tuple set
   | exception Not_found -> invalid_arg "invalid predicate symbol"
+
+let pp { universe; relations } =
+  let open Pretty in
+  let universe_doc =
+    group (nest 2 (text "universe = " ^^ break ^^ pp_as_set (universe |> List.to_seq |> Seq.map Entity.pp)))
+  in
+  let pp_relation (nm, tuples) =
+    group (nest 2 (text nm ^^ text " =" ^^ break ^^ pp_tupleset tuples))
+  in
+  group
+    (text "model {"
+     ^^ nest 2
+          (break
+           ^^ (relations
+               |> PredicateMap.to_seq
+               |> Seq.map pp_relation
+               |> Seq.cons universe_doc
+               |> Seq_ext.intersperse break
+               |> concat))
+     ^^ break ^^ text "}")
+
+(*
 
 let pp fmt { universe; relations } =
   let pp_tuple fmt = function
@@ -51,8 +97,9 @@ let pp fmt { universe; relations } =
       (Format.pp_print_seq ~pp_sep:pp_comma_brk pp_tuple)
       (TupleSet.to_seq tuples)
   in
-  Format.fprintf fmt "@[<v2>model {@,universe = {@[<h>%a@]},@,%a@]@,}@,"
+  Format.fprintf fmt "@[<v2>model {@,universe = {@[<h>%a@]}@,%a@]@,}@,"
     (Format.pp_print_list ~pp_sep:pp_comma_brk Format.pp_print_string)
     universe
-    (Format.pp_print_seq ~pp_sep:pp_comma_cut pp_rel_defn)
+    (Format.pp_print_seq pp_rel_defn)
     (PredicateMap.to_seq relations)
+ *)

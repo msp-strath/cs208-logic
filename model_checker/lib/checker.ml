@@ -34,19 +34,25 @@ and verification =
 
 type outcome = Verified of verification | Refuted of refutation
 
+let model_entity_pp = Format.pp_print_string
+let model_tuple_pp fmt entities =
+  Format.fprintf fmt "(%a)"
+    (Format.pp_print_list ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ", ")
+       model_entity_pp) entities
+
 let rec pp_refutation fmt = function
   | IsFalse -> Format.fprintf fmt "False"
   | NotEqual (x1, e1, x2, e2) ->
      Format.fprintf fmt "%a = %a refuted : %a = %a, but %a = %a" Term.pp x1
-       Term.pp x2 Term.pp x1 Model.Entity.pp e1 Term.pp x2 Model.Entity.pp e2
+       Term.pp x2 Term.pp x1 model_entity_pp e1 Term.pp x2 model_entity_pp e2
   | Equal (x1, e, x2) ->
      Format.fprintf fmt "%a != %a refuted : both equal to %a" Term.pp x1
-       Term.pp x2 Model.Entity.pp e
+       Term.pp x2 model_entity_pp e
   | NotInRelation (r, tms, entities) ->
      Format.fprintf fmt "%s(%a) refuted : %a not in interpretation of %s"
        r
        Term.pp_tms tms
-       Model.Tuple.pp entities
+       model_tuple_pp entities
        r
   | ConclFalse (verification, reason) ->
      Format.fprintf fmt
@@ -67,11 +73,11 @@ let rec pp_refutation fmt = function
        "@[<v2>negation refuted, because the subformula was verified:@,%a@]"
        pp_verification verification
   | ForallFail (x, entity, refutation) ->
-     Format.fprintf fmt "@[<v2>when %s = %a:@,%a@]" x Model.Entity.pp entity
+     Format.fprintf fmt "@[<v2>when %s = %a:@,%a@]" x model_entity_pp entity
        pp_refutation refutation
   | ExistsFail (x, _f, refutations) ->
      let pp_exists_case fmt (e, refutation) =
-       Format.fprintf fmt "- @[<v2>when %s = %a:@,%a@]" x Model.Entity.pp e
+       Format.fprintf fmt "- @[<v2>when %s = %a:@,%a@]" x model_entity_pp e
          pp_refutation refutation
      in
      Format.fprintf fmt "@[<v2>Exists refuted:@,%a@]"
@@ -82,13 +88,13 @@ and pp_verification fmt = function
   | IsTrue -> Format.fprintf fmt "True"
   | Equal (x1, e, x2) ->
      Format.fprintf fmt "%a = %a verified : both equal to %a" Term.pp x1
-       Term.pp x2 Model.Entity.pp e
+       Term.pp x2 model_entity_pp e
   | NotEqual (x1, e1, x2, e2) ->
      Format.fprintf fmt "%a != %a verified : %a = %a and %a = %a" Term.pp x1
-       Term.pp x2 Term.pp x1 Model.Entity.pp e1 Term.pp x2 Model.Entity.pp e2
+       Term.pp x2 Term.pp x1 model_entity_pp e1 Term.pp x2 model_entity_pp e2
   | InRelation (r, tms, entities) ->
      Format.fprintf fmt "%s(%a) verified : %a in interpretation of %s" r
-       Term.pp_tms tms Model.Tuple.pp entities r
+       Term.pp_tms tms model_tuple_pp entities r
   | HypFalse (reason, _) ->
      Format.fprintf fmt "@[<v>hypothesis refuted:@,%a@]" pp_refutation reason
   | ConclTrue (_, reason) ->
@@ -113,7 +119,7 @@ and pp_verification fmt = function
        pp_refutation refutation
   | ForallSuc (x, _f, verifications) ->
      let pp_forall_case fmt (e, verification) =
-       Format.fprintf fmt "- @[<v2>when %s = %a:@,%a@]" x Model.Entity.pp e
+       Format.fprintf fmt "- @[<v2>when %s = %a:@,%a@]" x model_entity_pp e
          pp_verification verification
      in
      Format.fprintf fmt "%a" (*  "@[<v2>For all verified:@,%a@]" *)
@@ -121,7 +127,7 @@ and pp_verification fmt = function
        verifications
   | ExistsSuc (x, e, verification) ->
      Format.fprintf fmt "@[<v2>exists verified with %s = %a:@,%a@]" x
-       Model.Entity.pp e pp_verification verification
+       model_entity_pp e pp_verification verification
 
 let pp_outcome fmt = function
   | Verified verification ->

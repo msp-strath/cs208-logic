@@ -36,6 +36,7 @@ Lemmas:
   (between-empty "all i. ¬between(i, 0, 0)")
   (between-elim "all x. all i. between(x, 0, add(i,1)) -> ((between(x,0,i) /\ !x = i) \/ x = i)"))
  (goal "all i. all a. all b. (all j. between(j,0,i) -> get(a,j) = get(b,j)) ->
+                             get(a,add(i,1)) = get(b,get(i,1)) ->
                              (all j. between(j,0,add(i,1)) ->
 							         get(set(a,i,get(b,i)),j) = get(b,j))"))
 ```
@@ -46,7 +47,7 @@ Lemmas:
  (logic_vars originalB)
  (assumptions
   (eqArray-zero "all a. all b. eqArray(0,a,b)")
-  (eqArray-step "all i. all a. all b. eqArray(i,a,b) -> eqArray(add(i,1),set(a,i,get(b,i)),b)"))
+  (eqArray-step "all i. all a. all b. eqArray(i,a,b) -> get(a,add(i,1)) = get(b,add(i,1)) -> eqArray(add(i,1),a,b)"))
  (precond "B = originalB")
  (postcond "eqArray(LEN,A,B) /\ B = originalB"))
 ```

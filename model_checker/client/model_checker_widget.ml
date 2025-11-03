@@ -41,7 +41,7 @@ let component initial =
              textf "%s != %s refuted : both equal to %s" (Term.to_string x1)
                (Term.to_string x2) (Model.Entity.to_string e)
           | NotInRelation (r, tms, entities) ->
-             textf "%s(%s) refuted : %s not in %s" r
+             textf "%s(%s) refuted : %s not in ‘%s’" r
                (String.concat "," (List.map Term.to_string tms))
                (Model.Tuple.to_string entities)
                r
@@ -107,7 +107,7 @@ let component initial =
                (Term.to_string x2)
                (Model.Entity.to_string e2)
           | InRelation (r, tms, entities) ->
-             textf "%s(%s) verified : %s in %s" r
+             textf "%s(%s) verified : %s in ‘%s’" r
                (String.concat "," (List.map Term.to_string tms))
                (Model.Tuple.to_string entities)
                r
@@ -169,9 +169,9 @@ let component initial =
         let render_outcome = function
           | Verified v ->
              [%concat
-                 text "Verified:";
-              br ();
-              render_verification v]
+                 text "Verified"(* ; *)
+              (* br (); *)
+              (* render_verification v *)]
           | Refuted v ->
              [%concat
                  text "Refuted:";
@@ -186,7 +186,7 @@ let component initial =
         | Exec_structure.Outcome (model_name, formula, outcome) ->
            [%concat
                text
-               (Printf.sprintf "checking %s |= \"%s\"" model_name
+               (Printf.sprintf "checking %s ⊧ \"%s\"" model_name
                   (Formula.to_string formula));
             br ();
             R.render_outcome outcome]
