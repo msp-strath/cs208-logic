@@ -85,7 +85,11 @@ The pages linked to below contain the lecture notes, covering the material intro
 
    There are no lecture slides for this topic.
 
--  Topic 7 will be **Programs with Arrays**.
+-  Topic 7 is **Programs with Arrays**.
+
+   [Hoare Logic for Arrays](hoare-arrays.md) describes how to use Hoare Logic to reason about programs that access and update array data structures. In doing so, we come up against the problem of *aliasing*, that complicates reasoning about any program that combines references with mutability.
+
+   There are no lecture slides for this topic. Lectures will all be live coding demonstrations.
 
 -  Topic 8 will be **Semantics of Predicate Logic**.
 
