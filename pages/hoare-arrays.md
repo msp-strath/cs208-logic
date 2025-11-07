@@ -36,7 +36,7 @@ a[j] = 2;
 ```
 It might feel reasonable to assume that after this program executes then `a[i] = 1` and `a[j] = 2`. But this is only true if `i` and `j` are not equal! If they are equal, we say that `i` and `j` are aliases for the same element of the array, and updates to one interfere with updates to the other.
 
-The problem of reasoning about updates to mutable data is significantly complicated by the presence of multiple ways of referring to the same underlying object. In arrays, we can have multiple index variables that actually point to the same element of the array. If we are not expecting this, then we can accidentally overwrite data. The phenomenon of having multiple ways of referencing the same underlying data is known as *aliasing*, and it can make reasoning about programs very hard.
+The problem of reasoning about updates to mutable data is significantly complicated by the presence of multiple ways of referring to the same underlying object. In arrays, we can have multiple index variables that refer to the same element of the array. If we are not expecting this, then we can accidentally overwrite data. The phenomenon of having multiple ways of referencing the same underlying data is known as *aliasing*, and it can make reasoning about programs very hard.
 
 Aliasing is pervasive in any programming language that allows references to data (e.g., arrays, Java/Python/Javascript object references, C pointers) that is *mutable* (i.e., we can change it). This is such a problem, especially when combined with concurrency where multiple threads can access the same data simultaneously, that modern programming languages are exploring ways to address it. One way, as you will see in CS260 *Functional Thinking* is to prohibit mutability altogether. Another way, which is demonstrated in the language [Rust](https://rust-lang.org) is only allow aliasing or mutability, but never both at the same time.
 
@@ -163,7 +163,7 @@ The reason to introduce the `equalTo` predicate is so that we can state and prov
 		   (all i. between(i,start,add(end,1)) -> get(set(a,end,v),i) = v)"))
    ```
 
-Using these two properties of `equalTo` it is possible to prove that the program above makes a copy of the array:
+Using these two properties of `equalTo` it is possible to prove that the program above fills the array with `VALUE` between `0` and `LEN`:
 
 ```hoare {id=hoare-arrays-fill}
 (hoare
@@ -178,50 +178,97 @@ Using these two properties of `equalTo` it is possible to prove that the program
  (postcond "equalTo(A,0,LEN,VALUE)"))
 ```
 
-## Copying an Array {id=hoare-arrays:copying}
+## Modifying Into Another Array {id=hoare-arrays:copy-modify}
 
-**UNDER CONSTRUCTION***
-
-The program:
+The next program copies one array into another, adding `1` to each element. This is similar to filling an array with a fixed value, except that the value we use changes for each index. This program takes each element of `B` between `0` and `LEN`, adds `1` and places the result into the same index in `A`:
 ```
 I := 0
 while (I != LEN) {
-  A := set(A,I,get(B,I))
+  A := set(A,I,add(get(B,I),1))
+  I := add(I,1)
+}
+```
+Notice that the little programming language we are using here guarantees that `A` and `B` refer to different arrays, so overwriting an element of `A` will not affect `B`. In languages like C, Java, and Python, this is not guaranteed. In Java, the code:
+```
+for (i = 0; i < a.length; i++)
+  a[i] = b[i] + 1;
+```
+will overwrite the original if `a` and `b` point to the same array.
+
+To state the postcondition for this program, we make another definition to help us. The outcome of this program ought to be that every index of `A` between `0` and `LEN` is equal to adding `1` to the corresponding element of `B`. Generalising over the portion of the array that has been updated, we use a predicate `done(a, start, end, b)`, defined as:
+```formula
+all i. between(i,start,end) -> get(a,i) = add(get(b,i),1)
+```
+As before, we will need two properties of this predicate that describe how the predicate evolves as arrays are updated. These are similar to the two properties we proved for `equalTo` above:
+
+1. The first says that all indexes between `i` and `i` (of which there are none) have been updated for any pair of arrays:
+   ```formula
+   all a. all i. all b. done(a,i,i,b)
+   ```
+
+   ```focused-nd {id=hoare-arrays-done-1}
+   (config
+    (assumptions
+	 (between-empty "all i. all j. ¬between(i,j,j)")
+	 (between-step "all x. all s. all i. between(x, s, add(i,1)) -> ((between(x,s,i) /\ ¬(x = i)) \/ x = i)"))
+    (goal "all a. all i. all b. all j. between(j,i,i) -> get(a,j) = add(get(b,j),1)"))
+   ```
+
+2. The second says that if a pair of arrays have been processed up to `end`, then updating the `end`th element makes them processed up to the `end + 1`th element:
+   ```formula
+   all a. all start. all end. all b.
+     done(a,start,end,b) ->
+	 done(set(a,end,add(get(b,end),1)),start,add(end,1),b)
+   ```
+   As for `equalTo`, we will use this on each step of the loop to update our knowledge of what work has been performed.
+
+   To prove this, we need to use the axioms for `between` and the `array` axioms. The proof splits into two cases, depending on whether the `i` we are looking up is the one that has been updated, or one that we already knew is set to `v`.
+   ```focused-nd {id=hoare-arrays-equalTo-step}
+   (config
+    (assumptions
+	  (get-set "all a. all i. all x. get(set(a,i,x),i) = x")
+	  (get-get "all a. all i. all j. all x. ¬i = j -> get(set(a,i,x),j) = get(a,j)")
+	   (between-empty "all i. all j. ¬between(i,j,j)")
+	   (between-step "all x. all s. all i. between(x, s, add(i,1)) -> ((between(x,s,i) /\ ¬(x = i)) \/ x = i)"))
+    (goal "all a. all start. all end. all b.
+	       (all i. between(i,start,end) -> get(a, i) = add(get(b,i),1)) ->
+		   (all i. between(i,start,add(end,1)) ->
+		   get(set(a,end,add(get(b,end),1)),i) = add(get(b,i),1))"))
+   ```
+
+With these properties, it is possible to verify the program above against the postcondition
+```formula
+done(A,0,LEN,B) /\ B = originalB
+```
+where we have had to include the extra `B = originalB` to ensure that the program does not overwrite the old array.
+
+We can complete the verification use the this annotated program, where the annotations follow the same overall pattern as the previous example:
+```
+I := 0
+assert (done(A,0,I,B) /\ B = originalB)
+while (I != LEN) {
+  A := set(A,I,add(get(B,I),1))
+  assert (done(A,0,add(I,1),B) /\ B = originalB)
   I := add(I,1)
 }
 ```
 
-Definitions:
-1. `eqArray(a,start,end,b) := all i. between(j,start,end) -> get(a,i) = get(b,i)`
+Verifying the program is now a matter of entering this annotated program, doing a few `unpack`s to unpack old versions of the array and instantiating the properties of `done` proved above.
 
-Lemmas:
-1. `all i. all a. all b. eqArray(a,start,end,b) -> eqArray(set(a,i,get(b,i)), start, add(end,1),b)`
-
-```focused-nd {id=hoare-arrays-eqarray-property}
-(config
- (assumptions
-  (get-set "all a. all i. all x. get(set(a,i,x),i) = x")
-  (get-get "all a. all i. all j. all x. ¬i = j -> get(set(a,i,x),j) = get(a,j)")
-  (between-empty "all i. ¬between(i, 0, 0)")
-  (between-elim "all x. all i. between(x, 0, add(i,1)) -> ((between(x,0,i) /\ !x = i) \/ x = i)"))
- (goal "all i. all a. all b. (all j. between(j,0,i) -> get(a,j) = get(b,j)) ->
-                             get(a,add(i,1)) = get(b,get(i,1)) ->
-                             (all j. between(j,0,add(i,1)) ->
-							         get(set(a,i,get(b,i)),j) = get(b,j))"))
-```
-
-```hoare {id=hoare-arrays-copy}
+```hoare {id=hoare-arrays-copy-update}
 (hoare
  (program_vars A B I LEN)
  (logic_vars originalB)
  (assumptions
-  (eqArray-zero "all a. all b. eqArray(0,a,b)")
-  (eqArray-step "all i. all a. all b. eqArray(i,a,b) -> get(a,add(i,1)) = get(b,add(i,1)) -> eqArray(add(i,1),a,b)"))
+  (done-start "all a. all i. all b. done(a,i,i,b)")
+  (done-step "all a. all start. all end. all b.
+     done(a,start,end,b) ->
+	 done(set(a,end,add(get(b,end),1)),start,add(end,1),b)"))
  (precond "B = originalB")
- (postcond "eqArray(LEN,A,B) /\ B = originalB"))
+ (postcond "done(A,0,LEN,B) /\ B = originalB"))
 ```
 
-## Updating Every Element {id=hoare-arrays:update-all}
+## Modifying in Place {id=hoare-arrays:update-all}
 
 **UNDER CONSTRUCTION***
 
@@ -229,7 +276,7 @@ Lemmas:
 pre : A = a
 I := 0
 while (I != LEN) {
-  A := set(A,I,f(get(I)))
+  A := set(A,I,add(get(A,I),1))
   I := add(I,1)
 }
 post : all i. between(i,0,LEN) -> get(A,i) = f(get(a,i))
