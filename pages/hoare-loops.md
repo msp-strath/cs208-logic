@@ -326,7 +326,7 @@ To prove these properties, we will need two additional axioms for `between(i,sta
    all x. all i. between(x, 0, add(i,1)) -> ((between(x,0,i) /\ ¬(x = i)) \/ x = i)
    ```
 
-We can now prove them in the prover:
+We can now prove the two `notFound` properties in the prover:
 1. ```focused-nd {id=hoare-loops-notFound-1}
    (config
     (name "notFound-0")
@@ -361,7 +361,7 @@ while (I != LEN) {
 }
 ```
 
-And the proof can be completed using the axioms given:
+And this annotated program can be verified using the proven properties of `notFound` and the axioms for `between`:
 
 ```hoare {id=hoare-loops-search2}
 (hoare
