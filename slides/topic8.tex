@@ -650,18 +650,16 @@
   {Summary}
 
   We have defined what it means for a Predicate Logic $P$ formula to
-  be true in some model $\mathcal{M}$.
+  be true in some model $\mathcal{M}$, and entailment in all models.
 
   \begin{itemize}
   \item Just as with Propositional Logic, this is done by breaking
     down the formula into its constituent parts
-  \item Care must be taken to ensure that all free variables have an
-    interpretation.
-  \item When a formula is true in some model, we write:
-    \begin{displaymath}
-      \mathcal{M} \models P
-    \end{displaymath}
-  \item Our proof system is sound and (with excluded middle) complete for this semantics
+  \item Must ensure that all free variables have an interpretation.
+  \item When a formula is true in some model, we write $\mathcal{M} \models P$.
+  \item Entailment ($P_1, ..., P_n \models Q$) is defined with respect to all models.
+  \item Our proof system is sound and (with excluded middle) complete
+    for this definition of entailment.
   \end{itemize}
 \end{frame}
 
@@ -683,7 +681,7 @@
     \textcolor{black!60}{Database queries}
 
   \item Fix formulas $P_1, ..., P_n$. Is there a model for them? \\
-    \textcolor{black!60}{Generating ``worlds''}
+    \textcolor{black!60}{Generating {\it worlds} or {\it counterexamples}}
 
   \end{enumerate}
 \end{frame}
@@ -700,7 +698,7 @@
       = & \textrm{some}~a. \sem{\mathrm{city}(x) \land \mathrm{country}(x)}(\mathcal{M}, [x \mapsto a]) \\
       = & \textrm{some}~a. \sem{\mathrm{city}(x)}(\mathcal{M}, [x \mapsto a])~\textrm{and}~\sem{\mathrm{country}(x)}(\mathcal{M}, [x \mapsto a]) \\
       = & \textrm{some}~a. a \in \mathrm{city}~\textrm{and}~a \in \mathrm{country} \\
-      = & \false \qquad \textrm{\textcolor{black!60}{(because no such $a$ exists)}}
+      = & \false \qquad \textrm{\textcolor{black!60}{(because no such $a$ exists, by checking them all)}}
     \end{array}
   \end{displaymath}
 \end{frame}
@@ -710,7 +708,7 @@
 
   The \emph{Relational Model} is a system for organising data.
   \begin{itemize}
-  \item Proposed by Edward F. Codd in 1970.
+  \item Proposed by Edgar F. Codd in 1969.
   \item Implemented in PostgreSQL, MySQL, SQLite\footnote{there are
       \emph{at least} $\approx 1000$ SQLite DBs in this room.}, MS SQL
     Server, Oracle, IBM DB2, ...
@@ -718,7 +716,7 @@
   \item Built on a logical foundation:
     \begin{enumerate}
     \item Vocabulary $\approx$ schema
-    \item Predicates $\approx$ tables
+    \item Predicates $\approx$ (finite) tables
     \item Formulas $\approx$ queries
     \item Models $\approx$ databases (collections of tables)
     \end{enumerate}
@@ -737,7 +735,6 @@
   \end{displaymath}
 
   \pause
-  \bigskip
 
   A formula, with free variable $x$:
   \begin{displaymath}

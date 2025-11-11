@@ -95,7 +95,7 @@ The pages linked to below contain the lecture notes, covering the material intro
 
    The [semantics of Predicate Logic](pred-logic-semantics.md) is inevitably more complex than the semantics of Propositional Logic that we looked at in Topic 0. A useful way to think about how formulas are interpreted is in terms of *databases* as you will see in CS209.
 
-   [Lecture slides for this topic](topic09-slides.pdf).
+   [Lecture slides for this topic](topic08-slides.pdf).
 
 -  Topic 9 will be **Automating Logic**.
 
