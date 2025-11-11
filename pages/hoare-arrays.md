@@ -268,6 +268,8 @@ Verifying the program is now a matter of entering this annotated program, doing 
  (postcond "done(A,0,LEN,B) /\ B = originalB"))
 ```
 
+```````comment
+
 ## Modifying in Place {id=hoare-arrays:update-all}
 
 **UNDER CONSTRUCTION***
@@ -328,3 +330,5 @@ When proving that the asserted formula holds, you will have to unpack the `H` th
  (precond "A = originalA")
  (postcond "done(LEN,originalA,A)"))
 ```
+
+````````
