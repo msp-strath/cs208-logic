@@ -119,6 +119,17 @@ let check_model_definition env name vocab_name defns =
                                    arity)
                       (List.length values = arity)
                   in
+                  let* () =
+                    Result_ext.traverse_
+                      (fun entity_name ->
+                        if List.mem entity_name universe then
+                          Ok ()
+                        else
+                          Result_ext.errorf
+                            "Entity '%s' is not in this model's universe"
+                            entity_name)
+                      values
+                  in
                   Result.ok (TupleSet.add values tuples))
                 TupleSet.empty
                 tuples

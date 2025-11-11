@@ -16,10 +16,12 @@
   {So far: Syntax and Proof}
 
   \begin{enumerate}
-  \item The syntax of predicate logic \\
+  \item Topic 3: The syntax of predicate logic \\
     \textcolor{black!60}{What sequences of symbols are well formed?}
-  \item Proofs for predicate logic \\
+  \item Topic 4: Proofs for predicate logic \\
     \textcolor{black!60}{When are formulas consequences of other formulas?}
+  \item Topics 5-7: Hoare Logic \\
+    \textcolor{black!60}{An Application of Predicate Logic}
   \end{enumerate}
 \end{frame}
 
@@ -46,9 +48,12 @@
 
   The plan:
   \begin{enumerate}
-  \item Fix a vocabulary
-  \item Define \emph{models} $\mathcal{M}$
-  \item Interpret a formula $P$ in a model $\mathcal{M}$
+  \item Fix \emph{vocabularies} $\mathcal{V}$
+  \item Define \emph{models} $\mathcal{M}$ for $\mathcal{V}$
+  \item Interpret \emph{formulas} $P$ using vocabulary $\mathcal{V}$ in models $\mathcal{M}$
+  \item Find uses for models (databases, generation, ...)
+  \item ...
+  \item Profit!
   \end{enumerate}
 \end{frame}
 
@@ -108,6 +113,7 @@
   \begin{itemize}
   \item $\mathrm{city}/1$ \quad \textcolor{black!60}{``is a city''}
   \item $\mathrm{within}/2$ \quad \textcolor{black!60}{``is within''}
+  \item $\mathrm{country}/1$ \quad \textcolor{black!60}{``is a country''}
   \end{itemize}
 
   \bigskip
@@ -157,7 +163,8 @@
   \begin{displaymath}
     \begin{array}{l@{\hspace{0.3em}}c@{\hspace{0.3em}}l}
       U &=& \{ \mathsf{aberdeen}, \mathsf{edinburgh}, \mathsf{glasgow}, \mathsf{scotland},  \mathsf{birmingham}, \mathsf{england} \}\\
-      \mathsf{city} &=& \{ (\mathsf{aberdeen}), (\mathsf{edinburgh}), (\mathsf{glasgow}), (\mathsf{birmingham}) \}\\
+      \mathsf{city} &=& \{ \mathsf{aberdeen}, \mathsf{edinburgh}, \mathsf{glasgow}, \mathsf{birmingham} \}\\
+      \mathsf{country} &=& \{ \mathsf{england}, \mathsf{scotland} \} \\
       \mathsf{within} &=& \{
                           \begin{array}[t]{@{}l}
                             (\mathsf{aberdeen}, \mathsf{scotland}), (\mathsf{edinburgh}, \mathsf{scotland}), \\
@@ -188,6 +195,15 @@
       \hline
     \end{array}
 
+    \begin{array}{|c|}
+      \hline
+      \mathrm{country} \\
+      \hline
+      \mathsf{england} \\
+      \mathsf{scotland} \\
+      \hline
+    \end{array}
+
     \begin{array}{|cc|}
       \hline
       \multicolumn{2}{|c|}{\mathrm{within}}\\
@@ -205,11 +221,17 @@
   \sechead{Example: Places, interpretation 2}
   \begin{displaymath}
     \begin{array}{lcl}
-      U &=& \{ \textsf{planet-b} \} \\
-      \mathsf{city} &=& \{ \} \\
-      \mathsf{within} &=& \{ (\textsf{planet-b}, \textsf{planet-b}) \}
+      U &=& \{ \mathsf{loopland} \} \\
+      \mathsf{city} &=& \{ \mathsf{loopland} \} \\
+      \mathsf{country} &=& \{ \mathsf{loopland} \} \\
+      \mathsf{within} &=& \{ (\textsf{loopland}, \textsf{loopland}) \}
     \end{array}
   \end{displaymath}
+
+  \pause
+
+  The names are only there to separate the predicates. Models do not
+  have to match our intuition for the names.
 \end{frame}
 
 \begin{frame}
@@ -256,7 +278,7 @@
 
   The model needn't match our intuition about the symbols!
   \begin{itemize}
-  \item Will assume formulas that will filter the possible models.
+  \item Will assume formulas that will restrict the possible models.
   \end{itemize}
 \end{frame}
 
@@ -276,7 +298,7 @@
   \bigskip
 
   Apart from the universe, this is the same as a \emph{valuation} in
-  Propositional Logic (Week 01).
+  Propositional Logic (Topic 0).
 \end{frame}
 
 \begin{frame}
@@ -327,6 +349,15 @@
       \mathsf{edinburgh} \\
       \mathsf{glasgow} \\
       \mathsf{birmingham}\\
+      \hline
+    \end{array}
+
+    \begin{array}{|c|}
+      \hline
+      \mathrm{country} \\
+      \hline
+      \mathsf{england} \\
+      \mathsf{scotland} \\
       \hline
     \end{array}
 
@@ -386,6 +417,7 @@
     \begin{array}{lcl}
       \sem{R(x_1, \dots, x_n)}(\mathcal{M},v) &=& \true \quad \mathrm{if}\quad (v(x_1), \dots, v(x_n)) \in \mathrm{R} \\
                                               &=& \false \quad \textrm{otherwise} \\
+      \\
       \sem{x = y}(\mathcal{M},v)              &=& \true \quad \textrm{if}\quad v(x) = v(y) \\
                                               &=& \false \quad \textrm{otherwise}
     \end{array}
@@ -506,7 +538,12 @@
   \begin{displaymath}
     \sem{P}(\mathcal{M}, []) = \true
   \end{displaymath}
-  meaning that $\mathcal{M}$ is a model of $P$.
+  meaning that \emph{$\mathcal{M}$ is a model of $P$}.
+
+  \pause
+  \bigskip
+
+  We write $\mathcal{M} \not\models P$ if this is not the case.
 \end{frame}
 
 \begin{frame}
@@ -514,16 +551,19 @@
 
   If $\mathcal{M}$ is the cities model, then
   \begin{displaymath}
-    \mathcal{M} \models \exists x. \mathrm{city}(x)
+    \mathcal{M} \models \exists x. \mathrm{city}(x)  \qquad \textrm{\textcolor{black!60}{(there exists a city)}}
   \end{displaymath}
-  and
+
+
   \begin{displaymath}
-    \mathcal{M} \not\models \forall x. \mathrm{city}(x)
+    \mathcal{M} \not\models \forall x. \mathrm{city}(x)\qquad \textrm{\textcolor{black!60}{(not everything is a city)}}
   \end{displaymath}
-  and
+
+
   \begin{displaymath}
     \mathcal{M} \models \forall x. \mathrm{city}(x) \to (\exists y. \mathrm{within}(x,y))
   \end{displaymath}
+  \hspace{6cm} \textcolor{black!60}{(every city is within something)}
 \end{frame}
 
 \begin{frame}
@@ -562,40 +602,48 @@
 \end{frame}
 
 \begin{frame}
-  {Axiomatisations}
+  {Provability and Soundness}
 
-  Some collections of formulas are called \emph{axiomatisations}.
+  Recall that
+  \begin{displaymath}
+    P_1, \cdots, P_n \vdash Q
+  \end{displaymath}
+  means that $Q$ is provable from the assumptions $P_1, \cdots,
+  P_n$.
 
   \bigskip
+  \pause
 
-  For example,
+  The proof system we have used so far is \emph{sound}:
   \begin{displaymath}
-    \begin{array}{l}
-      \forall x. x \leq x \\
-      \forall x. \forall y. (x \leq y \land y \leq x) \to x = y \\
-      \forall x. \forall y. \forall z. (x \leq y \land y \leq z) \to x \leq z
-    \end{array}
+    P_1, \cdots, P_n \vdash Q\qquad \textrm{implies} \qquad P_1, \cdots, P_n \models Q
   \end{displaymath}
-  axiomatises what it means to be a \emph{partial order}.
+  \begin{itemize}
+  \item If it is provable, then it is true in all models!
+  \item Using proof means that we do not need to check infinitely many
+    models, some of which may be infinite themselves.
+  \end{itemize}
 \end{frame}
 
 \begin{frame}
-  {Axiomatisations}
+  {Completeness}
 
-  If we write $\Gamma_{\mathit{partial}}$ for those formulas $\land$ed
-  together, then collection of models $\mathcal{M}$ such that:
+  If we add excluded middle, then the proof system is also
+  \emph{complete}:
   \begin{displaymath}
-    \mathcal{M} \models \Gamma_{\mathit{partial}}
+    P_1, \cdots, P_n \models Q\qquad \textrm{implies} \qquad P_1, \cdots, P_n \vdash Q
   \end{displaymath}
-  is the collection of partial orders.
+  \emph{every true entailment has a proof}
+  \pause
+  \begin{itemize}
+  \item This is a remarkable and non-trivial fact!
+  \item First proved by Kurt G{\"o}del: ``G{\"o}del's Completeness Theorem''
+  \item It also holds if we have infinitely many assumptions
+    $P_1, \cdots$, which means (because a proof can only use finitely
+    many assumptions) that an entailment only depends on finitely many
+    assumptions: Predicate logic is ``compact''.
+  \end{itemize}
 
-  \bigskip
-
-  And the collection of formulas $Q$ such that
-  \begin{displaymath}
-    \Gamma_{\mathit{partial}} \models Q
-  \end{displaymath}
-  is the collection of facts that are true about all partial orders.
 \end{frame}
 
 \begin{frame}
@@ -613,25 +661,325 @@
     \begin{displaymath}
       \mathcal{M} \models P
     \end{displaymath}
-  \item Gives us a basis to talk about axiomatisations.
+  \item Our proof system is sound and (with excluded middle) complete for this semantics
   \end{itemize}
 \end{frame}
 
-\weeksection{Logic and Databases}
+\weeksection{Using Models}
 
 \begin{frame}
-  {Logic and Databases}
+  {Using Models}
 
+  Some of the things we can do with models:
   \begin{enumerate}
-  \item Databases are models
-  \item Queries are formulas: which $x,y,z$ satisfy this?
-  \item Which databases make sense?
-    \begin{enumerate}
-    \item ``Foreign key constraints''
-    \item ``Functional constraints''
-    \item ``Check constraints''
-    \end{enumerate}
+  \item Fix $\mathcal{M}$. Does $\mathcal{M} \models P$? \\
+    \textcolor{black!60}{\emph{Model checking}}
+
+  \item Fix $\mathcal{M}$. For what $P$ does $\mathcal{M} \models P$? \\
+    \textcolor{black!60}{What is true about \emph{this} situation?} \\
+
+  \item Fix $\mathcal{M}$. For what $a_1, \cdots, a_n$ does
+    $\mathcal{M} \models P[a_1, \cdots, a_n]$? \\
+    \textcolor{black!60}{Database queries}
+
+  \item Fix formulas $P_1, ..., P_n$. Is there a model for them? \\
+    \textcolor{black!60}{Generating ``worlds''}
+
   \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Using Models: Model Checking}
+
+  Given a model $\mathcal{M}$, computing $\mathcal{M} \models P$ works
+  by breaking down the structure of $P$. For example:
+  \begin{displaymath}
+    \begin{array}{cl}
+      & \mathrm{Cities} \models \exists x. \mathrm{city}(x) \land \mathrm{country}(x) \\
+      = & \sem{\exists x. \mathrm{city}(x) \land \mathrm{country}(x)} (\mathcal{M}, [~]) \\
+      = & \textrm{some}~a. \sem{\mathrm{city}(x) \land \mathrm{country}(x)}(\mathcal{M}, [x \mapsto a]) \\
+      = & \textrm{some}~a. \sem{\mathrm{city}(x)}(\mathcal{M}, [x \mapsto a])~\textrm{and}~\sem{\mathrm{country}(x)}(\mathcal{M}, [x \mapsto a]) \\
+      = & \textrm{some}~a. a \in \mathrm{city}~\textrm{and}~a \in \mathrm{country} \\
+      = & \false \qquad \textrm{\textcolor{black!60}{(because no such $a$ exists)}}
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Using Models: Database Queries}
+
+  The \emph{Relational Model} is a system for organising data.
+  \begin{itemize}
+  \item Proposed by Edward F. Codd in 1970.
+  \item Implemented in PostgreSQL, MySQL, SQLite\footnote{there are
+      \emph{at least} $\approx 1000$ SQLite DBs in this room.}, MS SQL
+    Server, Oracle, IBM DB2, ...
+  \item Typically using the Structured Query Language (SQL)
+  \item Built on a logical foundation:
+    \begin{enumerate}
+    \item Vocabulary $\approx$ schema
+    \item Predicates $\approx$ tables
+    \item Formulas $\approx$ queries
+    \item Models $\approx$ databases (collections of tables)
+    \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  {Using Models: Database Queries}
+
+  An SQL query:
+  \begin{displaymath}
+    \begin{array}{l}
+      \texttt{SELECT}~\texttt{City.X}~\texttt{FROM}~\texttt{City, Within} \\
+      \texttt{WHERE}~\texttt{City.X = Within.X AND Within.Y = "scotland"}
+    \end{array}
+  \end{displaymath}
+
+  \pause
+  \bigskip
+
+  A formula, with free variable $x$:
+  \begin{displaymath}
+    \mathrm{city}(x) \land \mathrm{within}(x,\mathsf{scotland})
+  \end{displaymath}
+  The collection of $x$s that make this formula true in the model is
+  the result of the query\footnote{terms and conditions apply}. The second half of CS209 introduces SQL.
+\end{frame}
+
+\begin{frame}
+  {Models for Formulas}
+
+  Given a collection of formulas $P_1, \cdots, P_n$, it is sometimes
+  useful to generate a model $\mathcal{M}$ for them.
+  \begin{enumerate}
+  \item Sometimes it is easier to think about concrete examples
+  \item Models can be used as counterexamples \textcolor{black!60}{\emph{see later...}}
+  \item Can be used to generate interesting things \textcolor{black!60}{\emph{``Generative AI''}}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Models for Formulas}
+
+  With the following formulas:
+  \begin{enumerate}
+  \item $\exists x. \exists y. \mathrm{city}(x) \land \mathrm{city}(y) \land x \not= y$ \\
+    \only<2->{\textcolor{black!60}{there exist at least two cities}} ~\\
+  \item $\forall x. \mathrm{city}(x) \to (\exists y. \mathrm{country}(y) \land \mathrm{within}(x,y))$ \\
+    \only<3->{\textcolor{black!60}{every city is in a country}} ~\\
+  \item $\forall x. \lnot (\mathrm{city}(x) \land \mathrm{country}(x))$ \\
+    \only<4->{\textcolor{black!60}{nothing is both a city and a country}} ~\\
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Models for Formulas}
+
+  First attempt at a model (start minimal):
+  \begin{displaymath}
+    \begin{array}{lcl}
+      \mathit{universe} &=& \{ \} \\
+      \mathit{city} &=& \{ \} \\
+      \mathit{country} &=& \{ \} \\
+      \mathit{within} &=& \{ \} \\
+    \end{array}
+  \end{displaymath}
+
+  \pause
+
+  Does not satisfy $\exists x. \exists y. \mathrm{city}(x) \land \mathrm{city}(y) \land x \not= y$ \\
+  \textcolor{black!60}{Need at least two cities!}
+\end{frame}
+
+\begin{frame}
+  {Models for Formulas}
+
+  Second attempt at a model (the names are arbitrary!):
+  \begin{displaymath}
+    \begin{array}{lcl}
+      \mathit{universe} &=& \{ \mathsf{plockton}, \mathsf{auchtermuchty} \} \\
+      \mathit{city} &=& \{ \mathsf{plockton}, \mathsf{auchtermuchty} \} \\
+      \mathit{country} &=& \{ \} \\
+      \mathit{within} &=& \{ \} \\
+    \end{array}
+  \end{displaymath}
+
+  \pause
+
+  Satisfies $\exists x. \exists y. \mathrm{city}(x) \land \mathrm{city}(y) \land x \not= y$ \\
+  Does not satisfy $\forall x. \mathrm{city}(x) \to (\exists y. \mathrm{country}(y) \land \mathrm{within}(x,y))$ \\
+  \textcolor{black!60}{Every city needs a country!}
+\end{frame}
+
+\begin{frame}
+  {Models for Formulas}
+
+  Third attempt at a model:
+  \begin{displaymath}
+    \begin{array}{lcl}
+      \mathit{universe} &=& \{ \mathsf{plockton}, \mathsf{auchtermuchty} \} \\
+      \mathit{city} &=& \{ \mathsf{plockton}, \mathsf{auchtermuchty} \} \\
+      \mathit{country} &=& \{ \mathsf{plockton} \} \\
+      \mathit{within} &=& \{ (\mathsf{auchtermuchty}, \mathsf{plockton}) \} \\
+    \end{array}
+  \end{displaymath}
+
+  \pause
+
+  Satisfies $\exists x. \exists y. \mathrm{city}(x) \land \mathrm{city}(y) \land x \not= y$ \\
+  Does not satisfy $\forall x. \mathrm{city}(x) \to (\exists y. \mathrm{country}(y) \land \mathrm{within}(x,y))$ \\
+  \textcolor{black!60}{$\mathsf{plockton}$ needs to be somewhere!}
+\end{frame}
+
+\begin{frame}
+  {Models for Formulas}
+
+  Fourth attempt at a model:
+  \begin{displaymath}
+    \begin{array}{lcl}
+      \mathit{universe} &=& \{ \mathsf{plockton}, \mathsf{auchtermuchty} \} \\
+      \mathit{city} &=& \{ \mathsf{plockton}, \mathsf{auchtermuchty} \} \\
+      \mathit{country} &=& \{ \mathsf{plockton} \} \\
+      \mathit{within} &=& \{ (\mathsf{auchtermuchty}, \mathsf{plockton}), (\mathsf{plockton}, \mathsf{plockton}) \} \\
+    \end{array}
+  \end{displaymath}
+
+  \pause
+
+  Satisfies $\exists x. \exists y. \mathrm{city}(x) \land \mathrm{city}(y) \land x \not= y$ \\
+  Satisfies $\forall x. \mathrm{city}(x) \to (\exists y. \mathrm{country}(y) \land \mathrm{within}(x,y))$ \\
+  Does not satisfy $\forall x. \lnot (\mathrm{city}(x) \land \mathrm{country}(x))$ \\
+  \textcolor{black!60}{Nothing can be a city and a country!}
+\end{frame}
+
+\begin{frame}
+  {Models for Formulas}
+
+  Fifth attempt at a model:
+  \begin{displaymath}
+    \begin{array}{lcl}
+      \mathit{universe} &=& \{ \mathsf{plockton}, \mathsf{auchtermuchty}, \mathsf{scotland} \} \\
+      \mathit{city} &=& \{ \mathsf{plockton}, \mathsf{auchtermuchty} \} \\
+      \mathit{country} &=& \{ \mathsf{scotland} \} \\
+      \mathit{within} &=& \{
+                          \begin{array}[t]{@{}l}
+                            (\mathsf{auchtermuchty}, \mathsf{plockton}), (\mathsf{plockton}, \mathsf{plockton}), \\
+                            (\mathsf{auchtermuchty}, \mathsf{scotland}), (\mathsf{plockton}, \mathsf{scotland})\}
+                          \end{array}     \\
+    \end{array}
+  \end{displaymath}
+
+  \pause
+
+  Satisfies $\exists x. \exists y. \mathrm{city}(x) \land \mathrm{city}(y) \land x \not= y$ \\
+  Satisfies $\forall x. \mathrm{city}(x) \to (\exists y. \mathrm{country}(y) \land \mathrm{within}(x,y))$ \\
+  Satisfies $\forall x. \lnot (\mathrm{city}(x) \land \mathrm{country}(x))$
+\end{frame}
+
+\begin{frame}
+  {Models for Formulas}
+
+  Sixth attempt at a model:
+  \begin{displaymath}
+    \begin{array}{lcl}
+      \mathit{universe} &=& \{ \mathsf{plockton}, \mathsf{auchtermuchty} \} \\
+      \mathit{city} &=& \{ \mathsf{plockton}, \mathsf{auchtermuchty} \} \\
+      \mathit{country} &=& \{ \mathsf{scotland} \} \\
+      \mathit{within} &=& \{ (\mathsf{auchtermuchty}, \mathsf{scotland}), (\mathsf{plockton}, \mathsf{scotland})\}
+    \end{array}
+  \end{displaymath}
+
+  \pause
+
+  Satisfies $\exists x. \exists y. \mathrm{city}(x) \land \mathrm{city}(y) \land x \not= y$ \\
+  Satisfies $\forall x. \mathrm{city}(x) \to (\exists y. \mathrm{country}(y) \land \mathrm{within}(x,y))$ \\
+  Satisfies $\forall x. \lnot (\mathrm{city}(x) \land \mathrm{country}(x))$ \\
+  \textcolor{black!60}{and doesn't have any extra stuff}
+\end{frame}
+
+\begin{frame}
+  {Models for Formulas}
+
+  General strategy for formulas $P_1, ..., P_n$:
+  \begin{enumerate}
+  \item See what is forced to exist without conditions \\
+    \textcolor{black!60}{(e.g., at least two cities)}
+  \item See what is then forced to exist by these things existing \\
+    \textcolor{black!60}{(e.g., every city needs a country)}
+  \item Disjointness axioms force non-overlap and more existence \\
+    \textcolor{black!60}{(e.g., not a city and a country)}
+  \item Try to keep the model minimal \\
+    \textcolor{black!60}{(without the first formula, the empty model would work!)}
+  \end{enumerate}
+\end{frame}
+
+
+\begin{frame}
+  {Proof and Counterexamples}
+
+  Models can be used to show some formulas are \emph{unprovable}. \\
+  \qquad \textcolor{black!60}{Not the same as \emph{failing to prove it!}}
+
+  \bigskip
+  \pause
+
+  To show that there is no proof of $P_1, ..., P_n \vdash Q$:
+  \begin{enumerate}
+  \item Find a model $\mathcal{M}_c$ that makes all of
+    $\mathcal{M}_c \models P_1, \cdots, P_n$, but $\mathcal{M}_c \not\models Q$.
+    \textcolor{black!60}{($\mathcal{M}_c$ is the \emph{countermodel})}
+  \item \emph{If} we could prove $P_1, ..., P_n \vdash Q$ then (by soundness):
+    \begin{itemize}
+    \item every model $\mathcal{M}$ such that $\mathcal{M} \models P_1, ..., P_n$, then $\mathcal{M} \models Q$
+    \end{itemize}
+  \item But we have $\mathcal{M}_c$ that supports $P_1, ..., P_n$ and {\bf not} $Q$
+  \item So $P_1, ..., P_n \vdash Q$ is {\bf not} provable.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  {Example}
+
+  It is not possible to prove
+  \begin{displaymath}
+    \lnot (\exists x. \mathrm{country}(x))
+  \end{displaymath}
+  from the assumptions:
+  \begin{enumerate}
+  \item $\exists x. \exists y. \mathrm{city}(x) \land \mathrm{city}(y) \land x \not= y$
+  \item $\forall x. \mathrm{city}(x) \to (\exists y. \mathrm{country}(y) \land \mathrm{within}(x,y))$
+  \item $\forall x. \lnot (\mathrm{city}(x) \land \mathrm{country}(x))$
+  \end{enumerate}
+
+  \pause
+  \bigskip
+
+  The model above satisfies all these, but not $\lnot (\exists x. \mathrm{country}(x))$.
+
+  \bigskip
+
+  Therefore, there is no proof of this formula from these assumptions.
+
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  Several useful questions can be asked using models:
+  \begin{enumerate}
+  \item Model checking: does $\mathcal{M} \models P$?
+  \item Model checking for all values: for what $x$ does $\mathcal{M} \models P[x]$? \\
+    \textcolor{black!60}{database queries!}
+  \item Model generation for formulas $P_1, ..., P_n$ \\
+    \textcolor{black!60}{can be used to show unprovable things}
+  \end{enumerate}
+
+  \bigskip
+
+  With sufficiently adapted ideas of ``formula'' and ``model'', many
+  questions can be recast in terms of logic and implemented on a computer.
+
 \end{frame}
 
 \end{document}
