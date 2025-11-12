@@ -115,7 +115,7 @@ Altogether, a **model** consists of:
 
 ### Models as Databases {id=pred-sem:models:databases}
 
-A useful intuition to think about models is as databases: each predicate symbol is interpreted as a (possibly infinite) table of related elements of the universe. For example, the `Places` vocabulary defined above has an associated model that records the countries and some of the cities of the United Kingdom. We can think of `city`, `country`, and `within` as *tables* of data within a database. As we will see below,
+A useful intuition to think about models is as databases: each predicate symbol is interpreted as a (possibly infinite) table of related elements of the universe. For example, the `Places` vocabulary defined above has an associated model that records the countries and some of the cities of the United Kingdom. We can think of `city`, `country`, and `within` as *tables* of data within a database. As we will see below, we will use formulas to query databases.
 
 ```model-checker {id=predsem-places-model-uk}
 vocab Places {
@@ -157,9 +157,9 @@ vocab Places {
 }
 
 model LoopLand for Places {
-  universe = { loopville, loopland }
-  city = { loopville, loopland }
-  country = { loopville, loopland }
+  universe = { loopland }
+  city = { loopland }
+  country = { loopland }
   within = { (loopland, loopland) }
 }
 ```
@@ -168,19 +168,19 @@ To distinguish “good” models from “bad” models, we need a language to ta
 
 ## Interpretation of Formulas {id=pred-sem:interp}
 
-Once we have a definition of model, we can interpret Predicate Logic formulas. We do this in the same way as we did for [Propositional Logic](prop-logic-semantics.md): by breaking the formula down into its constituent parts, working out their meaning and then combining the meanings together.
+To interpret a formula we fix a vocabulary `V` and a model `M` for that vocabulary. The formulas we interpret must be written using the vocabulary `V`. Once we have our model `M`, we can interpret Predicate Logic formulas in that model.
+
+We do this using the same strategy we used for [Propositional Logic](prop-logic-semantics.md): breaking the formula down into its constituent parts, working out their meaning and then combining the meanings together. The subtlety in interpreting Predicate Logic formulas is that the collection of free variables varies across different subformulas within the same formula.
 
 ### Meaning of free variables {id=pred-sem:interp:freevars}
-
-To interpret a formula we fix a vocabulary `V` and a model `M` for that vocabulary. The formulas we interpret must be written using the vocabulary `V`.
 
 Formulas can have free variables that are not quantified, as we saw when asking [when two formulas are the same](pred-logic-intro.md#pred-logic:alpha-equiv). For example, the formula
 ```formula
 city(x) /\ within(x,y)
 ```
-has two free variables, `x` and `y`. We can't give this formula a truth value until we know what `x` and `y` mean. Our fixed model `M` tells us what *possible* values `x` and `y` have, and what the truth value of `city` and `within` are for those values. The meaning of the formula varies according the exact values we choose for `x` and `y`.
+has two free variables, `x` and `y`. Even if we have a model that tells us when `city` and `within` are true, We can't give this formula a truth value until we know what `x` and `y` mean. Our fixed model `M` tells us what *possible* values `x` and `y` have, and what the truth value of `city` and `within` are for those values. The meaning of the formula varies according the exact values we choose for `x` and `y`.
 
-For example, the `UnitedKingdom` model sets a particular universe. If we set `x` to be `glasgow` and `y` to be `scotland`, then the formula `city(x) /\ within(x,y) = city(glasgow) /\ within(glasgow,scotland)`, which is true in the model. But if we set `x` to be `scotland` and `y` to be `edinburgh`, then the formula ought to be assigned the value `F`, because neither of `city(scotland)` or `within(scotland,edinburgh)` are true.
+For example, the `UnitedKingdom` model sets a particular universe. If we set `x` to be `glasgow` and `y` to be `scotland` from that universe, then the formula `city(x) /\ within(x,y) = city(glasgow) /\ within(glasgow,scotland)`, which is true in the model. But if we set `x` to be `scotland` and `y` to be `edinburgh`, then the formula ought to be assigned the value `F`, because neither of `city(scotland)` or `within(scotland,edinburgh)` are true.
 
 In general, for a formula `P` with free variables `x1, x2, ..., xn` we need an assignment `v` of elements of the universe to each `xi`. This is similar to the idea of [valuations](prop-logic-semantics.md#prop-logic:semantics:valuations) in Propositional Logic, except that we are assigning elements of the universe of the model to variables instead of truth values to atomic propositions.
 
@@ -207,20 +207,19 @@ In symbols, using the double square (“Scott”) bracket notation (similar to t
                 = F otherwise
 ```
 
-**Example**. In the `UnitedKingdom` model, we have:
-```
-〚within(x,y)〛([ x ↦ glasgow, y ↦ scotland ]) = T
-```
-and
-```
-〚within(x,y)〛([ x ↦ glasgow, y ↦ wales ]) = F
-```
-
+-  **Example**. In the `UnitedKingdom` model, we have:
+   ```
+   〚within(x,y)〛([ x ↦ glasgow, y ↦ scotland ]) = T
+   ```
+   and
+   ```
+   〚within(x,y)〛([ x ↦ glasgow, y ↦ wales ]) = F
+   ```
 
 
 The quantifiers are where we extend the assignment `v` to cover the additional variables in the body of the formula. We write `v[x ↦ a]` for the assignment `v` extended to also assign `a` to `x`.
 
-The quantifiers are interpreted as “for all” and “exists” as one might expect:
+The quantifiers are interpreted by checking the truth values of the subformulas for all elements of the universe. The quantifiers differ in whether the subformula is true for all elements, or for some element:
 
 1. If the formula is `∀x. P` for the assignment `v`, then it is true if `P` is true for the assignment `v[x ↦ a]` **for all** values `a` in the universe. Otherwise, it is false.
 2. If the formula is `∃x. P` for the assignment `v`, then it is true if `P` is true for the assignment `v[x ↦ a]` **for some** value `a` in the universe. Otherwise, it is false.
@@ -236,22 +235,111 @@ In symbols, using the double bracket notation:
 
 These definitions may seem pointless, but the key point is that the variables *only take values from the universe*. As far as the interpretations of formulas in a particular model is concerned, it is only the values in the universe that matter.
 
-**Example**. In the `UnitedKingdom` model, we have `〚∀x. city(x)〛v = F`, because it is not the case that *for all* possible values of `x` that `city(x)` is true (it is not for `x = scotland`). On the other hand, `〚∃x. city(x)〛v = T`, because there exists at least one city in this model.
-
-If the model is finite, then working out
+- **Example**. In the `UnitedKingdom` model, we have `〚∀x. city(x)〛v = F`, because it is not the case that *for all* possible values of `x` that `city(x)` is true (it is not for `x = scotland`). On the other hand, `〚∃x. city(x)〛v = T`, because there exists at least one city in this model.
 
 The propositional connectives are the same as they were for Propositional Logic:
 ```
- 〚 P ∧ Q 〛v = 〚 P 〛v ∧ 〚 Q 〛v
- 〚 P ∨ Q 〛v = 〚 P 〛v ∨ 〚 Q 〛v
- 〚 ¬ P 〛v   = ¬ 〚 P 〛v
- 〚 P → Q 〛v = 〚 P 〛v → 〚 Q 〛v
+ 〚 P ∧ Q 〛v = 〚 P 〛v and 〚 Q 〛v
+ 〚 P ∨ Q 〛v = 〚 P 〛v or 〚 Q 〛v
+ 〚 ¬ P 〛v   = not 〚 P 〛v
+ 〚 P → Q 〛v = 〚 P 〛v  implies 〚 Q 〛v
 ```
 
-**Examples**.
-1.
+- **Examples** In the `Places` vocabulary and the `UnitedKingdom` model, the formula
+  ```formula
+  city(x) /\ within(x,y)
+  ```
+  has different interpretations depending on the assignment it is valued at. We compute the meaning by breaking down the formula:
 
-### Computing the Interpretation of Formulas {id=pred-sem:interp:computing}
+  1. If `v` is `[ x ↦ edinburgh, y ↦ scotland ]`, then:
+     ```
+       〚 city(x) ∧ within(x,y) 〛v
+	 = 〚 city(x) 〛v and 〚 within(x,y) 〛v
+	 = (edinburgh ∈ city) and ((edinburgh, scotland) ∈ within)
+	 = T and T
+	 = T
+	 ```
+  2. But if `v` is `[ x ↦ edinburgh, y ↦ birmingham ]`, then:
+     ```
+       〚 city(x) ∧ within(x,y) 〛v
+	 = 〚 city(x) 〛v and 〚 within(x,y) 〛v
+	 = (edinburgh ∈ city) and ((edinburgh, birmingham) ∈ within)
+	 = T and F
+	 = F
+	 ```
+
+   If we keep `v` as `[ x ↦ edinburgh, y ↦ birmingham ]` but change the `∧` to `∨`, then:
+   ```
+	 〚 city(x) ∨ within(x,y) 〛v
+   = 〚 city(x) 〛v or 〚 within(x,y) 〛v
+   = (edinburgh ∈ city) or ((edinburgh, birmingham) ∈ within)
+   = T or F
+   = T
+   ```
+
+For a closed formula (one with no free variables), we can value it in any model for its vocabulary. For example, the formula
+```formula
+all x. ¬(city(x) /\ country(x))
+```
+Is valued as True in the `UnitedKingdom` model, but as False in the `LoopLand` model. Whether or not a closed formula is true in a model is a useful property, so we use the notation
+```
+    M ⊧ P
+```
+to indicate when a formula `P` is true in a model `M`. We write `M ⊭ P` when `P` is not true in `M`.
+
+So we have `UnitedKingdom ⊧ ∀x. ¬(city(x) ∧ country(x))` and `LoopLand ⊭ ∀x. ¬(city(x) ∧ country(x))`.
+
+### Entailment {id=pred-sem:interp:entailment}
+
+Remember that we defined **entailment** in [Propostiional Logic](entailment.md) as a relation between a collection of assumptions and a conclusion:
+```
+   P1, ..., Pn ⊧ Q
+```
+This relation “holds” or “is valid” if for all valuations, if all the assumptions are true, then the conclusion is true.
+
+For Predicate Logic, we use the same idea, except that instead of valuations, we use models.
+
+**Definition** (Entailment). When `P1`, ..., `Pn`, and `Q` are Predicate Logic formulas in some vocabulary `V`, we say that the entailment `P1, ..., Pn ⊧ Q` holds if *for all models* `M`, if for all `i`, `M ⊧ Pi`, then `M ⊧ Q`.
+
+Checking entailment for Propositional Logic is possible by checking every possible valuation, though to do this naively would take `2^n` steps to check every valuation. Checking entailment for Predicate Logic is not possible by this simple enumeration technique because there are infinitely many possible models (e.g., all models with size 0, all models with size 1, size 2, ..., and infinite models), and individual models may themselves be infinite. This is why using proof is essential.
+
+### Soundness and Completeness {id=pred-sem:interp:sound-complete}
+
+We now have two definitions that describe when a conclusion follows from some assumptions. In the [proof rules for Predicate Logic](pred-logic-rules.md), we developed a system for proving judgements of the form:
+```
+   P1, ..., Pn ⊢ Q
+```
+that say that `Q` is provable from the assumptions `P1`, ..., `Pn`.
+
+Using models and interpretations, we have another definition of *semantic entailment*, [defined above](pred-logic-semantics.md#pred-sem:interp:entailment):
+```
+   P1, ..., Pn ⊧ Q
+```
+
+As with [Propositional Logic](natural-deduction-intro.md#natural-deduction:sound-complete), these two definitions are linked by the properties of **soundness** and **completeness**:
+
+1. The proof system is **sound** for this semantics, meaning that if a judgement `P1, ..., Pn ⊢ Q` is provable, then the entailment `P1, ..., Pn ⊧ Q` is valid.
+
+   This property is relatively easy to prove by checking that all of the proof rules preserve valid entailments: for each rule, if the premises are valid entailments, then so is the conclusion. The `done`, `true`, and `refl` rules have no premises, so they get us started.
+
+   Note that this is quite remarkable. Entailment is quite a complex property that involves quantification over *all* models, and then *all* elements of those models, but proofs are things that can be finitely checked.
+
+   A very useful consequence of soundness is that we can use it to [show that some formulas are *not* provable](pred-logic-semantics.md#pred-sem:using:proof-counter).
+
+2. If we add excluded middle to the proof system, then it is also **complete**. This means that if an entailment `P1, ..., Pn ⊧ Q` is valid, then the judgement `P1, ..., Pn ⊢ Q` is provable.
+
+   This property is much harder to prove that soundness. It was original proved by Kurt Gödel and is often called “Gödel's Completeness Theorem”. The proof works by constructing a special model from the vocabulary, and completing it under the assumptions.
+
+The proof system without excluded middle *is* complete for a more sophisticated semantics where truth is computed relative to a possible world from a collection of all possible worlds that represent stages of knowledge. The Stanford Encyclopedia of Philosophy has a section on [Semantics of Intuitionistic Logic](https://plato.stanford.edu/entries/logic-intuitionistic/#BasiSema).
+
+## Using Models {id=pred-sem:using}
+
+One reason to study the semantics of Predicate Logic is to give us some faith that the proof system we have been using actually means something. Another reason is that it gives us another view of logical formulas that is very useful for many purposes.
+
+### Computing the Interpretation of Formulas {id=pred-sem:using:computing}
+
+
+
 
 ```model-checker {id=predsem-computing-greek}
 vocab Mortality {
@@ -306,20 +394,11 @@ check UnitedKingdom |= "ex x. city(x) /\ country(x)"
 check UnitedKingdom |= "all x. ¬(city(x) /\ country(x))"
 ```
 
+### Models and Databases {id=pred-sem:using:databases}
 
-### Entailment {id=pred-sem:interp:entailment}
+### Generating Models {id=pred-sem:using:generating}
 
-With an interpretation of formulas, we can define *satisfiability*, *validity*, and *entailment* for Predicate Logic.
-
-These are essentially the same as for Propositional Logic, except that now we quantify over all *models*.
-
-FIXME: spell out the definitions.
-
-As with Propositional Logic, [entailment](entailment.md) means that for all models, if all the assumptions are true then the conclusion is true. Now there are infinitely many models, and each model may itself be infinite; so checking them all is no longer feasible. This is why proof for Predicate Logic is more essential than for Propositional Logic.
-
-FIXME: some examples and a quiz.
-
-### Proof and Counterexamples {id=pred-sem:interp:proof-counter}
+### Proof and Counterexamples {id=pred-sem:using:proof-counter}
 
 Proof is a way to show that a formula is true in all models. But what if we want to show that a formula is *not* provable? It is not enough to simply fail to prove it, because it may be the case that a proof exists and we are just not perceptive enough to find it.
 
@@ -330,7 +409,3 @@ One way to show that a formula `P` is not provable, assuming the proof system is
 3. So `P` is false in `M`, contradicting the assertion that `P` is true in every model, so `P` cannot be provable.
 
 FIXME: do an example
-
-## Logic for Databases {id=pred-sem:databases}
-
-FIXME: If models are databases, then queries are formulas with free variables. The result of a query is the collection of all possible values of the free variables that make the formula true.
