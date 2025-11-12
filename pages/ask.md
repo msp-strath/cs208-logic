@@ -8,56 +8,52 @@ ffof
 
 Need a custom proof layout for ask derivations.
 
-## Hoare Logic
+## Search Calculus
 
-### Test 1
+### Example 1
 
-```hoare {id=hoare-test}
-(hoare
- (program_vars X)
- (precond "T")
- (postcond "X = 10"))
+```search-calculus
+(A -> B -> C) -> (A -> B) -> A -> C
 ```
 
-### Test 2
+### Example 2
 
-```hoare {id=hoare-test-2}
-(hoare
- (program_vars X)
- (logic_vars x)
- (precond "X = x")
- (postcond "X = add(x, 1)"))
+```search-calculus
+A -> A
 ```
 
-### Test 3
+### Example 3
 
-```hoare {id=hoare-test-3}
-(hoare
- (program_vars X)
- (logic_vars x)
- (precond "X = x")
- (postcond "X = add(x, 1) /\ Y = x"))
+```search-calculus
+A -> B -> A
 ```
 
-### Test 4
+### Example 4
 
-```
-{ T }
-TOTAL := 0
-I := 0
-while (I != X) {
-  TOTAL := I + TOTAL
-  I := I + 1
-}
-{ TOTAL = sumUpTo(X) }
+```search-calculus
+(A /\ B) -> (A \/ B)
 ```
 
-```hoare {id=hoare-test-4}
-(hoare
- (program_vars TOTAL I X)
- (assumptions
-  (sum-0 "sumTo(0) = 0")
-  (sum-plus-1 "all x. sumTo(add(x,1)) = add(sumTo(x), x)"))
- (precond "T")
- (postcond "TOTAL = sumTo(X)"))
+### Example 5
+
+```search-calculus
+(A \/ B) -> (A -> C) -> (B -> D) -> (C \/ D)
+```
+
+### Example 6
+
+```search-calculus
+A -> ¬A -> B
+```
+
+### Example 7
+
+```search-calculus
+(A \/ B) -> (B \/ A)
+```
+
+### Example 8
+
+```search-calculus
+(A \/ B) -> (A /\ B)
 ```

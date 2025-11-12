@@ -40,6 +40,7 @@ let components =
 
   ; "ask", Natural_deduction.Ask.component
   ; "hoare", Natural_deduction.Hoare.component
+  ; "search-calculus", Natural_deduction.Search_calculus.component
   ]
 
 let () =

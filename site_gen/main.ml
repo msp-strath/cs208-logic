@@ -65,6 +65,7 @@ let code_render ~self ~attributes ~kind content = match kind with
   | "model-checker"
   | "ask"
   | "hoare"
+  | "search-calculus"
   | "formulaentry" as kind ->
      let open Html_static in
      let id = List.assoc_opt "id" attributes in
