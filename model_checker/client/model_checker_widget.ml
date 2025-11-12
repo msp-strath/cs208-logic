@@ -167,7 +167,7 @@ let component initial =
               render_verification verification]
 
         let render_outcome = function
-          | Verified v ->
+          | Verified _v ->
              [%concat
                  text "Verified"(* ; *)
               (* br (); *)
