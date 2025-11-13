@@ -84,7 +84,7 @@ model GreekMyth for Mortality {
 }
 ```
 
-Try changing the model and clicking **Run** to see what is allowed. The **Reset** button will reset the text box to the original example.
+**Exercise**. Try changing the model and clicking **Run** to see what is allowed. The **Reset** button will reset the text box to the original example.
 
 The `Mortality` vocabulary has only `1`-ary predicates. In general, predicates have more than one argument, which we write as multiple values in parentheses. For example, in the `Ordering` vocabulary, the `lessthan/2` predicate has arity `2` so we write its elements as pairs `(x,y)`:
 
@@ -288,6 +288,19 @@ Is valued as True in the `UnitedKingdom` model, but as False in the `LoopLand` m
 to indicate when a formula `P` is true in a model `M`. We write `M ⊭ P` when `P` is not true in `M`.
 
 So we have `UnitedKingdom ⊧ ∀x. ¬(city(x) ∧ country(x))` and `LoopLand ⊭ ∀x. ¬(city(x) ∧ country(x))`.
+
+- **Exercise**. Compute the truth value of the formula
+  ```formula
+  ex x. city(x) /\ country(x) /\ within(x,x)
+  ```
+  in the `UnitedKingdom` model, and in the `LoopLand` model.
+
+- **Exercise**. Compute the truth value of the formula
+  ```formula
+  all x. city(x) -> (ex y. ex c. city(y) /\ within(x,c) /\ within(y,c) /\ ¬x=y)
+  ```
+  in the `UnitedKingdom` model, and in the `LoopLand` model.
+
 
 ### Entailment {id=pred-sem:interp:entailment}
 
