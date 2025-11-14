@@ -618,15 +618,3 @@ from the assumptions
    all x. ¬(city(x) ∧ country(x))
    ```
 This is because the model we [constructed above](pred-logic-semantics.md#pred-sem:using:generating) supports the three listed formulas, but not `¬ (∃ x. country(x))` (because there exists a `country` in the model). Therefore, the argument we just made shows that it is not possible to prove this formula.
-
-```comment
-
-One way to show that a formula `P` is not provable, assuming the proof system is sound. is to find a model that makes its negation `¬P` true. This is due to the following reasoning:
-
-1. If it were the case that `P` was provable, then it would be true in every model.
-2. If `¬P` is true in some model `M`, then it cannot be the case that `P` is true in `M` (because then `¬P` would be false).
-3. So `P` is false in `M`, contradicting the assertion that `P` is true in every model, so `P` cannot be provable.
-
-FIXME: do an example
-
-```
