@@ -594,9 +594,30 @@ check M |= "all x. ex y. lessthan(x,y)"
 
 ### Proof and Counterexamples {id=pred-sem:using:proof-counter}
 
-Proof is a way to show that a formula is true in all models. But what if we want to show that a formula is *not* provable? It is not enough to simply fail to prove it, because it may be the case that a proof exists and we are just not perceptive enough to find it.
+Proof is a way to show that a formula is true in all models. Conversely, we can use models to show that certain formulas are not provable. To do this, it is not enough to simply fail to prove the formula, because it may be the case that a proof exists and we just did not work hard enough to find it.
 
-FIXME: finish this
+We can use the soundness of the proof system to show that a certain judgement `P1, ..., Pn ⊢ Q` is **not** provable as follows:
+
+1. Find a model `Mᶜ` that makes all of the `P1`, ..., `Pn` true (meaning `Mᶜ ⊧ Pi`, for all `i`), but does *not* make `Q` true (so `Mᶜ ⊭ Q`).
+2. *If* we could prove `P1, ..., Pn ⊧ Q` then, by soundness, for every model `M` if `M ⊧ P1`, ..., and `M ⊧ Pn` then `M ⊧ Q`.
+3. We have a model `Mᶜ` that supports `P1`, ..., `Pn`, so if the judgement is provable, we would have `Mᶜ ⊧ Q`.
+4. It is contradictory to have both `Mᶜ ⊧ Q` and `Mᶜ ⊭ Q`, so it must be the case that `P1, ..., Pn ⊧ Q` is not provable.
+
+**Example**. It is not possible to prove the formula
+```formula
+¬ (ex x. country(x))
+```
+from the assumptions
+1. ```formula
+   ex x. ex y. city(x) ∧ city(y) ∧ ¬x = y
+   ```
+2. ```formula
+   all x. city(x) -> (ex y. country(y) ∧ within(x,y))
+   ```
+3. ```formula
+   all x. ¬(city(x) ∧ country(x))
+   ```
+This is because the model we [constructed above](pred-logic-semantics.md#pred-sem:using:generating) supports the three listed formulas, but not `¬ (∃ x. country(x))` (because there exists a `country` in the model). Therefore, the argument we just made shows that it is not possible to prove this formula.
 
 ```comment
 
