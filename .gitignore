@@ -16,3 +16,4 @@
 /slides/*.fdb_latexmk
 /slides/*.xdv
 /slides/*.fls
+/slides/_region_.tex
