@@ -97,7 +97,11 @@ The pages linked to below contain the lecture notes, covering the material intro
 
    [Lecture slides for this topic](topic08-slides.pdf).
 
--  Topic 9 will be **Automating Logic**.
+-  Topic 9 is **Automating Logic**.
+
+   [SAT Solvers](sat.md) are a class of tool that can solve very large problems in Propositional Logic, and are used as a foundation for building tools that can solve problems in Predicate Logic. They use heuristic search techniques to try to avoid exponential runtime behaviour.
+
+   [Lecture slides for this topic](topic09-slides.pdf).
 
 -  Topic 10 will be **Undecidability**.
 

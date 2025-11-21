@@ -13,108 +13,107 @@
 \weeksection{Automating Logic}
 
 \begin{frame}
-  {Introduction}
+  {What to Automate?}
 
-  TODO: Some introductory text
-\end{frame}
+  Given a formula $P$, we can ask:
+  \begin{enumerate}
+  \item Does $P$ have a proof?
+  \item Is $P$ valid?
+  \item Is $P$ satisfiable?
+  \item For a model $\mathcal{M}$, do we have $\mathcal{M} \models P$?
+  \item Can we generate $\mathcal{M}$, such that $\mathcal{M} \models P$?
+  \item How many models does $P$ have?
+  \end{enumerate}
 
-\weeksection{Proof Search}
+  \bigskip
 
-\begin{frame}
-  Judgements:
-
-  \begin{displaymath}
-    x_1, \cdots, x_n \vdash G \Rightarrow \Sigma
-  \end{displaymath}
-  where:
-  \begin{itemize}
-  \item $x_1, \cdots, x_n$ is the list of variable in scope
-  \item $G$ is a list of \emph{goals}
-  \item $\Sigma$ is a list of literals
-  \end{itemize}
+  Given the expressiveness of Predicate Logic, this covers a large
+  range of questions.
 \end{frame}
 
 \begin{frame}
-  \begin{mathpar}
-    \inferrule*
-    {+P, G \\ +Q, G}
-    {+(P \land Q), G}
+  {The Bad News}
 
-    \inferrule*
-    {-P, -Q, G}
-    {-(P \land Q), G}
+  Lots of things are undecidable:
+  \begin{enumerate}
+  \item Validity in Predicate Logic
+  \item Entailment in Predicate Logic
+  \item Checking models of Predicate Logic
+  \item Model generation for Predicate Logic
+  \end{enumerate}
 
-    \inferrule*
-    {+P, +Q, G}
-    {+(P \lor Q), G}
+  \bigskip
 
-    \inferrule*
-    {-P, G \\ -Q, G}
-    {-(P \lor Q), G}
-  \end{mathpar}
+  \textcolor{black!60}{Undecidable: No program that can perfectly say
+    ``yes'' or ``no''}.
 \end{frame}
 
 \begin{frame}
-  Negation:
-  \begin{mathpar}
-    \inferrule*
-    {-P, G}
-    {+(\lnot P), G}
+  {More Bad News}
 
-    \inferrule*
-    {+P, G}
-    {-(\lnot P), G}
-  \end{mathpar}
+  Or theoretically intractable:
+  \begin{enumerate}
+  \item Validity / Satisfiability checking in Propositional Logic
+  \item Synthesis of finite models
+  \item Checking of finite models
+  \end{enumerate}
+  \textcolor{black!60}{Intractable: there is no (known) program to
+    solve it that runs in better than $O(2^n)$ on inputs of size $n$.}
 
-  Implication:
-  \begin{mathpar}
-    \inferrule*
-    {-P, +Q, G}
-    {+(P \to Q), G}
-
-    \inferrule*
-    {+P, G \\ -Q, G}
-    {-(P \to Q), G}
-  \end{mathpar}
 \end{frame}
 
 \begin{frame}
-  Universal quantifier:
-  \begin{mathpar}
-    \inferrule*
-    {x_0 \vdash +(P[x := x_0]), G}
-    {+(\forall x. P), G}
+  {The Good News}
 
-    \inferrule*
-    {G}
-    {-(\forall x. P), G}
-  \end{mathpar}
+  For undecidable problems, there are good \emph{semi-decision}
+  procedures. \\
+  \textcolor{black!60}{Semi-decision: says ``yes'' exactly when the
+    problem is solved. No guarantees otherwise.}
 
-  Existential quantifier:
-  \begin{mathpar}
-    \inferrule*
-    {G}
-    {+(\exists x. P)}
+  \bigskip
 
-    \inferrule*
-    {x_0 \vdash -(P[x := x_0]), G}
-    {-(\exists x. P), G}
-  \end{mathpar}
+  For intractable problems, there are heuristics that solve common
+  cases quickly.
+
 \end{frame}
 
 \begin{frame}
-  \begin{mathpar}
-    \inferrule*
-    {G \Rightarrow +- A, \Sigma}
-    {+- A, G \Rightarrow \Sigma}
-  \end{mathpar}
+  {Many Algorithms}
 
-  Axiom:
-  \begin{mathpar}
-    \inferrule*
-    {+A \in \Sigma \\ -A \in \Sigma}
-    {G \Rightarrow \Sigma}
-  \end{mathpar}
+  \begin{enumerate}
+  \item Proof Search \\
+    \textcolor{black!60}{Try all possible proof rules, under some strategy}
+  \item Resolution Provers \\
+    \textcolor{black!60}{A proof system specialised to proof search}
+  \item Specific tools for sub-languages of Predicate Logic \\
+    \textcolor{black!60}{E.g., ``Horn'' clause provers}
+  \item SAT / SMT Solvers \\
+    \textcolor{black!60}{SATisfiabilty solvers} \\
+    \textcolor{black!60}{SATisfiabilty Modulo Theory solvers}
+  \end{enumerate}
+
+  \pause
+  \bigskip
+
+  We will look at SAT / SMT solvers here.
+\end{frame}
+
+\begin{frame}
+  {SAT / SMT}
+
+  SAT solvers work on Propositional Logic.
+
+  \bigskip
+
+  SMT solvers work on a \emph{quantifier-free} fragment of Predicate Logic.
+
+  \bigskip
+
+  Lots of industrial strength tools: Z3, CVC5, Yices, ...
+
+  \bigskip
+
+  Used by (e.g.) Amazon Web Services to check access control rules, Microsoft to verify software, ...
 \end{frame}
 
 \weeksection{SAT Solvers}
@@ -156,10 +155,34 @@
 \end{frame}
 
 \begin{frame}
+  {Encoding Problems into SAT}
+
+  In general, if we want to prove that $P$ is valid, then it suffices
+  to show that $\lnot P$ is not satisifable:
+
+  \bigskip
+
+  \begin{enumerate}
+  \item Take $P$
+  \item Put $\lnot P$ into a SAT solver:
+    \begin{enumerate}
+    \item if $\lnot P$ is satisfiable, then we have a counter example to $P$
+    \item if $\lnot P$ is not satisfiable, then $P$ is valid
+    \end{enumerate}
+  \end{enumerate}
+
+  \bigskip
+
+  Also, there are \emph{many} problems that can be encoded as
+  Propositional Logic formulas.
+
+\end{frame}
+
+\begin{frame}
   {But SAT is useful: Solving Problems}
 
   \begin{enumerate}
-  \item Package installations (last lecture) \\
+  \item Package installations \\
     \sidenote{satisfying valuation = good package installation}
   \item Solving Sudoku \\
     \sidenote{satisfying valuation = correct solution}
@@ -172,7 +195,7 @@
 \begin{frame}
   {SAT is Useful: Finding Bugs}
 
-  \sidenote{Recall: $P_1 \to P_2 \to Q$ is valid if $\lnot(P_1 \to P_2 \to Q)$ is not satisfiable}
+%  \sidenote{Recall: $P_1 \to P_2 \to Q$ is valid if $\lnot(P_1 \to P_2 \to Q)$ is not satisfiable}
   \begin{enumerate}
   \item Finding faults in systems \\
     \sidenote{satisfying valuation = path to a bad state}
@@ -182,7 +205,6 @@
     \sidenote{satisfying valuation = counterexample to correctness}
   \end{enumerate}
 \end{frame}
-
 
 \begin{frame}
   {An alluring proposition}
@@ -242,35 +264,55 @@
 
 \begin{frame}
   {Conjunctive Normal Form}
-  For the package installation problems, we already have CNF:
-  \begin{displaymath}
-    \begin{array}{ll}
-      \left.
-      \begin{array}{cl}
-        &(\lnot \mathit{libD}_1 \lor \lnot \mathit{libD}_2) \\
-        \land&(\lnot \mathit{libC}_1 \lor \lnot \mathit{libC}_2) \\
-        \land&(\lnot \mathit{progA}_1 \lor \lnot \mathit{progA}_2)
-      \end{array}
-      \right\}
-      &
-        \textsc{Incompat}
-      \\
-      \left.
-      \begin{array}{cl}
-        \land&(\lnot \mathit{progA}_1 \lor \mathit{libC}_1) \\
-        \land&(\lnot \mathit{progA}_2 \lor \mathit{libC}_2) \\
-        \land&(\lnot \mathit{libC}_1 \lor \mathit{libD}_2) \\
-        \land&(\lnot \mathit{libC}_2 \lor \mathit{libD}_2)
-      \end{array}
-               \right\} & \textsc{Dep}
-      \\
-      \left.\begin{array}{cl}
-        \land &(\mathit{progA}_1 \lor \mathit{progA}_2)
-      \end{array}\right.
-    \end{array}
-  \end{displaymath}
 
+  The restriction to CNF may seem like a massive restriction.
+
+  \bigskip
+
+  Every Propositional Logic formula can be translated into CNF.
+
+  \bigskip
+
+  \begin{enumerate}
+  \item Slow way: ``multiply out the brackets'' \\
+    \textcolor{black!60}{Resulting formula might be exponentially larger}
+  \item Fast way: ``Tseytin translation'' \\
+    \textcolor{black!60}{Resulting formulas is at most 3 times larger}
+  \end{enumerate}
+  We'll just assume this can be done for now.
 \end{frame}
+
+% \begin{frame}
+%   {Conjunctive Normal Form}
+%   For the package installation problems, we already have CNF:
+%   \begin{displaymath}
+%     \begin{array}{ll}
+%       \left.
+%       \begin{array}{cl}
+%         &(\lnot \mathit{libD}_1 \lor \lnot \mathit{libD}_2) \\
+%         \land&(\lnot \mathit{libC}_1 \lor \lnot \mathit{libC}_2) \\
+%         \land&(\lnot \mathit{progA}_1 \lor \lnot \mathit{progA}_2)
+%       \end{array}
+%       \right\}
+%       &
+%         \textsc{Incompat}
+%       \\
+%       \left.
+%       \begin{array}{cl}
+%         \land&(\lnot \mathit{progA}_1 \lor \mathit{libC}_1) \\
+%         \land&(\lnot \mathit{progA}_2 \lor \mathit{libC}_2) \\
+%         \land&(\lnot \mathit{libC}_1 \lor \mathit{libD}_2) \\
+%         \land&(\lnot \mathit{libC}_2 \lor \mathit{libD}_2)
+%       \end{array}
+%                \right\} & \textsc{Dep}
+%       \\
+%       \left.\begin{array}{cl}
+%         \land &(\mathit{progA}_1 \lor \mathit{progA}_2)
+%       \end{array}\right.
+%     \end{array}
+%   \end{displaymath}
+
+% \end{frame}
 
 \begin{frame}
   {A SAT Solver's job}
@@ -399,24 +441,24 @@
 \def\doneafter<#1>#2{%
   \temporal<#1>%
   {\colorbox{white}{\color{black}$\displaystyle#2$}}%
-  {\colorbox{green!50}{\color{black}$\displaystyle#2$}}%
-  {\colorbox{green!50}{\color{black}$\displaystyle#2$}}}
+  {\colorbox{cyan!50}{\color{black}$\displaystyle#2$}}%
+  {\colorbox{cyan!50}{\color{black}$\displaystyle#2$}}}
 
 \def\stuck<#1>#2{%
   \temporal<#1>%
   {\colorbox{white}{\color{black}$\displaystyle#2$}}%
-  {\colorbox{red!50}{\color{black}$\displaystyle#2$}}%
+  {\colorbox{magenta!50}{\color{black}$\displaystyle#2$}}%
   {\colorbox{white}{\color{black}$\displaystyle#2$}}}
 
 \def\done<#1>#2{%
   \temporal<#1>%
   {\colorbox{white}{\color{black}$\displaystyle#2$}}%
-  {\colorbox{green!50}{\color{black}$\displaystyle#2$}}%
+  {\colorbox{cyan!50}{\color{black}$\displaystyle#2$}}%
   {\colorbox{white}{\color{black}$\displaystyle#2$}}}
 
 \newcommand{\undet}[1]{\stackrel{\textcolor{white}{\checkmark}}{\colorbox{white}{$#1$}}}
-\newcommand{\failed}[1]{\stackrel{\times}{\colorbox{red!90}{\textcolor{white}{$#1$}}}}
-\newcommand{\satd}[1]{\stackrel{\checkmark}{\colorbox{green!50}{{$#1$}}}}
+\newcommand{\failed}[1]{\stackrel{\times}{\colorbox{magenta!90}{\textcolor{white}{$#1$}}}}
+\newcommand{\satd}[1]{\stackrel{\checkmark}{\colorbox{cyan!50}{{$#1$}}}}
 
 \begin{frame}
   {Example}
@@ -427,7 +469,7 @@
     \only<4>{(\satd{\lnot a} \lor \failed{\lnot b} \lor \satd{\lnot c}) \land (\failed{\lnot b} \lor \satd{\lnot c} \lor \undet{\lnot d}) \land (\satd{\lnot a} \lor \failed{\lnot b} \lor \failed{c}) \land \satd{b}}%
     \only<5->{(\satd{\lnot a} \lor \failed{\lnot b} \lor \satd{\lnot c}) \land (\failed{\lnot b} \lor \satd{\lnot c} \lor \satd{\lnot d}) \land (\satd{\lnot a} \lor \failed{\lnot b} \lor \failed{c}) \land \satd{b}}%
   \end{displaymath}
-  \sidenote{Need at least one green in every clause}
+  \sidenote{Need at least one cyan in every clause}
 
   \sechead{Sequence of (lucky) guesses}
   \begin{enumerate}
@@ -812,31 +854,31 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}[t]
-  {Further Reading}
-  A blog post with a Python implementation: \\
-  \quad \emph{Understanding SAT by Implementing a Simple SAT Solver in Python} \\
-  \quad \textcolor{black!60}{Sahand Saba} \\
-  \quad {\tiny \url{https://sahandsaba.com/understanding-sat-by-implementing-a-simple-sat-solver-in-python.html}}
+% \begin{frame}[t]
+%   {Further Reading}
+%   A blog post with a Python implementation: \\
+%   \quad \emph{Understanding SAT by Implementing a Simple SAT Solver in Python} \\
+%   \quad \textcolor{black!60}{Sahand Saba} \\
+%   \quad {\tiny \url{https://sahandsaba.com/understanding-sat-by-implementing-a-simple-sat-solver-in-python.html}}
 
-  \bigskip
+%   \bigskip
 
-  Another blog post with more formalism: \\
-  \quad \emph{A Primer on Boolean Satisfiability} \\
-  \quad \textcolor{black!60}{Emina Torlak} \\
-  \quad {\tiny \url{https://homes.cs.washington.edu/~emina/blog/2017-06-23-a-primer-on-sat.html}} \\
-  \qquad {\footnotesize See also the links at the end for lots more detail.}
-\end{frame}
+%   Another blog post with more formalism: \\
+%   \quad \emph{A Primer on Boolean Satisfiability} \\
+%   \quad \textcolor{black!60}{Emina Torlak} \\
+%   \quad {\tiny \url{https://homes.cs.washington.edu/~emina/blog/2017-06-23-a-primer-on-sat.html}} \\
+%   \qquad {\footnotesize See also the links at the end for lots more detail.}
+% \end{frame}
 
-\begin{frame}[t]
-  {More Further Reading}
+% \begin{frame}[t]
+%   {More Further Reading}
 
-  For more breadth and detail than you could possibly imagine:\\
-  \quad \emph{The Art of Computer Programming: 7.2.2.2 Satisfiability} \\
-  \qquad \emph{Draft: Volume 4B, Pre-fascicle 6A} \\
-  \quad \textcolor{black!60}{Donald E. Knuth} \\
-  \quad {\tiny \url{https://cs.stanford.edu/~knuth/fasc6a.ps.gz}}
-\end{frame}
+%   For more breadth and detail than you could possibly imagine:\\
+%   \quad \emph{The Art of Computer Programming: 7.2.2.2 Satisfiability} \\
+%   \qquad \emph{Draft: Volume 4B, Pre-fascicle 6A} \\
+%   \quad \textcolor{black!60}{Donald E. Knuth} \\
+%   \quad {\tiny \url{https://cs.stanford.edu/~knuth/fasc6a.ps.gz}}
+% \end{frame}
 
 \begin{frame}
   {Summary}
@@ -849,21 +891,638 @@
   \end{itemize}
 \end{frame}
 
+\weeksection{Conversion to CNF}
 
-\weeksection{Decidable Theories}
+\begin{frame}[t]
+  {Conjunctive Normal Form (CNF)}
 
-\begin{frame}
-  {Decidable Theories}
-
-  TBD
+  \begin{displaymath}
+    \begin{array}{cl}
+      &(\lnot a \lor \lnot b \lor \lnot c) \\
+      \land&(\lnot b \lor \lnot c \lor \lnot d) \\
+      \land&(\lnot a \lor \lnot b \lor c) \\
+      \land&b
+    \end{array}
+  \end{displaymath}
+  \begin{enumerate}
+  \item Entire formula is a conjunction $C_1 \land C_2 \land \cdots \land C_n$
+  \item where each \emph{clause} $C_i = L_{i,1} \lor L_{i,2} \lor \cdots \lor L_{i,k}$
+  \item where each \emph{literal} $L_{i,j} = x_{i,j}$ or $L_{i,j} = \lnot x_{i,j}$
+  \end{enumerate}
 \end{frame}
 
-\weeksection{Quantifier Elimination}
+\begin{frame}[t]
+  {Disjunctive Normal Form (DNF)}
+
+  \emph{Disjunctive Normal Form} (DNF) is similar, but swaps $\land$
+  and $\lor$.
+
+  \begin{displaymath}
+    \begin{array}{cl}
+      &(\lnot a \land \lnot b \land \lnot c) \\
+      \lor&(\lnot b \land \lnot c \land \lnot d) \\
+      \lor&(\lnot a \land \lnot b \land c) \\
+      \lor&b
+    \end{array}
+  \end{displaymath}
+  \begin{enumerate}
+  \item Entire formula is a \emph{dis}junction $D_1 \lor D_2 \lor \cdots \lor D_n$
+  \item where each \emph{disjunct} $D_i = L_{i,1} \land L_{i,2} \land \cdots \land L_{i,k}$
+  \item where each \emph{literal} $L_{i,j} = x_{i,j}$ or $L_{i,j} = \lnot x_{i,j}$
+  \end{enumerate}
+\end{frame}
 
 \begin{frame}
-  {Fourier-Motzkin Elimination}
+  {Normal Forms and Satisfiability}
 
-  TBD
+  \textbf{CNF} \\ Each clause is a \emph{constraint} and all constraints
+  must be satisfied.
+
+  \bigskip
+
+  \textbf{DNF} \\ At least one of the disjuncts must be satisfied.
+
+  \bigskip
+
+  \emph{Exercise:} How would you write a SAT
+  Solver for formulas in DNF? Why don't we do this instead of CNF?
 \end{frame}
+
+\begin{frame}
+  {Conversion to CNF}
+
+  Not every formula is in CNF, e.g.,
+  \begin{displaymath}
+    (A \land B) \to (B \land A)
+  \end{displaymath}
+  What if we want to use a SAT solver to determine satisfiability?
+
+  \bigskip
+
+  Two ways to convert a formula to CNF that is ``the same'':
+  \begin{itemize}
+  \item ``Multiplying out''
+  \item Tseytin transformation
+  \end{itemize}
+
+  \bigskip
+
+  First we need to define what we mean by ``the same''.
+
+\end{frame}
+
+\begin{frame}
+  {Equivalent Formulas}
+  Define two formulas $P$ and $Q$ to be \emph{equivalent}, written
+  \begin{displaymath}
+    P \equiv Q
+  \end{displaymath}
+  exactly when, for all valuations $v$,
+  \begin{displaymath}
+    \sem{P}v = \sem{Q}v
+  \end{displaymath}
+  \textcolor{black!60}{Equivalent to both $P \models Q$ and $Q \models P$ being valid}
+\end{frame}
+
+\begin{frame}
+  {Simplifying Implication}
+
+  \begin{displaymath}
+    A \to B \equiv \lnot A \lor B
+  \end{displaymath}
+  \medskip
+  \begin{displaymath}
+    \begin{array}{cc|c|c|c}
+      \multicolumn{2}{c|}{\textit{valuation}}&&P&Q \\
+      A & B & \lnot A & A \to B & \lnot A \lor B \\
+      \hline
+      \false & \false & \true  & \true  & \true \\
+      \false & \true  & \true  & \true  & \true \\
+      \true  & \false & \false & \false & \false \\
+      \true  & \true  & \false & \true  & \true
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}[t]
+  {Double Negation}
+
+  Negating twice is the same as doing nothing:
+  \begin{displaymath}
+    A \equiv \lnot\lnot A
+  \end{displaymath}
+  \begin{displaymath}
+    \begin{array}{c|c|c|c}
+      \textit{valuation} & & P & Q \\
+      A&\lnot A&A&\lnot \lnot A \\
+      \hline
+      \false&\true&\false&\false \\
+      \true&\false&\true&\true
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {de Morgan's laws}
+
+  Negation swaps $\land$ and $\lor$:
+  \begin{displaymath}
+    \lnot (A \land B) \equiv \lnot A \lor \lnot B
+  \end{displaymath}
+  \begin{displaymath}
+    \begin{array}{cc|ccc|c|c}
+      \multicolumn{2}{c|}{\textit{valuation}}&&&&P&Q\\
+      A & B & \lnot A & \lnot B & A \land B & \lnot (A \land B) & \lnot A \lor \lnot B \\
+      \hline
+      \false & \false & \true  & \true  & \false & \true & \true \\
+      \false & \true  & \true  & \false & \false & \true & \true \\
+      \true  & \false & \false & \true  & \false & \true & \true \\
+      \true  & \true  & \false & \false & \true  & \false & \false
+    \end{array}
+  \end{displaymath}
+  Similar for $\lnot (A \lor B) \equiv \lnot A \land \lnot B$
+\end{frame}
+
+\begin{frame}
+  {Negation Normal Form (NNF)}
+
+  Using the equivalences:
+  \begin{displaymath}
+    \begin{array}{rcl}
+      A \to B & \equiv & \lnot A \lor B \\
+      A&\equiv&\lnot \lnot A \\
+      \lnot (A \land B)&\equiv&\lnot A \lor \lnot B \\
+      \lnot (A \lor B)&\equiv&\lnot A \land \lnot B
+    \end{array}
+  \end{displaymath}
+
+  We can \emph{rewrite} any formula into an equivalent one with
+  \begin{enumerate}
+  \item No implications ($\to$s)
+  \item All negation signs on the atomic propositions
+  \end{enumerate}
+
+  % \bigskip
+
+  % Formula will have only $\land$s and $\lor$s, and $\lnot$s only at
+  % the ``leaves''.
+\end{frame}
+
+\begin{frame}
+  {Example}
+
+  \begin{displaymath}
+    \begin{array}{cll}
+             & (a \land (a \to b)) \to c \\
+      \equiv & \lnot (a \land (a \to b)) \lor c & \textit{converted }\to\\
+      \equiv & \lnot (a \land (\lnot a \lor b)) \lor c & \textit{converted }\to\\
+      \equiv & \lnot a \lor \lnot (\lnot a \lor b) \lor c & \textit{converted }\land\textit{ to }\lor \\
+      \equiv & \lnot a \lor (\lnot \lnot a \land \lnot b) \lor c & \textit{converted }\lor\textit{ to }\land \\
+      \equiv & \lnot a \lor (a \land \lnot b) \lor c & \textit{converted double negation} \\
+    \end{array}
+  \end{displaymath}
+
+  \bigskip
+
+  Now in NNF, but not CNF.
+\end{frame}
+
+\begin{frame}
+  {``Push'' $\lor$s into $\land$s}
+  \begin{displaymath}
+    A \lor (B \land C) \equiv (A \lor B) \land (A \lor C)
+  \end{displaymath}
+  {\footnotesize\begin{displaymath}
+    \begin{array}{ccc|ccc|c|c}
+      \multicolumn{3}{c|}{\textit{valuation}}&&&&P&Q\\
+      A & B & C       & B \land C & A \lor B & A \lor C & A \lor (B \land C) & (A \lor B) \land (A \lor C) \\
+      \hline
+      \false & \false & \false & \false       & \false      & \false      & \false                & \false \\
+      \false & \false & \true  & \false       & \false      & \true       & \false                & \false \\
+      \false & \true  & \false & \false       & \true       & \false      & \false                & \false \\
+      \false & \true  & \true  & \true        & \true       & \true       & \true                 & \true  \\
+      \true  & \false & \false & \false       & \true       & \true       & \true                 & \true  \\
+      \true  & \false & \true  & \false       & \true       & \true       & \true                 & \true  \\
+      \true  & \true  & \false & \false       & \true       & \true       & \true                 & \true  \\
+      \true  & \true  & \true  & \true        & \true       & \true       & \true                 & \true  \\
+    \end{array}
+  \end{displaymath}}
+\end{frame}
+
+\begin{frame}
+  {Conversion to CNF}
+
+  \begin{displaymath}
+    \begin{array}{cl}
+             & \lnot a \lor (a \land \lnot b) \lor c \\
+      \equiv & \hspace{4cm}\textit{multiply out} \\
+             & \lnot a \lor ((a \lor c) \land (\lnot b \lor c)) \\
+      \equiv & \hspace{4cm}\textit{multiply out} \\
+             & (\lnot a \lor a \lor c) \land (\lnot a \lor \lnot b \lor c) \\
+    \end{array}
+  \end{displaymath}
+  Now in CNF.
+
+  \bigskip
+
+  \textcolor{black!60}{(Can further simplify to: $(\lnot a \lor \lnot b \lor c)$)}
+\end{frame}
+
+\begin{frame}
+  {Exponential Blowup}
+
+  If we convert
+  $(a \land b \land c) \lor (d \land e \land f) \lor (g \land h \land
+  i)$ to CNF, we get:
+
+  {\footnotesize
+    \begin{displaymath}
+      \begin{array}{@{}l}
+        (a \lor d \lor g) \land (a \lor d \lor h) \land (a \lor d \lor i) \land (a \lor e \lor g) \land (a \lor e \lor h) \land \\
+        (a \lor e \lor i) \land (a \lor f \lor g) \land (a \lor f \lor h) \land (a \lor f \lor i) \land (b \lor d \lor g) \land \\
+        (b \lor d \lor h) \land (b \lor d \lor i) \land (b \lor e \lor g) \land (b \lor e \lor h) \land (b \lor e \lor i) \land \\
+        (b \lor f \lor g) \land (b \lor f \lor h) \land (b \lor f \lor i) \land (c \lor d \lor g) \land (c \lor d \lor h) \land \\
+        (c \lor d \lor i) \land (c \lor e \lor g) \land (c \lor e \lor h) \land (c \lor e \lor i) \land (c \lor f \lor g) \land \\
+        (c \lor f \lor h) \land (c \lor f \lor i)
+      \end{array}
+    \end{displaymath}}
+
+  which has $27$ clauses.
+
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item SAT Solvers take their input in CNF
+  \item Some problems are naturally in CNF
+  \item Conversion by ``multiplying out'' can generate huge formulas
+  \item We need something better
+  \end{itemize}
+\end{frame}
+
+\weeksection{Tseytin Transformation}
+
+\begin{frame}
+  {Tseytin Transformation}
+
+  The Tseytin transformation converts a formula into CNF with at most
+  3 times as many clauses as connectives in the original formula
+  (versus potentially exponential for multiplying out the brackets).
+
+  \bigskip
+
+  \begin{enumerate}
+  \item Convert the formula into equations \\
+    \quad \textcolor{black!60}{One connective $\leadsto$ one equation}
+  \item Convert each equation into clauses \\
+    \quad \textcolor{black!60}{One equation $\leadsto$ 2-3 clauses}
+  \end{enumerate}
+
+  \bigskip
+
+  Result is not equivalent, but \emph{equisatisfiable}.
+
+
+  % FIXME: give the basic idea
+
+  % \textcolor{black!60}{Assume that all $\to$s have been removed}
+
+  % If we can find values for $a, b, c$ \emph{and} $x_1, x_2, x_3$ such
+  % that all these equations are true, and $x_1$ is true, then we've
+  % found values for $a, b, c$ such that the original formula is
+  % satisfied.
+
+\end{frame}
+
+\begin{frame}[t]
+  {1. Name subformulas}
+
+  Take the formula and name all the non-atomic subformulas.
+
+  \medskip
+
+  Example:
+  \begin{displaymath}
+    \lnot(a \land (\lnot a \lor b)) \lor c
+  \end{displaymath}
+  becomes:
+  \begin{displaymath}
+    \begin{array}{lcl}
+      x_1&=&x_2 \lor c \\
+      x_2&=&\lnot x_3 \\
+      x_3&=&a \land x_4 \\
+      x_4&=&x_5 \lor b\\
+      x_5&=&\lnot a
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {2. Converting Equations to Clauses}
+
+  Given an equation like $x = y \land z$, we want some clauses that
+  are true for every valuation that satisfies the equation.
+
+  \pause
+  \bigskip
+
+  Derive by conversion to CNF:
+  \begin{displaymath}
+    \begin{array}{cl}
+      &x = y \land z \\
+      \equiv&(x \to (y \land z)) \land ((y \land z) \to x) \\
+      \equiv&(\lnot x \lor (y \land z)) \land (\lnot(y \land z) \lor x)\\
+      \equiv&(\lnot x \lor y) \land (\lnot x \lor z) \land (\lnot y \lor \lnot z \lor x)
+    \end{array}
+  \end{displaymath}
+
+\end{frame}
+
+\begin{frame}
+  {2. Equations to Clauses}
+
+  Take each equation $x = y \mathop\Box z$ and turn it into clauses:
+  \begin{enumerate}
+  \item If $x = y \land z$, add
+    \begin{displaymath}
+      (\lnot x \lor y) \land (\lnot x \lor z) \land (\lnot y \lor \lnot z \lor x)
+    \end{displaymath}
+  \item If $x = y \lor z$, add
+    \begin{displaymath}
+      (y \lor z \lor \lnot x) \land (\lnot y \lor x) \land (\lnot z \lor x)
+    \end{displaymath}
+  \item If $x = \lnot y$, add
+    \begin{displaymath}
+      (\lnot y \lor \lnot x) \land (y \lor x)
+    \end{displaymath}
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+  {3. Assert the top level variable}
+
+  If $x$ is the name of the whole formula, add a clause with just
+  $x$:
+
+  \begin{displaymath}
+    \begin{array}{cl}
+      &\textit{equation 1} \\
+      \land&\textit{equation 2}\\
+      \land&...\\
+      \land&x
+    \end{array}
+  \end{displaymath}
+
+  This asserts that our original formula must be true.
+\end{frame}
+
+\begin{frame}
+  {Example: $\lnot (A \land B) \lor (B \land A)$}
+
+  \rhighlight{1.}~Name the subformulas:
+  \begin{displaymath}
+    \begin{array}{lcl@{\hspace{2em}}lcl}
+      x_1&=&x_2 \lor x_4 &
+      x_2&=&\lnot x_3 \\
+      x_3&=&A \land B &
+      x_4&=&B \land A
+    \end{array}
+  \end{displaymath}
+
+  \pause
+
+  \rhighlight{2+3.}~Generate clauses: \textcolor{black!60}{(One line per equation)}
+  \begin{displaymath}
+    \begin{array}{cl}
+      &(x_2 \lor x_4 \lor \lnot x_1) \land (\lnot x_2 \lor x_1) \land (\lnot x_4 \lor x_1) \\
+      \land&(\lnot x_3 \lor \lnot x_2) \land (x_3 \lor x_2) \\
+      \land&(\lnot A \lor \lnot B \lor x_3) \land (A \lor \lnot x_3) \land (B \lor \lnot x_3) \\
+      \land&(\lnot B \lor \lnot A \lor x_4) \land (B \lor \lnot x_4) \land (A \lor \lnot x_4) \\
+      \land&x_1
+    \end{array}
+  \end{displaymath}
+\end{frame}
+
+\begin{frame}
+  {Efficiency}
+
+  In small examples, we get many clauses.
+
+  \bigskip
+
+  But we \emph{always} get $\leq 3n$ clauses, where $n$ number of
+  connectives.
+
+  \bigskip
+
+  Multiplying out can result in exponential number of clauses.
+
+  \bigskip
+
+  Can also optimise (see the tutorial questions).
+
+\end{frame}
+
+% \begin{frame}
+%   A bigger example... FIXME
+% \end{frame}
+
+\begin{frame}
+  {Not Equivalent!}
+
+  The formulas generated by the Tseytin transformation are
+  \textbf{not} equivalent to the original, because they have extra
+  atomic propositions.
+\end{frame}
+
+\begin{frame}
+  {Example}
+
+  If the original formula is
+  \begin{displaymath}
+    \lnot A
+  \end{displaymath}
+
+  the Tseytin transformed version is: \textcolor{black!60}{(assuming
+    we don't optimise)}
+  \begin{displaymath}
+    (\lnot A \lor \lnot x) \land (A \lor x) \land x
+  \end{displaymath}
+
+  Then $\{A \assigned \false, x \assigned \false\}$ satisfies the
+  original, but not the transformed formula.
+\end{frame}
+
+\begin{frame}
+  {Equisatisfiable}
+
+  If we write $\mathsf{Tseytin}(P)$ for the Tseytin translation of
+  $P$, then:
+  \begin{enumerate}
+  \item If there exists a valuation $v_1$ such that $\sem{P}v_1 = \true$,
+    then there exists a valuation $v_2$ such that
+    $\sem{\mathsf{Tseytin}(P)}v_2 = \true$;
+  \item If there exists a valuation $v$ such that
+    $\sem{\mathsf{Tseytin}(P)}v = \true$, then the valuation $v' = v$
+    without the additional $x_i$s makes $\sem{P}v' = \true$.
+  \end{enumerate}
+
+  \bigskip
+
+  This is called ``equisatisfiability''.
+\end{frame}
+
+\begin{frame}
+  {Example}
+
+  $v = \{A \assigned \false\}$ satisfies $\lnot A$
+
+  \bigskip
+
+  The corresponding satisfying valuation for
+  \begin{displaymath}
+    (\lnot A \lor \lnot x) \land (A \lor x) \land x
+  \end{displaymath}
+  is $\{A \assigned \false, x \assigned \true\}$.
+
+  \bigskip
+
+  A corresponding satisfying assignment always exists for the Tseytin
+  transformation, because it is built from equations.
+\end{frame}
+
+\begin{frame}
+  {Summary}
+
+  \begin{itemize}
+  \item Tseytin transformation converts formulas to CNF
+  \item Generates $\leq 3n$ clauses, where $n$ is the number of connectives
+  \item Avoids exponential blowup
+  \item Can be further optimised
+  \item Result is \emph{equisatisfiable}
+  \end{itemize}
+\end{frame}
+
+
+
+% \weeksection{Proof Search}
+
+% \begin{frame}
+%   Judgements:
+
+%   \begin{displaymath}
+%     x_1, \cdots, x_n \vdash G \Rightarrow \Sigma
+%   \end{displaymath}
+%   where:
+%   \begin{itemize}
+%   \item $x_1, \cdots, x_n$ is the list of variable in scope
+%   \item $G$ is a list of \emph{goals}
+%   \item $\Sigma$ is a list of literals
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \begin{mathpar}
+%     \inferrule*
+%     {+P, G \\ +Q, G}
+%     {+(P \land Q), G}
+
+%     \inferrule*
+%     {-P, -Q, G}
+%     {-(P \land Q), G}
+
+%     \inferrule*
+%     {+P, +Q, G}
+%     {+(P \lor Q), G}
+
+%     \inferrule*
+%     {-P, G \\ -Q, G}
+%     {-(P \lor Q), G}
+%   \end{mathpar}
+% \end{frame}
+
+% \begin{frame}
+%   Negation:
+%   \begin{mathpar}
+%     \inferrule*
+%     {-P, G}
+%     {+(\lnot P), G}
+
+%     \inferrule*
+%     {+P, G}
+%     {-(\lnot P), G}
+%   \end{mathpar}
+
+%   Implication:
+%   \begin{mathpar}
+%     \inferrule*
+%     {-P, +Q, G}
+%     {+(P \to Q), G}
+
+%     \inferrule*
+%     {+P, G \\ -Q, G}
+%     {-(P \to Q), G}
+%   \end{mathpar}
+% \end{frame}
+
+% \begin{frame}
+%   Universal quantifier:
+%   \begin{mathpar}
+%     \inferrule*
+%     {x_0 \vdash +(P[x := x_0]), G}
+%     {+(\forall x. P), G}
+
+%     \inferrule*
+%     {G}
+%     {-(\forall x. P), G}
+%   \end{mathpar}
+
+%   Existential quantifier:
+%   \begin{mathpar}
+%     \inferrule*
+%     {G}
+%     {+(\exists x. P)}
+
+%     \inferrule*
+%     {x_0 \vdash -(P[x := x_0]), G}
+%     {-(\exists x. P), G}
+%   \end{mathpar}
+% \end{frame}
+
+% \begin{frame}
+%   \begin{mathpar}
+%     \inferrule*
+%     {G \Rightarrow +- A, \Sigma}
+%     {+- A, G \Rightarrow \Sigma}
+%   \end{mathpar}
+
+%   Axiom:
+%   \begin{mathpar}
+%     \inferrule*
+%     {+A \in \Sigma \\ -A \in \Sigma}
+%     {G \Rightarrow \Sigma}
+%   \end{mathpar}
+% \end{frame}
+
+
+
+% \weeksection{Decidable Theories}
+
+% \begin{frame}
+%   {Decidable Theories}
+
+%   TBD
+% \end{frame}
+
+% \weeksection{Quantifier Elimination}
+
+% \begin{frame}
+%   {Fourier-Motzkin Elimination}
+
+%   TBD
+% \end{frame}
 
 \end{document}
