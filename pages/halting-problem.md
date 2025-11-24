@@ -1,7 +1,7 @@
 # The Undecidability of the Halting Problem
 
 ```aside
-This page assumes that you have understood the [proof rules for quantifiers](pred-logic-rules.html) and [proof rules for equality](equality.html) pages and completed all the exercises there. This page also builds on the [Specification of Program Properties](properties-of-programs.html).
+This page assumes that you have understood the [proof rules for quantifiers](pred-logic-rules.html) and completed all the exercises there. This page also builds on the `exec` predicate introduced in [Specification and Verification](specify-verify.html).
 ```
 
 One of the foundational results of Computer Science is that there is no program which can reliably tell if another program will halt on a given input.
@@ -18,9 +18,9 @@ If we could solve any of these, we can also solve the halting problem by wrappin
 
 The proof of undecidability is an example of a *diagonalisation* proof, where we prove that a solution cannot exist by assuming that a solution exists and using it *on itself* to construct a contradiction.
 
-## Vocabulary
+## Vocabulary {id=halting-problem:vocab}
 
-### Ways of Building Programs and Data
+### Ways of Building Programs and Data {id=halting-problem:vocab:building}
 
 The following function symbols give us ways of building programs and data values.
 
@@ -31,21 +31,21 @@ The following function symbols give us ways of building programs and data values
 
 We will only need to assume this minimal set of function symbols for building programs to prove that the halting problem is undeciable. We do **not** say in our axiomatisation below that these are the only ways of building programs, only that the underlying model of computation must have **at least** these ways of constructing programs.
 
-### The Execution Predicate
+### The Execution Predicate {id=halting-problem:vocab:exec-pred}
 
-We use the execution predicate we was when [specifying properties of programs](properties-of-programs.md):
+We use the execution predicate we saw when [specifying and verifying programs](specify-verify.md):
 
 1. `exec(program, input, output)` -- meaning that when we run `program` on `input` the result is `output`.
 
 We do not distinguish between things that are program-like and things that are data-like. In particular, a program can take itself as an input. This flexibility of self reference will be crucial for stating the halting problem and proving that it is undecidable.
 
-## Axioms
+## Axioms {id=halting-problem:axioms}
 
 Next we have axioms that tell us how each of the different kinds of program executes. We'll not actually need all of these axioms to complete the proof of the undecidability of the halting problem, but they serve to show how one can use logic to specify how programs execute.
 
 These axioms are meant to establish some basic properties of computation that any realistic kind of programs ought to satisfy: we can output fixed values, duplicate data, not give answers, and make decisions.
 
-### The `true` and `false` programs
+### The `true` and `false` programs {id=halting-problem:axioms:true-false}
 
 The program `true()` outputs `true()` for any input:
 ```formula
@@ -65,14 +65,14 @@ and if it outputs anything, then that thing is equal to `false()`:
 all x. all y. exec(false(), x, y) -> y = false()
 ```
 
-### The `loop` program
+### The `loop` program {id=halting-problem:axioms:loop}
 
 The program `loop` never outputs anything:
 ```formula
    all x. all y. ¬exec(loop(), x, y)
 ```
 
-### The `duplicate` program
+### The `duplicate` program {id=halting-problem:axioms:duplicate}
 
 The program `duplicate(p)` acts like I said above:
 ```formula
@@ -83,7 +83,7 @@ and this is the only way it acts:
 all p. all x. all y. exec(duplicate(p),x,y) -> exec(p,pair(x,x),y)
 ```
 
-### The `if` program
+### The `if` program {id=halting-problem:axioms:if}
 
 The program `if(p1,p2,p3)` acts like I said above. We split into two cases, one for when the condition `p1` returns `true`:
 ```formula
@@ -99,19 +99,21 @@ all p1. all p2. all p3. all x. all y. exec(if(p1,p2,p3),x,y) ->
   ((exec(p1,x,true()) /\ exec(p2,x,y)) \/ (exec(p1,x,false()) /\ exec(p3,x,y)))
 ```
 
-### Explanation
+### Explanation {id=halting-problem:axioms:explanation}
 
-Why do we need “both directions” for the axioms for `duplicate` and `if`? This is because we are going to have to reason backwards about program execution to answer questions like “if the output was `y`, then what happened during the program?”.
+Each of the axioms above explains how each of the different program parts operates in terms of the `exec` predicate. For each program constructor, there are axioms that say under what circumstances a program will execute and further axioms that say what must have happened if a program has executed.
 
-## What does it mean for a program to halt?
+Why do we need “both directions”? This is because we are going to have to reason backwards about program execution to answer questions like “if the output was `y`, then what happened during the program?”.
 
-As we saw when [Specifying Properties of Programs](properties-of-programs.md), we can use the `exec` predicate to define what it means for a program to halt. A program `prog` halts on an input `x` if there exists an answer `y` that executing `prog` with input `x` gives the output `y`:
+## What does it mean for a program to halt? {id=halting-problem:halt-meaning}
+
+As we saw when [Specifying Properties of Programs](specify-verify.md#specify-verify:properties-of-programs), we can use the `exec` predicate to define what it means for a program to halt. A program `prog` halts on an input `x` if there exists an answer `y` that executing `prog` with input `x` gives the output `y`:
 
 ```formula
 ex y. exec(prog,x,y)
 ```
 
-## What does it mean for a program to solve the halting problem?
+## What does it mean for a program to solve the halting problem? {id=halting-problem:solution-meaning}
 
 To specify when we have a program that solves the halting problem, we use a predicate `solution(p)`. Any solution must satisfy the following four properties, so we say that `solution(p)` implies each one:
 
@@ -150,7 +152,7 @@ Some notes on this specification:
 
 2. We do not only say that if the solution says `true` then the input halts, we also state the opposite property for `false`. This rules out “solutions” to the halting problem that always say `false`, or underestimate the cases when the input halts. In practice, because the halting problem is undecidable, this is in fact what we have to do. We'll discuss mitigations of undecidability at the end of this page.
 
-## What if we had a solution to the Halting Problem?
+## What if we had a solution to the Halting Problem? {id=halting-problem:what-if}
 
 If we had a solution to the halting problem, then we could use it to make larger programs.
 
@@ -174,7 +176,7 @@ We can write this program in the format described above like so:
 if(duplicate(p),loop(),true())
 ```
 
-### Solution says “loops”, then spoiler halts
+### Solution says “loops”, then spoiler halts {id=halting-problem:halt-meaning:spoiler1}
 
 Conversely, we can prove from the axioms that, if the solution `p` says “false” then the spoiler program does halt:
 
@@ -201,7 +203,7 @@ The proof goes like this:
  (solution (Rule(Introduce p)((Rule(Introduce x)((Rule(Introduce solution-p)((Rule(Introduce p-says-false)((Rule(Exists(Fun true()))((Rule(Use exec-if1false)((Rule(Instantiate(Fun duplicate((Var p))))((Rule(Instantiate(Fun loop()))((Rule(Instantiate(Fun true()))((Rule(Instantiate(Var x))((Rule(Instantiate(Fun true()))((Rule Implies_elim((Rule(Use exec-dup1)((Rule(Instantiate(Var p))((Rule(Instantiate(Var x))((Rule(Instantiate(Fun false()))((Rule Implies_elim((Rule(Use p-says-false)((Rule Close())))(Rule Close())))))))))))(Rule Implies_elim((Rule(Use exec-true1)((Rule(Instantiate(Var x))((Rule Close())))))(Rule Close())))))))))))))))))))))))))))))
 ```
 
-### Solution says “halts”, then spoiler loops
+### Solution says “halts”, then spoiler loops {id=halting-problem:halt-meaning:spoiler2}
 
 We can prove formally from the axioms that, if the solution `p` says “true” then the spoiler program does not halt:
 
@@ -231,7 +233,7 @@ The proof goes like this:
  (solution (Rule(Introduce p)((Rule(Introduce x)((Rule(Introduce solution-p)((Rule(Introduce p-says-true)((Rule(NotIntro spoiler-halts)((Rule(Use spoiler-halts)((Rule(ExElim y spoiler-executes)((Rule(Use exec-if2)((Rule(Instantiate(Fun duplicate((Var p))))((Rule(Instantiate(Fun loop()))((Rule(Instantiate(Fun true()))((Rule(Instantiate(Var x))((Rule(Instantiate(Var y))((Rule Implies_elim((Rule(Use spoiler-executes)((Rule Close())))(Rule(Cases case-true case-false)((Rule(Use exec-loop)((Rule(Instantiate(Var x))((Rule(Instantiate(Var y))((Rule NotElim((Rule(Use case-true)((Rule Conj_elim2((Rule Close())))))))))))))(Rule(Use solution-never-says-true-and-false)((Rule(Instantiate(Var p))((Rule Implies_elim((Rule(Use solution-p)((Rule Close())))(Rule(Instantiate(Var x))((Rule(Instantiate(Var x))((Rule Implies_elim((Rule(Use p-says-true)((Rule Close())))(Rule Implies_elim((Rule(Use exec-dup2)((Rule(Instantiate(Var p))((Rule(Instantiate(Var x))((Rule(Instantiate(Fun false()))((Rule Implies_elim((Rule(Use case-false)((Rule Conj_elim1((Rule Close())))))(Rule Close())))))))))))(Rule Close())))))))))))))))))))))))))))))))))))))))))))))))
 ```
 
-## Undecidability of the Halting Problem
+## Undecidability of the Halting Problem {id=halting-problem:halt-undecidable}
 
 Given these two facts we have proved about the spoiler program, we can now prove that there can be *no* solution to the halting problem. The proof goes like this:
 
@@ -282,7 +284,7 @@ We can carry this proof out formally from our axioms of computation and the two 
  (solution (Rule(NotIntro solution-exists)((Rule(Use solution-exists)((Rule(ExElim p solution-p)((Rule(Use solution-says-true-or-false)((Rule(Instantiate(Var p))((Rule Implies_elim((Rule(Use solution-p)((Rule Close())))(Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule(Cases p-says-true p-says-false)((Rule(Use spoiler1)((Rule(Instantiate(Var p))((Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule Implies_elim((Rule(Use solution-p)((Rule Close())))(Rule Implies_elim((Rule(Use p-says-true)((Rule Close())))(Rule NotElim((Rule(Use solution-true-means-halts)((Rule(Instantiate(Var p))((Rule Implies_elim((Rule(Use solution-p)((Rule Close())))(Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule Implies_elim((Rule(Use p-says-true)((Rule Close())))(Rule Close())))))))))))))))))))))))))(Rule(Use solution-false-means-doesnt-halt)((Rule(Instantiate(Var p))((Rule Implies_elim((Rule(Use solution-p)((Rule Close())))(Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule Implies_elim((Rule(Use p-says-false)((Rule Close())))(Rule NotElim((Rule(Use spoiler2)((Rule(Instantiate(Var p))((Rule(Instantiate(Fun if((Fun duplicate((Var p)))(Fun loop())(Fun true()))))((Rule Implies_elim((Rule(Use solution-p)((Rule Close())))(Rule Implies_elim((Rule(Use p-says-false)((Rule Close())))(Rule Close())))))))))))))))))))))))))))))))))))))))))))))
 ```
 
-## What does this proof show?
+## What does this proof show? {id=halting-problem:consequences}
 
 The undecidability of the halting problem is in some sense disappointing, because it shows that we cannot build a program that will do perfect checking of other programs for us. On the other hand, it also shows that Computer Science can never be “solved” in some sense. There will always be more programs to think about.
 
@@ -295,4 +297,6 @@ It is worth looking at the various assumptions underlying this proof, to see exa
    * Another solution is to prohibit unrestricted looping altogether, or at least to control it in some way. If we restrict our programs to always only loop over the input, or over data structures generated from the input, then we can guarantee termination. Unfortunately, this also means that we miss some functions (because otherwise we would have a solution to the halting problem!).
 2. We assumed that a solution is **sound and complete**. Soundness means that if it says `true` then the program halts. Completeness means that if it says `false`, then the program does not halt. If we drop one of these, then we can make useful approximate solutions. For example, a solution that says `true` in most *useful* cases is an area of intensive research. This is similar to the idea above of restricting programs to a certain form, but approaching it from the other direction.
 
+```comment
 On the [next page](metatheory-automation.md), we'll look at a similar negative result that it purely about logic: Gödel's Incompleteness Theorem.
+```

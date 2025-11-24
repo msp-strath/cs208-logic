@@ -1,16 +1,14 @@
 # Converting to CNF
 
-As we have seen, [SAT Solvers](sat-solvers.html) take their input in *Conjunctive Normal Form* (CNF).
+As we have seen, [SAT Solvers](sat.md) take their input in *Conjunctive Normal Form* (CNF).
 
-Some problems, like the [Package Installation Problem](packages.html), are naturally expressed in CNF, but others are not. Therefore, it is vital to be able to convert any Propositional Logic formula into one in CNF.
+Some problems are naturally expressed in CNF, but others are not. Therefore, it is vital to be able to convert any Propositional Logic formula into one in CNF.
 
 We look at two techniques.
 
 The first is "multiplying out", which uses equivalences between formulas to rewrite any formula to an equivalent one in CNF. This technique is simple, but can often generate formulas that are exponentially larger than the original.
 
 The second technique is known as the "Tseytin" transformation. This works by translating a formula into a collection of equations that are then translated into clauses. The Tseytin transformation does not suffer the exponential blowup problem of the naive technique.
-
-[The Slides used in the two videos below](week03-slides.pdf).
 
 ## Multiplying Out
 

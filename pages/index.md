@@ -101,9 +101,13 @@ The pages linked to below contain the lecture notes, covering the material intro
 
    [SAT Solvers](sat.md) are a class of tool that can solve very large problems in Propositional Logic, and are used as a foundation for building tools that can solve problems in Predicate Logic. They use heuristic search techniques to try to avoid exponential runtime behaviour.
 
+   [Conversion to CNF](converting-to-cnf.md) is required to convert Propositional Logic formulas into the format suitable for a SAT solver. There are two approaches, one is slow but relies on simple rewrites, the other is fast.
+
    [Lecture slides for this topic](topic09-slides.pdf).
 
--  Topic 10 will be **Undecidability**.
+-  Topic 10 is **Undecidability**.
+
+   [The Undecidability of the Halting Problem](halting-problem.md) is one of the foundational results in Computer Science. It shows that there cannot exist a computer program that reliably determines whether or not programs halt. The proof relies crucially on the fact that programs are described by source code, and that programs can take other programs source code, incuding their own, as input. More generally, the result shows that there are limits to what computer programs can do, if we insist on infallibility.
 
 ## Further Reading {id=index:further-reading}
 
