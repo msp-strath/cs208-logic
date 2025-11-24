@@ -8,7 +8,7 @@ In our [introduction to Hoare Logic](hoare-logic.md), we only looked at simple p
 
 ## Loops, and Loop Invariants {id=hoare-loops:loops}
 
-The simple programming language we are using only has one way of doing loops: `while(C) { <program> }`. More exotic loops, such as `do { ... } while(C)` or `for(...) { ... }` can be expressed using `while` and some auxillary variables.
+The simple programming language we are using only has one way of doing loops: `while(C) { <program> }`. More exotic loops, such as `do { ... } while(C)` or `for(...) { ... }` can be expressed using `while` and some auxiliary variables.
 
 The meaning of `while(C) { <program> }` is deceptively simple looking: “keep doing `<program>` as long as `C` is true”. This appearance of simplicity is a trap.
 
