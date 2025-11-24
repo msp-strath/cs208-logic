@@ -52,7 +52,8 @@ In the continuation after the loop, the additional assumption is that `1 = 1` (t
 (hoare
  (program_vars X)
  (precond "T")
- (postcond "X = 0"))
+ (postcond "X = 0")
+ (solution (Rule(Program_rule(Assign X(Fun 0())))((Rule(Program_rule(While(Rel(Fun 1())Ne(Fun 1()))))((Rule(Program_rule(Assign X(Fun 1())))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))))(Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))
 ```
 
 ## Adding Up Numbers {id=hoare-loops:sumTo}
@@ -113,7 +114,8 @@ If you now enter this program into the proof tool below, you will be able to com
   (sum-0 "sumTo(0) = 0")
   (sum-plus-1 "all x. sumTo(add(x,1)) = add(sumTo(x), x)"))
  (precond "T")
- (postcond "TOTAL = sumTo(X)"))
+ (postcond "TOTAL = sumTo(X)")
+ (solution (Rule(Program_rule(Assign TOTAL(Fun 0())))((Rule(Program_rule(Assign I(Fun 0())))((Rule(Program_rule(Assert(Atom =((Var TOTAL)(Fun sumTo((Var I)))))))((Rule(Proof_rule Auto)())(Rule(Program_rule(While(Rel(Var I)Ne(Var X))))((Rule(Program_rule(Assign TOTAL(Fun add((Var TOTAL)(Var I)))))((Rule(Program_rule(Assert(Atom =((Var TOTAL)(Fun sumTo((Fun add((Var I)(Fun 1())))))))))((Rule(Proof_rule(Use sum-plus-1))((Rule(Proof_rule(Instantiate(Var I)))((Rule(Proof_rule(Store fact))((Rule(Proof_rule Auto)())))))))(Rule(Program_rule(Assign I(Fun add((Var I)(Fun 1())))))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))(Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))))))
 ```
 
 ## The Rule for Loops {id=hoare-loops:rule}
@@ -192,7 +194,8 @@ With this annotated program, the axioms about `isEven`, and two axioms establish
   (not-1 "not(false()) = true()")
   (not-2 "not(true()) = false()"))
  (precond "T")
- (postcond "(EVEN = true() /\ isEven(X)) \/ (EVEN = false() /\ ¬isEven(X))"))
+ (postcond "(EVEN = true() /\ isEven(X)) \/ (EVEN = false() /\ ¬isEven(X))")
+ (solution (Rule(Program_rule(Assign EVEN(Fun true())))((Rule(Program_rule(Assign I(Fun 0())))((Rule(Program_rule(Assert(Or(And(Atom =((Var EVEN)(Fun true())))(Atom isEven((Var I))))(And(Atom =((Var EVEN)(Fun false())))(Not(Atom isEven((Var I))))))))((Rule(Proof_rule Auto)())(Rule(Program_rule(While(Rel(Var I)Ne(Var X))))((Rule(Program_rule(Assign EVEN(Fun not((Var EVEN)))))((Rule(Program_rule(Assert(Or(And(Atom =((Var EVEN)(Fun true())))(Atom isEven((Fun add((Var I)(Fun 1()))))))(And(Atom =((Var EVEN)(Fun false())))(Not(Atom isEven((Fun add((Var I)(Fun 1()))))))))))((Rule(Proof_rule(Use even-odd))((Rule(Proof_rule(Instantiate(Var I)))((Rule(Proof_rule(Store fact1))((Rule(Proof_rule(Use odd-even))((Rule(Proof_rule(Instantiate(Var I)))((Rule(Proof_rule(Store fact2))((Rule(Proof_rule Auto)())))))))))))))(Rule(Program_rule(Assign I(Fun add((Var I)(Fun 1())))))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))(Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))))))
 ```
 
 ## A Strategy for Finding Loop Invariants {id=hoare-loops:strategy}
@@ -247,7 +250,8 @@ Entering this program into the tool is straightforward. All of the proofs can be
 (hoare
  (program_vars RESULT I LEN)
  (precond "T")
- (postcond "RESULT = -1 \/ lookup(RESULT) = 0"))
+ (postcond "RESULT = -1 \/ lookup(RESULT) = 0")
+ (solution (Rule(Program_rule(Assign RESULT(Fun -1())))((Rule(Program_rule(Assign I(Fun 0())))((Rule(Program_rule(Assert(Or(Atom =((Var RESULT)(Fun -1())))(Atom =((Fun lookup((Var RESULT)))(Fun 0()))))))((Rule(Proof_rule Auto)())(Rule(Program_rule(While(Rel(Var I)Ne(Var LEN))))((Rule(Program_rule(If(Rel(Fun lookup((Var I)))Eq(Fun 0()))))((Rule(Program_rule(Assign RESULT(Var I)))((Rule(Program_rule(Assert(Atom =((Fun lookup((Var RESULT)))(Fun 0())))))((Rule(Proof_rule Auto)())(Rule(Program_rule End)())))))(Rule(Program_rule(Assert(Or(Atom =((Var RESULT)(Fun -1())))(Atom =((Fun lookup((Var RESULT)))(Fun 0()))))))((Rule(Proof_rule Auto)())(Rule(Program_rule End)())))(Rule(Program_rule(Assign I(Fun add((Var I)(Fun 1())))))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))(Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))))))
 ```
 
 ### Version 2 {id=hoare-loops:search:v2}
@@ -294,7 +298,8 @@ The proof can now be completed on the annotated program, but `auto` will need he
   (between-start "all i. between(i,0,add(i,1))")
   (between-step "all i. all x. between(x, 0, i) -> between(x,0,add(i,1))"))
  (precond "T")
- (postcond "RESULT = -1 \/ (between(RESULT,0,LEN) /\ lookup(RESULT) = 0)"))
+ (postcond "RESULT = -1 \/ (between(RESULT,0,LEN) /\ lookup(RESULT) = 0)")
+ (solution (Rule(Program_rule(Assign RESULT(Fun -1())))((Rule(Program_rule(Assign I(Fun 0())))((Rule(Program_rule(Assert(Or(Atom =((Var RESULT)(Fun -1())))(And(Atom between((Var RESULT)(Fun 0())(Var I)))(Atom =((Fun lookup((Var RESULT)))(Fun 0())))))))((Rule(Proof_rule Auto)())(Rule(Program_rule(While(Rel(Var I)Ne(Var LEN))))((Rule(Program_rule(If(Rel(Fun lookup((Var I)))Eq(Fun 0()))))((Rule(Program_rule(Assign RESULT(Var I)))((Rule(Program_rule(Assert(And(Atom between((Var RESULT)(Fun 0())(Fun add((Var I)(Fun 1())))))(Atom =((Fun lookup((Var RESULT)))(Fun 0()))))))((Rule(Proof_rule(Use between-start))((Rule(Proof_rule(Instantiate(Var I)))((Rule(Proof_rule(Store fact))((Rule(Proof_rule Auto)())))))))(Rule(Program_rule End)())))))(Rule(Program_rule(Assert(Or(Atom =((Var RESULT)(Fun -1())))(And(Atom between((Var RESULT)(Fun 0())(Fun add((Var I)(Fun 1())))))(Atom =((Fun lookup((Var RESULT)))(Fun 0())))))))((Rule(Proof_rule(Use between-step))((Rule(Proof_rule(Instantiate(Var I)))((Rule(Proof_rule(Instantiate(Var RESULT)))((Rule(Proof_rule(Store fact))((Rule(Proof_rule Auto)())))))))))(Rule(Program_rule End)())))(Rule(Program_rule(Assign I(Fun add((Var I)(Fun 1())))))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))(Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))))))
 ```
 
 ### Version 3 {id=hoare-loops:search:v3}
@@ -374,7 +379,8 @@ And this annotated program can be verified using the proven properties of `notFo
   (between-start "all i. between(i,0,add(i,1))")
   (between-step "all i. all x. between(x, 0, i) -> between(x,0,add(i,1))"))
  (precond "T")
- (postcond "(RESULT = -1 /\ notFound(0,LEN)) \/ (between(RESULT,0,LEN) /\ lookup(RESULT) = 0)"))
+ (postcond "(RESULT = -1 /\ notFound(0,LEN)) \/ (between(RESULT,0,LEN) /\ lookup(RESULT) = 0)")
+ (solution (Rule(Program_rule(Assign RESULT(Fun -1())))((Rule(Program_rule(Assign I(Fun 0())))((Rule(Program_rule(Assert(Or(And(Atom =((Var RESULT)(Fun -1())))(Atom notFound((Fun 0())(Var I))))(And(Atom between((Var RESULT)(Fun 0())(Var I)))(Atom =((Fun lookup((Var RESULT)))(Fun 0())))))))((Rule(Proof_rule Auto)())(Rule(Program_rule(While(Rel(Var I)Ne(Var LEN))))((Rule(Program_rule(If(Rel(Fun lookup((Var I)))Eq(Fun 0()))))((Rule(Program_rule(Assign RESULT(Var I)))((Rule(Program_rule(Assert(And(Atom between((Var RESULT)(Fun 0())(Fun add((Var I)(Fun 1())))))(Atom =((Fun lookup((Var RESULT)))(Fun 0()))))))((Rule(Proof_rule(Use between-start))((Rule(Proof_rule(Instantiate(Var I)))((Rule(Proof_rule(Store between-fact))((Rule(Proof_rule Auto)())))))))(Rule(Program_rule End)())))))(Rule(Program_rule(Assert(Or(And(Atom =((Var RESULT)(Fun -1())))(Atom notFound((Fun 0())(Fun add((Var I)(Fun 1()))))))(And(Atom between((Var RESULT)(Fun 0())(Fun add((Var I)(Fun 1())))))(Atom =((Fun lookup((Var RESULT)))(Fun 0())))))))((Rule(Proof_rule(Use notFound-step))((Rule(Proof_rule(Instantiate(Var I)))((Rule(Proof_rule(Store fact1))((Rule(Proof_rule(Use between-step))((Rule(Proof_rule(Instantiate(Var I)))((Rule(Proof_rule(Instantiate(Var RESULT)))((Rule(Proof_rule(Store fact2))((Rule(Proof_rule Auto)())))))))))))))))(Rule(Program_rule End)())))(Rule(Program_rule(Assign I(Fun add((Var I)(Fun 1())))))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))(Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))))))
 ```
 
 ## Non-terminating Programs Meet Any Specification {id=hoare-loops:false}
@@ -393,7 +399,8 @@ Because `1 = 1` is alway true, this program never finishes. We can use this fact
 ```hoare {id=hoare-loops-false}
 (hoare
  (precond "T")
- (postcond "F"))
+ (postcond "F")
+ (solution (Rule(Program_rule(While(Rel(Fun 1())Eq(Fun 1()))))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))(Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))
 ```
 
 You can complete the construction by entering `while (1 = 1)` and then `end` and `auto` for the loop body and the continuation.

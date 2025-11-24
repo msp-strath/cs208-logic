@@ -48,7 +48,8 @@ Sometimes, we are in the enviable position that our programs have nothing to do,
 (hoare
  (program_vars X)
  (precond "X = 10")
- (postcond "X = 10"))
+ (postcond "X = 10")
+ (solution (Rule(Program_rule End)())))
 ```
 
 The program is verified against the specification because the precondition is exactly the same as the postcondition.
@@ -59,7 +60,8 @@ It might also be the case that there is nothing for a program to do, but showing
 (hoare
  (program_vars X Y)
  (precond "X = 10 /\ Y = 20")
- (postcond "X = 10"))
+ (postcond "X = 10")
+ (solution (Rule(Program_rule End)((Rule(Proof_rule(Use H))((Rule(Proof_rule Conj_elim1)((Rule(Proof_rule Close)())))))))))
 ```
 
 Notice that when we get dropped into proof mode, the precondition is given the name `H` and we are tasked to prove the postcondition. In this case, we can prove it with `use H`; `first`; `done`.
@@ -75,7 +77,8 @@ Program specifications can also have universal quantifiers and assumptions aroun
  (assumptions
   (x-is-10 "x = 10"))
  (precond "X = x")
- (postcond "X = 10"))
+ (postcond "X = 10")
+ (solution (Rule(Program_rule End)((Rule(Proof_rule Auto)())))))
 ```
 
 This proof can be completed using `rewrite->`, but is also simple enough for `auto` to complete.
@@ -108,7 +111,8 @@ The program is completed by entering the command `end`. This drops us into the p
 (hoare
  (program_vars X)
  (precond "T")
- (postcond "X = 10"))
+ (postcond "X = 10")
+ (solution (Rule(Program_rule(Assign X(Fun 10())))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))
 ```
 
 The next program requires that we write to two variables. In this simple language we assume that all variables are independent, so writing to one does not affect any others. Complete this program by entering `X := 10` and `Y := 20` as commands (in any order). Notice that the formula describing the state of the system expands as the assignments are performed. Once the program is finished by typing `end`, you are asked to prove that the effect of performing these two assignments is to make `X = 10 /\ Y = 20` true. Again, the `auto` command can do this for you.
@@ -117,7 +121,8 @@ The next program requires that we write to two variables. In this simple languag
 (hoare
  (program_vars X Y)
  (precond "T")
- (postcond "X = 10 /\ Y = 20"))
+ (postcond "X = 10 /\ Y = 20")
+ (solution (Rule(Program_rule(Assign X(Fun 10())))((Rule(Program_rule(Assign Y(Fun 20())))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))
 ```
 
 Just for your peace of mind, try entering an *incorrect* program and seeing if the computer will accept your proof.
@@ -143,7 +148,8 @@ which we can read as “there exists an old value of `X`, such that `X` is equal
  (program_vars X)
  (logic_vars x)
  (precond "X = x")
- (postcond "X = add(x,1)"))
+ (postcond "X = add(x,1)")
+ (solution (Rule(Program_rule(Assign X(Fun add((Var X)(Fun 1())))))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))
 ```
 
 Again, the program is completed by typing `end`, and the proof can be completed by typing `auto`.
@@ -157,7 +163,8 @@ The previous program updated the value of `X`, but forgot the old value. Write a
  (program_vars X Y)
  (logic_vars x)
  (precond "X = x")
- (postcond "Y = x /\ X = add(x,1)"))
+ (postcond "Y = x /\ X = add(x,1)")
+ (solution (Rule(Program_rule(Assign Y(Var X)))((Rule(Program_rule(Assign X(Fun add((Var X)(Fun 1())))))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))
 ```
 
 Again, `auto` will be able to complete the proof at the end.
@@ -185,7 +192,8 @@ The specification of this program is that the variables `X` and `Y` start with s
  (program_vars X Y Z)
  (logic_vars x y)
  (precond "X = x /\ Y = y")
- (postcond "X = y /\ Y = x"))
+ (postcond "X = y /\ Y = x")
+ (solution (Rule(Program_rule(Assign Z(Var X)))((Rule(Program_rule(Assign X(Var Y)))((Rule(Program_rule(Assign Y(Var Z)))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))))
 ```
 
 When writing this program, you will notice that the formule involved gets quite long. We will see how to address this in the next topic.
@@ -231,7 +239,8 @@ Try this:
 (hoare
  (program_vars RESULT INPUT)
  (precond "T")
- (postcond "INPUT = 5 -> RESULT = 1"))
+ (postcond "INPUT = 5 -> RESULT = 1")
+ (solution (Rule(Program_rule(If(Rel(Var INPUT)Ne(Fun 5()))))((Rule(Program_rule End)())(Rule(Program_rule(Assign RESULT(Fun 1())))((Rule(Program_rule End)())))(Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))
 ```
 
 ### Specifying conditional setting of a variable {id=hoare-logic:if:specify}
@@ -243,7 +252,8 @@ To avoid the possibly unintended solution where the program does not actually ch
  (program_vars RESULT INPUT)
  (precond "T")
  (postcond "(INPUT = 5 -> RESULT = 1)
-            /\ (¬INPUT = 5 -> RESULT = 2)"))
+            /\ (¬INPUT = 5 -> RESULT = 2)")
+ (solution (Rule(Program_rule(If(Rel(Var INPUT)Eq(Fun 5()))))((Rule(Program_rule(Assign RESULT(Fun 1())))((Rule(Program_rule End)())))(Rule(Program_rule(Assign RESULT(Fun 2())))((Rule(Program_rule End)())))(Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))
 ```
 
 You can also try writing this program the other way round by using `INPUT != 5` as the condition.
@@ -257,7 +267,8 @@ A more complex program is one that sets the `RESULT` variable according to the v
  (precond "INPUT = input")
  (postcond "(input = 5 -> RESULT = 1)
             /\ (¬input = 5 -> RESULT = 2)
-			/\ INPUT = 0"))
+			/\ INPUT = 0")
+ (solution (Rule(Program_rule(If(Rel(Var INPUT)Eq(Fun 5()))))((Rule(Program_rule(Assign RESULT(Fun 1())))((Rule(Program_rule End)())))(Rule(Program_rule(Assign RESULT(Fun 2())))((Rule(Program_rule End)())))(Rule(Program_rule(Assign INPUT(Fun 0())))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))
 ```
 
 Again, `auto` will be able to complete the proof.
@@ -283,7 +294,8 @@ Write a program that sets `RESULT` to `1` if `INPUT` is `2`, but leaves it alone
  (program_vars RESULT INPUT)
  (logic_vars originalResult)
  (precond "RESULT = originalResult")
- (postcond "(INPUT = 2 -> RESULT = 1) /\ (¬INPUT = 2 -> RESULT = originalResult)"))
+ (postcond "(INPUT = 2 -> RESULT = 1) /\ (¬INPUT = 2 -> RESULT = originalResult)")
+ (solution (Rule(Program_rule(If(Rel(Var INPUT)Eq(Fun 2()))))((Rule(Program_rule(Assign RESULT(Fun 1())))((Rule(Program_rule End)())))(Rule(Program_rule End)())(Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))
 ```
 
 ### Exercise 2 {id=hoare-logic:if:ex2}
@@ -294,7 +306,8 @@ The little language we are using here does not allow full logical expressions in
 (hoare
  (program_vars RESULT INPUT1 INPUT2)
  (precond "T")
- (postcond "((INPUT1 = 5 /\ INPUT2 = 10) -> RESULT = 1) /\ (¬(INPUT1 = 5 /\ INPUT2 = 10) -> RESULT = 2)"))
+ (postcond "((INPUT1 = 5 /\ INPUT2 = 10) -> RESULT = 1) /\ (¬(INPUT1 = 5 /\ INPUT2 = 10) -> RESULT = 2)")
+ (solution (Rule(Program_rule(If(Rel(Var INPUT1)Eq(Fun 5()))))((Rule(Program_rule(If(Rel(Var INPUT2)Eq(Fun 10()))))((Rule(Program_rule(Assign RESULT(Fun 1())))((Rule(Program_rule End)())))(Rule(Program_rule(Assign RESULT(Fun 2())))((Rule(Program_rule End)())))(Rule(Program_rule End)())))(Rule(Program_rule(Assign RESULT(Fun 2())))((Rule(Program_rule End)())))(Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))
 ```
 
 Likewise, it is possible to simulate a logical OR by using if-then-else in sequence:
@@ -303,11 +316,12 @@ Likewise, it is possible to simulate a logical OR by using if-then-else in seque
 (hoare
  (program_vars RESULT INPUT1 INPUT2)
  (precond "T")
- (postcond "((INPUT1 = 5 \/ INPUT2 = 10) -> RESULT = 1) /\ (¬(INPUT1 = 5 \/ INPUT2 = 10) -> RESULT = 2)"))
+ (postcond "((INPUT1 = 5 \/ INPUT2 = 10) -> RESULT = 1) /\ (¬(INPUT1 = 5 \/ INPUT2 = 10) -> RESULT = 2)")
+ (solution (Rule(Program_rule(Assign RESULT(Fun 2())))((Rule(Program_rule(If(Rel(Var INPUT1)Eq(Fun 5()))))((Rule(Program_rule(Assign RESULT(Fun 1())))((Rule(Program_rule End)())))(Rule(Program_rule End)())(Rule(Program_rule(If(Rel(Var INPUT2)Eq(Fun 10()))))((Rule(Program_rule(Assign RESULT(Fun 1())))((Rule(Program_rule End)())))(Rule(Program_rule End)())(Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))))
 ```
 
-Note that there are several different ways of writing these programs. Try a few and look at the formulas generated.
+There are several different ways of writing these programs. Try a few and look at the formulas generated. The solutions given are only one way of writing them. The proofs should always be finishable using `auto` without having to do any proofs by hand. Using proof automation here is almost essential to deal with the complexity of the formulas.
 
 ## Next {id=hoare-logic:next}
 
-We have now looked at the Hoare Logic rules for dothing nothing, assigning variables, and making decisions. In order to do complete programs, the final thing we need is the ability to repeatedly do something until the state of the computer changes. We will look at this in the next topic.
+We have now looked at the Hoare Logic rules for dothing nothing, assigning variables, and making decisions. In order to do complete programs, the final thing we need is the ability to repeatedly do something until the state of the computer changes. We will look at this in the [next topic](hoare-loops.md).

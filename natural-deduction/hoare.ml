@@ -140,50 +140,6 @@ end
 module UI (* : Proof_tree_UI2.UI_SPEC with module Calculus = Calculus *) = struct
 
   open Hoare_calculus
-
-  (*
-  open Fol_formula
-
-  module Calculus = Hoare_calculus
-
-  let rec string_of_formula_or_meta = function
-    | Calculus.Formula f -> Formula.to_string f
-    | Calculus.Meta v    -> "?" ^ v
-    | Calculus.Or (p, q) ->
-       "(" ^ string_of_formula_or_meta p ^ ") ∨ (" ^ string_of_formula_or_meta q ^ ")"
-
-  let string_of_goal = function
-    | Calculus.Program { precond; postcond } ->
-        Printf.sprintf "{%s} - {%s}"
-          (string_of_formula_or_meta precond)
-          (string_of_formula_or_meta postcond)
-    | Calculus.Entailment goal ->
-       Focused_ui2.string_of_goal goal
-
-  let string_of_assumption nm = function
-    | Calculus.Program_variable -> nm
-    | Calculus.Logic_variable -> nm
-    | Calculus.Assumed_formula f -> nm ^ " : " ^ Formula.to_string f
-
-  let label_of_program_rule = function
-    | Calculus.End -> "end"
-    | Calculus.Assign (v, expr) ->
-       Printf.sprintf "%s := %s" v (Term.to_string expr)
-    | Calculus.Assert f ->
-       Printf.sprintf "assert %s" (Formula.to_string f)
-    | Calculus.If cond ->
-       Printf.sprintf "if(%s)" (Syntax.string_of_boolean_expr cond)
-    | Calculus.While cond ->
-       Printf.sprintf "while(%s)" (Syntax.string_of_boolean_expr cond)
-
-  let label_of_rule = function
-    | Calculus.Program_rule rule ->
-       label_of_program_rule rule
-    | Calculus.Proof_rule rule ->
-       Focused_ui2.label_of_rule rule
-
-  let string_of_error e = e
-   *)
   open Result_ext.Syntax
 
   (* FIXME: replace this with a nicer parser that matches the output format. *)
@@ -199,38 +155,6 @@ module UI (* : Proof_tree_UI2.UI_SPEC with module Calculus = Calculus *) = struc
                (Hoare_parser.whole_command Hoare_lexer.token lexbuf))
        with _ ->
          Error "command not understood"
-
-    (* FIXME: allow the parser to depend on the goal? *)
-    (* match Sexplib.Sexp.of_string str with
-    | exception _ ->
-       let* rule = Focused_ui2.parse_rule str in
-       Ok (Calculus.Proof_rule rule)
-    | Sexplib.Type.Atom "end" ->
-       Ok (Calculus.Program_rule End)
-    | Sexplib.Type.List [ Atom "if"; e ] ->
-       (match Syntax.boolean_expr_of_sexp_human e with
-       | None   -> Error "invalid boolean expression"
-       | Some e -> Ok (Program_rule (If e)))
-    | Sexplib.Type.List [ Atom "while"; e ] ->
-       (match Syntax.boolean_expr_of_sexp_human e with
-       | None   -> Error "invalid boolean expression"
-       | Some e -> Ok (Program_rule (While e)))
-    | Sexplib.Type.List [ Atom "assert"; Atom fmla ] ->
-       (match Formula.of_string fmla with
-       | Ok fmla -> Ok (Program_rule (Assert fmla))
-       | Error _ -> Error "invalid formula")
-    | Sexplib.Type.List [ Atom ":="; Atom v; e ] ->
-       (match Syntax.Program_var.of_string v, Syntax.expr_of_sexp_human e with
-       | None, _ | _, None ->
-          Error "invalid assignment"
-       | Some var, Some e ->
-          Ok (Program_rule (Assign (var, e))))
-    | Sexplib.Type.Atom _atm ->
-       let* rule = Focused_ui2.parse_rule str in
-       Ok (Calculus.Proof_rule rule)
-    | _ -> *)
-             (*        Error ("command not understood: " ^ str) *)
-
 end
 
 (* This is a generic UI for any 'vertical' proof format *)
@@ -253,6 +177,7 @@ module MakeUI
          (Param : sig
             val assumptions : (string * M.Calculus.assumption) list
             val goal        : M.Calculus.goal
+            val solution    : Sexp_parser.sexp option
           end) :
 sig
   type state
@@ -283,22 +208,36 @@ end = struct
 
   module PT = Proof_tree.Make (Calculus) (Hole)
 
-  type state = PT.t
+  type state =
+    { editor : PT.t
+    ; show_solution : bool
+    }
 
-  let sexp_of_state state = PT.sexp_of_tree (PT.to_tree state)
+  let sexp_of_state state = PT.sexp_of_tree (PT.to_tree state.editor)
 
-  let state_of_sexp sexp =
+  let tree_of_sexp sexp =
     match PT.of_tree assumptions goal (PT.tree_of_sexp sexp) with
     | Ok state -> Some state
     | Error _ | exception _ -> None
 
+  let solution =
+    Option.bind solution tree_of_sexp
+
+  let state_of_sexp sexp =
+    match tree_of_sexp sexp with
+    | None -> None
+    | Some editor -> Some { editor; show_solution = false }
+
   let initial =
-    PT.init ~assumptions goal
+    { editor = PT.init ~assumptions goal
+    ; show_solution = false
+    }
 
   type action =
     | UpdateHole of PT.point * Hole.t
     | SendHole of PT.point * string
     | ResetTo of PT.point
+    | ToggleShowsolution
 
   module H = Focused_proof_renderer.HTML_Bits (Ulmus.Html)
   open Renderer (Ulmus.Html)
@@ -320,7 +259,23 @@ end = struct
 
   let (@|) e es = e (Ulmus.Html.concat_list es)
 
-  let render t =
+  let render_solution t =
+    let assumptions = PT.root_assumptions t in
+    let goal = PT.root_goal t in
+    H.vertical @| [
+        prologue assumptions goal;
+        PT.fold
+          (fun _ _ _ -> Ulmus.Html.empty)
+          (fun _pt rule children _ ->
+            let children = List.map (fun c -> c `Inner) children in
+            render_rule ~resetbutton:Ulmus.Html.empty ~rule ~children)
+          render_box
+          t
+          `Top;
+        epilogue goal
+      ]
+
+  let render_editable t =
     let assumptions = PT.root_assumptions t in
     let goal = PT.root_goal t in
     let open Ulmus.Html in
@@ -352,22 +307,50 @@ end = struct
         epilogue goal
       ]
 
-  let update action _prooftree =
+  let render { editor; show_solution } =
+    let open Ulmus.Html in
+    let (@|) e es = e (concat_list es) in
+    div ~attrs:[ A.class_ "vertical" ] @| [
+        (match show_solution, solution with
+        | true, Some solution ->
+           render_solution solution
+        | _, _ ->
+           render_editable editor);
+        div
+          ~attrs:[ A.class_ "horizontal" ] @| [
+                (* button ~attrs:[ E.onclick ToggleShowtree ] *)
+                (*   (text (if showtree then "Hide proof tree" else "Show proof tree")); *)
+            (match solution with
+            | None -> empty
+            | Some _ ->
+               concat_list [
+                   text " ";
+                   button ~attrs:[ E.onclick ToggleShowsolution ]
+                     (text (if show_solution then "Hide solution" else "Show solution"))
+            ])
+          ]
+      ]
+
+
+  let update action state =
     match action with
     | UpdateHole (pt, hole_data) ->
-       PT.set_hole hole_data pt
+       { state with editor = PT.set_hole hole_data pt }
     | SendHole (pt, command) ->
        (match parse_rule (PT.goal pt) command with
        | Ok rule ->
           (match PT.apply rule pt with
-          | Ok prooftree -> prooftree
-          | Error (`RuleError msg) -> PT.set_hole { command; message = Some msg } pt)
+          | Ok prooftree -> { state with editor = prooftree }
+          | Error (`RuleError msg) ->
+             { state with editor = PT.set_hole { command; message = Some msg } pt })
        | Error msg ->
-          PT.set_hole { command; message = Some msg } pt)
+          { state with editor = PT.set_hole { command; message = Some msg } pt })
     | ResetTo pt ->
        (* let tree = PT.subtree_of_point pt in
           let command = string_of_tree tree in *)
-       PT.set_hole { command = ""; message = None } pt
+       { state with editor = PT.set_hole { command = ""; message = None } pt }
+    | ToggleShowsolution ->
+       { state with show_solution = not state.show_solution }
 
 end
 
@@ -381,6 +364,7 @@ module Config_parser = struct
     ; assumptions  : (string * formula) list
     ; precond      : formula
     ; postcond     : formula
+    ; solution     : sexp option
     }
 
   let formula =
@@ -413,14 +397,16 @@ module Config_parser = struct
        and+ logic_vars   = consume_opt "logic_vars" (many logic_var_p)
        and+ assumptions  = consume_opt "assumptions" (many assumption)
        and+ precond      = consume_one "precond" (one formula)
-       and+ postcond     = consume_one "postcond" (one formula) in
+       and+ postcond     = consume_one "postcond" (one formula)
+       and+ solution     = consume_opt "solution" (one sexp) in
        let program_vars = Option.value ~default:[] program_vars in
        let logic_vars   = Option.value ~default:[] logic_vars in
        let assumptions  = Option.value ~default:[] assumptions in
        (* FIXME: check that requires and ensures are well-scoped in
           the program and logic vars, and that all of the assumptions
           are well scoped and do not contain program_vars. *)
-       { program_vars; logic_vars; assumptions; precond; postcond })
+       { program_vars; logic_vars; assumptions;
+         precond; postcond; solution })
 
 end
 
@@ -435,7 +421,7 @@ let component config =
      let detail = Generalities.Annotated.detail err in
      let message = "Configuration failure: " ^ detail in
      Widgets.Error_display.component message
-  | Ok Config_parser.{ precond; postcond; assumptions; program_vars; logic_vars } ->
+  | Ok Config_parser.{ precond; postcond; assumptions; program_vars; logic_vars; solution } ->
      let assumptions =
        List.map (fun nm -> nm, Program_variable) program_vars
        @ List.map (fun nm -> nm, Logic_variable) logic_vars
@@ -452,7 +438,11 @@ let component config =
            module Renderer = Make_renderer
            let parse_rule = UI.parse_rule
          end
-         include MakeUI (M) (struct let assumptions = assumptions let goal = goal end)
+         include MakeUI (M)
+                   (struct let assumptions = assumptions
+                           let goal = goal
+                           let solution = solution
+                    end)
 
          let serialise t =
            Sexplib.Sexp.to_string (sexp_of_state t)

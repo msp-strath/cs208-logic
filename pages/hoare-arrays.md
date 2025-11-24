@@ -88,7 +88,8 @@ As you enter the program, you will see that the formula describing the state evo
   (get-get "all a. all i. all j. all x. ¬i = j -> get(set(a,i,x),j) = get(a,j)"))
   (program_vars A I J)
   (precond "¬I = J")
-  (postcond "get(A,I) = 1 /\ get(A,J) = 2"))
+  (postcond "get(A,I) = 1 /\ get(A,J) = 2")
+  (solution (Rule(Program_rule(Assign A(Fun set((Var A)(Var I)(Fun 1())))))((Rule(Program_rule(Assign A(Fun set((Var A)(Var J)(Fun 2())))))((Rule(Program_rule End)((Rule(Proof_rule(Use H))((Rule(Proof_rule(ExElim oldA H))((Rule(Proof_rule(Use H))((Rule(Proof_rule Conj_elim2)((Rule(Proof_rule(ExElim olderA H2))((Rule(Proof_rule Split)((Rule(Proof_rule(Use get-get))((Rule(Proof_rule(Instantiate(Var oldA)))((Rule(Proof_rule(Instantiate(Var J)))((Rule(Proof_rule(Instantiate(Var I)))((Rule(Proof_rule(Instantiate(Fun 2())))((Rule(Proof_rule(Store fact1))((Rule(Proof_rule(Use get-set))((Rule(Proof_rule(Instantiate(Var olderA)))((Rule(Proof_rule(Instantiate(Var I)))((Rule(Proof_rule(Instantiate(Fun 1())))((Rule(Proof_rule(Store fact2))((Rule(Proof_rule Auto)())))))))))))))))))))))))(Rule(Proof_rule(Use get-set))((Rule(Proof_rule(Instantiate(Var oldA)))((Rule(Proof_rule(Instantiate(Var J)))((Rule(Proof_rule(Instantiate(Fun 2())))((Rule(Proof_rule(Store fact))((Rule(Proof_rule Auto)())))))))))))))))))))))))))))))))
 ```
 
 ## Filling an Array {id=hoare-arrays:filling}
@@ -177,7 +178,8 @@ Using these two properties of `equalTo` it is possible to prove that the program
 
  (program_vars A I LEN VALUE)
  (precond "T")
- (postcond "equalTo(A,0,LEN,VALUE)"))
+ (postcond "equalTo(A,0,LEN,VALUE)")
+ (solution (Rule(Program_rule(Assign I(Fun 0())))((Rule(Program_rule(Assert(Atom equalTo((Var A)(Fun 0())(Var I)(Var VALUE)))))((Rule(Proof_rule(Use equalTo-start))((Rule(Proof_rule(Instantiate(Var A)))((Rule(Proof_rule(Instantiate(Var I)))((Rule(Proof_rule(Instantiate(Var VALUE)))((Rule(Proof_rule(Store fact))((Rule(Proof_rule Auto)())))))))))))(Rule(Program_rule(While(Rel(Var I)Ne(Var LEN))))((Rule(Program_rule(Assign A(Fun set((Var A)(Var I)(Var VALUE)))))((Rule(Program_rule(Assert(Atom equalTo((Var A)(Fun 0())(Fun add((Var I)(Fun 1())))(Var VALUE)))))((Rule(Proof_rule(Use H))((Rule(Proof_rule(ExElim oldA H))((Rule(Proof_rule(Use equalTo-step))((Rule(Proof_rule(Instantiate(Var oldA)))((Rule(Proof_rule(Instantiate(Fun 0())))((Rule(Proof_rule(Instantiate(Var I)))((Rule(Proof_rule(Instantiate(Var VALUE)))((Rule(Proof_rule(Store fact))((Rule(Proof_rule Auto)())))))))))))))))))(Rule(Program_rule(Assign I(Fun add((Var I)(Fun 1())))))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))(Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))))
 ```
 
 ## Modifying Into Another Array {id=hoare-arrays:copy-modify}
@@ -269,7 +271,8 @@ Verifying the program is now a matter of entering this annotated program, doing 
      done(a,start,end,b) ->
 	 done(set(a,end,add(get(b,end),1)),start,add(end,1),b)"))
  (precond "B = originalB")
- (postcond "done(A,0,LEN,B) /\ B = originalB"))
+ (postcond "done(A,0,LEN,B) /\ B = originalB")
+ (solution (Rule(Program_rule(Assign I(Fun 0())))((Rule(Program_rule(Assert(And(Atom done((Var A)(Fun 0())(Var I)(Var B)))(Atom =((Var B)(Var originalB))))))((Rule(Proof_rule(Use done-start))((Rule(Proof_rule(Instantiate(Var A)))((Rule(Proof_rule(Instantiate(Var I)))((Rule(Proof_rule(Instantiate(Var B)))((Rule(Proof_rule(Store fact))((Rule(Proof_rule Auto)())))))))))))(Rule(Program_rule(While(Rel(Var I)Ne(Var LEN))))((Rule(Program_rule(Assign A(Fun set((Var A)(Var I)(Fun add((Fun get((Var B)(Var I)))(Fun 1())))))))((Rule(Program_rule(Assert(And(Atom done((Var A)(Fun 0())(Fun add((Var I)(Fun 1())))(Var B)))(Atom =((Var B)(Var originalB))))))((Rule(Proof_rule(Use H))((Rule(Proof_rule(ExElim oldA H))((Rule(Proof_rule(Use done-step))((Rule(Proof_rule(Instantiate(Var oldA)))((Rule(Proof_rule(Instantiate(Fun 0())))((Rule(Proof_rule(Instantiate(Var I)))((Rule(Proof_rule(Instantiate(Var B)))((Rule(Proof_rule Auto)())))))))))))))))(Rule(Program_rule(Assign I(Fun add((Var I)(Fun 1())))))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))(Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))))
 ```
 
 ```````comment
