@@ -139,7 +139,8 @@ The reason to introduce the `equalTo` predicate is so that we can state and prov
     (assumptions
 	 (between-empty "all i. all j. ¬between(i,j,j)")
 	 (between-step "all x. all s. all i. between(x, s, add(i,1)) -> ((between(x,s,i) /\ ¬(x = i)) \/ x = i)"))
-    (goal "all a. all i. all v. all j. between(j,i,i) -> get(a,j) = v"))
+    (goal "all a. all i. all v. all j. between(j,i,i) -> get(a,j) = v")
+	(solution (Rule(Introduce a)((Rule(Introduce i)((Rule(Introduce v)((Rule(Introduce j)((Rule(Use between-empty)((Rule(Instantiate(Var j))((Rule(Instantiate(Var i))((Rule(Store fact)((Rule Auto())))))))))))))))))))
    ```
 
 2. The second property of `equalTo` is that if an array is equal to `v` up to `end`, then updating that array with `v` at `end` is equal to `v` up to `add(end,1)`:
@@ -160,7 +161,8 @@ The reason to introduce the `equalTo` predicate is so that we can state and prov
 	 (between-step "all x. all s. all i. between(x, s, add(i,1)) -> ((between(x,s,i) /\ ¬(x = i)) \/ x = i)"))
     (goal "all a. all start. all end. all v.
 	       (all i. between(i,start,end) -> get(a, i) = v) ->
-		   (all i. between(i,start,add(end,1)) -> get(set(a,end,v),i) = v)"))
+		   (all i. between(i,start,add(end,1)) -> get(set(a,end,v),i) = v)")
+    (solution (Rule(Introduce a)((Rule(Introduce start)((Rule(Introduce end)((Rule(Introduce v)((Rule(Introduce H)((Rule(Introduce i)((Rule(Introduce H2)((Rule(Use between-step)((Rule(Instantiate(Var i))((Rule(Instantiate(Var start))((Rule(Instantiate(Var end))((Rule Implies_elim((Rule Auto())(Rule(Cases H3 H3)((Rule(Use get-get)((Rule(Instantiate(Var a))((Rule(Instantiate(Var end))((Rule(Instantiate(Var i))((Rule(Instantiate(Var v))((Rule(Store fact1)((Rule(Use H)((Rule(Instantiate(Var i))((Rule(Store fact2)((Rule Auto())))))))))))))))))))(Rule(Use get-set)((Rule(Instantiate(Var a))((Rule(Instantiate(Var i))((Rule(Instantiate(Var v))((Rule(Store fact)((Rule Auto())))))))))))))))))))))))))))))))))))))))
    ```
 
 Using these two properties of `equalTo` it is possible to prove that the program above fills the array with `VALUE` between `0` and `LEN`:
@@ -211,7 +213,8 @@ As before, we will need two properties of this predicate that describe how the p
     (assumptions
 	 (between-empty "all i. all j. ¬between(i,j,j)")
 	 (between-step "all x. all s. all i. between(x, s, add(i,1)) -> ((between(x,s,i) /\ ¬(x = i)) \/ x = i)"))
-    (goal "all a. all i. all b. all j. between(j,i,i) -> get(a,j) = add(get(b,j),1)"))
+    (goal "all a. all i. all b. all j. between(j,i,i) -> get(a,j) = add(get(b,j),1)")
+	(solution (Rule(Introduce a)((Rule(Introduce i)((Rule(Introduce b)((Rule(Introduce j)((Rule(Introduce j-between-i-i)((Rule(Use between-empty)((Rule(Instantiate(Var j))((Rule(Instantiate(Var i))((Rule(Store fact)((Rule Auto())))))))))))))))))))))
    ```
 
 2. The second says that if a pair of arrays have been processed up to `end`, then updating the `end`th element makes them processed up to the `end + 1`th element:
@@ -233,7 +236,8 @@ As before, we will need two properties of this predicate that describe how the p
     (goal "all a. all start. all end. all b.
 	       (all i. between(i,start,end) -> get(a, i) = add(get(b,i),1)) ->
 		   (all i. between(i,start,add(end,1)) ->
-		   get(set(a,end,add(get(b,end),1)),i) = add(get(b,i),1))"))
+		   get(set(a,end,add(get(b,end),1)),i) = add(get(b,i),1))")
+    (solution (Rule(Introduce a)((Rule(Introduce start)((Rule(Introduce end)((Rule(Introduce b)((Rule(Introduce previous-state)((Rule(Introduce i)((Rule(Introduce i-between-start-end1)((Rule(Use between-step)((Rule(Instantiate(Var i))((Rule(Instantiate(Var start))((Rule(Instantiate(Var end))((Rule Implies_elim((Rule Auto())(Rule(Cases i-is-before-end i-is-end)((Rule(Use get-get)((Rule(Instantiate(Var a))((Rule(Instantiate(Var end))((Rule(Instantiate(Var i))((Rule(Instantiate(Fun add((Fun get((Var b)(Var end)))(Fun 1()))))((Rule(Store fact)((Rule(Use previous-state)((Rule(Instantiate(Var i))((Rule(Store fact2)((Rule Auto())))))))))))))))))))(Rule(Use get-set)((Rule(Instantiate(Var a))((Rule(Instantiate(Var end))((Rule(Instantiate(Fun add((Fun get((Var b)(Var i)))(Fun 1()))))((Rule(Store fact)((Rule Auto())))))))))))))))))))))))))))))))))))))))
    ```
 
 With these properties, it is possible to verify the program above against the postcondition

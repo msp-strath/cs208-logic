@@ -332,7 +332,8 @@ We can now prove the two `notFound` properties in the prover:
     (name "notFound-0")
 	(assumptions
 	 (between-empty "all i. ¬between(i, 0, 0)"))
-	(goal "all i. between(i,0,0) -> ¬lookup(i) = 0"))
+	(goal "all i. between(i,0,0) -> ¬lookup(i) = 0")
+	(solution (Rule(Introduce i)((Rule(Use between-empty)((Rule(Instantiate(Var i))((Rule(Store H)((Rule Auto())))))))))))
    ```
 2. ```focused-nd {id=hoare-loops-notFound-2}
    (config
@@ -341,7 +342,8 @@ We can now prove the two `notFound` properties in the prover:
 	 (between-elim
 	  "all x. all i. between(x, 0, add(i,1)) -> ((between(x,0,i) /\ !(x = i)) \/ x = i)"))
 	(goal
-	 "all i. (all x. between(x,0,i) -> ¬lookup(x) = 0) -> ¬lookup(i) = 0 -> (all x. between(x,0,add(i,1)) -> ¬lookup(x) = 0)"))
+	 "all i. (all x. between(x,0,i) -> ¬lookup(x) = 0) -> ¬lookup(i) = 0 -> (all x. between(x,0,add(i,1)) -> ¬lookup(x) = 0)")
+    (solution (Rule(Introduce i)((Rule(Introduce H)((Rule(Introduce H2)((Rule(Introduce x)((Rule(Use between-elim)((Rule(Instantiate(Var x))((Rule(Instantiate(Var i))((Rule(Store H3)((Rule(Use H)((Rule(Instantiate(Var x))((Rule(Store H4)((Rule Auto())))))))))))))))))))))))))
    ```
 
 Using the `notFound` predicate, the complete annotated program is:

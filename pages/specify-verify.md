@@ -140,7 +140,8 @@ As you might expect, total correctness implies partial correctness:
  (assumptions
   (prog var)
   (prog-total-spec "all s1. P(s1) -> ((ex s2. exec(prog, s1, s2)) /\ (all s2. exec(prog, s1, s2) -> Q(s2)))"))
- (goal "all s1. all s2. P(s1) -> exec(prog,s1,s2) -> Q(s2)"))
+ (goal "all s1. all s2. P(s1) -> exec(prog,s1,s2) -> Q(s2)")
+ (solution (Rule(Introduce s1)((Rule(Introduce s2)((Rule(Introduce precond)((Rule(Use prog-total-spec)((Rule(Instantiate(Var s1))((Rule Implies_elim((Rule(Use precond)((Rule Close())))(Rule Conj_elim2((Rule(Instantiate(Var s2))((Rule Close())))))))))))))))))))
 ```
 
 The full specification of total correctness is quite a mouthful, and it seems a bit roundabout that we have to prove that the program halts and separately that all of the answers meet the postcondition. There is a weaker specification, that says that there exists at least one final state that meets the post condition, but leaves open the possibility that it might halt in another state that does not meet it.
@@ -156,7 +157,8 @@ The following theorem states that the stronger total correctness implies the wea
  (assumptions
   (prog var)
   (prog-total-spec "all s1. P(s1) -> ((ex s2. exec(prog, s1, s2)) /\ (all s2. exec(prog, s1, s2) -> Q(s2)))"))
- (goal "all s1. P(s1) -> (ex s2. exec(prog, s1, s2) /\ Q(s2))"))
+ (goal "all s1. P(s1) -> (ex s2. exec(prog, s1, s2) /\ Q(s2))")
+ (solution (Rule(Introduce s1)((Rule(Introduce precond)((Rule(Use prog-total-spec)((Rule(Instantiate(Var s1))((Rule Implies_elim((Rule(Use precond)((Rule Close())))(Rule Conj_elim1((Rule(ExElim s2 exec-s1-s2)((Rule(Exists(Var s2))((Rule Split((Rule(Use exec-s1-s2)((Rule Close())))(Rule(Use prog-total-spec)((Rule(Instantiate(Var s1))((Rule Implies_elim((Rule(Use precond)((Rule Close())))(Rule Conj_elim2((Rule(Instantiate(Var s2))((Rule Implies_elim((Rule(Use exec-s1-s2)((Rule Close())))(Rule Close())))))))))))))))))))))))))))))))))
 ```
 
 This theorem states that the weaker one implies the stronger one, if we also assume that the program is deterministic (i.e., has at most one answer):
@@ -168,5 +170,6 @@ This theorem states that the weaker one implies the stronger one, if we also ass
   (prog-total-spec "all s1. P(s1) -> (ex s2. exec(prog, s1, s2) /\ Q(s2))")
   (prog-deterministic
    "all s. all s1. all s2. exec(prog,s,s1) -> exec(prog,s,s2) -> s1 = s2"))
- (goal "all s1. P(s1) -> ((ex s2. exec(prog, s1, s2)) /\ (all s2. exec(prog, s1, s2) -> Q(s2)))"))
+ (goal "all s1. P(s1) -> ((ex s2. exec(prog, s1, s2)) /\ (all s2. exec(prog, s1, s2) -> Q(s2)))")
+ (solution (Rule(Introduce s1)((Rule(Introduce precond)((Rule(Use prog-total-spec)((Rule(Instantiate(Var s1))((Rule Implies_elim((Rule(Use precond)((Rule Close())))(Rule(ExElim s2 exec-s1-s2-and-Qs2)((Rule Split((Rule(Exists(Var s2))((Rule(Use exec-s1-s2-and-Qs2)((Rule Conj_elim1((Rule Close())))))))(Rule(Introduce s3)((Rule(Introduce exec-s1-s3)((Rule(Use prog-deterministic)((Rule(Instantiate(Var s1))((Rule(Instantiate(Var s2))((Rule(Instantiate(Var s3))((Rule Implies_elim((Rule(Use exec-s1-s2-and-Qs2)((Rule Conj_elim1((Rule Close())))))(Rule Implies_elim((Rule(Use exec-s1-s3)((Rule Close())))(Rule(Rewrite rtl)((Rule(Use exec-s1-s2-and-Qs2)((Rule Conj_elim2((Rule Close())))))))))))))))))))))))))))))))))))))))
 ```
