@@ -1,7 +1,7 @@
 # Hoare Logic with Arrays
 
 ```aside
-This page assumes that you have understood the pages on [Hoare Logic](hoare-logic.html) and [Loops in Hoare Logic](hoare-loops.html).
+This page assumes that you have understood the pages on [Hoare Logic](hoare-logic.html) and [Loops in Hoare Logic](hoare-loops.html). Understanding how to use [Assertions and Automaton](hoare-assert-and-auto.html) will be useful.
 ```
 
 The programs we have looked at so far have only used variables that store individual values like booleans and integers. Any reasonable program will need compound data structures like arrays, queues, stacks, trees, and so on. Arrays are perhaps the most basic of these data structures, and are used in most languages to implement the more specialised ones.
