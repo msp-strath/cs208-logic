@@ -1,11 +1,15 @@
+module type PRESENTATION = sig
+  module Calculus : Proof_tree.CALCULUS
+
+  val latex_of_sequent :
+    (string * Calculus.assumption) list * Calculus.goal -> string
+
+  val name_of_rule : Calculus.rule -> string
+end
+
 module Make
          (PT : Proof_tree.PROOF_TREE)
-         (Presentation : sig
-            val latex_of_sequent :
-              (string * PT.Calculus.assumption) list * PT.Calculus.goal -> string
-
-            val name_of_rule : PT.Calculus.rule -> string
-          end) :
+         (Presentation : PRESENTATION with module Calculus = PT.Calculus) :
 sig
   val render : Format.formatter -> PT.t -> unit
 end = struct

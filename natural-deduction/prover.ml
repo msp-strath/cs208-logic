@@ -1,3 +1,4 @@
+open Generalities
 open Fol_formula
 
 module type SOLVER = sig
