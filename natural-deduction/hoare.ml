@@ -53,10 +53,7 @@ module Make_renderer (Html : Html_sig.S) = struct
     | Program_rule (Assert fmla) ->
        (match boxes with
        | [ proof; continuation ] ->
-          (* FIXME: HTML rendering of formula?
-
-             FIXME: hiding proofs?
-           *)
+          (* FIXME: hiding proofs? *)
           vertical @| [
              div (resetbutton ^^ code (textf "assert (%s)" (Formula.to_string fmla)));
              div (textf "Proof:");
