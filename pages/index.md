@@ -139,7 +139,7 @@ Formal Logic has its roots in Philosophy. There are many books aimed at Philosop
 
 1. [The Logic Manual](https://users.ox.ac.uk/~logicman/) by Volker Halbach. This is am introduction to formal logic, intended primarily for Philosophy students. It covers Propostiional and Predicate Logic with Natural Deduction proofs, but does not explore applications to Computer Science. It does discuss the connections between formal logic and natural language.
 
-2. [Logical Methods](https://mitpress.mit.edu/9780262544849/logical-methods/) by [Greg Restall](https://consequently.org/) and Shawn Standefer. Also a textbook introduction to formal logic intended for Philosophy students. Covers more topics that *The Logic Manual*, including Modal Logic.
+2. [Logical Methods](https://mitpress.mit.edu/9780262544849/logical-methods/) by [Greg Restall](https://consequently.org/) and [Shawn Standefer](https://shawn-standefer.github.io/). Also a textbook introduction to formal logic intended for Philosophy students. Covers more topics that *The Logic Manual*, including Modal Logic.
 
 3. [Proofs and Models in Philosophical Logic](https://www.cambridge.org/core/elements/abs/proofs-and-models-in-philosophical-logic/A1907B05C24E1000270CC5B684FA7AAB) by [Greg Restall](https://consequently.org/). More advanced than *Logical Methods*, and includes topics on “non-classical” logics that reject certain principles from the normal two-valued logic.
 
