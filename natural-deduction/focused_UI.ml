@@ -1,10 +1,9 @@
 open Sexplib0.Sexp_conv
 
 module Hole = struct
-  type goal = Focused.goal
   type t = string * string option [@@deriving sexp]
 
-  let empty _ = ("", None)
+  let empty = ("", None)
 end
 
 module PT = Proof_tree.Make (Focused) (Hole)

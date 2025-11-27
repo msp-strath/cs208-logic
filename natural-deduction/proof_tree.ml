@@ -2,7 +2,7 @@ open Sexplib0.Sexp_conv
 
 include Proof_tree_intf
 
-module Make (Calculus : CALCULUS) (Hole : HOLE with type goal = Calculus.goal)
+module Make (Calculus : CALCULUS) (Hole : HOLE)
  : PROOF_TREE with module Calculus = Calculus
                and module Hole     = Hole
 = struct
@@ -26,7 +26,7 @@ module Make (Calculus : CALCULUS) (Hole : HOLE with type goal = Calculus.goal)
   type t = proofbox
 
   let init ?content ?(assumptions = []) goal =
-    let content = match content with None -> Hole.empty goal | Some h -> h in
+    let content = match content with None -> Hole.empty | Some h -> h in
     {
       subtree = { formula = goal; status = Hole { content } };
       assumptions = assumptions;
@@ -213,7 +213,7 @@ module Make (Calculus : CALCULUS) (Hole : HOLE with type goal = Calculus.goal)
          List.map
            (fun (assumptions, goal) ->
              let status : status =
-               Hole { content = Hole.empty goal }
+               Hole { content = Hole.empty }
              in
              { assumptions; subtree = { formula = goal; status } })
            premises

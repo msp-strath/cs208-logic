@@ -134,12 +134,11 @@ module Make_renderer (Html : Html_sig.S) = struct
 
 end
 
-module UI (* : Proof_tree_UI2.UI_SPEC with module Calculus = Calculus *) = struct
+module UI = struct
 
   open Hoare_calculus
   open Result_ext.Syntax
 
-  (* FIXME: replace this with a nicer parser that matches the output format. *)
   let parse_rule goal str =
     match goal with
     | Entailment _ ->
@@ -193,14 +192,12 @@ end = struct
   open Param
 
   module Hole = struct
-    type goal = Calculus.goal
-
     type t =
       { command : string
       ; message : string option
       } [@@deriving sexp]
 
-    let empty _ = { command = ""; message = None }
+    let empty = { command = ""; message = None }
   end
 
   module PT = Proof_tree.Make (Calculus) (Hole)

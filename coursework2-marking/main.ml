@@ -60,9 +60,8 @@ module Focused = struct
 
   module Hole = struct
     type t = string * string option [@@deriving sexp]
-    type goal = Focused.goal
 
-    let empty _ = ("", None)
+    let empty = ("", None)
   end
 
   module PT = Proof_tree.Make (Focused) (Hole)

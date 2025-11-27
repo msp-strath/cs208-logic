@@ -26,16 +26,13 @@ module Make
   open Spec
 
   module Hole = struct
-    type goal = Calculus.goal
     type t =
       { user_input : string;
         message    : string option
       } [@@deriving sexp]
 
-    let void =
+    let empty =
       { user_input = ""; message = None }
-
-    let empty _ = void
   end
 
   module PT = Proof_tree.Make (Calculus) (Hole)
@@ -132,7 +129,7 @@ module Make
   let update action _prooftree =
     match action with
     | ResetTo point ->
-       PT.set_hole Hole.void point
+       PT.set_hole Hole.empty point
     | Update (point, user_input) ->
        (* FIXME: on-the-fly checking? *)
        PT.set_hole { user_input; message = None } point
@@ -162,16 +159,13 @@ module Make_no_box
   open Spec
 
   module Hole = struct
-    type goal = Calculus.goal
     type t =
       { user_input : string;
         message    : string option;
       } [@@deriving sexp]
 
-    let void =
+    let empty =
       { user_input = ""; message = None }
-
-    let empty _ = void
   end
 
   module PT = Proof_tree.Make (Calculus) (Hole)
@@ -259,7 +253,7 @@ module Make_no_box
   let update action _prooftree =
     match action with
     | ResetTo point ->
-       PT.set_hole Hole.void point
+       PT.set_hole Hole.empty point
     | Update (point, user_input) ->
        (* FIXME: on-the-fly checking? *)
        PT.set_hole { user_input; message = None } point

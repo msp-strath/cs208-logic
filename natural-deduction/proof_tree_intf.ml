@@ -26,14 +26,13 @@ end
 
 module type HOLE = sig
   type t [@@deriving sexp]
-  type goal
 
-  val empty : goal -> t
+  val empty : t
 end
 
 module type PROOF_TREE = sig
   module Calculus : CALCULUS
-  module Hole : HOLE with type goal = Calculus.goal
+  module Hole : HOLE
 
   type t
   type point
@@ -104,6 +103,6 @@ module type Proof_tree = sig
   module type HOLE = HOLE
   module type PROOF_TREE = PROOF_TREE
 
-  module Make (Calculus : CALCULUS) (Hole : HOLE with type goal = Calculus.goal) :
+  module Make (Calculus : CALCULUS) (Hole : HOLE) :
     PROOF_TREE with module Calculus = Calculus and module Hole = Hole
 end
