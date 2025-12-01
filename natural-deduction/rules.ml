@@ -1,12 +1,5 @@
 open Generalities
 
-(* Heterogeneous list comparison *)
-let rec list_equal elem_eq xs ys =
-  match xs, ys with
-  | [], [] -> true
-  | x::xs, y::ys -> elem_eq x y && list_equal elem_eq xs ys
-  | _ -> false
-
 (******************************************************************************)
 module VarSet = Set.Make (String)
 module VarMap = Map.Make (String)
@@ -132,7 +125,7 @@ end = struct
       | Var v1, Var v2 ->
          var_eq v1 v2
       | Fun (fnm1, terms1), Fun (fnm2, terms2) ->
-         String.equal fnm1 fnm2 && list_equal check terms1 terms2
+         String.equal fnm1 fnm2 && List_ext.hequal check terms1 terms2
       | _ ->
          false
     in
