@@ -90,12 +90,12 @@ module type PROOF_TREE = sig
     (string * Calculus.assumption) list ->
     Calculus.goal ->
     tree ->
-    (t, [> `RuleError of Calculus.error | `LengthMismatch ]) result
+    (t, [> `RuleError of Calculus.error | `LengthMismatch of string * Sexplib0.Sexp.t ]) result
 
   val insert_tree :
     tree ->
     point ->
-    (t, [> `RuleError of Calculus.error | `LengthMismatch ]) result
+    (t, [> `RuleError of Calculus.error | `LengthMismatch of string * Sexplib0.Sexp.t ]) result
 end
 
 module type Proof_tree = sig

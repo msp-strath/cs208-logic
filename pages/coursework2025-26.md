@@ -193,6 +193,7 @@ Prove that Hoare Triples satisfy *Consequence*:
 
 ```focused-nd {id=cw2025-q3a marks=1}
 (config
+ (name "Question 3(a): Consequence")
  (assumptions
   (pre "all s. P'(s) -> P(s)")
   (post "all s. Q(s) -> Q'(s)")
@@ -221,6 +222,7 @@ Similarly to the way that `skip()` does nothing to states, the rule says that an
 Prove that this rule is sound from the axiom about how `skip()` affects the state:
 ```focused-nd {id=cw2025-q3b marks=1}
 (config
+ (name "Question (b): Doing Nothing")
  (assumptions
   (exec-skip "all s1. all s2. exec(skip(), s1, s2) -> s1 = s2"))
  (goal "all s1. all s2. P(s1) -> exec(skip(), s1, s2) -> P(s2)"))
@@ -248,6 +250,7 @@ As with `skip()`, the Hoare Logic rule for sequencing follows the same shape. If
 Prove that this rule is sound from the axiom of how sequencing affects the state:
 ```focused-nd {id=cw2025-q3c marks=1}
 (config
+ (name "Question 3(c): Sequencing")
  (assumptions
   (exec-seq   "all p1. all p2. all s1. all s2. exec(seq(p1, p2), s1, s2) -> (ex s. exec(p1, s1, s) /\ exec(p2, s, s2))")
   (prog1 var)
@@ -279,6 +282,7 @@ Prove that this rule is sound, assuming the update axiom for `exec`:
 
 ```focused-nd {id=cw2025-q3d marks=1}
 (config
+ (name "Question 3(d): Assignment (backward)")
  (assumptions
   (exec-update "all s1. all s2. exec(update(), s1, s2) -> s2 = doUpdate(s1)"))
  (goal "all s1. all s2. P(doUpdate(s1)) -> exec(update(), s1, s2) -> P(s2)"))
@@ -299,6 +303,7 @@ This rule is perhaps easier to explain. If `P` is true about the current state b
 Prove this rule using the same axiom for `update()` as above:
 ```focused-nd {id=cw2025-q3e marks=1}
 (config
+ (name "Question 3(e): Assignment (forward)")
  (assumptions
   (exec-update "all s1. all s2. exec(update(), s1, s2) -> s2 = doUpdate(s1)"))
  (goal "all s1. all s2. P(s1) -> exec(update(), s1, s2) -> (ex oldstate. s2 = doUpdate(oldstate) /\ P(oldstate))"))
@@ -328,6 +333,7 @@ The rule for `ifC` follows this idea. The OR in the formula becomes a requiremen
 Use the `exec-if` axiom to prove that the `If` rule is sound in Hoare Logic:
 ```focused-nd {id=cw2025-q3f marks=1}
 (config
+ (name "Question 3(e): If-then-else")
  (assumptions
   (exec-if "all p1. all p2. all s1. all s2. exec(ifC(p1, p2), s1, s2) -> ((C(s1) /\ exec(p1,s1,s2)) \/ (!C(s1) /\ exec(p2,s1,s2)))")
   (prog1 var)
@@ -354,6 +360,7 @@ Use this fact to write the following program that ends with a copy of `X` in `Y`
 
 ```hoare {id=cw2025-q4a marks=1}
 (hoare
+ (name "Question 4(a) : Add and Subtract")
  (program_vars X Y)
  (logic_vars x y)
  (assumptions
@@ -387,8 +394,9 @@ Prove that this program works. The program code you type in (excepting `assert` 
 
 **HINT:** The proof will be much easier if you put an `assert` after each line of code rewriting the formula for the state at that point as a pair of equations `/\`d together, one for `X` and one for `Y`.
 
-```hoare {id=cw2025-q4b}
+```hoare {id=cw2025-q4b marks=2}
 (hoare
+ (name "Question 4(b): XOR swap")
  (program_vars X Y)
  (logic_vars x y)
  (assumptions
@@ -431,6 +439,7 @@ Prove that the program above correctly implements `countTo`. You can add as many
 
 ```hoare {id=cw2025-q4c marks=2}
 (hoare
+ (name "Question 4(c): Counting Zeros")
  (program_vars COUNT I LEN)
  (assumptions
   (count-zero "countTo(0) = 0")

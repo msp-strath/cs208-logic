@@ -1,5 +1,6 @@
-(*
-  Plan:
+open Generalities
+
+(* Plan:
 
   1. Load the coursework description to get all the questions' specifications.
      FIXME: annotate with mark value
@@ -8,18 +9,27 @@
 
   3. Render the proof into HTML document, with the mark total
 
-  4. Output the marks and the html feedback in one go
+  4. Output the marks and the html feedback in one go *)
 
- *)
-
-let read_answers_file filename =
+let read_answers_file ~filename =
   In_channel.with_open_text filename
     (fun ch ->
       Seq.of_dispenser (fun () -> In_channel.input_line ch)
       |> Seq.map
-           (fun line ->
-             Scanf.sscanf line "%s@:%S" (fun fieldname data -> fieldname, data))
+           (fun line -> Scanf.sscanf line "%s@:%S" Tuple2.make)
       |> List.of_seq)
+
+type question_detail =
+  | Formula
+  | Comment
+  | Proof   of Natural_deduction.Focused_config.config
+  | Program of Natural_deduction.Hoare_calculus.Config_parser.config
+
+type question =
+  { question_id     : string
+  ; question_detail : question_detail
+  ; question_marks  : int
+  }
 
 let rec questions_of_block = function
   | Omd.Paragraph _
@@ -35,18 +45,36 @@ let rec questions_of_block = function
      questions_of_blocks doc
   | Omd.Code_block (attrs, kind, content) ->
      (match kind, List.assoc_opt "id" attrs, List.assoc_opt "marks" attrs with
-      (* FIXME: have a central registry of question types, and their
-         configurations *)
-      | "focused-nd", Some id, Some marks ->
-         (let sexp = Sexplib.Sexp.of_string content in
-          match Natural_deduction.Focused_config.config_p sexp with
-          | Ok config ->
-             [ id, (config, int_of_string marks) ]
-          | Error err ->
-             let msg = Generalities.Annotated.detail err in
-             failwith ("QUESTION FILE ERROR: " ^ msg))
-      | _ ->
-         [])
+     | "focused-nd", Some id, Some marks ->
+        (let sexp = Sexplib.Sexp.of_string content in
+         match Natural_deduction.Focused_config.config_p sexp with
+         | Ok config ->
+            [ { question_id = id
+              ; question_detail = Proof config
+              ; question_marks  = int_of_string marks
+              }
+            ]
+         | Error err ->
+            let msg = Generalities.Annotated.detail err in
+            failwith ("QUESTION FILE ERROR: " ^ msg))
+     | "hoare", Some id, Some marks ->
+        (let sexp = Sexplib.Sexp.of_string content in
+         match Natural_deduction.Hoare_calculus.Config_parser.config_p sexp with
+         | Ok config ->
+            [ { question_id = id
+              ; question_detail = Program config
+              ; question_marks  = int_of_string marks
+              }
+            ]
+         | Error err ->
+            let msg = Generalities.Annotated.detail err in
+            failwith ("QUESTION FILE ERROR: " ^ msg))
+     | "formulaentry", Some id, None ->
+        [ { question_id = id; question_detail = Formula; question_marks = 0 } ]
+     | "textbox", Some id, None ->
+        [ { question_id = id; question_detail = Comment; question_marks = 0 } ]
+     | _ ->
+        [])
 and questions_of_blocks doc =
   List.concat_map questions_of_block doc
 
@@ -148,8 +176,8 @@ module Focused = struct
     match
       PT.of_tree config.assumptions (Focused.Checking config.goal) (PT.tree_of_sexp sexp)
     with
-    | Error `LengthMismatch ->
-        Error (`Msg "Natural Deduction decode error: Length mismatch")
+    | Error (`LengthMismatch (s, rule)) ->
+        Error (`Msg (Printf.sprintf "Natural Deduction decode error: Length mismatch: %s on %s" s (Sexplib.Sexp.to_string rule)))
     | Error (`RuleError e) ->
         Error (`Msg (Printf.sprintf "Natural Deduction decode error: %s" e))
     | Ok state ->
@@ -161,8 +189,47 @@ module Focused = struct
           Ok (0, proof_tree))
 end
 
+module Hoare_qn = struct
+  open Natural_deduction
+  open Sexplib0.Sexp_conv
 
-let check_proof (config, max_marks) str_proof =
+  module Hole = struct
+    type t =
+      { command : string
+      ; message : string option
+      } [@@deriving sexp]
+
+    let empty = { command = ""; message = None }
+  end
+
+  module PT = Proof_tree.Make (Hoare_calculus) (Hole)
+
+  let num_holes prooftree =
+    PT.fold
+      (fun _ _ -> 1)
+      (fun _ _ l -> List.fold_left ( + ) 0 l)
+      (fun _ x -> x)
+      prooftree
+
+  let qn ~marks:max config submitted =
+    let open Hoare_calculus.Config_parser in
+    let assumptions, goal = assumptions_and_goal config in
+    match PT.of_tree assumptions goal (PT.tree_of_sexp submitted) with
+    | Error (`LengthMismatch (s, rule)) ->
+        Error (`Msg (Printf.sprintf "Natural Deduction decode error: Length mismatch: %s on %s" s (Sexplib.Sexp.to_string rule)))
+    | Error (`RuleError e) ->
+        Error (`Msg (Printf.sprintf "Proof decode error: %s" e))
+    | Ok state ->
+       (let _name = config.name in
+        let proof_tree = Html_static.empty (* render ?name state *) in
+        if num_holes state = 0 then
+          Ok (max, proof_tree)
+        else
+          Ok (0, proof_tree))
+end
+
+
+let check_proof config max_marks str_proof =
   let open Natural_deduction.Focused_config in
   let wrap given_marks html_proof =
     let open Html_static in
@@ -185,6 +252,31 @@ let check_proof (config, max_marks) str_proof =
         Error msg
      | Ok (given_marks, html_proof) ->
         Ok (wrap given_marks html_proof)
+
+let check_program config max_marks str_proof =
+  let open Natural_deduction.Hoare_calculus.Config_parser in
+  let wrap given_marks html_proof =
+    let open Html_static in
+    (given_marks,
+     h2 (text (Printf.sprintf
+                 "%s (%d/%d)"
+                 (Option.value ~default:"" config.name)
+                 given_marks
+                 max_marks))
+     ^^
+       html_proof)
+  in
+  match str_proof with
+  | "" ->
+     Ok (wrap 0 (Html_static.text "Not attempted"))
+  | str_proof ->
+     let proof_tree = Sexplib.Sexp.of_string str_proof in
+     match Hoare_qn.qn ~marks:max_marks config proof_tree with
+     | Error (`Msg msg) ->
+        Error msg
+     | Ok (given_marks, html_proof) ->
+        Ok (wrap given_marks html_proof)
+
 
 let template ~css ~title:title_text ?(sub_title="") body_html =
   let open Html_static in
@@ -233,36 +325,58 @@ let do_submission css questions dirname outdir entry =
   let entry_dir = Filename.concat dirname entry in
   let submission_filename = Filename.concat entry_dir (get_file_of_dir entry_dir) in
   try
-    let answers = read_answers_file submission_filename in
+    let answers = read_answers_file ~filename:submission_filename in
+    let name = List.assoc "cw2025-name" answers in
+    let regnum = List.assoc "cw2025-regnum" answers in
     let given_marks, html_feedback =
       List.fold_left
-        (fun (total_marks, html) (question_id, question_config) ->
+        (fun (total_marks, html) { question_id; question_detail; question_marks } ->
           match List.assoc_opt question_id answers with
           | None ->
              Printf.eprintf "%s: missing\n" question_id;
              (total_marks, html)
           | Some answer ->
-             match check_proof question_config answer with
-             | Error msg ->
-                Printf.eprintf "%s: %s: ERROR: %s\n" partnum question_id msg;
-                (total_marks, html)
-             | Ok (given_marks, qn_html) ->
-                (total_marks+given_marks, Html_static.(^^) html qn_html))
+             (match question_detail with
+             | Proof question_config ->
+                (match check_proof question_config question_marks answer with
+                | Error msg ->
+                   Printf.eprintf "%s: %s: ERROR: %s\n" partnum question_id msg;
+                   (total_marks, html)
+                | Ok (given_marks, qn_html) ->
+                   (total_marks+given_marks, Html_static.(^^) html qn_html))
+             | Program question_config ->
+                (match check_program question_config question_marks answer with
+                | Error msg ->
+                   Printf.eprintf "%s: %s: ERROR: %s\n" partnum question_id msg;
+                   (total_marks, html)
+                | Ok (given_marks, qn_html) ->
+                   (total_marks+given_marks, Html_static.(^^) html qn_html))
+             | Formula ->
+                let doc = let open Html_static in
+                          h2 (text question_id) ^^ p (text answer)
+                in
+                (total_marks, Html_static.(^^) html doc)
+             | Comment ->
+                let doc = let open Html_static in
+                          h2 (text question_id) ^^ p (text answer)
+                in
+                (total_marks, Html_static.(^^) html doc)
+        ))
         (0, Html_static.empty)
         questions
     in
     let html_feedback =
       let open Html_static in
-      h1 (text (Printf.sprintf "Coursework 2 (%d/20)" given_marks)) ^^ html_feedback
+      h1 (text (Printf.sprintf "Coursework (%d/20)" given_marks)) ^^ html_feedback
     in
-    let doc = template ~css ~title:"Coursework 2 Results" html_feedback in
+    let doc = template ~css ~title:"Coursework Results" html_feedback in
     let outdir = Filename.concat outdir entry in
     if not (Sys.file_exists outdir) then
       Sys.mkdir outdir 0o700;
     let outfile = Filename.concat outdir "feedback.html" in
     Out_channel.with_open_text outfile
       (fun ch -> Html_static.Render.to_channel ~doctype:true ch doc);
-    Printf.printf "Participant %s,%d\n" partnum given_marks
+    Printf.printf "%s,%s,Participant %s,%d\n" regnum name partnum given_marks
   with exn ->
     Printf.eprintf "PROBLEM: %s: %s\n" partnum (Printexc.to_string exn)
 

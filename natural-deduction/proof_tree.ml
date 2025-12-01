@@ -231,20 +231,21 @@ module Make (Calculus : CALCULUS) (Hole : HOLE)
     | Rule (rule, children) ->
        let* subgoals, update' = lift_err (Calculus.apply context rule goal) in
        let update = Calculus.combine_update update update' in
-       let* children, update = of_trees update context subgoals children in
+       let* children, update = of_trees update context rule subgoals children in
        let goal = Calculus.update_goal update goal in
        Ok ({ formula = goal; status = Rule { rule; children } }, update)
 
-  and of_trees update context goals trees =
+  and of_trees update context rule goals trees =
     match (goals, trees) with
     | [], [] -> Ok ([], update)
     | (assumptions, goal) :: goals, tree :: trees ->
        let goal = Calculus.update_goal update goal in
        (* FIXME: update assumptions too *)
        let* subtree, update = of_tree update (List.rev_append assumptions context) goal tree in
-       let* boxes, update = of_trees update context goals trees in
+       let* boxes, update = of_trees update context rule goals trees in
        Ok ({ subtree; assumptions } :: boxes, update)
-    | _, [] | [], _ -> Error `LengthMismatch
+    | _, [] -> Error (`LengthMismatch ("not enough proof", Calculus.sexp_of_rule rule))
+    | [], _ -> Ok ([], update) (*Error (`LengthMismatch ("too much proof", Calculus.sexp_of_rule rule)) *)
 
   let insert_tree tree { pt_formula; pt_status = _; pt_context; pt_assumptions } =
     let* { status; _}, update =

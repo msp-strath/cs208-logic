@@ -252,3 +252,74 @@ let apply context rule = function
         let* subgoals, () = Focused.apply context rule goal in
         Ok (List.map (fun (assumps, subgoal) -> (of_focused_context assumps, Entailment subgoal)) subgoals,
             empty_update))
+
+module Config_parser = struct
+  open Generalities.Sexp_parser
+  open Fol_formula
+
+  type config =
+    { program_vars : string list
+    ; logic_vars   : string list
+    ; assumptions  : (string * formula) list
+    ; precond      : formula
+    ; postcond     : formula
+    ; solution     : sexp option
+    ; name         : string option
+    }
+
+  let formula =
+    let+? str = atom in
+    Result.map_error
+      (function `Parse e ->
+         Parser_util.Driver.string_of_error e)
+      (Fol_formula.Formula.of_string str)
+
+  let program_var_p =
+    let+? str = atom in
+    (* FIXME: check captialisation *)
+    Ok str
+
+  let logic_var_p =
+    let+? str = atom in
+    (* FIXME: lower case *)
+    Ok str
+
+    let assumption =
+    sequence
+      (let+ name       = consume_next atom
+       and+ assumption = consume_next formula
+       and+ ()         = assert_nothing_left in
+       (name, assumption))
+
+  let config_p =
+    tagged "hoare"
+      (let+ program_vars = consume_opt "program_vars" (many program_var_p)
+       and+ logic_vars   = consume_opt "logic_vars" (many logic_var_p)
+       and+ assumptions  = consume_opt "assumptions" (many assumption)
+       and+ precond      = consume_one "precond" (one formula)
+       and+ postcond     = consume_one "postcond" (one formula)
+       and+ solution     = consume_opt "solution" (one sexp)
+       and+ name         = consume_opt "name" (one atom) in
+       let program_vars = Option.value ~default:[] program_vars in
+       let logic_vars   = Option.value ~default:[] logic_vars in
+       let assumptions  = Option.value ~default:[] assumptions in
+       (* FIXME: check that requires and ensures are well-scoped in
+          the program and logic vars, and that all of the assumptions
+          are well scoped and do not contain program_vars. *)
+       { program_vars; logic_vars; assumptions;
+         precond; postcond; solution; name })
+
+  let assumptions_and_goal { precond; postcond; assumptions; program_vars; logic_vars; solution = _; name = _ } =
+    let assumptions =
+      List.map (fun nm -> nm, Program_variable) program_vars
+      @ List.map (fun nm -> nm, Logic_variable) logic_vars
+      @ List.map (fun (nm, fmla) -> nm, Assumed_formula fmla) assumptions
+    and goal =
+      Program
+        { precond = Formula precond
+        ; postcond = Formula postcond
+        }
+    in
+    assumptions, goal
+
+end
