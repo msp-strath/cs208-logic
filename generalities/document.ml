@@ -49,6 +49,8 @@ let text s = Text s
 
 let textf fmt = Printf.ksprintf (fun str -> Text str) fmt
 
+let strong inlines = Strong inlines
+
 module ToPretty = struct
 
   let rec pretty_of_inline = function

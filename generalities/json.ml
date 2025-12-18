@@ -6,6 +6,11 @@ type t =
   | JNull
   | JObject of (string * t) list
 
+let obj assocs = JObject assocs
+let null = JNull
+let string s = JString s
+let int i = JInt i
+
 module P = struct
 
   open Pretty

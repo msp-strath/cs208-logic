@@ -9,3 +9,11 @@ type t =
 val to_document : t -> Pretty.document
 
 val to_string : t -> string
+
+val obj : (string * t) list -> t
+
+val null : t
+
+val string : string -> t
+
+val int : int -> t

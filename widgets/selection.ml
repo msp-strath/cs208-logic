@@ -3,14 +3,17 @@ open Generalities
 let config_p =
   let open Sexp_parser in
   tagged "config"
-    (consume_one "options" (one (list atom)))
+    (let+ options = consume_one "options" (one (list atom))
+     and+ default = consume_opt "default" (one atom)
+     in
+     options, default)
 
 
 let component config =
   match config_p (Sexplib.Sexp.of_string config) with
   | Error err ->
      Error_display.component (Annotated.detail err)
-  | Ok options ->
+  | Ok (options, default) ->
      let module C =
        struct
          type state = { selected : string option }
@@ -36,7 +39,7 @@ let component config =
 
          let update (Select selected) _ = {selected = Some selected}
 
-         let initial = { selected = None }
+         let initial = { selected = default }
 
          let to_sexp = function
            | { selected = None } -> Sexplib.Sexp.(List [ Atom "None" ])
