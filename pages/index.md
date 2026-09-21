@@ -25,89 +25,114 @@ The course is split into 11 topics, numbered 0 to 10. Each topic corresponds to 
 
 The pages linked to below contain the lecture notes, covering the material introduced in the lectures. They also contain interactive exercises for you to do.
 
--  Topic 0 is a (re)introduction to the basic concepts of **Propositional Logic**.
+### Topic 0 : Propositional Logic {id=index:topics:topic0}
 
-   We look at the syntax of Propositional Logic (what are the formulas?) and the semantics (what do the formulas mean?).
+Topic 0 is a (re)introduction to the basic concepts of **Propositional Logic**.
 
-   Propositional Logic is concerned with statements that are true or false (e.g., “It is raining”, “I am in Glasgow”) and their combination by connectives such as 'and', 'or', 'not', and 'implies'. Propositional Logic is not a very expressive logic, for example it is not possible to directly express relationships between things, but it is useful in its own right, as we shall see.
+We look at the syntax of Propositional Logic (what are the formulas?) and the semantics (what do the formulas mean?).
 
-   1. [Syntax](prop-logic-syntax.md): what are the valid sequences of symbols that we can write down? Which ones are logical formulas?
+Propositional Logic is concerned with statements that are true or false (e.g., “It is raining”, “I am in Glasgow”) and their combination by connectives such as 'and', 'or', 'not', and 'implies'. Propositional Logic is not a very expressive logic, for example it is not possible to directly express relationships between things, but it is useful in its own right, as we shall see.
 
-   2. [Semantics](prop-logic-semantics.md): what do those symbols mean? What do formulas made from the symbols mean?
+1. [Syntax](prop-logic-syntax.md): what are the valid sequences of symbols that we can write down? Which ones are logical formulas?
 
-   3. [Truth Tables, Satisfiability, and Validity](truth-tables.md): Truth tables are an effective way to compute the meaning of a logical formula. Satisfiability and Validity are two categorisations we can make about a formula.
+2. [Semantics](prop-logic-semantics.md): what do those symbols mean? What do formulas made from the symbols mean?
 
-   4. An [extended exercise sheet on Three-valued logic](tutorial-0-three-valued.md).
+3. [Truth Tables, Satisfiability, and Validity](truth-tables.md): Truth tables are an effective way to compute the meaning of a logical formula. Satisfiability and Validity are two categorisations we can make about a formula.
 
-   [The lecture slides for this topic](topic00-slides.pdf).
+4. An [extended exercise sheet on Three-valued logic](tutorial-0-three-valued.md).
 
--  Topic 1 is **Entailment** and **Deduction**.
+[The lecture slides for this topic](topic00-slides.pdf).
 
-   1. [Entailment](entailment.md): A generalised form of validity. What does it mean to say a formula is true under some assumptions?
+### Topic 1 : Entailment and Deduction {id=index:topics:topic1}
 
-   2. [Introduction to Deductive Proof](proof-intro.md), which describes the general idea of proof systems, and introduces a small example of a proof system inspired by biology.
+Topic 1 is **Entailment** and **Deduction**.
 
-   [The lecture slides for this topic](topic01-slides.pdf).
+1. [Entailment](entailment.md): A generalised form of validity. What does it mean to say a formula is true under some assumptions?
 
--  Topic 2 is **Proof for Propositional Logic**.
+2. [Introduction to Deductive Proof](proof-intro.md), which describes the general idea of proof systems, and introduces a small example of a proof system inspired by biology.
 
-   [Natural Deduction](natural-deduction-intro.md). Natural Deduction is a style of proof system that places a particular emphasis on how assumptions are used, and on how the rules for each connective come in introduction and elimination pairs.
+[The lecture slides for this topic](topic01-slides.pdf).
 
-   [The lecture slides for this topic](topic02-slides.pdf).
+### Topic 2 : Proof for Propositional Logic {id=index:topics:topic2}
 
-- Topic 3 is **Predicate Logic**.
+Topic 2 is **Proof for Propositional Logic**.
 
-  [Introducing Predicate Logic](pred-logic-intro.md) as an expressive language for making statements in a formalised way. By selecting our vocabulary carefully, we can use Predicate Logic as a modelling tool to describe many situations. The syntax of Predicate Logic is more complex that that of Proposition Logic, so this page introduces it, with the concepts of free and bound variables and substitution.
+[Natural Deduction](natural-deduction-intro.md). Natural Deduction is a style of proof system that places a particular emphasis on how assumptions are used, and on how the rules for each connective come in introduction and elimination pairs.
+
+[The lecture slides for this topic](topic02-slides.pdf).
+
+### Topic 3 : Predicate Logic {id=index:topics:topic3}
+
+Topic 3 is **Predicate Logic**.
+
+[Introducing Predicate Logic](pred-logic-intro.md) as an expressive language for making statements in a formalised way. By selecting our vocabulary carefully, we can use Predicate Logic as a modelling tool to describe many situations. The syntax of Predicate Logic is more complex that that of Proposition Logic, so this page introduces it, with the concepts of free and bound variables and substitution.
 
 
-   [The lecture slides for this topic](topic03-slides.pdf).
+ [The lecture slides for this topic](topic03-slides.pdf).
 
--  Topic 4 is **Proof for Predicate Logic**.
+### Topic 4 : Proof for Predicate Logic {id=index:topics:topic4}
 
-   [Proof rules for Predicate Logic](pred-logic-rules.md). Natural deduction rules for “for all” and “exists” allow us to construct proofs of Predicate Logic formulas. Also, how do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
+Topic 4 is **Proof for Predicate Logic**.
 
-   [The lecture slides for this topic](topic04-slides.pdf).
+[Proof rules for Predicate Logic](pred-logic-rules.md). Natural deduction rules for “for all” and “exists” allow us to construct proofs of Predicate Logic formulas. Also, how do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
 
+[The lecture slides for this topic](topic04-slides.pdf).
 
--  Topic 5 is **Specification and Verification**.
+### Topic 5 : Specification and Verification {id=index:topics:topic5}
 
-   [Specification and Verification](specify-verify.md) introduces the topic of how we say what we want programs to do, and how we might go about proving those things. We look at a simple model of programs in which we can state some properties of programs.
+Topic 5 is **Specification and Verification**.
 
-   The [page on Hoare Logic](hoare-logic.md) introduces Hoare Logic, a logic for proving specifications of programs, demonstrates its use on programs without loops.
+[Specification and Verification](specify-verify.md) introduces the topic of how we say what we want programs to do, and how we might go about proving those things. We look at a simple model of programs in which we can state some properties of programs.
 
-   [The lecture slides for this topic](topic05-slides.pdf).
+The [page on Hoare Logic](hoare-logic.md) introduces Hoare Logic, a logic for proving specifications of programs, demonstrates its use on programs without loops.
 
--  Topic 6 is **Programs with Loops**.
+[The lecture slides for this topic](topic05-slides.pdf).
 
-   [Assertions and Automation](hoare-assert-and-auto.md) introduces some tools for controlling complexity when constructing proofs of programs. In particular, we add human assisted proof automation to our proof tool.
+### Topic 6 : Verifying Programs with Loops {id=index:topics:topic6}
 
-   [Hoare Logic for Loops](hoare-loops.md) introduces the Hoare Logic rule for loops, and the important concept of *loop invariant*.
+Topic 6 is **Programs with Loops**.
 
-   There are no lecture slides for this topic.
+[Assertions and Automation](hoare-assert-and-auto.md) introduces some tools for controlling complexity when constructing proofs of programs. In particular, we add human assisted proof automation to our proof tool.
 
--  Topic 7 is **Programs with Arrays**.
+[Hoare Logic for Loops](hoare-loops.md) introduces the Hoare Logic rule for loops, and the important concept of *loop invariant*.
 
-   [Hoare Logic for Arrays](hoare-arrays.md) describes how to use Hoare Logic to reason about programs that access and update array data structures. In doing so, we come up against the problem of *aliasing*, that complicates reasoning about any program that combines references with mutability.
+There are no lecture slides for this topic.
 
-   There are no lecture slides for this topic. Lectures will all be live coding demonstrations.
+### Topic 7 : Verifying Programs with Arrays {id=index:topics:topic7}
 
--  Topic 8 is **Semantics of Predicate Logic**.
+Topic 7 is **Programs with Arrays**.
 
-   The [semantics of Predicate Logic](pred-logic-semantics.md) is inevitably more complex than the semantics of Propositional Logic that we looked at in Topic 0. A useful way to think about how formulas are interpreted is in terms of *databases* as you will see in CS209.
+[Hoare Logic for Arrays](hoare-arrays.md) describes how to use Hoare Logic to reason about programs that access and update array data structures. In doing so, we come up against the problem of *aliasing*, that complicates reasoning about any program that combines references with mutability.
 
-   [Lecture slides for this topic](topic08-slides.pdf).
+There are no lecture slides for this topic. Lectures will all be live coding demonstrations.
 
--  Topic 9 is **Automating Logic**.
+### Topic 8 : Semantics of Predicate Logic {id=index:topics:topic8}
 
+Topic 8 is **Semantics of Predicate Logic**.
+
+The [semantics of Predicate Logic](pred-logic-semantics.md) is inevitably more complex than the semantics of Propositional Logic that we looked at in Topic 0. A useful way to think about how formulas are interpreted is in terms of *databases* as you will see in CS209.
+
+[Lecture slides for this topic](topic08-slides.pdf).
+
+### Topic 9 : Applications of Predicate Logic Semantics {id=index:topics:topic9}
+
+Topic 9 is **Applications of Predicate Logic Semantics**.
+
+TBD...
+
+```comment
    [SAT Solvers](sat.md) are a class of tool that can solve very large problems in Propositional Logic, and are used as a foundation for building tools that can solve problems in Predicate Logic. They use heuristic search techniques to try to avoid exponential runtime behaviour.
 
    [Conversion to CNF](converting-to-cnf.md) is required to convert Propositional Logic formulas into the format suitable for a SAT solver. There are two approaches, one is slow but relies on simple rewrites, the other is fast.
 
    [Lecture slides for this topic](topic09-slides.pdf).
+```
 
--  Topic 10 is **Undecidability**.
+### Topic 10 : Undecidability {id=index:topics:topic10}
 
-   [The Undecidability of the Halting Problem](halting-problem.md) is one of the foundational results in Computer Science. It shows that there cannot exist a computer program that reliably determines whether or not programs halt. The proof relies crucially on the fact that programs are described by source code, and that programs can take other programs source code, incuding their own, as input. More generally, the result shows that there are limits to what computer programs can do, if we insist on infallibility.
+Topic 10 is **Undecidability**.
+
+[The Undecidability of the Halting Problem](halting-problem.md) is one of the foundational results in Computer Science. It shows that there cannot exist a computer program that reliably determines whether or not programs halt. The proof relies crucially on the fact that programs are described by source code, and that programs can take other programs source code, incuding their own, as input. More generally, the result shows that there are limits to what computer programs can do, if we insist on infallibility.
 
 ## Further Reading {id=index:further-reading}
 
