@@ -14,13 +14,16 @@ rule structure_token = parse
   | '\n'         { Lexing.new_line lexbuf; structure_token lexbuf }
   | "\"" ([^ '\"']* as quoted) "\""
                  { Result.bind (Formula.of_string quoted) (fun f -> Ok (QUOTED f)) }
-  | "vocab"      { Ok VOCAB }
+(*   | "vocab"      { Ok VOCAB } *)
   | "for"        { Ok FOR }
   | "model"      { Ok MODEL }
   | "check"      { Ok CHECK }
-  | "axioms"     { Ok AXIOMATISATION }
-  | "synth"      { Ok SYNTH }
-  | "size"       { Ok SIZE }
+  | "axiom"      { Ok AXIOM }
+  | "theory"     { Ok THEORY }
+  | "predicate"  { Ok PREDICATE }
+(*   | "axioms"     { Ok AXIOMATISATION } *)
+(*   | "synth"      { Ok SYNTH } *)
+(*   | "size"       { Ok SIZE } *)
   | "{"          { Ok LBRACE }
   | "}"          { Ok RBRACE }
   | "|="         { Ok MODELS }

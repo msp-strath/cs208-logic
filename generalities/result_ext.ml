@@ -1,3 +1,9 @@
+let both x y =
+  match x, y with
+  | Ok (), Ok () -> Ok ()
+  | (Error _ as e), _ -> e
+  | Ok (), (Error _ as e) -> e
+
 let of_predicate ~on_error p x =
   if p x then Ok x else Error on_error
 
@@ -76,3 +82,14 @@ let traverse_array : type a b e. (a -> (b, e) result) -> a array -> (b array, e)
                     | Ok x -> x
                     | Error e -> raise (Fail_traverse e)))
   with Fail_traverse e -> Error e
+
+let check_seq f seq =
+  let rec loop seq =
+    match seq () with
+    | Seq.Nil -> Ok ()
+    | Seq.Cons (a, seq) ->
+      (match f a with
+      | Ok () -> loop seq
+      | Error _ as e -> e)
+  in
+  loop seq

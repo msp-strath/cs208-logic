@@ -1,5 +1,7 @@
 (** Extensions to the {!Stdlib.Result} module. *)
 
+val both : (unit, 'e) result -> (unit, 'e) result -> (unit, 'e) result
+
 (** {2 Failure} *)
 
 val errorf : ('a, unit, string, ('b, string) result) format4 -> 'a
@@ -31,6 +33,8 @@ end
 (** {2 List and Array Functions} *)
 
 val traverse : ('a -> ('b, 'e) result) -> 'a list -> ('b list, 'e) result
+
+val check_seq : ('a -> (unit, 'e) result) -> 'a Seq.t -> (unit, 'e) result
 
 val fold_left_err : ('state -> 'a -> ('state, 'e) result) -> 'state -> 'a list -> ('state, 'e) result
 

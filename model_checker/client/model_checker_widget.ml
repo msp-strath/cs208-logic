@@ -3,7 +3,6 @@ let component initial =
     struct
 
       open Model_checker
-      open Fol_formula
 
       type state = {
           input : string;
@@ -12,7 +11,8 @@ let component initial =
           output :
             [ `Nothing
             | `Output of
-                (Exec_structure.res list, Exec_structure.res list * string) result ];
+                (Exec_structure.output_item list,
+                 Exec_structure.output_item list * string) result ];
           reseting : bool;
         }
 
@@ -23,6 +23,7 @@ let component initial =
         | ConfirmReset
         | CancelReset
 
+      (*
       module R = struct
         open Checker
         open Ulmus.Html
@@ -177,19 +178,28 @@ let component initial =
                  text "Refuted:";
               br ();
               render_refutation v]
-      end
+	end
+	*)
 
       let render_output =
         let open Ulmus.Html in
         function
-        | Exec_structure.Message msg -> text msg
-        | Exec_structure.Outcome (model_name, formula, outcome) ->
-           [%concat
-               text
-               (Printf.sprintf "checking %s ⊧ \"%s\"" model_name
-                  (Formula.to_string formula));
-            br ();
-            R.render_outcome outcome]
+          | Exec_structure.Message msg -> text msg
+  | Exec_structure.Table { headers; rows } ->
+    table
+      [%concat
+        tr (concat_list @@ List.map (fun x -> th (text x)) headers);
+        concat_map
+	  (fun row -> tr (concat_map (fun x -> td (text x)) row))
+	  rows
+      ]
+        (* | Exec_structure.Outcome (model_name, formula, outcome) -> *)
+        (*    [%concat *)
+        (*        text *)
+        (*        (Printf.sprintf "checking %s ⊧ \"%s\"" model_name *)
+        (*           (Formula.to_string formula)); *)
+        (*     br (); *)
+        (*     R.render_outcome outcome] *)
 
       let num_newlines =
         String.fold_left (fun i -> function '\n' -> i+1 | _ -> i) 0

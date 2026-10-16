@@ -1,5 +1,5 @@
-vocab V {
-  path/2
+theory V {
+  predicate path/2
 }
 
 model I1 for V {
@@ -12,8 +12,14 @@ model I1 for V {
 //  transitivity : "all x. all y. all z. (path(x,y) /\ path(y,z)) -> path(x,z)"
 //}
 
+// The model contains at least three elements
 check I1 |= "ex x. ex y. ex z. x != y /\ x != z /\ y != z"
 
+// There exists a path between two separate elements
 check I1 |= "ex x. ex y. path(x, y) /\ x != y"
 
+// Paths are reversible
 check I1 |= "all x. all y. path(x,y) -> path(y,x)"
+
+// Paths are transitive
+check I1 |= "all x. all y. all z. path(x,y) -> path(y,z) -> path(x,z)"
