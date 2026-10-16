@@ -80,7 +80,7 @@ This is because `N1`, `N2`, `N3`, and `N5` are all connected to each other which
 
 Graph colouring is a good fit for Logical Modelling because we can express possible colourings as atomic propositions and constraints on the colourings as logical formulas.
 
-As with the [package installation problem](domains-and-parameters.html), we will use domains to express the ranges of nodes and colours in this problem:
+As with the [package installation problem](domains-and-parameters.md), we will use domains to express the ranges of nodes and colours in this problem:
 
 ```
 domain colour { Red, Green, Blue }
@@ -104,7 +104,7 @@ define all_nodes_some_colour {
 
 Literally: "for every node, there is some colour that is colouring that node".
 
-Second, we need to make sure that no node has more than one colour. This is almost identical to the `incompatibilities` constraint we saw for the [package installations with domains and parameters](domains-and-parameters.html):
+Second, we need to make sure that no node has more than one colour. This is almost identical to the `incompatibilities` constraint we saw for the [package installations with domains and parameters](domains-and-parameters.md):
 
 ```
 define all_nodes_at_most_one_colour {

@@ -4,6 +4,8 @@ We now look at a more realistic example of logical modelling: using logic to sol
 
 We have to take into account that multiple versions of the same software package cannot be installed at the same time, and that installing some packages may require other packages to be installed. By expressing these constraints as logical formulas, we can make sure that all satisfying valuations represent feasible installations.
 
+````comment
+
 ## Video
 
 The following video introduces the Package Installation Problem, and shows how to encode it in logic:
@@ -13,6 +15,8 @@ uNVSbLVh_kM
 ```
 
 [The slides for this video](week02-slides.pdf) (mixed in with the SAT solver slides for now).
+
+````
 
 ## Example
 
@@ -34,7 +38,7 @@ Let's do the following example:
    atom libD
    ```
 
-3. We encode the fact that the two version of `progA` and `libC` are incompatible by using a "not both of these" constraint, as we saw in the [patterns](patterns.html):
+3. We encode the fact that the two version of `progA` and `libC` are incompatible by using a "not both of these" constraint, as we saw in the [patterns](patterns.md):
 
    ```
    define incompatibilities {
@@ -54,7 +58,7 @@ Let's do the following example:
    3. `progB` depends on `libC2`
    4. `libC2` depends on `libD`
 
-   Each of these is encoded as an "if this then that" [pattern](patterns.html) by saying that either the thing isn't installed, or the thing it depends on is:
+   Each of these is encoded as an "if this then that" [pattern](patterns.md) by saying that either the thing isn't installed, or the thing it depends on is:
 
    ```
    define dependencies {
@@ -65,7 +69,7 @@ Let's do the following example:
    }
    ```
 
-5. Finally, we have some requirements, we must install some version of `progA` and `progB`. This uses the "at least one" [pattern](patterns.html) to encode "at least one version of `progA`". (There is only one version of `progB`, so we just add the constraint that it must be true.)
+5. Finally, we have some requirements, we must install some version of `progA` and `progB`. This uses the "at least one" [pattern](patterns.md) to encode "at least one version of `progA`". (There is only one version of `progB`, so we just add the constraint that it must be true.)
 
    ```
    define requirements {
@@ -123,4 +127,4 @@ Have a go at changing the above constraints to see whether or not it is possible
 
 1. The original source for logical modelling of the Package Installation Problem is the paper "[OPIUM: Optimal Package Install/Uninstall Manager](http://cseweb.ucsd.edu/~lerner/papers/opium.pdf)" by Tucker, Shuffelton, Jhala, and Lerner. The paper also describes some refinements, such as how to minimise solutions in terms of number of packages or size of downloads. Some experimental results are also given.
 
-2. The post [Version SAT](https://research.swtch.com/version-sat) by Russ Cox, a member of the Google Go team, explains how to encode *any* NP problem (see [SAT Solver](sat.html) for what NP means) into a package installation problem. This means that solving a package installation problem may be very hard indeed (for the computer) in the general case.
+2. The post [Version SAT](https://research.swtch.com/version-sat) by Russ Cox, a member of the Google Go team, explains how to encode *any* NP problem (see [SAT Solver](sat.md) for what NP means) into a package installation problem. This means that solving a package installation problem may be very hard indeed (for the computer) in the general case.

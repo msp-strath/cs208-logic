@@ -32,7 +32,7 @@ So far, we have defined our logical modelling problems in terms of three parts:
 
 ## Can we do large problems?
 
-*Theoretically*, the above parts are enough for us to describe any problem that a SAT solver can solve, and to present the results. *Practically*, however, it is difficult to write out any problems that are larger than the small example we used for the [package installations](package.html].
+*Theoretically*, the above parts are enough for us to describe any problem that a SAT solver can solve, and to present the results. *Practically*, however, it is difficult to write out any problems that are larger than the small example we used for the [package installations](package.md].
 
 There are three main problems that get in the way of doing larger examples:
 

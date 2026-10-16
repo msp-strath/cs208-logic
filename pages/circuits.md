@@ -1,12 +1,12 @@
 # Circuits, Gates and Formulas
 
-In [Converting to CNF](converting-to-cnf.html), we saw that logical connectives can be translated into clauses by treating them as equations.
+In [Converting to CNF](converting-to-cnf.md), we saw that logical connectives can be translated into clauses by treating them as equations.
 
-Let's now look at how to do this in the Logical Modelling Tool. We'll use a [domain](domains-and-parameters.html) to write down all the variables involved, and a parameterised atom `active(n : var)` which is true if that variable is true, and false otherwise.
+Let's now look at how to do this in the Logical Modelling Tool. We'll use a [domain](domains-and-parameters.md) to write down all the variables involved, and a parameterised atom `active(n : var)` which is true if that variable is true, and false otherwise.
 
 ## Encoding NOT
 
-We can encode `Out = ¬ In` as clauses like so, using the translation given in [Conversion to CNF](converting-to-cnf.html):
+We can encode `Out = ¬ In` as clauses like so, using the translation given in [Conversion to CNF](converting-to-cnf.md):
 
 ```lmt {id=circuits-not}
 domain var { In, Out }
@@ -26,7 +26,7 @@ Clicking **Run** should give exactly the truth table for NOT.
 
 ## Encoding AND
 
-Similarly, we can encode AND as clauses, using the translation given in [Conversion to CNF](converting-to-cnf.html):
+Similarly, we can encode AND as clauses, using the translation given in [Conversion to CNF](converting-to-cnf.md):
 
 ```lmt {id=circuits-and}
 domain var { In1, In2, Out }
@@ -118,7 +118,7 @@ The results should say that `Out` is true exactly when `In1` is equal to `In2`.
 
 ## Extended Exercise: Adder Circuits
 
-As we saw in when looking at [patterns of constraints](patterns.html), it can be difficult to encode constraints like "exactly one of two", compared to "at most one". Constraints like "exactly two of three" or more get even harder, and the number of individual clauses we need can explode.
+As we saw in when looking at [patterns of constraints](patterns.md), it can be difficult to encode constraints like "exactly one of two", compared to "at most one". Constraints like "exactly two of three" or more get even harder, and the number of individual clauses we need can explode.
 
 This exercise looks at a less elementary, but much more scalable approach to encode the 2-of-3 problem which generalises to any "`n`-of-`m`" problem.
 

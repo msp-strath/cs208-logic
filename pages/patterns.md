@@ -1,6 +1,6 @@
 # Logical Modelling Patterns
 
-In the [Wizard's Pets](wizards-pets.html) example, we saw several ways of encoding certain kinds of constraints. Here is a list of some common patterns that come up over and over again.
+In the [Wizard's Pets](wizards-pets.md) example, we saw several ways of encoding certain kinds of constraints. Here is a list of some common patterns that come up over and over again.
 
 ## At least one
 
