@@ -33,6 +33,7 @@ rule structure_token = parse
   | ":"          { Ok COLON }
   | "/"          { Ok SLASH }
   | ","          { Ok COMMA }
+  | "?"          { Ok QMARK }
   | ident        { Ok (IDENT (Lexing.lexeme lexbuf)) }
   | ('-'|'+'|"")digit+
     { try (Ok (INTLIT (int_of_string (Lexing.lexeme lexbuf))))
