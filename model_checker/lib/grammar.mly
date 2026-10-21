@@ -29,18 +29,6 @@ item:
     { Model { name; theory_name; defns } }
   | CHECK; model_name=IDENT; MODELS; formula=QUOTED
     { Check { model_name; formula } }
-/*
-  | VOCAB; name=IDENT; LBRACE; arities=list(arity_defn); RBRACE
-    { Vocab { name; arities } }
-  | MODEL; name=IDENT; FOR; vocab_name=IDENT; LBRACE; defns=list(set_defn); RBRACE
-    { Model { name; vocab_name; defns } }
-  | AXIOMATISATION; name=IDENT; FOR; vocab=IDENT; LBRACE; formulas=list(named_formula); RBRACE
-    { Axioms { name; vocab; formulas } }
-  | CHECK; model_name=IDENT; MODELS; formula=QUOTED
-    { Check { model_name; formula } }
-  | SYNTH; axioms=IDENT; SIZE; cardinality=INTLIT
-    { Synth { axioms; cardinality } }
-*/
 
 theory_item:
   | AXIOM; nm=IDENT; COLON; f=QUOTED

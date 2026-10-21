@@ -1,8 +1,12 @@
+open Generalities
 open Model_checker
 
 let print_output = function
   | Exec_structure.Message msg ->
     Printf.printf "INFO: %s\n" msg
+  | Exec_structure.Pretty doc ->
+    Pretty.print ~width:80 doc;
+    print_newline ();
   | Exec_structure.Table { headers; rows } ->
     print_endline (String.concat "," headers);
     rows |> List.iter (Fun.compose print_endline (String.concat ","));

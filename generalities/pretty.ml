@@ -64,8 +64,6 @@ let break_with s =
   ; break_width = { distance = 0; closed = true }
   }
 
-let break = break_with " "
-
 let alignment_spaces n =
   { doc = AlignSpaces n
   ; flat_width = 0
@@ -93,12 +91,18 @@ let group doc =
 (******************************************************************************)
 (* Derived *)
 
+let break = break_with " "
+
 let break_words str =
   str
   |> Seq_ext.words
   |> Seq.map text
   |> Seq_ext.intersperse (group break)
   |> concat
+
+let (^/^) d1 d2 = d1 ^^ break ^^ d2
+
+let of_seq = Seq.fold_left (^^) empty
 
 (******************************************************************************)
 (* Output of documents *)

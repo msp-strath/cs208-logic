@@ -14,6 +14,9 @@ val align : document -> document
 val group : document -> document
 
 val break : document
+val (^/^) : document -> document -> document
+
+val of_seq : document Seq.t -> document
 
 (** [break_words str] separates the string [str] into words and
     constructs a document by interspersing [group break] between each

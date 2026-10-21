@@ -4,15 +4,15 @@ let component initial =
 
       open Model_checker
 
+      type output = Exec_structure.output_item list
+
       type state = {
         input : string;
         parse_result : (Structure.t, string) result;
         fresh : bool;
         output :
             [ `Nothing
-            | `Output of
-                (Exec_structure.output_item list,
-                 Exec_structure.output_item list * string) result ];
+            | `Output of (output,output * string) result ];
         reseting : bool;
       }
 
@@ -184,7 +184,10 @@ let component initial =
       let render_output =
         let open Ulmus.Html in
         function
-          | Exec_structure.Message msg -> text msg
+          | Exec_structure.Message msg ->
+	    text msg
+	  | Exec_structure.Pretty doc ->
+	    pre (text (Generalities.Pretty.to_string ~width:100 doc))
 	  | Exec_structure.Table { headers; rows } ->
 	    text "Query results: " ^^
             table
@@ -270,14 +273,13 @@ let component initial =
                  ]
                    empty;
 		 div
-                   ~attrs:
-                [
-                  A.style
-                    "background-color: #eee;grid-row: 1;grid-column: \
-                    1/3;margin-left: 50px;margin-right: 50px;margin-top: \
-                    50px;z-index: 100;border: 1px solid black;border-radius: \
-                    5px;padding: 10px;text-align: center";
-                ]
+                   ~attrs:[
+                     A.style
+                       "background-color: #eee;grid-row: 1;grid-column: \
+                       1/3;margin-left: 50px;margin-right: 50px;margin-top: \
+                       50px;z-index: 100;border: 1px solid black;border-radius: \
+                       5px;padding: 10px;text-align: center";
+                   ]
                    [%concat
                     text "Are you sure you want to reset to the original state?";
                     br ();

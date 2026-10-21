@@ -2,6 +2,8 @@ open Generalities
 open Fol_formula
 open Result_ext.Syntax
 
+let errorf = Result_ext.errorf
+
 module IdentMap = Map.Make (String)
 module IdentSet = Set.Make (String)
 module Tuple    = struct
@@ -9,6 +11,7 @@ module Tuple    = struct
   let compare = List.compare String.compare
 end
 module TupleSet = Set.Make (Tuple)
+module TupleMap = Map.Make (Tuple)
 
 type location = unit
 
@@ -25,11 +28,43 @@ type theory = {
   axioms     : axiom_info IdentMap.t;
 }
 
-(* Really a first-order structure *)
 type structure = {
   universe : IdentSet.t; (* individuals, as a set of names *)
-  predicate_defns : (int * TupleSet.t option) IdentMap.t;
+  predicate_defns : TupleSet.t IdentMap.t;
 }
+
+let pp_structure structure =
+  let open Pretty in
+  let curly_brak d =
+    group (nest 2 (text "{" ^/^ d) ^/^ text "}")
+  in
+  let commas docs =
+    of_seq (Seq_ext.intersperse (text "," ^^ group break) docs)
+  in
+  let universe_clause =
+    let elems =
+      commas (Seq.map text (IdentSet.to_seq structure.universe))
+    in
+    group (nest 1 (text "universe =" ^/^ curly_brak elems))
+  in
+  let pp_tuple = function
+    | [x] -> text x
+    | xs -> text "(" ^^ commas (Seq.map text (List.to_seq xs)) ^^ text ")"
+  in
+  let pp_tuples tuples =
+    curly_brak (commas (Seq.map pp_tuple (TupleSet.to_seq tuples)))
+  in
+  let predicate_defn (predicate_name, elems) =
+    group (nest 1 (text predicate_name ^^ text " =" ^/^ pp_tuples elems))
+  in
+  let predicate_clauses =
+    structure.predicate_defns
+    |> IdentMap.to_seq
+    |> Seq.map predicate_defn
+    |> Seq_ext.intersperse break
+    |> of_seq
+  in
+  curly_brak (universe_clause ^/^ predicate_clauses)
 
 type env_item =
   | Theory of theory
@@ -45,7 +80,7 @@ module WFF = struct
     | Var v ->
       Ok (VarSet.singleton v)
     | Fun (f, _) ->
-      Result_ext.errorf
+      errorf
 	"Function symbol '%s' not declared: function symbols not supported."
 	f
 
@@ -59,7 +94,7 @@ module WFF = struct
 	| r ->
 	  match IdentMap.find_opt r vocab with
 	  | None ->
-	    Result_ext.errorf "Predicate symbol '%s' not declared" r
+	    errorf "Predicate symbol '%s' not declared" r
 	  | Some { arity; location = _ } -> Ok arity
       in
       if arity = List.length tms then
@@ -70,7 +105,7 @@ module WFF = struct
 	  VarSet.empty
 	  tms
       else
-	Result_ext.errorf
+	errorf
 	  "Incorrect number of arguments to predicate '%s'" r
     | Imp (f1, f2) | And (f1, f2) | Or (f1, f2) ->
       let+ vars1 = valid_formula vocab f1
@@ -86,12 +121,10 @@ module WFF = struct
     let* vars = valid_formula vocab f in
     if VarSet.is_empty vars then Ok ()
     else
-      Result_ext.errorf
+      errorf
 	"Variables %s are free in formula"
 	(String.concat ", " (VarSet.elements vars))
 end
-
-
 
 let build_theory items =
   let* predicates, axioms =
@@ -108,7 +141,7 @@ let build_theory items =
 	    Ok (predicates, axioms)
 	  | Some { location = _; arity = _ } ->
 	    (* FIXME: location info *)
-	    Result_ext.errorf "Predicate symbol '%s' already declared." ident)
+	    errorf "Predicate symbol '%s' already declared." ident)
 	| Structure.Axiom (ident, formula) ->
 	  (match IdentMap.find_opt ident axioms with
 	  | None ->
@@ -116,7 +149,7 @@ let build_theory items =
 	    let axioms = IdentMap.add ident { formula; location } axioms in
 	    Ok (predicates, axioms)
 	  | Some { formula = _; location = _ } ->
-	    Result_ext.errorf "Axiom '%s' already declared." ident))
+	    errorf "Axiom '%s' already declared." ident))
       (IdentMap.empty, IdentMap.empty)
       items
   in
@@ -135,25 +168,25 @@ let list_is_singleton = function
   | [x] -> Some x
   | _ -> None
 
-let check_tuple universe arity individuals =
+let check_tuple ~universe ~arity individuals =
   assert (arity >= 0);
   let rec check n rev_checked todo =
     match n, todo with
     | 0, []   -> Ok (List.rev rev_checked)
-    | 0, _::_ -> Result_ext.errorf "Too many elements in tuple; expecting %d" arity
-    | _, []   -> Result_ext.errorf "Too few elements in tuple; expecting %d" arity
+    | 0, _::_ -> errorf "Too many elements in tuple; expecting %d" arity
+    | _, []   -> errorf "Too few elements in tuple; expecting %d" arity
     | n, x::todo ->
-      (* FIXME: locations *)
+      (* FIXME: location information for better errors *)
       if IdentSet.mem x universe then
 	check (n-1) (x::rev_checked) todo
       else
-	Result_ext.errorf "Symbol '%s' not in the universe of this model" x
+	errorf "Symbol '%s' not in the universe of this model" x
   in
   check arity [] individuals
 
-(* Build a model as a collection of entities and predicate definitions *)
+(* Build a structure as a collection of entities and predicate
+   definitions, checking it against the given vocabulary. *)
 let build_structure predicates defns =
-  let open Result_ext.Syntax in
   let universes, predicate_defns =
     List.partition_map
       (function
@@ -179,7 +212,7 @@ let build_structure predicates defns =
   in
   let find_predicate_decl ident =
     match IdentMap.find_opt ident predicates with
-    | None -> Result_ext.errorf "Predicate '%s' not declared in this theory" ident
+    | None -> errorf "Predicate '%s' not declared in this theory" ident
     | Some predicate_info -> Ok predicate_info
   in
   let* predicate_defns =
@@ -188,22 +221,23 @@ let build_structure predicates defns =
 	let* { arity; location = _ } = find_predicate_decl ident in
 	let* () =
 	  match IdentMap.find_opt ident predicate_defns with
-	  | Some _ -> Result_ext.errorf "Multiple definitions of predicate '%s'" ident
+	  | Some _ -> errorf "Multiple definitions of predicate '%s'" ident
 	  | None -> Ok ()
 	in
 	match items with
 	| None ->
-	  Ok (IdentMap.add ident (arity, None) predicate_defns)
+	  failwith "missing predicate definition"
+	  (* Ok (IdentMap.add ident (arity, None) predicate_defns) *)
 	| Some items ->
 	  let* elems =
 	    Result_ext.fold_left_err
 	      (fun elems tuple_defn ->
-		let+ tuple = check_tuple universe arity tuple_defn in
+		let+ tuple = check_tuple ~universe ~arity tuple_defn in
 		TupleSet.add tuple elems)
 	      TupleSet.empty
 	      items
 	  in
-	  Ok (IdentMap.add ident (arity, Some elems) predicate_defns))
+	  Ok (IdentMap.add ident elems predicate_defns))
       IdentMap.empty
       predicate_defns
   in
@@ -213,105 +247,83 @@ let build_structure predicates defns =
   if IdentMap.is_empty missing_predicates then
     Ok { universe; predicate_defns }
   else
-    Result_ext.errorf "Missing predicate definitions: %s are not defined"
+    errorf "Missing predicate definitions: %s are not defined"
       (String.concat ", " (List.map fst (IdentMap.bindings missing_predicates)))
 
-module type BOOLEAN_ALGEBRA = sig
-  type t
-  val one : t
-  val zero : t
-  val conj : t list -> t
-  val disj : t list -> t
-  val neg  : t -> t
-end
-
-module BoolBA = struct
-  type t = bool
-  let one = true
-  let zero = false
-  let conj = List.fold_left (&&) true
-  let disj = List.fold_left (||) false
-  let neg = not
-end
-
-module type FO_STRUCTURE = sig
-  type t
-  type individual
-  type v
-  val universe : t -> individual Seq.t
-  val predicate : t -> string -> individual list -> v
-  val equal : individual -> individual -> v
-  (* val for_all : (individual -> v) -> v *)
-  (* val exists : (individual -> v) -> v *)
-end
 
 module ConcreteStructure = struct
   type t = structure
   type individual = string
-  type v = bool
+  type predicate_symbol = string
+
+  module Domain = Boolean_algebra.Bool
+
   let universe model = IdentSet.to_seq model.universe
   let predicate model pred tuple =
-    match IdentMap.find pred model.predicate_defns with
-    | _, Some tuples -> TupleSet.mem tuple tuples
-    | _, None -> failwith "undefined predicate"
+    let tuples = IdentMap.find pred model.predicate_defns in
+    TupleSet.mem tuple tuples
   let equal x y = String.equal x y
 end
 
-module EvalFormula
-  (BA : BOOLEAN_ALGEBRA)
-  (S : FO_STRUCTURE with type v = BA.t and type individual = string) =
-struct
+module SolverStructure () = struct
 
-  let eval_term local_env = function
-    | Var v -> IdentMap.find v local_env
-    | Fun _ -> failwith "internal error: Fun in formula"
+  module TV = Solver.Make ()
 
-  let rec eval_formula model local_env = function
-    | True -> BA.one
-    | False -> BA.zero
-    | Atom ("=", [tm1; tm2]) ->
-      S.equal (eval_term local_env tm1) (eval_term local_env tm2)
-    | Atom ("!=", [tm1; tm2]) ->
-      BA.neg (S.equal (eval_term local_env tm1) (eval_term local_env tm2))
-    | Atom (pred, tms) ->
-      let tuple = List.map (eval_term local_env) tms in
-      S.predicate model pred tuple
-    | Imp (p, q) ->
-      BA.disj [
-	BA.neg (eval_formula model local_env p);
-	eval_formula model local_env q;
-      ]
-    | And (p, q) ->
-      BA.conj [
-	eval_formula model local_env p;
-	eval_formula model local_env q;
-      ]
-    | Or (p, q) ->
-      BA.disj [
-	eval_formula model local_env p;
-	eval_formula model local_env q;
-      ]
-    | Not p ->
-      BA.neg (eval_formula model local_env p)
-    | Forall (vnm, p) ->
-      model
-      |> S.universe
-      |> Seq.map (fun x ->
-	   eval_formula model (IdentMap.add vnm x local_env) p)
-      |> List.of_seq
-      |> BA.conj
-    | Exists (vnm, p) ->
-      model
-      |> S.universe
-      |> Seq.map (fun x ->
-	   eval_formula model (IdentMap.add vnm x local_env) p)
-      |> List.of_seq
-      |> BA.disj
+  type t = {
+    universe : IdentSet.t;
+    predicate_defns : TupleSet.t IdentMap.t;
+    mutable predicate_vars : TV.t TupleMap.t IdentMap.t
+  }
+
+  (* 'predicate_vars' should be initialised with all the undefined
+     predicates. *)
+
+  let universe t =
+    IdentSet.to_seq t.universe
+
+  let predicate (model : t) pred tuple =
+    match IdentMap.find_opt pred model.predicate_defns with
+    | Some tuples ->
+      if TupleSet.mem tuple tuples then TV.one else TV.zero
+    | None ->
+      let tuples = IdentMap.find pred model.predicate_vars in
+      match TupleMap.find_opt tuple tuples with
+      | Some v -> v
+      | None ->
+	let v = TV.gen () in
+	model.predicate_vars <-
+           IdentMap.add pred (TupleMap.add tuple v tuples) model.predicate_vars;
+	v
+
+  let equal x y =
+    if String.equal x y then TV.one else TV.zero
+
+  let complete_model (model : t) vars =
+    List.iter TV.add_assert vars;
+    match TV.solve () with
+    | None ->
+      None
+    | Some assignment ->
+      let new_predicate_defns =
+	IdentMap.map (fun tuple_map ->
+	  TupleMap.fold
+	    (fun tuple v -> if assignment v then TupleSet.add tuple else Fun.id)
+	    tuple_map
+	    TupleSet.empty)
+	  model.predicate_vars
+      in
+      let predicate_defns =
+	IdentMap.union
+	  (fun _ tuples1 tuples2 -> Some (TupleSet.union tuples1 tuples2))
+	  model.predicate_defns
+	  new_predicate_defns
+      in
+      Some ({ universe = model.universe; predicate_defns } : structure)
 end
 
 module QueryEngine = struct
 
-  module BoolValued = EvalFormula (BoolBA) (ConcreteStructure)
+  module BoolValued = Formula_evaluator.Make (ConcreteStructure)
 
   module ResultTuple = struct
     type t = string IdentMap.t
@@ -359,50 +371,59 @@ let check_axioms theory structure =
       []
   in
   match invalid_axioms with
-  | [] -> Ok ()
+  | [] ->
+    Ok ()
   | invalid ->
-    Result_ext.errorf "The axioms %s do not hold for this model"
+    (* FIXME: explain why not. *)
+    errorf "The axioms %s do not hold for this model"
       (String.concat ", " invalid)
 
 type output_item =
   | Message of string
-  | Table of { headers : string list; rows : string list list }
+  | Pretty  of Pretty.document
+  | Table   of { headers : string list; rows : string list list }
 
 let messagef fmt = Printf.ksprintf (fun str -> Message str) fmt
 
 let exec_structure_item env = function
+
   | Structure.Theory { name; items } ->
     begin
       if IdentMap.mem name env then
-	Result_ext.errorf "The name '%s' has already been used for a definition" name
+	errorf "The name '%s' has already been used for a definition" name
       else
 	let+ theory = build_theory items in
-	messagef "Theory '%s' defined" name,
+	[ messagef "Theory '%s' defined" name ],
 	IdentMap.add name (Theory theory) env
     end
+
   | Structure.Model { name; theory_name; defns } ->
     begin
       if IdentMap.mem name env then
-	Result_ext.errorf "The name '%s' has already been used for a definition" name
+	errorf "The name '%s' has already been used for a definition" name
       else
 	match IdentMap.find_opt theory_name env with
 	| None ->
-	  Result_ext.errorf "'%s' does not refer to a defined theory" theory_name
+	  errorf "'%s' does not refer to a defined theory" theory_name
 	| Some (Model _) ->
-	  Result_ext.errorf "'%s' refers to a model; expecting a theory to be referenced here" name
+	  errorf "'%s' refers to a model; expecting a theory to be referenced here" name
 	| Some (Theory theory) ->
 	  let* structure = build_structure theory.predicates defns in
 	  let+ () = check_axioms theory structure in
-	  messagef "Model '%s' for theory '%s' defined" name theory_name,
+	  [
+	    messagef "Model '%s' for theory '%s' defined" name theory_name;
+	    Pretty (pp_structure structure)
+	  ],
 	  IdentMap.add name (Model (theory_name, structure)) env
     end
+
   | Check { model_name; formula } ->
     begin
       match IdentMap.find_opt model_name env with
       | None ->
-	Result_ext.errorf "'%s' does not refer to a defined model" model_name
+	errorf "'%s' does not refer to a defined model" model_name
       | Some (Theory _) ->
-	Result_ext.errorf "'%s' refers to a theory; expecting a model to be referenced here" model_name
+	errorf "'%s' refers to a theory; expecting a model to be referenced here" model_name
       | Some (Model (theory_name, model)) ->
 	let theory = match IdentMap.find theory_name env with Model _ -> assert false | Theory theory -> theory in
 	let+ free_vars = WFF.valid_formula theory.predicates formula in
@@ -411,15 +432,17 @@ let exec_structure_item env = function
 	in
 	if WFF.VarSet.is_empty free_vars then
 	  (if QueryEngine.ResultSet.is_empty results then
-	    messagef "Formula '%s' is not valid in model '%s'" (Formula.to_string formula) model_name,
+	    [ messagef "NOT VALID: %s |= %s" model_name (Formula.to_string formula) ] ,
 	    env
 	  else
-	    messagef "Formula '%s' valid in model '%s'" (Formula.to_string formula) model_name,
+	    [ messagef "VALID: %s |= %s" model_name (Formula.to_string formula) ],
 	    env)
 	else
 	  let headers = IdentSet.elements free_vars in
 	  let rows    = QueryEngine.ResultSet.fold (fun assignment -> List.cons (List.map (fun vnm -> IdentMap.find vnm assignment) headers)) results [] in
-	  Table { headers; rows }, env
+	  [ messagef "Results of query %s |= %s" model_name (Formula.to_string formula);
+	    Table { headers; rows }
+	  ], env
     end
 
 let rec exec_all env outputs = function
@@ -430,7 +453,7 @@ let rec exec_all env outputs = function
     | Error msg ->
       Error (List.rev outputs, msg)
     | Ok (output, env) ->
-      exec_all env (output::outputs) items)
+      exec_all env (List.rev_append output outputs) items)
 
 let exec =
   exec_all IdentMap.empty []
