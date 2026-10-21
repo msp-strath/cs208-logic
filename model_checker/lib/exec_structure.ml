@@ -184,9 +184,83 @@ let check_tuple ~universe ~arity individuals =
   in
   check arity [] individuals
 
+module ConcreteStructure = struct
+  type t = structure
+  type individual = string
+  type predicate_symbol = string
+
+  module Domain = Boolean_algebra.Bool
+
+  let universe model = IdentSet.to_seq model.universe
+  let predicate model pred tuple =
+    let tuples = IdentMap.find pred model.predicate_defns in
+    TupleSet.mem tuple tuples
+  let equal x y = String.equal x y
+end
+
+module SolverStructure () = struct
+
+  module S = Solver.Make ()
+  module Domain = S
+
+  type individual = string
+  type predicate_symbol = string
+
+  type t = {
+    universe : IdentSet.t;
+    predicate_defns : TupleSet.t IdentMap.t;
+    mutable predicate_vars : Domain.t TupleMap.t IdentMap.t
+  }
+
+  (* 'predicate_vars' should be initialised with all the undefined
+     predicates. *)
+
+  let universe t =
+    IdentSet.to_seq t.universe
+
+  let predicate (model : t) pred tuple =
+    match IdentMap.find_opt pred model.predicate_defns with
+    | Some tuples ->
+      if TupleSet.mem tuple tuples then Domain.one else Domain.zero
+    | None ->
+      let tuples = IdentMap.find pred model.predicate_vars in
+      match TupleMap.find_opt tuple tuples with
+      | Some v -> v
+      | None ->
+	let v = S.gen () in
+	model.predicate_vars <-
+           IdentMap.add pred (TupleMap.add tuple v tuples) model.predicate_vars;
+	v
+
+  let equal x y =
+    if String.equal x y then Domain.one else Domain.zero
+
+  let complete_model (model : t) vars =
+    List.iter S.add_assert vars;
+    match S.solve () with
+    | None ->
+      None
+    | Some assignment ->
+      let new_predicate_defns =
+	IdentMap.map (fun tuple_map ->
+	  TupleMap.fold
+	    (fun tuple v -> if assignment v then TupleSet.add tuple else Fun.id)
+	    tuple_map
+	    TupleSet.empty)
+	  model.predicate_vars
+      in
+      let predicate_defns =
+	IdentMap.union
+	  (fun _ tuples1 tuples2 -> Some (TupleSet.union tuples1 tuples2))
+	  model.predicate_defns
+	  new_predicate_defns
+      in
+      Some ({ universe = model.universe; predicate_defns } : structure)
+end
+
 (* Build a structure as a collection of entities and predicate
    definitions, checking it against the given vocabulary. *)
-let build_structure predicates defns =
+let build_structure theory defns =
   let universes, predicate_defns =
     List.partition_map
       (function
@@ -211,13 +285,13 @@ let build_structure predicates defns =
 	items
   in
   let find_predicate_decl ident =
-    match IdentMap.find_opt ident predicates with
+    match IdentMap.find_opt ident theory.predicates with
     | None -> errorf "Predicate '%s' not declared in this theory" ident
     | Some predicate_info -> Ok predicate_info
   in
-  let* predicate_defns =
+  let* predicate_defns, incomplete =
     Result_ext.fold_left_err
-      (fun predicate_defns (ident, items) ->
+      (fun (predicate_defns, incomplete) (ident, items) ->
 	let* { arity; location = _ } = find_predicate_decl ident in
 	let* () =
 	  match IdentMap.find_opt ident predicate_defns with
@@ -226,8 +300,7 @@ let build_structure predicates defns =
 	in
 	match items with
 	| None ->
-	  failwith "missing predicate definition"
-	  (* Ok (IdentMap.add ident (arity, None) predicate_defns) *)
+	  Ok (predicate_defns, IdentMap.add ident TupleMap.empty incomplete)
 	| Some items ->
 	  let* elems =
 	    Result_ext.fold_left_err
@@ -237,89 +310,47 @@ let build_structure predicates defns =
 	      TupleSet.empty
 	      items
 	  in
-	  Ok (IdentMap.add ident elems predicate_defns))
-      IdentMap.empty
+	  Ok (IdentMap.add ident elems predicate_defns, incomplete))
+      (IdentMap.empty, IdentMap.empty)
       predicate_defns
   in
-  let missing_predicates =
-    predicate_defns |> IdentMap.to_seq |> Seq.map fst |> Seq.fold_left (fun required nm -> IdentMap.remove nm required) predicates
+  let mentioned_predicates =
+    Seq.append
+      (Seq.map fst (IdentMap.to_seq predicate_defns))
+      (Seq.map fst (IdentMap.to_seq incomplete))
   in
-  if IdentMap.is_empty missing_predicates then
-    Ok { universe; predicate_defns }
-  else
-    errorf "Missing predicate definitions: %s are not defined"
-      (String.concat ", " (List.map fst (IdentMap.bindings missing_predicates)))
-
-
-module ConcreteStructure = struct
-  type t = structure
-  type individual = string
-  type predicate_symbol = string
-
-  module Domain = Boolean_algebra.Bool
-
-  let universe model = IdentSet.to_seq model.universe
-  let predicate model pred tuple =
-    let tuples = IdentMap.find pred model.predicate_defns in
-    TupleSet.mem tuple tuples
-  let equal x y = String.equal x y
-end
-
-module SolverStructure () = struct
-
-  module TV = Solver.Make ()
-
-  type t = {
-    universe : IdentSet.t;
-    predicate_defns : TupleSet.t IdentMap.t;
-    mutable predicate_vars : TV.t TupleMap.t IdentMap.t
-  }
-
-  (* 'predicate_vars' should be initialised with all the undefined
-     predicates. *)
-
-  let universe t =
-    IdentSet.to_seq t.universe
-
-  let predicate (model : t) pred tuple =
-    match IdentMap.find_opt pred model.predicate_defns with
-    | Some tuples ->
-      if TupleSet.mem tuple tuples then TV.one else TV.zero
-    | None ->
-      let tuples = IdentMap.find pred model.predicate_vars in
-      match TupleMap.find_opt tuple tuples with
-      | Some v -> v
-      | None ->
-	let v = TV.gen () in
-	model.predicate_vars <-
-           IdentMap.add pred (TupleMap.add tuple v tuples) model.predicate_vars;
-	v
-
-  let equal x y =
-    if String.equal x y then TV.one else TV.zero
-
-  let complete_model (model : t) vars =
-    List.iter TV.add_assert vars;
-    match TV.solve () with
-    | None ->
-      None
-    | Some assignment ->
-      let new_predicate_defns =
-	IdentMap.map (fun tuple_map ->
-	  TupleMap.fold
-	    (fun tuple v -> if assignment v then TupleSet.add tuple else Fun.id)
-	    tuple_map
-	    TupleSet.empty)
-	  model.predicate_vars
-      in
-      let predicate_defns =
-	IdentMap.union
-	  (fun _ tuples1 tuples2 -> Some (TupleSet.union tuples1 tuples2))
-	  model.predicate_defns
-	  new_predicate_defns
-      in
-      Some ({ universe = model.universe; predicate_defns } : structure)
-end
+  let missing_predicates =
+    Seq.fold_left
+      (fun required nm -> IdentMap.remove nm required)
+      theory.predicates
+      mentioned_predicates
+  in
+  let* () =
+    if IdentMap.is_empty missing_predicates then Ok ()
+    else
+      errorf "Missing predicate definitions: %s are not defined"
+	(String.concat ", " (List.map fst (IdentMap.bindings missing_predicates)))
+  in
+  (* Evaluate all the axioms of the theory in this partial model *)
+  let module E = SolverStructure () in
+  let module Ev = Formula_evaluator.Make (E) in
+  let partial_model =
+    let u = universe in
+    E.{ universe = u; predicate_defns; predicate_vars = incomplete }
+  in
+  let axiom_vars =
+    theory.axioms
+    |> IdentMap.to_seq
+    |> Seq.map (fun (_, { formula = fmla; location = _}) ->
+                  Ev.eval_formula partial_model IdentMap.empty fmla)
+    |> List.of_seq
+  in
+  match E.complete_model partial_model axiom_vars with
+  | None ->
+    (* FIXME: why not? *)
+    errorf "Unable to complete model"
+  | Some model ->
+    Ok model
 
 module QueryEngine = struct
 
@@ -408,8 +439,7 @@ let exec_structure_item env = function
 	| Some (Model _) ->
 	  errorf "'%s' refers to a model; expecting a theory to be referenced here" name
 	| Some (Theory theory) ->
-	  let* structure = build_structure theory.predicates defns in
-	  let+ () = check_axioms theory structure in
+	  let+ structure = build_structure theory defns in
 	  [
 	    messagef "Model '%s' for theory '%s' defined" name theory_name;
 	    Pretty (pp_structure structure)
@@ -439,7 +469,14 @@ let exec_structure_item env = function
 	    env)
 	else
 	  let headers = IdentSet.elements free_vars in
-	  let rows    = QueryEngine.ResultSet.fold (fun assignment -> List.cons (List.map (fun vnm -> IdentMap.find vnm assignment) headers)) results [] in
+	  let rows =
+	    List.rev
+	      (QueryEngine.ResultSet.fold
+		(fun assignment ->
+		  List.cons (List.map (fun vnm -> IdentMap.find vnm assignment) headers))
+		results
+		[])
+	  in
 	  [ messagef "Results of query %s |= %s" model_name (Formula.to_string formula);
 	    Table { headers; rows }
 	  ], env
