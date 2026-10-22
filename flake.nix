@@ -81,8 +81,8 @@ make -C slides -j 8 all
             installPhase = ''
 mkdir -p $out;
 for w in 1 2 3 4 5 6 7 8 9 10; do
-  outfile=$(printf "week%02d-slides.pdf" $w);
-  cp slides/week$w.pdf $out/$outfile;
+  outfile=$(printf "topic%02d-slides.pdf" $w);
+  cp slides/topic$w.pdf $out/$outfile;
 done;
 '';
           };
