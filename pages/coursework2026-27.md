@@ -8,7 +8,7 @@ The whole page is marked out of 20.
 
 The questions are on this page, along with places for you to write your answers.  This page will remember the answers you type in, even if you leave the page and come back. Your browser's [local storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API) is used to store the data. If you delete saved data in your browser, or visit this page in private browsing mode and then close the window, you will lose your answers.
 
-Once you have completed the questions, please click on the “Download” button to download your answers as a file called `cs208-2026-coursework.answers`. When you are ready to submit your answers, please upload the file to [the MyPlace submission page](https://classes.myplace.strath.ac.uk/mod/assign/view.php?id=2163360).
+Once you have completed the questions, click on the “Download” button to download your answers as a file called `cs208-2026-coursework.answers`. When you are ready to submit your answers, upload the file to [the MyPlace submission page](https://classes.myplace.strath.ac.uk/mod/assign/view.php?id=2163360).
 
 The deadline is **12:00 Wednesday 2nd December**. All extension requests should be submitted via [MyPlace](https://classes.myplace.strath.ac.uk/mod/assign/view.php?id=2163360).
 
@@ -16,9 +16,9 @@ The deadline is **12:00 Wednesday 2nd December**. All extension requests should 
 cs208-2026-coursework.answers
 ```
 
-## Question 0 (0 marks) {id=cw2026:q0}
+## Q0 (0 marks) {id=cw2026:q0}
 
-Please enter your name and registration number:
+Enter your name and registration number:
 
 - Name:
   ```entrybox {id=cw2026-name}
@@ -30,11 +30,11 @@ Please enter your name and registration number:
   <registration-number>
   ```
 
-## Question 1 : Undefined Behaviour (2 marks) {id=cw2026:q1}
+## Q1 : Undefined Behaviour (2 marks) {id=cw2026:q1}
 
 The [document defining the C programming language](https://www.iso.org/standard/82075.html) (available for free as a [draft copy](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)) includes the concept of *undefined behaviour* (Section 3.5.3). This means that there are things that have the syntax of C programs but the C standard does not assign them a behaviour for all possible inputs. A standards conforming C compiler is allowed to assume that the program it is asked to compile will only ever use behaviour that is defined by the standard. Therefore, if the program does do something that is undefined, then the C compiler is under no obligation to do anything “sensible” with the program.
 
-The concept of undefined behaviour is surprisingly subtle. Usually we can rely on each part of a program having a well defined meaning. Sequential steps of a program apply those means one after the other until the program finishes. However, if the compiler is allowed to assume that some things *cannot happen* because doing so would lead to undefined behaviour, then the compiler can draw non-obvious conclusions about the code.
+The concept of undefined behaviour is surprisingly subtle. Usually we can rely on each part of a program having a well defined meaning. Sequential steps of a program apply those meanings one after the other until the program finishes. However, if the compiler is allowed to assume that some things *cannot happen* because doing so would lead to undefined behaviour then the compiler can draw surprising and non-obvious conclusions about the code.
 
 Have a look at this snippet of C code. Assume that the variable `ptr` has type `int *` (i.e., it has the type of a pointer to an `int`).
 
@@ -45,7 +45,7 @@ if (ptr == NULL) {
 *ptr = 17;
 ```
 
-We might hope to read this as “if `ptr` is `NULL` then print a message. Then write `17` into the memory location pointed to by `ptr`”. If `ptr` is actually `NULL` when this code gets executed, then we might expect it to crash with a segmentation fault on the last line but we would also expect it to have printed a message before that, helping us to diagnose the problem.
+We might hope to read this as “if `ptr` is `NULL` then print a message. Then write `17` into the memory location pointed to by `ptr`”. If `ptr` is actually `NULL` when this code gets executed then we might expect it to crash with a segmentation fault on the last line. But we would also expect it to have printed a message before that, helping us to diagnose the problem.
 
 Surprisingly, the C standard **does not** require the compiler to print the message. In fact, the compiler is free to *completely remove the whole `if ... { ... }` from the code*.
 
@@ -140,7 +140,7 @@ because the first line is removed because variable `unused` is unused. The reaso
 The series of articles [What Every C Programmer Should Know About Undefined Behavior, Part 1](https://blog.llvm.org/2011/05/what-every-c-programmer-should-know.html), [Part 2](https://blog.llvm.org/2011/05/what-every-c-programmer-should-know_14.html) and [Part 3](https://blog.llvm.org/2011/05/what-every-c-programmer-should-know_21.html) explain more about undefined behaviour in C. Programming in C is very difficult to get right, and if (when) you do it wrong, you can cause [internet-wide shutdowns and cybersecurity flaws](https://www.bbc.co.uk/news/articles/c3qjnwye0ep5o) (the article doesn't mention it, but the bug lies in unexpected behaviour of PHP's implementation in C).
 ````
 
-## Question 2 : Set Theory (3 marks) {id=cw2026:q2}
+## Q2 : Set Theory (3 marks) {id=cw2026:q2}
 
 Predicate logic can be used as a foundational language for all of mathematics, but to do so we need to start from some axioms about what sort of things exist. *Set Theory* is a way of defining what mathematical things exist in terms of collections, called sets. The most common system of axioms for set theory is [Zermelo-Fraenkel Set Theory](https://en.wikipedia.org/wiki/Zermelo%E2%80%93Fraenkel_set_theory) which specifies 9 axioms (or "axiom schemas") that is enough to build almost all of modern mathematics. For this question we will look at two of the axioms: *pairing* and *union*.
 
@@ -171,7 +171,7 @@ Most of the axioms tell us when certain sets exist. We will only look at two of 
    all x. ex z. (all w. all u. member(w,u) -> member(u,x) -> member(w,z)) /\ (all w. member(w,z) -> (ex u. member(u,x) /\ member(w,u)))
    ```
 
-### Question 2(a) : Making Singletons {id=cw2026:q2:a}
+### Q2(a) : Making Singletons {id=cw2026:q2:a}
 
 Prove that the pairing axiom implies that singleton sets exist. That is, for every `x`, there is a set `s` that contains `x` and only `x`. This set is usually written as `{x}`.
 
@@ -183,7 +183,7 @@ Prove that the pairing axiom implies that singleton sets exist. That is, for eve
  (goal "all x. ex s. member(x,s) /\ (all w. member(w,s) -> w = x)"))
 ```
 
-### Question 2(b) : Unions of two sets {id=cw2026:q2:b}
+### Q2(b) : Unions of two sets {id=cw2026:q2:b}
 
 The union axiom states that a set of sets can be “flattened” to a single set by combining all their elements. A useful special case of this is the union of two sets: if `x` and `y` are sets, then their union (usually written `x ∪ y`) contains all the elements of `x` and all the elements of `y` and nothing else.
 
@@ -198,7 +198,7 @@ Prove that the union of `x` and `y` exists as a consequence of the pairing and u
  (goal "all x. all y. ex u. (all w. (member(w,x) \/ member(w,y)) -> member(w,u)) /\ (all w. member(w,u) -> (member(w,x) \/ member(w,y)))"))
 ```
 
-### Question 2(c) : Making triples {id=cw2026:q2:c}
+### Q2(c) : Making triples {id=cw2026:q2:c}
 
 The pairing axiom says that we can form the set `{x,y}` from `x` and `y`. Part (a) above says we can form `{x}` from `x`. Prove that from `x`, `y`, `z` we can make the set `{x,y,z}`.
 
@@ -211,7 +211,7 @@ The pairing axiom says that we can form the set `{x,y}` from `x` and `y`. Part (
  (goal "all x. all y. all z. ex t. member(x,t) /\ member(y,t) /\ member(z,t) /\ (all w. member(w,t) -> (w = x \/ w = y \/ w = z))"))
 ```
 
-## Question 3 : Hoare Logic is Sound (3 marks) {id=cw2026:q3}
+## Q3 : Hoare Logic is Sound (3 marks) {id=cw2026:q3}
 
 We have described the [rules of Hoare Logic](hoare-logic.md), but have not proved them sound with respect to our [simple model of computation](specify-verify.md#specify-verify:simple-model). You will do this now.
 
@@ -225,7 +225,7 @@ In words: if `P` is true for the initial state `s1`, and executing `prog` get us
 
 For the rules below (except for *Consequence*), we will have to assume certain properties of the `exec` predicate for the relevant kinds of program. We introduce these as we go.
 
-### Question 3(a) : Logical Consequence {id=cw2026:q3:a}
+### Q3(a) : Logical Consequence {id=cw2026:q3:a}
 
 The *Consequence* rule allows a specification to be adjusted. If we know that `prog` satisifies the specification `{ P } prog { Q }`, then we can *strengthen* the precondition and *weaken* the postcondition. Strengthening means assuming something that implies `P`, i.e. assuming something “stronger” (in the sense it can imply more things) than `P`. Weakening means ensuring something that is *implied by* `Q`.
 
@@ -252,7 +252,7 @@ Prove that Hoare Triples satisfy *Consequence*:
  (goal "all s1. all s2. P'(s1) -> exec(prog, s1, s2) -> Q'(s2)"))
 ```
 
-### Question 3(b) : Doing Nothing {id=cw2026:q3:b}
+### Q3(b) : Doing Nothing {id=cw2026:q3:b}
 
 The simplest program is one that does nothing. In the tool this is called `end` because it is only ever needed at the end of a block of code. In the unbiased presentation of Hoare Logic it can be used anywhere and so is called `skip()` (it is similar to `pass` in Python).
 
@@ -278,7 +278,7 @@ Prove that this rule is sound from the axiom about how `skip()` affects the stat
  (goal "all s1. all s2. P(s1) -> exec(skip(), s1, s2) -> P(s2)"))
 ```
 
-### Question 3(c) : Sequencing {id=cw2026:q3:c}
+### Q3(c) : Sequencing {id=cw2026:q3:c}
 
 The next basic way programs work is by sequencing them one after the other. The tool handles this implicitly, but the unbiased presentation of Hoare Logic treats sequencing as its own rule.
 
@@ -311,7 +311,7 @@ Prove that this rule is sound from the axiom of how sequencing affects the state
  (goal "all s1. all s2. P(s1) -> exec(seq(prog1, prog2), s1, s2) -> Q(s2)"))
 ```
 
-### Question 3(d) : Assignment (backward) {id=cw2026:q3:d}
+### Q3(d) : Assignment (backward) {id=cw2026:q3:d}
 
 In the tool, updating the state is performed by writing to variables. In the simple model of programs we have here, the state is not necessarily made of separate variables. We will simply model the updating of the state by assuming that there is some function `doUpdate(s)` that returns the updated version of the state.
 
@@ -338,7 +338,7 @@ Prove that this rule is sound, assuming the update axiom for `exec`:
  (goal "all s1. all s2. P(doUpdate(s1)) -> exec(update(), s1, s2) -> P(s2)"))
 ```
 
-### Question 3(e) : Assignment (forward) {id=cw2026:q3:e}
+### Q3(e) : Assignment (forward) {id=cw2026:q3:e}
 
 The alternative version of the rule for `update()` reasons forwards. This is the form that is used in the tool. The rule is:
 ```rules-display
@@ -359,7 +359,7 @@ Prove this rule using the same axiom for `update()` as above:
  (goal "all s1. all s2. P(s1) -> exec(update(), s1, s2) -> (ex oldstate. s2 = doUpdate(oldstate) /\ P(oldstate))"))
 ```
 
-### Question 3(f) : If-then-else {id=cw2026:q3:f}
+### Q3(f) : If-then-else {id=cw2026:q3:f}
 
 If-then-else is more complex than the rules above because it involves branching between two possible outcomes, so there are two premises to the rule.
 
@@ -393,11 +393,11 @@ Use the `exec-if` axiom to prove that the `If` rule is sound in Hoare Logic:
  (goal "all s1. all s2. P(s1) -> exec(ifC(prog1, prog2), s1, s2) -> Q(s2)"))
 ```
 
-## Question 4 : Straight Line Programs (3 marks) {id=cw2026:q4}
+## Q4 : Straight Line Programs (3 marks) {id=cw2026:q4}
 
 These three sub-questions all involve proving something about programs that do not involve any loops. In these questions, the reasoning is partly done "by hand" so that you can use the experience to understand the underlying steps. In a real implementation, all of these programs would be proved to meet their specifications automatically.
 
-### Question 4(a) : One step forward, one step back {id=cw2026:q4:a}
+### Q4(a) : One step forward, one step back {id=cw2026:q4:a}
 
 Adding and then subtracting gets you back to where you started:
 ```formula
@@ -419,7 +419,7 @@ Use this fact to write the following program that ends with a copy of `X` in `Y`
  (postcond "Y = x /\ X = add(x,y)"))
 ```
 
-### Question 4(b) : Swapping with XOR {id=cw2026:q4:b}
+### Q4(b) : Swapping with XOR {id=cw2026:q4:b}
 
 The `xor` function on pairs of integers has the following two useful properties:
 
@@ -456,7 +456,7 @@ Prove that this program works. The program code you type in (excepting `assert` 
  (postcond "X = y /\ Y = x"))
 ```
 
-### Question 4(c) : Swapping Array Elements {id=cw2026:q4:c}
+### Q4(c) : Swapping Array Elements {id=cw2026:q4:c}
 
 This program swaps two elements of an array `A` at indexes `I` and `J`. All other elements of the array are left as they were before:
 ```
@@ -483,11 +483,11 @@ You can add as many `assert`s as you need, but the program code should be exactl
 
 **HINT:** It is useful to add an assert at the end of the program but before `end` that summarises in one line how the final value of `A` relates to the initial value of the array in `arr`.
 
-## Question 5 : Programs with Loops (3 marks) {id=cw2026:q5}
+## Q5 : Programs with Loops (3 marks) {id=cw2026:q5}
 
 The next three questions involve programs with loops. The programs are given to you, but to complete the proofs you will need to work out the right [loop invariant](hoare-loops.md) to use, and how to use the axioms given to complete the proof.
 
-### Question 5(a) : Counting {id=cw2026:q5:a}
+### Q5(a) : Counting {id=cw2026:q5:a}
 
 The following program counts up the number of times `lookup(I)` returns `0` between `0` and `LEN - 1`:
 ```
@@ -530,7 +530,7 @@ Prove that the program above correctly implements `countTo`. You can add as many
  (postcond "COUNT = countTo(LEN)"))
 ```
 
-### Question 5(b) : Summing {id=cw2026:q5:b}
+### Q5(b) : Summing {id=cw2026:q5:b}
 
 The following program sums up the numbers in an array `A` up to but not including the `N`th element., putting the result into the variable `SUM`.
 ```
@@ -567,7 +567,7 @@ Prove that the program above correctly implements `sumArray`. You can add as man
  (postcond "SUM = sumArray(A,N)"))
 ```
 
-### Question 5(c) : Running Sum {id=cw2026:q5:c}
+### Q5(c) : Running Sum {id=cw2026:q5:c}
 
 The following program computes the running sums of an array `A`. At the end of the program, the output array `B` at element `i` contains the sum of the elements of `A` up to `i`.
 
@@ -600,7 +600,7 @@ You can add as many `assert`s as you need, but the program code should be exactl
  (postcond "all i. between(i,0,N) -> get(B,i) = sumArray(A,i)"))
 ```
 
-## Question 6 : Register Allocation (3 marks) {id=cw2026:q6}
+## Q6 : Register Allocation (3 marks) {id=cw2026:q6}
 
 Compilers have to translate from high level code that uses any amount of variables to low-level machine code that only has as many registers as the CPU has. Each variable in the high-level code must be assigned to a register in the machine code, but since there may be fewer registers than variables in the original code we have to find a way of reusing registers where possible.  This is a kind of resource allocation problem. One way to solve this problem is to express the problem in terms of logical constraints and ask the computer to find a solution.
 
@@ -691,9 +691,9 @@ model Example for RegisterAllocation {
 }
 ```
 
-## Question 7 : Route Planning for Robots (3 marks) {id=cw2026:q7}
+## Q7 : Planning (3 marks) {id=cw2026:q7}
 
-We can use logic to solve many kinds of planning problem. Given a logical description of what it means to be a good plan and constraints on what actions can be taken, we can get computers to write plans for us. This question develops a simple version of this.
+A planning problem is where we are asked to invent a way of achieving a goal by making actions.  We can use logic to solve many kinds of planning problem. Given a logical description of what it means to be a good plan and constraints on what actions can be taken, we can get computers to write plans for us. In this question you will develop a simple logical description of good plans that can be used by the computer to generate plans to meet specific goals.
 
 You are asked to write a theory for describing plans where a robot has to be in a sequence of locations, one for each timestep. Across consecutive timesteps, the robot can only move between locations that are linked. The robot must hit several specified waypoints.
 
@@ -744,7 +744,7 @@ We represent a plan using a predicate `robot-at/2`. If we have `robot-at(t,l)`, 
 4. For each consecutive pair of timesteps `t1` and `t2`, the location at time `t1` and the location at time `t2` are linked.
 5. Each waypoint is met by the robot.
 
-### Plans are Models of the Planning Theory {id=cw2026:q7:plans-are-models}
+### Plans are Models {id=cw2026:q7:plans-are-models}
 
 The editor box below is set up with a theory with the vocabulary described above and a partial model of this vocabulary for the example planning problem.
 
