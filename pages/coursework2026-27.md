@@ -83,7 +83,7 @@ We also encode the program into three axioms, which describe the programs' behav
   dereferenced(ptr)
   ```
 
-With all of these axioms together, we can prove that the message does not get printed. Prove this:
+With all of these axioms together, we can prove that the message does not get printed. Prove this using the [proof tool](pred-logic-rules.md):
 
 ```focused-nd {id=cw2026-1a marks=1}
 (config
@@ -144,17 +144,21 @@ The series of articles [What Every C Programmer Should Know About Undefined Beha
 
 Predicate logic can be used as a foundational language for all of mathematics, but to do so we need to start from some axioms about what sort of things exist. *Set Theory* is a way of defining what mathematical things exist in terms of collections, called sets. The most common system of axioms for set theory is [Zermelo-Fraenkel Set Theory](https://en.wikipedia.org/wiki/Zermelo%E2%80%93Fraenkel_set_theory) which specifies 9 axioms (or "axiom schemas") that is enough to build almost all of modern mathematics. For this question we will look at two of the axioms: *pairing* and *union*.
 
-In Set Theory, the only things that exist are sets and the only relationship that we have between things is membership. Membership is usually written as `x ∈ y` to mean `x` is a *member* of `y` (or `x` is an *element* of `y`). Here we will write this as `member(x,y)`. Everything else is built from sets and the membership relation between them.
+In Set Theory, the only things that exist are sets and the only relationship that we have between things is membership. Membership is usually written as `x ∈ y` to mean `x` is a *member* of `y` (or `x` is an *element* of `y`). Here we will write this as `member(x,y)`. Everything in Set Theory is built from sets and the membership relation between them.
 
-Informally, we write sets by listing their elements inside curly brackets, e.g. `{ a, b, c }` is the set containing `a`, `b` and `c`. To express this in terms of membership we say that there exists a set `x` such that `member(a,x)`, `member(b,x)` and `member(c,x)`, and that for all `y` such that `member(y,x)` then `y = a` or `y = b` or `y = c`. Note that we have to give both a list of things that we know to be in the set and something that is true for everything in the set.
+Informally, we write sets by listing their elements inside curly brackets. For example, `{ a, b, c }` is the set containing `a`, `b` and `c`. To express this in terms of the `member` relation we say that there exists a set `x` such that `member(a,x)`, `member(b,x)` and `member(c,x)`, and that for all `y` such that `member(y,x)` then `y = a` or `y = b` or `y = c`. Note that we have to give both a list of things that we know to be in the set and something that is true for everything in the set. (Compare to the introduction and elimination rules for the logical connectives.)
 
-Most of the axioms tell us when certain sets exist. We will only look at two of them:
+Saying that something is in a set twice (e.g., `member(a,x) /\ member(a,x)`) is equivalent to saying it is in the set once `member(a,x)`. This matches the usual idea of sets that duplicates don't matter: the set `{ a, a }` is the same as the set `{ a }`.
+
+There are nine axioms in the usual description of ZF Set Theory. Most of the axioms tell us when certain sets exist. We will only look at two of them:
 
 1. The *pair* axiom says that if `x` and `y` are sets, then there exists a set `p` such that `x` and `y` are members of `p`, and that `x` and `y` are the only members of `p`.
 
    ```formula
    all x. all y. ex p. (all w. member(w,p) -> (w = x \/ w = y)) /\ member(x,p) /\ member(y,p)
    ```
+
+   Informally, the pair axiom says that if we have `x` and `y`, then the set `{ x, y }` exists.
 
 2. The *union* axiom says that it is possible to “flatten” nested sets. For example, if we have a set of sets
    ```
@@ -395,7 +399,7 @@ Use the `exec-if` axiom to prove that the `If` rule is sound in Hoare Logic:
 
 ## Q4 : Straight Line Programs (3 marks) {id=cw2026:q4}
 
-These three sub-questions all involve proving something about programs that do not involve any loops. In these questions, the reasoning is partly done "by hand" so that you can use the experience to understand the underlying steps. In a real implementation, all of these programs would be proved to meet their specifications automatically.
+These three sub-questions all involve proving something about programs that do not involve any loops using the [rules of Hoare Logic](hoare-logic.md). You will also find [assertions and automation](hoare-assert-and-auto.md) useful.
 
 ### Q4(a) : One step forward, one step back {id=cw2026:q4:a}
 
@@ -421,7 +425,7 @@ Use this fact to write the following program that ends with a copy of `X` in `Y`
 
 ### Q4(b) : Swapping with XOR {id=cw2026:q4:b}
 
-The `xor` function on pairs of integers has the following two useful properties:
+The bitwise `xor` function on pairs of integers has the following two useful properties:
 
 1. It is commutative:
    ```formula
@@ -602,7 +606,7 @@ You can add as many `assert`s as you need, but the program code should be exactl
 
 ## Q6 : Register Allocation (3 marks) {id=cw2026:q6}
 
-Compilers have to translate from high level code that uses any amount of variables to low-level machine code that only has as many registers as the CPU has. Each variable in the high-level code must be assigned to a register in the machine code, but since there may be fewer registers than variables in the original code we have to find a way of reusing registers where possible.  This is a kind of resource allocation problem. One way to solve this problem is to express the problem in terms of logical constraints and ask the computer to find a solution.
+Compilers have to translate from high level code that uses any amount of variables to low-level machine code that only has as many registers as the CPU has. Each variable in the high-level code must be assigned to a register in the machine code, but since there may be fewer registers than variables in the original code we have to find a way of reusing registers where possible.  This is a kind of resource allocation problem. One way to solve this problem is to express the problem in terms of logical constraints and ask the computer to find a solution. We will do this by expressing valid allocations as [models of logical theories](pred-logic-semantics.md).
 
 ```details
 The Truth...
@@ -705,11 +709,11 @@ We model time as a collection of timesteps related to each other by a relation `
 
 We will not specify any particular axioms about time in our theory. The nature of time will be something that is given by the model itself. For some purposes, it might make sense for time to be have branches or to have loops.
 
-For the example planning scenario here though, we will assume that there are six timesteps `T1`, `T2`, `T3`, `T4`, `T4`, `T5`, `T6`, and that `next(x,y)` is true for each pair in sequence. Only immediately consecutive timesteps are related by `next`: we have `next(T1,T2)` and `next(T2,T3)` but not `next(T1,T3)`.
+For the example planning scenario here though, we will assume that there are six timesteps `T1`, `T2`, `T3`, `T4`, `T5`, `T6`, and that `next(x,y)` is true for each pair in sequence. Only immediately consecutive timesteps are related by `next`: we have `next(T1,T2)` and `next(T2,T3)` but not `next(T1,T3)`.
 
 ### Place {id=cw2026:q7:place}
 
-We model the places that can be moved to as locations related to each other by `linked/2`. Locations are things `l` such that `location(l)` is true. Two locations `l1` and `l2` are directly linked if `linked(l1,l2)` is true. The idea is that if two locations are linked, then the robot can move from one to the other in between two timesteps.
+We model the places that can be moved to as locations related to each other by `linked/2`. Locations are things `l` such that `location(l)` is true. Two locations `l1` and `l2` are directly linked if `linked(l1,l2)` is true. The idea is that if two locations are linked, then the robot can move from one to the other in between two immediately subsequent timesteps.
 
 For the example planning scenario here, we assume the locations `Store`, `Factory`, `LoadingBay`, `Road`, `Yard`, and `WasteHeap`. These are linked in the following way:
 
@@ -748,7 +752,7 @@ We represent a plan using a predicate `robot-at/2`. If we have `robot-at(t,l)`, 
 
 The editor box below is set up with a theory with the vocabulary described above and a partial model of this vocabulary for the example planning problem.
 
-If you click ‘Run’, it will generate an empty plan (i.e. a definition of `robot-at`). The empty plan is not a valid plan.
+If you click ‘Run’, it will generate an empty plan (i.e., an empty definition of `robot-at/2` where nothing is true). The empty plan is not a valid plan.
 
 Add axioms to the theory that generate a valid plan for the robot. Make sure that your axioms match the five properties for a good plan listed above. You should put in the axioms that match the properties above, not just ones that happen to give a valid plan in this example. Your axioms should work for all examples.
 

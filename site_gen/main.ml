@@ -13,53 +13,53 @@ let template ~title:title_text ?(sub_title="") ~script_url navigation_html body_
   let open Html_static in
   let (@|) elem elems = elem (concat_list elems) in
   html @| [
-      head @| [
-        meta ~attrs:[A.charset "utf8"];
-        meta ~attrs:[
-            A.name "viewport";
-            A.content "width=device-width, initial-scale=1.0"
-          ];
-        link ~attrs:[
-            A.rel "stylesheet";
-            A.href "simple.min.css"
-          ];
-        link ~attrs:[
-            A.rel "stylesheet";
-            A.href "local.css"
-          ];
-        script ~attrs:[A.src script_url; raw_attr "defer" "yes"] "";
-        title title_text
+    head @| [
+      meta ~attrs:[A.charset "utf8"];
+      meta ~attrs:[
+        A.name "viewport";
+        A.content "width=device-width, initial-scale=1.0"
       ];
-      body @| [
-          header @| [
-            h1 (text title_text);
-            p (text sub_title);
-            nav @| [
-                a ~attrs:[A.href "index.html"] (text "Contents");
-                (* a ~attrs:[A.href "coursework2025-26.html"] (text "Coursework"); *)
-              ]
-          ];
-          div ~attrs:[ A.class_ "navigation" ] navigation_html;
-
-          main body_html;
-
-          footer @| [
-              text "Source code for these pages ";
-              a ~attrs:[A.href "https://github.com/msp-strath/cs208-logic"]
-                (text "on GitHub");
-              text ". ";
-              text "Styling provided by ";
-              a ~attrs:[A.href "https://simplecss.org/"]
-                (text "SimpleCSS");
-              text "."
-            ]
+      link ~attrs:[
+        A.rel "stylesheet";
+        A.href "simple.min.css"
+      ];
+      link ~attrs:[
+        A.rel "stylesheet";
+        A.href "local.css"
+      ];
+      script ~attrs:[A.src script_url; raw_attr "defer" "yes"] "";
+      title title_text
+    ];
+    body @| [
+      header @| [
+        h1 (text title_text);
+        p (text sub_title);
+        nav @| [
+          a ~attrs:[A.href "index.html"] (text "Contents");
+          a ~attrs:[A.href "coursework2026-27.html"] (text "Coursework");
         ]
+      ];
+      div ~attrs:[ A.class_ "navigation" ] navigation_html;
+
+      main body_html;
+
+      footer @| [
+        text "Source code for these pages ";
+        a ~attrs:[A.href "https://github.com/msp-strath/cs208-logic"]
+          (text "on GitHub");
+        text ". ";
+        text "Styling provided by ";
+        a ~attrs:[A.href "https://simplecss.org/"]
+          (text "SimpleCSS");
+        text "."
+      ]
     ]
+  ]
 
 let code_render ~self ~attributes ~kind content = match kind with
-  (* FIXME: find a way to synchronise this with frontend.ml, and to
-     syntax check the configurations. *)
-  | "lmt" | "tickbox" | "textbox" | "entrybox" | "selection"
+     (* FIXME: find a way to synchronise this with frontend.ml, and to
+	syntax check the configurations. *)
+| "lmt" | "tickbox" | "textbox" | "entrybox" | "selection"
   | "rules" | "rules-display" | "focused-nd"
   | "focused-tree" | "focused-freeentry"
   | "model-checker"
@@ -67,79 +67,79 @@ let code_render ~self ~attributes ~kind content = match kind with
   | "hoare"
   | "search-calculus"
   | "formulaentry" as kind ->
-     let open Html_static in
-     let id = List.assoc_opt "id" attributes in
-     let attrs =
-       [ raw_attr "data-widget" kind ]
+  let open Html_static in
+  let id = List.assoc_opt "id" attributes in
+  let attrs =
+    [ raw_attr "data-widget" kind ]
        @ (match id with Some id -> [ raw_attr "data-key" id ] | None -> [])
-     in
-     div ~attrs (text content)
-  | "youtube" ->
-     let identifier = String.trim content in
-     let open Html_static in
-     iframe
-       ~attrs:[
-         raw_attr "width" "560";
-         raw_attr "height" "315";
-         A.src ("https://www.youtube-nocookie.com/embed/" ^ identifier);
-         raw_attr "frameborder" "0";
-         raw_attr "allow" "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-         raw_attr "allowfullscreen" ""
-       ]
-       empty
-  | "download" ->
-     let filename = String.trim content in
-     let open Html_static in
-     button
-       ~attrs:[ A.id "download"
-              ; raw_attr "data-filename" filename ]
-       (text "Download")
-  | "pikchr" ->
-     (match Opikchr.pikchr ~src:content () with
-      | Ok (svg, width, height) ->
-         let open Html_static in
-         div
-           ~attrs:[
-             A.style (Printf.sprintf "width: %dpx; height: %dpx; margin: auto" width height)
-           ]
-           (raw_text svg)
-      | Error html ->
-         (* FIXME: ought to abort the processing here? *)
-         Html_static.raw_text html)
-  | "details" ->
-     let open Html_static in
-     let title, body =
-       match String.index_opt content '\n' with
-       | None ->
-          None,
+  in
+  div ~attrs (text content)
+| "youtube" ->
+  let identifier = String.trim content in
+  let open Html_static in
+  iframe
+    ~attrs:[
+      raw_attr "width" "560";
+      raw_attr "height" "315";
+      A.src ("https://www.youtube-nocookie.com/embed/" ^ identifier);
+      raw_attr "frameborder" "0";
+      raw_attr "allow" "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+      raw_attr "allowfullscreen" ""
+    ]
+    empty
+| "download" ->
+  let filename = String.trim content in
+  let open Html_static in
+  button
+    ~attrs:[ A.id "download"
+      ; raw_attr "data-filename" filename ]
+    (text "Download")
+| "pikchr" ->
+  (match Opikchr.pikchr ~src:content () with
+  | Ok (svg, width, height) ->
+    let open Html_static in
+    div
+      ~attrs:[
+        A.style (Printf.sprintf "width: %dpx; height: %dpx; margin: auto" width height)
+      ]
+      (raw_text svg)
+  | Error html ->
+    (* FIXME: ought to abort the processing here? *)
+    Html_static.raw_text html)
+| "details" ->
+  let open Html_static in
+  let title, body =
+    match String.index_opt content '\n' with
+    | None ->
+      None,
           Omd.of_string content
-       | Some i ->
-          Some (String.sub content 0 i),
+    | Some i ->
+      Some (String.sub content 0 i),
           Omd.of_string (String.sub content (i+1) (String.length content - i - 1))
-     in
-     details
-       ((match title with None -> empty | Some t -> summary (text t))
+  in
+  details
+    ((match title with None -> empty | Some t -> summary (text t))
         ^^ self body)
-  | "aside" ->
-     let open Html_static in
-     let body = Omd.of_string content in
-     aside (self body)
-  | "formula" ->
-     let open Fol_formula in
-     (match Formula.of_string content with
-      | Ok fmla ->
-         let open Html_static in
-         div ~attrs:[ A.class_ "displayedformula" ]
-           (Html_of_formula.html_of_formula fmla)
-      | Error (`Parse err) ->
-         (* FIXME: just log the error? *)
-         failwith (Parser_util.Driver.string_of_error err))
-  | "comment" ->
-     Html_static.empty
-  | "" ->
-     Html_static.(pre (code (text content)))
-  | tag ->
-     failwith ("Unknown block tag: " ^ tag)
+| "aside" ->
+  let open Html_static in
+  let body = Omd.of_string content in
+  aside (self body)
+| "formula" ->
+  let open Fol_formula in
+  (match Formula.of_string content with
+  | Ok fmla ->
+    let open Html_static in
+    div ~attrs:[ A.class_ "displayedformula" ]
+      (Html_of_formula.html_of_formula fmla)
+  | Error (`Parse err) ->
+    (* FIXME: just log the error? *)
+    failwith (Parser_util.Driver.string_of_error err))
+| "comment" ->
+  Html_static.empty
+| "" ->
+  Html_static.(pre (code (text content)))
+| tag ->
+  failwith ("Unknown block tag: " ^ tag)
 
 module OmdRender =
   Html_of_omd.Make (Html_static)
