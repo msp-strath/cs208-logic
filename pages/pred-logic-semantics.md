@@ -37,29 +37,29 @@ Is this a simplification too far? It is not, because we can always translate a f
 The resulting formula with the additional assumptions is provable exactly when the original was, so we have not lost anything. Predicate logic without function symbols is as expressive as with, although formulas do become much lengthier.
 ````
 
-In order to have a way to unambiguously write down vocabularies, we use the notation `relation/n`, where `n` is a number indicating the number of arguments this symbol has. We will write vocabularies as `vocab <NAME> { <relation-symbols> }`. For example, a vocabulary for humanity and mortality where `human` and `mortal` are both relation symbols that take one argument would be:
+In order to have a way to unambiguously write down vocabularies, we use the notation `relation/n`, where `n` is a number indicating the number of arguments this symbol has. We will write vocabularies as `vocab <NAME> { <relation-symbols> }`. For example, for the theory of humanity and mortality where `human` and `mortal` are both relation symbols that take one argument, the vocabulary would be written as:
 ```
-vocab Mortality {
-  human/1
-  mortal/1
+theory Mortality {
+  predicate human/1
+  predicate mortal/1
 }
 ```
-A vocabulary for talking about things that are less than other things would have a predicate `lessthan` that takes two arguments:
+A theory for talking about things that are less than other things would have a predicate `lessthan` that takes two arguments:
 ```
-vocab Ordering {
-  lessthan/2
+theory Ordering {
+  predicate lessthan/2
 }
 ```
-A vocabulary for talking about places including cities and countries and whether or not they are within each other would be:
+A theory for talking about places including cities and countries and whether or not they are within each other would have a vocabulary like:
 ```
-vocab Places {
-  city/1
-  country/1
-  within/2
+theory Places {
+  predicate city/1
+  predicate country/1
+  predicate within/2
 }
 ```
 
-Equality can be though of as a `2`-ary predicate symbol `=/2`. We will always include **equality** in our vocabularies without mentioning it, due to the way it is [treated specially](pred-logic-rules.md#pred-logic:equality) in logic.
+Equality can be though of as a `2`-ary predicate symbol `=/2`. We will always include **equality** in our vocabularies without mentioning it, due to the way it is [treated specially](pred-logic-rules.md#pred-logic:equality) in logic. Disequality `x != y` is treated as an abbreviation for `¬ (x = y)`.
 
 ## Models {id=pred-sem:models}
 
@@ -72,9 +72,9 @@ Then for each predicate symbol `pred/n`, we must say for which of the values of 
 For example, the `Mortality` vocabulary could have a model with three entities in the universe: `jason`, `zeus`, and `wuffles`. The `human/1` predicate contains `jason`, and the `mortal/1` predicate contains `jason` and `wuffles` (the dog). Clicking **Run** checks the given model against the vocabulary.
 
 ```model-checker {id=predsem-greekmyth-model}
-vocab Mortality {
-  human/1
-  mortal/1
+theory Mortality {
+  predicate human/1
+  predicate mortal/1
 }
 
 model GreekMyth for Mortality {
@@ -89,8 +89,8 @@ model GreekMyth for Mortality {
 The `Mortality` vocabulary has only `1`-ary predicates. In general, predicates have more than one argument, which we write as multiple values in parentheses. For example, in the `Ordering` vocabulary, the `lessthan/2` predicate has arity `2` so we write its elements as pairs `(x,y)`:
 
 ```model-checker {id=predsem-ordering-model}
-vocab Ordering {
-  lessthan/2
+theory Ordering {
+  predicate lessthan/2
 }
 
 model Line for Ordering {
@@ -118,10 +118,10 @@ Altogether, a **model** consists of:
 A useful intuition to think about models is as databases: each predicate symbol is interpreted as a (possibly infinite) table of related elements of the universe. For example, the `Places` vocabulary defined above has an associated model that records the countries and some of the cities of the United Kingdom. We can think of `city`, `country`, and `within` as *tables* of data within a database. As we will see below, we will use formulas to query databases.
 
 ```model-checker {id=predsem-places-model-uk}
-vocab Places {
-  city/1
-  country/1
-  within/2
+theory Places {
+  predicate city/1
+  predicate country/1
+  predicate within/2
 }
 
 model UnitedKingdom for Places {
@@ -150,10 +150,10 @@ The predicate names we use in our vocabularies are just names. This means that t
 The `Circle` model for the `Ordering` vocabulary is an example of a model that doesn't match what we might mean as `lessthan` because it says that `north` is less than `south`, but also that `south` is less than `north`. Another example in the `Places` vocabulary, we may feel like we can assume that cities and countries are distinct categories and that a country is not within itself, but there is nothing stopping a model of the `Places` vocabulary from violating these properties, as the `LoopLand` model shows:
 
 ```model-checker {id=predsem-places-model-}
-vocab Places {
-  city/1
-  country/1
-  within/2
+theory Places {
+  predicate city/1
+  predicate country/1
+  predicate within/2
 }
 
 model LoopLand for Places {
@@ -201,10 +201,10 @@ In symbols, using the double square (“Scott”) bracket notation (similar to t
 
 ```
 〚R(x1,...,xn)〛v = T if (v(x1), ..., v(xn)) ∈ R
-                = F otherwise
+                  = F otherwise
 
 〚x = y〛v        = T if v(x) = v(y)
-                = F otherwise
+                  = F otherwise
 ```
 
 -  **Example**. In the `UnitedKingdom` model, we have:
@@ -227,15 +227,15 @@ The quantifiers are interpreted by checking the truth values of the subformulas 
 In symbols, using the double bracket notation:
 ```
 〚∀x. P〛v = T   if for all 'a' in the universe, 〚P〛(v[x ↦ a]) = T
-         = F    otherwise
+           = F    otherwise
 
 〚∃x. P〛v = T   if for some 'a' in the universe, 〚P〛(v[x ↦ a]) = T
-         = F    otherwise
+           = F    otherwise
 ```
 
-These definitions may seem pointless, but the key point is that the variables *only take values from the universe*. As far as the interpretations of formulas in a particular model is concerned, it is only the values in the universe that matter.
+These definitions may seem like they are doing nothing more than defining the “for all” quantifier in terms of our prior understanding of “for all things”, but the key point is that the variables *only take values from the universe*. As far as the interpretations of formulas in a particular model is concerned, it is only the values in the universe of the model that matter.
 
-- **Example**. In the `UnitedKingdom` model, we have `〚∀x. city(x)〛v = F`, because it is not the case that *for all* possible values of `x` that `city(x)` is true (it is not for `x = scotland`). On the other hand, `〚∃x. city(x)〛v = T`, because there exists at least one city in this model.
+- **Example**. In the `UnitedKingdom` model, we have `〚∀x. city(x)〛v = F`, because it is not the case that *for all* possible values of `x` that `city(x)` is true (it is not true for `x = scotland`). On the other hand, `〚∃x. city(x)〛v = T`, because there exists at least one city in this model.
 
 The propositional connectives are the same as they were for Propositional Logic:
 ```
@@ -295,22 +295,34 @@ So we have `UnitedKingdom ⊧ ∀x. ¬(city(x) ∧ country(x))` and `LoopLand �
   ```
   in the `UnitedKingdom` model, and in the `LoopLand` model.
 
+  ```details
+  Solution...
+
+  FIXME
+  ```
+
 - **Exercise**. Compute the truth value of the formula
   ```formula
   all x. city(x) -> (ex y. ex c. city(y) /\ within(x,c) /\ within(y,c) /\ ¬x=y)
   ```
   in the `UnitedKingdom` model, and in the `LoopLand` model.
 
+  ```details
+  Solution...
+
+  FIXME
+  ```
+
 
 ### Entailment {id=pred-sem:interp:entailment}
 
-Remember that we defined **entailment** in [Propostiional Logic](entailment.md) as a relation between a collection of assumptions and a conclusion:
+Remember that we defined **entailment** in [Propositional Logic](entailment.md) as a relation between a collection of assumptions and a conclusion:
 ```
    P1, ..., Pn ⊧ Q
 ```
 This relation “holds” or “is valid” if for all valuations, if all the assumptions are true, then the conclusion is true.
 
-For Predicate Logic, we use the same idea, except that instead of valuations, we use models.
+For Predicate Logic we use the same idea, except that instead of valuations we use models.
 
 **Definition** (Entailment). When `P1`, ..., `Pn`, and `Q` are Predicate Logic formulas in some vocabulary `V`, we say that the entailment `P1, ..., Pn ⊧ Q` holds if *for all models* `M`, if for all `i`, `M ⊧ Pi`, then `M ⊧ Q`.
 
@@ -352,9 +364,9 @@ If we have a fixed model `M`, then the first thing we can do is to ask what form
 The tool embedded in this page can compute whether or not a formula is true in *finite* models. For example, the `GreekMyth` model for the `Mortality` vocabularity supports one of the formulas shown below, but not the other. If you click **Run**, then the output will confirm that the first formula is supported by the model (“Verified”) but the second is not, and a counter example is produced.
 
 ```model-checker {id=predsem-computing-greek}
-vocab Mortality {
-  human/1
-  mortal/1
+theory Mortality {
+  predicate human/1
+  predicate mortal/1
 }
 
 model GreekMyth for Mortality {
@@ -379,10 +391,10 @@ To make both formulas true, you need to make the elements of `human` and `mortal
 The next example uses the `UnitedKingdom` model for the `Places` vocabulary. There are five formulas at the end, four of which are supported by the model. Click **Run** to see which.
 
 ```model-checker {id=predsem-computing-unitedkingdom}
-vocab Places {
-  city/1
-  country/1
-  within/2
+theory Places {
+  predicate city/1
+  predicate country/1
+  predicate within/2
 }
 
 model UnitedKingdom for Places {
@@ -431,3 +443,35 @@ To see this, we can rely on the soundness of our proof system. Assuming these tw
  (solution (Rule(Use exists-city-and-country)((Rule(ExElim x H)((Rule(Use never-both-city-and-country)((Rule(Instantiate(Var x))((Rule NotElim((Rule(Use H)((Rule Close())))))))))))))))
 ```
 ````
+
+## Models and Databases {id=using-models:databases}
+
+The *Relational Model* for databases was introduced by Edgar F. Codd in the paper [*A relational model of data for large shared data banks*](https://dl.acm.org/doi/10.1145/362384.362685), originally written in 1969.
+
+The core idea of the Relational Model is that databases are comprised of *relations* between values. A database that stores banking information could relate account holders to their names and addresses, and also relate account holders to their accounts, and each account to its transactions. The key innovation of the relational model is that these relations are unbiased, unlike the “navigational” or “hierarchical” models that predated it, which allow referencing of transtions *from* accounts, but not (easily) the reverse. This lack of bias makes the relational model very flexible in the face of changing data access requirements.
+
+The connection to Predicate Logic arises from the fact that there is a tight connection between logical concepts and parts of the relational model:
+
+| Logical Concept | Database Concept |
+|-----------------|------------------|
+| Vocabulary      | Schema           |
+| Predicate       | (finite) Tables  |
+| Formulas        | Queries          |
+| Models          | Databases        |
+
+**Example**. The Structured Query Language (SQL) is the most common language for writing queries on relational databases. A simple SQL query is:
+```
+SELECT City.X
+FROM City, Within
+WHERE City.X = Within.X AND Within.Y = "scotland"
+```
+This query will return all the cities in Scotland in the database. This query is equivalent to asking *“what values of `x` make the following formula true in a model?”*
+```formula
+ex y. city(x) /\ within(y,z) /\ x = y /\ z = scotland()
+```
+or, more simply:
+```formula
+within(x,scotland()) /\ city(x)
+```
+
+**FIXME**: put in some more examples

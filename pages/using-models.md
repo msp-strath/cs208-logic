@@ -4,41 +4,19 @@
 This page assumes that you have read the [Introduction to Predicate Logic](pred-logic-intro.html) and about the [Semantics of Predicate Logic](pred-logc-semantics.html). You can also read the [proof rules for predicate logic](pred-logic-rules.html) to get a feel for how the quantifiers in predicate logic work.
 ```
 
+**DRAFT**
+
 One reason to study the semantics of Predicate Logic is to give us some faith that the proof system we have been using actually means something. Another reason is that it gives us another view of logical formulas that is very useful for many purposes.
 
-## Models and Databases {id=using-models:databases}
+Given a collection of formulas `P1`, ..., `Pn`, it can be useful to build a model `M` of them. There are several uses:
 
-The *Relational Model* for databases was introduced by Edgar F. Codd in the paper [*A relational model of data for large shared data banks*](https://dl.acm.org/doi/10.1145/362384.362685), originally written in 1969. You will learn more about the Relational Model in the second half of CS209.
+1. Building a model of a collection of formulas helps us check to see whether or not the formulas make sense. If we are able to build a model of some axioms that does not match our intuition, then perhaps we have made a mistake in our axioms? Or maybe we have learnt an unexpected fact about our axioms?
 
-The core idea of the Relational Model is that databases are comprised of *relations* between values. A database that stores banking information could relate account holders to their names and addresses, and also relate account holders to their accounts, and each account to its transactions. The key innovation of the relational model is that these relations are unbiased, unlike the “navigational” or “hierarchical” models that predated it, which allow referencing of transtions *from* accounts, but not (easily) the reverse. This lack of bias makes the relational model very flexible in the face of changing data access requirements.
+2. Building a model that satisfies a collection of axioms but also falsifies another formula is a way of showing that there is no way of proving that formula from the axioms. We will look at this to show that [certain formulas are unprovable](using-models.md#using-models:proof-counter).
 
-The connection to Predicate Logic arises from the fact that there is a tight connection between logical concepts and parts of the relational model:
+3. If we specify some axioms and *part of* a model, we can get the computer to complete the rest of the model for us such that the axioms are validated. This gives a way of solving problems not by explicitly programming a way of solving them, but instead by stating what it is we want solved and getting the computer to do it for us. We will look at several examples below, including [package installations](using-models.md#using-models:packages) and [resource allocation](using-models.md#using-models:resource-alloc).
 
-| Logical Concept | Database Concept |
-|-----------------|------------------|
-| Vocabulary      | Schema           |
-| Predicate       | (finite) Tables  |
-| Formulas        | Queries          |
-| Models          | Databases        |
-
-**Example**. The Structured Query Language (SQL) is the most common language for writing queries on relational databases. A simple SQL query is:
-```
-SELECT City.X
-FROM City, Within
-WHERE City.X = Within.X AND Within.Y = "scotland"
-```
-This query will return all the cities in Scotland in the database. This query is equivalent to asking *“what values of `x` make the following formula true in a model?”*
-```formula
-ex y. city(x) /\ within(y,z) /\ x = y /\ z = scotland()
-```
-or, more simply:
-```formula
-within(x,scotland()) /\ city(x)
-```
-
-### Generating Models {id=using-models:generating}
-
-Given a collection of formulas `P1`, ..., `Pn`, it can be useful to generate a model `M` of them. Sometimes it is easier to think about concrete situations rather than abstract properties. Such models can also be used as counterexamples to show that [certain formulas are unprovable](using-models.md#using-models:proof-counter). Finally, it is also possible to use model generation, often combined with some randomness, as a kind of logically guided generative AI.
+## Building Models {id=using-models:generating}
 
 Generating small models from collections of formulas is a useful skill for checking that such formulas make sense together, so let's step through an example using the `Places` vocabulary with the following three formulas:
 
@@ -162,7 +140,7 @@ check M |= "all x. ex y. lessthan(x,y)"
 
 **Exercise**. Convince yourself that there are no finite models that make all of these formulas true simultaneously. For each three of four of the formulas, write a model that satisfies those formulas.
 
-### Proof and Counterexamples {id=using-models:proof-counter}
+## (Un)Proof and Counterexamples {id=using-models:proof-counter}
 
 Proof is a way to show that a formula is true in all models. Conversely, we can use models to show that certain formulas are not provable. To do this, it is not enough to simply fail to prove the formula, because it may be the case that a proof exists and we just did not work hard enough to find it.
 
@@ -188,3 +166,13 @@ from the assumptions
    all x. ¬(city(x) ∧ country(x))
    ```
 This is because the model we [constructed above](using-models.md#using-models:generating) supports the three listed formulas, but not `¬ (∃ x. country(x))` (because there exists a `country` in the model). Therefore, the argument we just made shows that it is not possible to prove this formula.
+
+**Exercise**: FIXME
+
+## Package Installations {id=using-models:packages}
+
+**FIXME**
+
+## Resource Allocation {id=using-models:resource-alloc}
+
+**FIXME**

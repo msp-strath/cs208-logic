@@ -118,7 +118,7 @@ The [semantics of Predicate Logic](pred-logic-semantics.md) is inevitably more c
 
 Topic 9 is **Applications of Predicate Logic Semantics**.
 
-TBD...
+Models can be thought of as descriptions of the world in terms of individuals and relations. Predicate Logic is language for describing which models “make sense” and for asking questions about models. There are many possible [uses of models](using-models.md) for stating and solving problems, which we will explore this week.
 
 ```comment
    [SAT Solvers](sat.md) are a class of tool that can solve very large problems in Propositional Logic, and are used as a foundation for building tools that can solve problems in Predicate Logic. They use heuristic search techniques to try to avoid exponential runtime behaviour.
