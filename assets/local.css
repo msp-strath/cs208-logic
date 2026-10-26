@@ -32,6 +32,12 @@ body > .navigation {
     }
 }
 
+@media only print {
+    body > .navigation {
+	display: none;
+    }
+}
+
 /* Monospace is easier to read when entering lots of symbols */
 
 input {
