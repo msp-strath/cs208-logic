@@ -717,19 +717,37 @@ We model the places that can be moved to as locations related to each other by `
 
 For the example planning scenario here, we assume the locations `Store`, `Factory`, `LoadingBay`, `Road`, `Yard`, and `WasteHeap`. These are linked in the following way:
 
+```pikchr
+Store: box rad 5px "Store" fit
+move from Store right 2cm up 0.3cm
+Factory: box rad 5px "Factory" fit
+move from Store right 2cm down 0.3cm
+Yard: box rad 5px "Yard" fit
+move from Factory right 2cm
+LoadingBay: box rad 5px "LoadingBay" fit
+move from Store right 8cm up 0.3cm
+Road: box rad 5px "Road" fit
+move from Store right 8cm down 0.3cm
+WasteHeap: box rad 5px "WasteHeap" fit
+
+arrow <-> from Store.e to Factory.w
+arrow <-> from Store.e to Yard.w
+arrow <-> from Factory.e to LoadingBay.w
+arrow <-> from Yard.n to Factory.s
+arrow <-> from Yard.e to WasteHeap.w
+arrow from WasteHeap.n to Road.s
+arrow from LoadingBay.se to WasteHeap.nw
+arrow from LoadingBay.e to Road.w
 ```
-    (Store, Factory)
-    (Store, Yard)
-    (Factory, Store)
-    (Factory, LoadingBay)
-    (Yard, Factory)
-    (Yard, Store)
-    (Yard, WasteHeap)
-    (WasteHeap, Road)
-    (WasteHeap, Yard)
-    (LoadingBay, WasteHeap)
-    (LoadingBay, Factory)
-    (LoadingBay, Road)
+To translate the map into a logical model, we write it out as a collection of pairs of linked locations. This will be the interpretation of `linked/2` predicate. Some of the links on the map are bidirectional. This means that we have to include both directions in our list of links:
+```
+linked = {
+  (Store, Factory), (Store, Yard), (Factory, Store),
+  (Factory, LoadingBay), (Yard, Factory), (Yard, Store),
+  (Yard, WasteHeap), (WasteHeap, Road), (WasteHeap, Yard),
+  (LoadingBay, WasteHeap), (LoadingBay, Factory),
+  (LoadingBay, Road)
+}
 ```
 
 ### Waypoints {id=cw2026:q7:waypoints}
