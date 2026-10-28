@@ -110,7 +110,7 @@ There are no lecture slides for this topic. Lectures will all be live coding dem
 
 Topic 8 is **Semantics of Predicate Logic**.
 
-The [semantics of Predicate Logic](pred-logic-semantics.md) is inevitably more complex than the semantics of Propositional Logic that we looked at in Topic 0. A useful way to think about how formulas are interpreted is in terms of *databases* as you will see in CS209.
+The [semantics of Predicate Logic](pred-logic-semantics.md) is inevitably more complex than the semantics of Propositional Logic that we looked at in Topic 0. A useful way to think about how formulas are interpreted is in terms of *databases*.
 
 [Lecture slides for this topic](topic08-slides.pdf).
 
