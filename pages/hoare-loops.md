@@ -136,7 +136,50 @@ The body of the loop is permitted to assume that the loop condition `C` is true 
 
 The fact that the state after the loop is described as `¬C /\ P` will often be able to guide us to the correct loop invariant for the problem. If we know what we want, we can work backwards to find out what we need.
 
-## Finding Out If A Number Is Even Or Odd {id=hoare-loops:even-odd}
+## Example: Multiplication {id=hoare-loops:multiplication}
+
+This program performs multiplication of `X` and `Y` into `RESULT` by repeated addition:
+```
+RESULT := 0
+I := 0
+while (I != X) {
+  RESULT := add(RESULT,Y)
+  I := add(I,1)
+}
+```
+
+We would like to prove the postcondition `RESULT = mul(X,Y)` for this program. The structure of the program is very similar to the one for `sumTo` above, and a similar proof structure works. Try to copy the shape of the assertions used in that program to prove the postcondition for this one:
+
+```hoare{id=hoare-loops:multiplication}
+(hoare
+ (program_vars X Y RESULT I)
+ (assumptions
+  (mul-0 "all y. mul(0,y) = 0")
+  (mul-add1 "all x. all y. mul(add(x,1),y) = add(mul(x,y),y)"))
+ (precond "T")
+ (postcond "RESULT = mul(X,Y)")
+ (solution (Rule(Program_rule(Assign I(Fun 0())))((Rule(Program_rule(Assign RESULT(Fun 0())))((Rule(Program_rule(Assert(Atom =((Var RESULT)(Fun mul((Var I)(Var Y)))))))((Rule(Proof_rule(Use mul-0))((Rule(Proof_rule(Instantiate(Var Y)))((Rule(Proof_rule Auto)())))))(Rule(Program_rule(While(Rel(Var I)Ne(Var X))))((Rule(Program_rule(Assign RESULT(Fun add((Var RESULT)(Var Y)))))((Rule(Program_rule(Assert(Atom =((Var RESULT)(Fun mul((Fun add((Var I)(Fun 1())))(Var Y)))))))((Rule(Proof_rule(Use mul-add1))((Rule(Proof_rule(Instantiate(Var I)))((Rule(Proof_rule(Instantiate(Var Y)))((Rule(Proof_rule Auto)())))))))(Rule(Program_rule(Assign I(Fun add((Var I)(Fun 1())))))((Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))(Rule(Program_rule End)((Rule(Proof_rule Auto)())))))))))))))
+```
+
+````details
+Solution explanation
+
+THe loop invariant needed for this program is `RESULT = mul(I,Y)`. This is because as the loop progresses, the `RESULT` variable contains the result of mutliplying `I` by `Y`. At the end of the loop, `I = X` so `RESULT` contains the correct final result.
+
+As with the `sumTo` program, it is helpful to add an extra `assert` in the middle of the program to make the proof parts shorter:
+```
+I := 0
+RESULT := 0
+assert (RESULT = mul(I,Y))
+while (I != X) {
+  RESULT := add(RESULT,Y)
+  assert (RESULT = mul(add(I,1),Y))
+  I := add(I,1)
+}
+```
+````
+
+## Example: Even Or Odd {id=hoare-loops:even-odd}
 
 The following program computes whether or not the value stored in `X` is even or odd by counting up to `X`. As the loop progresses, the variable `EVEN` is `true()` if `I` is even and `false()` if `I` is odd. When the loop ends, `I` is equal to `X` and so `EVEN` tells us whether or not `X` is even.
 
