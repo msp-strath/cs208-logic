@@ -142,6 +142,8 @@ The series of articles [What Every C Programmer Should Know About Undefined Beha
 
 ## Q2 : Set Theory (3 marks) {id=cw2026:q2}
 
+*There are [some examples on proving things in Set Theory](pred-logic-rules.md#pred-logic:set-theory) in the Lecture Notes. Try these before doing this question.*
+
 Predicate logic can be used as a foundational language for all of mathematics, but to do so we need to start from some axioms about what sort of things exist. *Set Theory* is a way of defining what mathematical things exist in terms of collections, called sets. The most common system of axioms for set theory is [Zermelo-Fraenkel Set Theory](https://en.wikipedia.org/wiki/Zermelo%E2%80%93Fraenkel_set_theory) which specifies 9 axioms (or "axiom schemas") that is enough to build almost all of modern mathematics. For this question we will look at two of the axioms: *pairing* and *union*.
 
 In Set Theory, the only things that exist are sets and the only relationship that we have between things is membership. Membership is usually written as `x ∈ y` to mean `x` is a *member* of `y` (or `x` is an *element* of `y`). Here we will write this as `member(x,y)`. Everything in Set Theory is built from sets and the membership relation between them.

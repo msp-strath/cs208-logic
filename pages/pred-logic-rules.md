@@ -770,7 +770,7 @@ More generally, if we have two things that have different properties (one is `P`
  (solution (Rule(Introduce x)((Rule(Introduce y)((Rule(Introduce x-is-p)((Rule(Introduce y-is-not-p)((Rule(NotIntro x-eq-y)((Rule(Use y-is-not-p)((Rule NotElim((Rule(Use x-eq-y)((Rule(Rewrite rtl)((Rule(Use x-is-p)((Rule Close())))))))))))))))))))))))
 ```
 
-### Exercise : Abelian Groups {id=pred-logic:equality:exercise}
+## Exercise : Abelian Groups {id=pred-logic:equality:exercise}
 
 An [abelian group](https://en.wikipedia.org/wiki/Abelian_group) is a generalisation of the ideas of addition and multiplication of numbers. We assume there is an operation ‘combine’ that combines two things (e.g., adding or multiplying), an operation ‘inv’ that takes the inverse of a thing (e.g., negation or reciprocal), and a value ‘emp()’ that has no effect when combined with something else (e.g., zero for addition, or one for multiplication). What makes an abelian group *abelian* and not just a group is that it does not matter what order things are combined in: ‘combine(x,y) = combine(y,x)’.
 
@@ -876,4 +876,99 @@ These rules apply when there is a formula in focus. These rules either act upon 
 	 (combine-emp "∀x. combine(x, emp()) = x"))
 	(goal "all x. combine(inv(x), x) = emp()")
 	(solution (Rule(Introduce x)((Rule(Use combine-comm)((Rule(Instantiate(Fun inv((Var x))))((Rule(Instantiate(Var x))((Rule(Rewrite ltr)((Rule(Use combine-inv)((Rule(Instantiate(Var x))((Rule Close())))))))))))))))))
+   ```
+
+## Exercise : Set Theory {id=pred-logic:set-theory}
+
+Predicate logic can be used as a foundational language for all of mathematics, but to do so we need to start from some axioms about what sort of things exist. *Set Theory* is a way of defining what mathematical things exist in terms of collections, called sets. The most common system of axioms for set theory is [Zermelo-Fraenkel Set Theory](https://en.wikipedia.org/wiki/Zermelo%E2%80%93Fraenkel_set_theory) which specifies 9 axioms (or "axiom schemas") that is enough to build almost all of modern mathematics.
+
+In Set Theory, the only things that exist are sets and the only relationship that we have between things is membership. Membership is usually written as `x ∈ y` to mean `x` is a *member* of `y` (or `x` is an *element* of `y`). Here we will write this as `member(x,y)`. Everything in Set Theory is built from sets and the membership relation between them.
+
+Informally, we write sets by listing their elements inside curly brackets. For example, `{ a, b, c }` is the set containing `a`, `b` and `c`. To express this in terms of the `member` relation we say that there exists a set `x` such that `member(a,x)`, `member(b,x)` and `member(c,x)`, and that for all `y` such that `member(y,x)` then `y = a` or `y = b` or `y = c`. Note that we have to give both a list of things that we know to be in the set and something that is true for everything in the set. (Compare to the introduction and elimination rules for the logical connectives.)
+
+Saying that something is in a set twice (e.g., `member(a,x) /\ member(a,x)`) is equivalent to saying it is in the set once `member(a,x)`. This matches the usual idea of sets that duplicates don't matter: the set `{ a, a }` is the same as the set `{ a }`.
+
+1. Prove that if we have a set `U` that contains `a()` and nothing else, and another set `U` that contains `a()` and `b()` (and nothing else), then everything that is in `U` is in `V`. We usually write this as `U ⊆ V`.
+
+   ```focused-nd {id=pred-logic-containership}
+   (config
+    (assumptions
+	 (U var)
+	 (V var)
+	 (U-description "member(a(),U) /\ (all x. member(x,U) -> x = a())")
+     (V-description "member(a(),V) /\ member(b(),V) /\ (all x. member(x,V) -> (x = a() \/ x = b()))"))
+    (goal "all x. member(x,U) -> member(x,V)")
+	(solution (Rule(Introduce x)((Rule(Introduce x-in-U)((Rule(Use U-description)((Rule Conj_elim2((Rule(Instantiate(Var x))((Rule Implies_elim((Rule(Use x-in-U)((Rule Close())))(Rule(Rewrite ltr)((Rule(Use V-description)((Rule Conj_elim1((Rule Close())))))))))))))))))))))
+   ```
+
+2. Prove that if we have a set `U` with only `a()` as a member, then `b()` is not a member of `U`, assuming that `a()` and `b()` are different.
+
+   ```focused-nd {id=pred-logic-not-contain}
+   (config
+    (assumptions
+	 (U var)
+	 (a-neq-b "¬(a() = b())")
+	 (U-description "member(a(),U) /\ (all x. member(x,U) -> x = a())"))
+    (goal "¬member(b(), U)")
+	(solution (Rule(NotIntro b-in-U)((Rule(Use a-neq-b)((Rule NotElim((Rule(Use U-description)((Rule Conj_elim2((Rule(Instantiate(Fun b()))((Rule Implies_elim((Rule(Use b-in-U)((Rule Close())))(Rule(Rewrite ltr)((Rule Refl())))))))))))))))))))
+   ```
+
+3. Prove that if we have two sets `U` and `V` where
+   ```
+   U = { a, b }
+   ```
+   and
+   ```
+   V = { a, c }
+   ```
+   then `U` is not equal to `V`, assuming that `a`, `b` and `c` are all different.
+
+   The way to prove this is to use the fact that if they were equal, then everything that is true about one is true about the other. Therefore since `member(b(), U)` is true and by assumption `U = V`, then `member(b(),V)` must be true. But it isn't, so `U` and `V` cannot be equal.
+
+   ```focused-nd {id=pred-logic-unequal-sets}
+   (config
+    (assumptions
+	 (U var)
+	 (V var)
+	 (a-neq-b "¬(a() = b())")
+	 (b-neq-c "¬(b() = c())")
+	 (a-neq-c "¬(a() = c())")
+	 (U-description "member(a(),U) /\ member(b(),U) /\ (all x. member(x,U) -> (x = a() \/ x = b()))")
+	 (V-description "member(a(),V) /\ member(c(),V) /\ (all x. member(x,V) -> (x = a() \/ x = c()))"))
+    (goal "¬(U = V)")
+	(solution (Rule(NotIntro U-is-V)((Rule(Use V-description)((Rule Conj_elim2((Rule Conj_elim2((Rule(Instantiate(Fun b()))((Rule Implies_elim((Rule(Use U-is-V)((Rule(Rewrite rtl)((Rule(Use U-description)((Rule Conj_elim2((Rule Conj_elim1((Rule Close())))))))))))(Rule(Cases b-eq-a b-eq-c)((Rule(Use a-neq-b)((Rule NotElim((Rule(Use b-eq-a)((Rule(Rewrite ltr)((Rule Refl())))))))))(Rule(Use b-neq-c)((Rule NotElim((Rule(Use b-eq-c)((Rule Close())))))))))))))))))))))))
+   ```
+
+4. The axiom of intersection says that if we have two sets `x` and `y`, then there exists a set `z` that has as members exactly the things that are members of both `x` and `y`. In symbols:
+
+   ```formula
+   all x. all y. ex z. (all w. (member(w,x) /\ member(w,y)) -> member(w,z)) /\ (all w. member(w,z) -> (member(w,x) /\ member(w,y)))
+   ```
+
+   Use this axiom to show that if there exist sets `{ a, b }` and `{ a, c }`, there exists a set `{ a }`:
+
+   ```details
+   Hint
+
+   In this question, the existence of the two sets is given as two existential assumptions. You will have to first unpack both of these assumptions and then use them to instantiate the intersection axiom. Unpacking the result of the intersection axiom will given you enough parts to prove the goal.
+
+   Actually proving the goal splits into two halves:
+
+   1. The first half, proving that `a()` is in the intersection is shorter, and relies on `a()` being in both of the two sets.
+
+   2. The second half is longer. We need to prove that everything in the intersection is equal to `a()`. We do this by using the fact that if it is in the intersection then it is in both sets. If it is in the first set then it is equal to `a()` or `b()`. In the first case, we are done. In the second case it is equal to `b()` and it is in the second set so it is equal to `a()` or `c()`. Since `b()` is equal to neither `a()` nor `c()`, then either way we get a contradiction.
+   ```
+
+   ```focused-nd {id=pred-logic-intersection-to-one}
+   (config
+    (assumptions
+	 (a-neq-b "¬(a() = b())")
+	 (b-neq-c "¬(b() = c())")
+	 (a-neq-c "¬(a() = c())")
+	 (U-exists "ex U. member(a(),U) /\ member(b(),U) /\ (all x. member(x,U) -> (x = a() \/ x = b()))")
+	 (V-exists "ex V. member(a(),V) /\ member(c(),V) /\ (all x. member(x,V) -> (x = a() \/ x = c()))")
+	 (intersection-axiom
+	   "all x. all y. ex z. (all w. (member(w,x) /\ member(w,y)) -> member(w,z)) /\ (all w. member(w,z) -> (member(w,x) /\ member(w,y)))"))
+    (goal "ex S. member(a(),S) /\ (all x. member(x,S) -> x = a())")
+	(solution (Rule(Use U-exists)((Rule(ExElim U U-description)((Rule(Use V-exists)((Rule(ExElim V V-description)((Rule(Use intersection-axiom)((Rule(Instantiate(Var U))((Rule(Instantiate(Var V))((Rule(ExElim I I-description)((Rule(Exists(Var I))((Rule Split((Rule(Use I-description)((Rule Conj_elim1((Rule(Instantiate(Fun a()))((Rule Implies_elim((Rule Split((Rule(Use U-description)((Rule Conj_elim1((Rule Close())))))(Rule(Use V-description)((Rule Conj_elim1((Rule Close())))))))(Rule Close())))))))))(Rule(Introduce x)((Rule(Introduce x-in-I)((Rule(Use U-description)((Rule Conj_elim2((Rule Conj_elim2((Rule(Instantiate(Var x))((Rule Implies_elim((Rule(Use I-description)((Rule Conj_elim2((Rule(Instantiate(Var x))((Rule Implies_elim((Rule(Use x-in-I)((Rule Close())))(Rule Conj_elim1((Rule Close())))))))))))(Rule(Cases x-is-a x-is-b)((Rule(Use x-is-a)((Rule Close())))(Rule(Use V-description)((Rule Conj_elim2((Rule Conj_elim2((Rule(Instantiate(Var x))((Rule Implies_elim((Rule(Use I-description)((Rule Conj_elim2((Rule(Instantiate(Var x))((Rule Implies_elim((Rule(Use x-in-I)((Rule Close())))(Rule Conj_elim2((Rule Close())))))))))))(Rule(Cases x-is-a x-is-c)((Rule(Use a-neq-b)((Rule NotElim((Rule(Use x-is-a)((Rule(Rewrite rtl)((Rule(Use x-is-b)((Rule Close())))))))))))(Rule(Use b-neq-c)((Rule NotElim((Rule(Use x-is-b)((Rule(Rewrite rtl)((Rule(Use x-is-c)((Rule Close())))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
    ```
