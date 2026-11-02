@@ -155,12 +155,12 @@ module Make_HTML_Formatter (Html : Html_sig.S) = struct
     x |> List.to_seq |> Seq.map f |> Seq_ext.intersperse comma |> List.of_seq |> H.concat_list
 
   (* FIXME: copied from Term *)
-let is_numeric_constant s =
-  let is_digit = function '0' .. '9' -> true | _ -> false in
-  let rec is_digits idx =
-    idx = String.length s || (is_digit s.[idx] && is_digits (idx+1))
-  in
-  String.length s > 0 &&
+  let is_numeric_constant s =
+    let is_digit = function '0' .. '9' -> true | _ -> false in
+    let rec is_digits idx =
+      idx = String.length s || (is_digit s.[idx] && is_digits (idx+1))
+    in
+    String.length s > 0 &&
     ((s.[0] = '-' && String.length s > 1 && is_digits 1)
      || is_digits 0)
 
