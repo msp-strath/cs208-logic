@@ -692,7 +692,7 @@ More usefully, the theory of “less than” is described using two axioms:
 theory Ordering {
   predicate lt/2
   axiom transitivity:
-    "all x. all y. all z. lt(x,y) -> lt(y,z) -> lt(x,z)",
+    "all x. all y. all z. lt(x,y) -> lt(y,z) -> lt(x,z)"
   axiom irreflexive: "all x. ¬lt(x,x)"
 }
 
@@ -809,6 +809,6 @@ There are many other questions about theories that are of interest that unfortun
 
 3. Given a theory, we can ask whether or not it is *complete*, which is a different concept to whether or not a proof system is complete. A *theory* is complete if for any formula `P`, either `P` or `¬P` provable from the axioms of the theory. By soundness and completeness, this is equivalent to asking whether `P` holds in all models of the theory. Note that this is not the same as excluded middle -- we are asking for a *proof* of `P` or *proof* of `¬P`, not a proof of `P ∨ ¬P`.
 
-   If a theory is complete we can write a program to solve problems in this theory for us by searching in parallel for a proof of `P` and a proof of `¬P`. Since one of these is provable, at leasy one of the searches will eventually terminate. If the theory is not inconsistent, then exactly one will terminate, telling us the whether or not `P` is a consequence of the theory.
+   If a theory is complete we can write a program to solve problems in this theory for us by searching in parallel for a proof of `P` and a proof of `¬P`. Since one of these is provable, at least one of the searches will eventually terminate. If the theory is not inconsistent then exactly one will terminate, telling us the whether or not `P` is a consequence of the theory.
 
    This gives us a way of getting a computer to reliably and precisely tell us the answers to any question we might have about a complete theory. Unfortunately, Gödel's *Incompleteness Theorem* states that any theory that includes [Peano's Axioms for the theory of addition and multiplication](induction.md) must be incomplete. This includes pretty much any theory that is strong enough to express general mathematical statements, since any such theory ought to include basic addition and multiplication. A related result is that deciding whether or not a computer program will halt on a given input is [not possible](halting-problem.md).

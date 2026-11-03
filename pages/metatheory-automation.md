@@ -1,4 +1,4 @@
-# Metatheory, Automation, and Incompleteness
+# Metatheory, and Incompleteness
 
 In this final part of the course, we take a quick look at the Metatheory of Predicate Logic. This material is not examinable, and is provided for information purposes only.
 
@@ -6,7 +6,7 @@ In this final part of the course, we take a quick look at the Metatheory of Pred
 YPjGFDUTK_8
 ```
 
-[Slides for this video (PDF)](week10-slides.pdf)
+[Slides for this video (PDF)](topic10-slides.pdf)
 
 *Metatheory* is the study of properties of a system of logic as a whole, rather than doing individual proofs within the logic. The Predicate Logic proof system we have built up over the last few weeks has the following properties:
 
@@ -34,5 +34,4 @@ One approach is to restrict to axiomatisations that are weaker than Peano arithm
 
 Another approach is to restrict the kinds of formulas we can write down. One useful subset of formulas are called “Horn Clauses” which all have the form `∀ x₁ ... ∀ xₙ . P₁(..) → ... → Q(..)`. Horn clauses have an efficient proof search technique that forms the basis of *logic programming languages* like [Prolog](https://www.metalevel.at/prolog) and the database query language Datalog.
 
-A good introduction to automated theorem proving is the [Handbook of Practical Logic and Automated Reasoning](https://www.cl.cam.ac.uk/~jrh13/atp/index.html) which develops implementations of several automated proof systems. Since not all proofs can be
-automated, interactive theorem proving, like you have been doing in this course, is now a major area. The interactive proof system we have used in this course is only suitable for relatively small examples, but systems have been developed that can deal with much larger proofs, such as [Rocq](https://rocq-prover.org/), [Isabelle](https://isabelle.in.tum.de/), [Lean](https://leanprover.github.io/) and [Agda](https://wiki.portal.chalmers.se/agda/pmwiki.php). If you do the [CS410 Advanced Functional Programming](https://github.com/gallais/CS410-2024) course in fourth year, you will be using Agda to construct formal proofs that are much larger and more interesting than the ones in this course.
+A good introduction to automated theorem proving is the [Handbook of Practical Logic and Automated Reasoning](https://www.cl.cam.ac.uk/~jrh13/atp/index.html) which develops implementations of several automated proof systems. Since not all proofs can be automated, interactive theorem proving, like you have been doing in this course, is now a major area. The interactive proof system we have used in this course is only suitable for relatively small examples, but systems have been developed that can deal with much larger proofs, such as [Rocq](https://rocq-prover.org/), [Isabelle](https://isabelle.in.tum.de/), [Lean](https://leanprover.github.io/) and [Agda](https://wiki.portal.chalmers.se/agda/pmwiki.php). If you do the [CS410 Advanced Functional Programming](https://github.com/gallais/CS410-2024) course in fourth year, you will be using Agda to construct formal proofs that are much larger and more interesting than the ones in this course.

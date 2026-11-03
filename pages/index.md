@@ -23,11 +23,9 @@ By the end of semester 1 of the module you should be able to:
 
 The course is split into 11 topics, numbered 0 to 10. Each topic corresponds to roughly a week's worth of the course.
 
-The pages linked to below contain the lecture notes, covering the material introduced in the lectures. They also contain interactive exercises for you to do.
+The pages linked to below contain the lecture notes, covering the material introduced in the lectures. They also contain exercises for you to do.
 
 ### Topic 0 : Propositional Logic {id=index:topics:topic0}
-
-Topic 0 is a (re)introduction to the basic concepts of **Propositional Logic**.
 
 We look at the syntax of Propositional Logic (what are the formulas?) and the semantics (what do the formulas mean?).
 
@@ -45,8 +43,6 @@ Propositional Logic is concerned with statements that are true or false (e.g., �
 
 ### Topic 1 : Entailment and Deduction {id=index:topics:topic1}
 
-Topic 1 is **Entailment** and **Deduction**.
-
 1. [Entailment](entailment.md): A generalised form of validity. What does it mean to say a formula is true under some assumptions?
 
 2. [Introduction to Deductive Proof](proof-intro.md), which describes the general idea of proof systems, and introduces a small example of a proof system inspired by biology.
@@ -55,32 +51,23 @@ Topic 1 is **Entailment** and **Deduction**.
 
 ### Topic 2 : Proof for Propositional Logic {id=index:topics:topic2}
 
-Topic 2 is **Proof for Propositional Logic**.
-
 [Natural Deduction](natural-deduction-intro.md). Natural Deduction is a style of proof system that places a particular emphasis on how assumptions are used, and on how the rules for each connective come in introduction and elimination pairs.
 
 [The lecture slides for this topic](topic02-slides.pdf).
 
 ### Topic 3 : Predicate Logic {id=index:topics:topic3}
 
-Topic 3 is **Predicate Logic**.
-
 [Introducing Predicate Logic](pred-logic-intro.md) as an expressive language for making statements in a formalised way. By selecting our vocabulary carefully, we can use Predicate Logic as a modelling tool to describe many situations. The syntax of Predicate Logic is more complex that that of Proposition Logic, so this page introduces it, with the concepts of free and bound variables and substitution.
 
-
- [The lecture slides for this topic](topic03-slides.pdf).
+[The lecture slides for this topic](topic03-slides.pdf).
 
 ### Topic 4 : Proof for Predicate Logic {id=index:topics:topic4}
-
-Topic 4 is **Proof for Predicate Logic**.
 
 [Proof rules for Predicate Logic](pred-logic-rules.md). Natural deduction rules for “for all” and “exists” allow us to construct proofs of Predicate Logic formulas. Also, how do we prove that one thing is equal to another thing? And what can we prove if we know that one thing is equal to another thing?
 
 [The lecture slides for this topic](topic04-slides.pdf).
 
 ### Topic 5 : Specification and Verification {id=index:topics:topic5}
-
-Topic 5 is **Specification and Verification**.
 
 [Specification and Verification](specify-verify.md) introduces the topic of how we say what we want programs to do, and how we might go about proving those things. We look at a simple model of programs in which we can state some properties of programs.
 
@@ -90,8 +77,6 @@ The [page on Hoare Logic](hoare-logic.md) introduces Hoare Logic, a logic for pr
 
 ### Topic 6 : Verifying Programs with Loops {id=index:topics:topic6}
 
-Topic 6 is **Programs with Loops**.
-
 [Assertions and Automation](hoare-assert-and-auto.md) introduces some tools for controlling complexity when constructing proofs of programs. In particular, we add human assisted proof automation to our proof tool.
 
 [Hoare Logic for Loops](hoare-loops.md) introduces the Hoare Logic rule for loops, and the important concept of *loop invariant*.
@@ -100,15 +85,11 @@ There are no lecture slides for this topic.
 
 ### Topic 7 : Verifying Programs with Arrays {id=index:topics:topic7}
 
-Topic 7 is **Programs with Arrays**.
-
 [Hoare Logic for Arrays](hoare-arrays.md) describes how to use Hoare Logic to reason about programs that access and update array data structures. In doing so, we come up against the problem of *aliasing*, that complicates reasoning about any program that combines references with mutability.
 
 There are no lecture slides for this topic. Lectures will all be live coding demonstrations.
 
 ### Topic 8 : Semantics of Predicate Logic {id=index:topics:topic8}
-
-Topic 8 is **Semantics of Predicate Logic**.
 
 The [semantics of Predicate Logic](pred-logic-semantics.md) is inevitably more complex than the semantics of Propositional Logic that we looked at in Topic 0. A useful way to think about how formulas are interpreted is in terms of *databases*.
 
@@ -116,23 +97,22 @@ The [semantics of Predicate Logic](pred-logic-semantics.md) is inevitably more c
 
 ### Topic 9 : Using Models of Predicate Logic {id=index:topics:topic9}
 
-Topic 9 is **Using Models of Predicate Logic**.
-
 Models can be thought of as descriptions of the world in terms of individuals and relations. Predicate Logic is language for describing which models “make sense” and for asking questions about models. There are many possible [uses of models](using-models.md) for stating and solving problems, which we will explore this week.
 
-```comment
-   [SAT Solvers](sat.md) are a class of tool that can solve very large problems in Propositional Logic, and are used as a foundation for building tools that can solve problems in Predicate Logic. They use heuristic search techniques to try to avoid exponential runtime behaviour.
+### Topic 10 : Metatheory and Undecidability {id=index:topics:topic10}
 
-   [Conversion to CNF](converting-to-cnf.md) is required to convert Propositional Logic formulas into the format suitable for a SAT solver. There are two approaches, one is slow but relies on simple rewrites, the other is fast.
+**This Topic is Not Examinable: For Educational Purposes Only**
 
-   [Lecture slides for this topic](topic09-slides.pdf).
-```
+[The Undecidability of the Halting Problem](halting-problem.md) is one of the foundational results in Computer Science, first stated and proved by Alan Turing. Turing showed that there cannot exist a computer program that reliably determines whether or not programs halt. The proof relies crucially on the fact that programs are described by source code, and that programs can take other programs source code, incuding their own, as input. More generally, the result shows that there are limits to what computer programs can do, if we insist on infallibility.
 
-### Topic 10 : Undecidability {id=index:topics:topic10}
+Another fundamental result is that, once our theories become powerful enough to talk about themselves, they become *incomplete* in the sense mentioned in the [Theory of Theories](pred-logic-semantics.md#pred-sem:theory-of-theories). Powerful enough means that the theory can talk about numbers and arithmetic. Peano's axioms for arithmetic are described on the [page on arithmetic and induction](induction.md). The proof of Gödel's Incompleteness theorem is described on the [page on Metatheory and Incompleteness](metatheory-automation.md).
 
-Topic 10 is **Undecidability**.
+[Slides on Metatheory and Incompleteness](topic10-slides.pdf)
 
-[The Undecidability of the Halting Problem](halting-problem.md) is one of the foundational results in Computer Science. It shows that there cannot exist a computer program that reliably determines whether or not programs halt. The proof relies crucially on the fact that programs are described by source code, and that programs can take other programs source code, incuding their own, as input. More generally, the result shows that there are limits to what computer programs can do, if we insist on infallibility.
+Turing's Undecidability and Gödel's Incompleteness Result mean that it is **impossible** to completely and reliably automate logic. However, for restricted subsets of logic, there are tools that can solve problems quickly and reliably. The model completion tool from [Using Models](using-models.md) works using a tool called a SAT solver. [SAT Solvers](sat.md) are a class of tool that can solve very large problems in Propositional Logic, and are used as a foundation for building tools that can solve problems in Predicate Logic. They use heuristic search techniques to try to avoid exponential runtime behaviour. [Conversion to CNF](converting-to-cnf.md) is required to convert Propositional Logic formulas into the format suitable for a SAT solver. There are two approaches, one is slow but relies on simple rewrites, the other is fast.
+
+[Slides on SAT Solvers and Conversion to CNF](topic09-slides.pdf).
+
 
 ## Further Reading {id=index:further-reading}
 
