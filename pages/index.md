@@ -142,7 +142,7 @@ There are many software tools for doing interactive proofs with logic that are l
 
 Formal Logic has its roots in Philosophy. There are many books aimed at Philosophy students that are interesting to read to learn about the assumptions underlying logic. Some good ones are:
 
-1. [The Logic Manual](https://users.ox.ac.uk/~logicman/) by Volker Halbach. This is am introduction to formal logic, intended primarily for Philosophy students. It covers Propostiional and Predicate Logic with Natural Deduction proofs, but does not explore applications to Computer Science. It does discuss the connections between formal logic and natural language.
+1. [The Logic Manual](https://users.ox.ac.uk/~logicman/) by Volker Halbach. This is an introduction to formal logic, intended primarily for Philosophy students. It covers Propositional and Predicate Logic with Natural Deduction proofs, but does not explore applications to Computer Science. It does discuss the connections between formal logic and natural language.
 
 2. [Logical Methods](https://mitpress.mit.edu/9780262544849/logical-methods/) by [Greg Restall](https://consequently.org/) and [Shawn Standefer](https://shawn-standefer.github.io/). Also a textbook introduction to formal logic intended for Philosophy students. Covers more topics that *The Logic Manual*, including Modal Logic.
 

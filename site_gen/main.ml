@@ -33,7 +33,7 @@ let html_of_formula fmla =
   Html_static.map Impossible.elim
     (Pretty.format_tagged
       (module PrettyHTML)
-      ~width:100
+      ~width:80
       (Fol_formula.Formula.to_doc fmla))
 
 let template ~title:title_text ?(sub_title="") ~script_url navigation_html body_html =
