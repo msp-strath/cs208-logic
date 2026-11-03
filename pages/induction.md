@@ -4,13 +4,13 @@
 This page assumes that you have understood the [proof rules for quantifiers](pred-logic-rules.html) and [proof rules for equality](equality.html) pages and completed all the exercises there.
 ```
 
-Now we can talk about equality in our proof system, we can start to talk about useful things like numbers and arithmetic, and make statements like the fact that addition is commutative (i.e., it doesn't matter which way round we add things):
+One example of things that can be expressed in Predicate Logic is the theory of arithmetic using addition and multiplication. We can use it to make statements like the fact that addition is commutative (i.e., it doesn't matter which way round we add things):
 
 ```formula
 ∀ x. ∀ y. add(x,y) = add(y,x)
 ```
 
-However, we cannot yet prove statements like this. To be able to prove such statements, we use a collection of [axioms](https://en.wikipedia.org/wiki/Peano_axioms) set out by [Giuseppe Peano](https://en.wikipedia.org/wiki/Giuseppe_Peano) in the 19th century. These axioms specify a way of representing numbers, the laws for addition and multiplication, and the proof principle of induction, which allows us to prove facts about all natural numbers.
+However, we cannot yet prove statements like this purely from logic. To be able to prove such statements, we use a collection of [axioms](https://en.wikipedia.org/wiki/Peano_axioms) set out by [Giuseppe Peano](https://en.wikipedia.org/wiki/Giuseppe_Peano) in the 19th century. These axioms specify a way of representing numbers, the laws for addition and multiplication, and the proof principle of induction, which allows us to prove facts about all natural numbers.
 
 The axioms, including induction, are introduced in the following video, and explained below with exercises in the interactive proof editor.
 
@@ -28,11 +28,17 @@ Numbers are represented in *unary* notation. We start from 0 and represent large
 
 In order to make sure that the function symbols 0 and S act properly, we need two axioms:
 
-1. *zero-ne-succ*: “all x. ¬(0 = S(x))”
+1. *zero-ne-succ*:
+   ```formula
+   all x. ¬(0 = S(x))
+   ```
 
    This axiom states that 0 is never equal to the successor of something. We need this to make sure that our numbers do not “loop round” back to zero at some point.
 
-2. *succ-injective*: “all x. all y. S(x) = S(y) → x = y”
+2. *succ-injective*:
+   ```formula
+   all x. all y. S(x) = S(y) → x = y
+   ```
 
    This axiom states that if two successors are equal, then their predecessors are equal. This axiom is a bit more difficult to understand than the previous one. One way to understand it is that it says that there is only one way to “get to” a number in one step. So it is another way of saying that our sequence of numbers has no cycles.
 
@@ -53,11 +59,17 @@ With these axioms, we can prove that numbers that are written differently are un
 
 Peano's axioms assume a function symbol “add(x,y)” intended to represent “x + y”. The behaviour of addition is specified by two axioms, which are hopefully almost self-explanatory:
 
-1. *add-zero*: “all x. add(0,x) = x”
+1. *add-zero*:
+   ```formula
+   all x. add(0,x) = x
+   ```
 
    Adding zero to “x” is equal to “x”. In normal symbols, “0 + x = x”.
 
-2. *add-succ*: “all x. all y. add(S(x),y) = S(add(x,y))”
+2. *add-succ*:
+   ```formula
+   all x. all y. add(S(x),y) = S(add(x,y))
+   ```
 
    Adding the successor of “x” to “y” is equal to the successor of adding “x” to “y”. In normal symbols, “(1 + x) + y = 1 + (x + y)”.
 
@@ -79,11 +91,17 @@ With these axioms, we can prove simple facts like 2 + 2 = 4:
 
 Multiplication is specified in a similar way to addition, by saying what it does on 0 and S in its first argument. Multiplication is represented as repeated addition.
 
-1. *mul-zero*: “all x. mul(0,x) = 0”
+1. *mul-zero*:
+   ```formula
+   all x. mul(0,x) = 0
+   ```
 
    Multiplying 0 by anything is always 0.
 
-2. *mul-succ*: “all x. all y. mul(S(x),y) = add(y,mul(x,y))”
+2. *mul-succ*:
+   ```formula
+   all x. all y. mul(S(x),y) = add(y,mul(x,y))
+   ```
 
    In normal symbols, this axiom says: “(1 + x) * y = y + (x * y)”. As with the *add-succ* axiom above, we can think of it as pushing the “mul” operation through a layer of successor. Repeated use of this axiom should usually lead to the “mul” operation disappearing when the *mul-zero* axiom is used.
 
