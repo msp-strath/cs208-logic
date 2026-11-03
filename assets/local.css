@@ -44,19 +44,34 @@ input {
     font-family: monospace;
 }
 
-/* Displayed formulas are centred. */
+/* Displayed formulas with syntax highlighting. */
 
 .displayedformula {
-    text-align: center;
+    /* text-align: center; */
+    margin-left: 5%;
     font-family: var(--mono-font);
-    background-color: #fff;
+    background-color: #ddd;
+    padding: 5px;
+    border-radius: 5px;
+    white-space: pre;
 }
 
 .syn-connective { color: darkmagenta; }
 .syn-relation   { color: blue; }
 .syn-variable   { color: green; }
-.syn-function   { color: red; }
+.syn-function   { color: darkred; }
 .syn-quantifier { color: darkgoldenrod; }
+
+@media (prefers-color-scheme: dark) {
+    .displayedformula {
+	background-color: #333;
+    }
+    .syn-connective { color: magenta; }
+    .syn-relation   { color: lightblue; }
+    .syn-variable   { color: lightgreen; }
+    .syn-function   { color: pink; }
+    .syn-quantifier { color: darkgoldenrod; }
+}
 
 /* Code entry stuff */
 

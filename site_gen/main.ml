@@ -5,9 +5,36 @@
    3. Wrap the output in the right stuff for SimpleCSS, plus the defnsat stuff.
    4. Stick in a thing to load the js_of_ocaml javascript to do the widget(s)
 
- *)
+   *)
 
-module Html_of_formula = Fol_formula.Formula.Make_HTML_Formatter (Html_static)
+open Generalities
+
+module PrettyHTML = struct
+  type tag = string
+
+  type output_doc = Impossible.t Html_static.t
+
+  let empty = Html_static.empty
+
+  let (^^) = Html_static.(^^)
+
+  let text = Html_static.text
+
+  let spaces n = Html_static.text (String.make n ' ')
+
+  let tag nm doc =
+    Html_static.(span ~attrs:[A.class_ ("syn-" ^ nm)] doc)
+
+  let line_break =
+    Html_static.br ()
+end
+
+let html_of_formula fmla =
+  Html_static.map Impossible.elim
+    (Pretty.format_tagged
+      (module PrettyHTML)
+      ~width:100
+      (Fol_formula.Formula.to_doc fmla))
 
 let template ~title:title_text ?(sub_title="") ~script_url navigation_html body_html =
   let open Html_static in
@@ -130,7 +157,7 @@ let code_render ~self ~attributes ~kind content = match kind with
   | Ok fmla ->
     let open Html_static in
     div ~attrs:[ A.class_ "displayedformula" ]
-      (Html_of_formula.html_of_formula fmla)
+      (html_of_formula fmla)
   | Error (`Parse err) ->
     (* FIXME: just log the error? *)
     failwith (Parser_util.Driver.string_of_error err))
