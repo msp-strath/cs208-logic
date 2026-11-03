@@ -11,9 +11,9 @@ val compare : t -> t -> int
 
 val to_string : t -> string
 
-val to_doc : t -> Generalities.Pretty.document
+val to_doc : t -> string Generalities.Pretty.document
 
-val to_doc_prec : int -> t -> Generalities.Pretty.document
+val to_doc_prec : int -> t -> _ Generalities.Pretty.document
 
 val to_latex : t -> string
 

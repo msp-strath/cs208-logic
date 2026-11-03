@@ -471,7 +471,7 @@ let marking_sheet participant_id answers =
        match Hoare_qn.qn ~marks config submission with
        | Ok (marks, program) ->
           [ para [ textf "Question %s" label];
-            monospace program;
+	    monospace (Pretty.map (fun _ -> ()) program);
             para [ textf "@Mark%s=%d" label marks ]
           ]
        | Error (`Msg msg) ->
@@ -480,7 +480,7 @@ let marking_sheet participant_id answers =
             para [ textf "@Mark%s=%d" label 0 ]
           ]
   in
-  document ~title:(Printf.sprintf "Participant %s" participant_id)
+  document ~title:(Printf.sprintf "Semester 1 Coursework 2025/26%s" (if participant_id = "" then "" else ". Participant " ^ participant_id))
     ~sections:[
       section ~title:"Information"
         ~content:[
@@ -493,7 +493,7 @@ let marking_sheet participant_id answers =
        let formula_answer key =
          let submitted = from_answers key in
          match Formula.of_string submitted with
-         | Ok fmla -> monospace (Formula.to_doc fmla)
+	 | Ok fmla -> monospace (Pretty.map (fun _ -> ()) (Formula.to_doc fmla))
          | Error _ -> preformatted (submitted ^ " (PARSE FAIL)")
        in
        section ~title:"Logical Modelling"
@@ -563,173 +563,7 @@ let marking_sheet participant_id answers =
           @ hoare_question qn4c)
         ()
     ]
-
-  (* 4. Three questions using Hoare Logic
-        - Automark, except ought to show the program given *)
   ()
-
-
-(*
-let marking_sheet participant_id answers coursework_spec =
-  let module Custom = struct
-      module Html = Html_static
-
-      let raw_html _ = failwith "RAW HTML"
-
-      let link_href s = s
-
-      let img_href s = s
-
-      open Result_ext.Syntax
-
-      module Html_of_formula = Fol_formula.Formula.Make_HTML_Formatter (Html_static)
-
-      let mark_confirm id options default =
-        let options = String.concat " " (List.map string_of_int options) in
-        let config =
-          Printf.sprintf "(config (options (%s)) (default %d))" options default
-        in
-        let open Html_static in
-        let attrs = [ raw_attr "data-widget" "selection"; raw_attr "data-key" id ] in
-        div ~attrs (text config)
-
-      let code ~self ~attributes ~kind content =
-        Result.fold
-          ~ok:Fun.id
-          ~error:(fun (`Msg err) -> Html.p ~attrs:[ Html.A.class_ "errormsg" ] (Html.text err))
-          (match kind, List.assoc_opt "id" attributes, List.assoc_opt "marks" attributes with
-          | "focused-nd", Some id, Some marks ->
-             let marking_id = participant_id ^ "-" ^ id in
-             let* config = Result.map_error (fun _ -> `Msg "bad config")
-                              (Natural_deduction.Focused_config.config_p (Sexplib.Sexp.of_string content)) in
-             let* marks = Result_ext.of_option ~on_error:(`Msg "non-integer marks") (int_of_string_opt marks) in
-             (match List.assoc_opt id answers with
-             | None | Some "" ->
-                Ok (Html.(text "<no submission>"
-                          ^^ p (strong (text "Marks:") ^^ mark_confirm marking_id [0;1] 0)))
-             | Some sexp_txt ->
-                let answer = Sexplib.Sexp.of_string sexp_txt in
-                let* given_marks, doc = Focused.qn ~marks config answer in
-                Ok Html.(doc
-                         ^^ p (strong (text "Marks:") ^^ mark_confirm marking_id [0;1] given_marks)))
-          | "hoare", Some id, Some marks ->
-             let marking_id = participant_id ^ "-" ^ id in
-             let* config = Result.map_error (fun _ -> `Msg "bad config")
-                             (Natural_deduction.Hoare_calculus.Config_parser.config_p
-                                (Sexplib.Sexp.of_string content)) in
-             let* marks = Result_ext.of_option ~on_error:(`Msg "non-integer marks") (int_of_string_opt marks) in
-             let options = if marks = 2 then [0;1;2] else [0;1] in
-             (match List.assoc_opt id answers with
-             | Some "" | None ->
-                Ok (Html.(text "<no submission>"
-                    ^^ p (strong (text "Marks:") ^^ mark_confirm marking_id options 0)))
-             | Some sexp_txt ->
-                let answer = Sexplib.Sexp.of_string sexp_txt in
-                let* given_marks, doc = Hoare_qn.qn ~marks config answer in
-                Ok Html.(doc ^^ p (strong (text "Marks:") ^^ mark_confirm marking_id options given_marks)))
-          | "formulaentry", Some id, None ->
-             let marking_id = participant_id ^ "-" ^ id in
-             (match List.assoc_opt id answers with
-             | None ->
-                Ok (Html.(em (text "<no answer>")
-                          ^^ p (strong (text "Marks:") ^^ mark_confirm marking_id [0;1] 0)))
-             | Some answer ->
-                let open Fol_formula in
-                (match Formula.of_string answer with
-                | Ok fmla ->
-                   Ok Html_static.(
-                    p (strong (text "Submitted answer: ")
-                         ^^ div ~attrs:[ A.class_ "displayedformula" ]
-                              (Html_of_formula.html_of_formula fmla)
-                         ^^ p (strong (text "Marks:") ^^ mark_confirm marking_id [0;1] 0)))
-                | Error _ ->
-                   Ok Html_static.(
-                    p (strong (text "Submitted answer (did not parse as a formula): ")
-                       ^^ text answer
-                       ^^ p (strong (text "Marks:") ^^ mark_confirm marking_id [0;1] 0)))))
-          | ("textbox" | "entrybox"), Some id, None ->
-             (* Render the text as commentary *)
-             (match List.assoc_opt id answers with
-             | None ->
-                Ok (Html.(p (em (text "<no answer>"))))
-             | Some answer ->
-                Ok (Html.(p (strong (text "Submitted answer: ") ^^ text answer))))
-          | "download", _, _ ->
-             Ok Html.empty
-          | "formula", _, _ ->
-             let open Fol_formula in
-             (match Formula.of_string content with
-             | Ok fmla ->
-                let open Html_static in
-                Ok (div ~attrs:[ A.class_ "displayedformula" ]
-                      (Html_of_formula.html_of_formula fmla))
-             | Error (`Parse err) ->
-                (* FIXME: just log the error? *)
-                failwith (Parser_util.Driver.string_of_error err))
-          | "rules-display", _, _ ->
-             let open Html_static in
-             let attrs = [ raw_attr "data-widget" kind ] in
-             Ok (div ~attrs (text content))
-          | "", _, _ ->
-             Ok (Html_static.(pre (code (text content))))
-          | kind, _, _  ->
-             failwith ("UNKNOWN CODE BLOCK: " ^ kind))
-    end
-  in
-  let module Gen = Html_of_omd.Make (Html_static) (Custom) in
-  Gen.of_doc coursework_spec
-
-let ids =
-  [ "cw2025-q1b", "1a", 1
-  ; "cw2025-q1c", "1b", 1
-  ; "cw2025-q1d", "1c", 1
-  ; "cw2025-q1e", "1d", 1
-  ; "cw2025-q1f", "1e", 1
-  ; "cw2025-q1g", "1f", 1
-  ; "cw2025-q1h", "1g", 1
-  ; "cw2025-2a", "2a", 1
-  ; "cw2025-2b", "2b", 1
-  ; "cw2025-2c", "2c", 1
-  ; "cw2025-q3a", "3a", 1
-  ; "cw2025-q3b", "3b", 1
-  ; "cw2025-q3c", "3c", 1
-  ; "cw2025-q3d", "3d", 1
-  ; "cw2025-q3e", "3e", 1
-  ; "cw2025-q3f", "3f", 1
-  ; "cw2025-q4a", "4a", 1
-  ; "cw2025-q4b", "4b", 2
-  ; "cw2025-q4c", "4c", 2
-  ]
-
-let template ~css ~title:title_text ?(sub_title="") body_html =
-  let open Html_static in
-  let (@|) elem elems = elem (concat_list elems) in
-  html @| [
-      head @| [
-        meta ~attrs:[A.charset "utf8"];
-        meta ~attrs:[
-            A.name "viewport";
-            A.content "width=device-width, initial-scale=1.0"
-          ];
-        style (text css);
-        title title_text;
-        script ~attrs:[A.src "../frontend.bc.js"; raw_attr "defer" "yes"] "";
-      ];
-      body @| [
-          header @| [
-            h1 (text title_text);
-            p (text sub_title);
-          ];
-          main body_html;
-          footer @| [
-              text "Styling provided by ";
-              a ~attrs:[A.href "https://simplecss.org/"]
-                (text "SimpleCSS");
-              text "."
-            ]
-        ]
-    ]
- *)
 
 let seq_head seq = match seq () with
   | Seq.Cons (x, _) -> x
@@ -745,63 +579,23 @@ let get_partnum string =
   let idx = String.index string '_' in
   String.sub string (idx+1) 7
 
-let do_submission css coursework_spec dirname outdir entry =
+let do_submission_file title submission_filename outfile =
+  let answers = read_answers_file ~filename:submission_filename in
+  let marking_sheet =
+    Document.ToPretty.pretty_of_document (marking_sheet title answers) in
+  Out_channel.with_open_text outfile
+    (fun ch ->
+      Pretty.output_to_channel ch ~width:100 marking_sheet)
+
+let do_submission dirname outdir entry =
   let partnum = get_partnum entry in
   let entry_dir = Filename.concat dirname entry in
   let submission_filename = Filename.concat entry_dir (get_file_of_dir entry_dir) in
   try
     let answers = read_answers_file ~filename:submission_filename in
     let marking_sheet = Document.ToPretty.pretty_of_document (marking_sheet partnum answers) in
-    (* let marking_sheet_html = *)
-    (*   marking_sheet partnum answers coursework_spec *)
-    (* in *)
     let name = List.assoc "cw2025-name" answers in
     let regnum = List.assoc "cw2025-regnum" answers in
-    (*
-    let given_marks, html_feedback =
-      List.fold_left
-        (fun (total_marks, html) { question_id; question_detail; question_marks } ->
-          match List.assoc_opt question_id answers with
-          | None ->
-             Printf.eprintf "%s: missing\n" question_id;
-             (total_marks, html)
-          | Some answer ->
-             (match question_detail with
-             | Proof question_config ->
-                (match check_proof question_config question_marks answer with
-                | Error msg ->
-                   Printf.eprintf "%s: %s: ERROR: %s\n" partnum question_id msg;
-                   (total_marks, html)
-                | Ok (given_marks, qn_html) ->
-                   (total_marks+given_marks, Html_static.(^^) html qn_html))
-             | Program question_config ->
-                (match check_program question_config question_marks answer with
-                | Error msg ->
-                   Printf.eprintf "%s: %s: ERROR: %s\n" partnum question_id msg;
-                   (total_marks, html)
-                | Ok (given_marks, qn_html) ->
-                   (total_marks+given_marks, Html_static.(^^) html qn_html))
-             | Formula ->
-                let doc = let open Html_static in
-                          h2 (text question_id) ^^ p (text answer)
-                in
-                (total_marks, Html_static.(^^) html doc)
-             | Comment ->
-                let doc = let open Html_static in
-                          h2 (text question_id) ^^ p (text answer)
-                in
-                (total_marks, Html_static.(^^) html doc)
-        ))
-        (0, Html_static.empty)
-        questions
-    in
-    let html_feedback =
-      let open Html_static in
-      h1 (text (Printf.sprintf "Coursework (%d/20)" given_marks)) ^^ html_feedback
-      in
-     *)
-
-    (* let doc = template ~css ~title:"Coursework" marking_sheet_html in *)
     let outdir = Filename.concat outdir entry in
     if not (Sys.file_exists outdir) then
       Sys.mkdir outdir 0o700;
@@ -809,29 +603,28 @@ let do_submission css coursework_spec dirname outdir entry =
     Out_channel.with_open_text outfile
       (fun ch ->
         Pretty.output_to_channel ch ~width:100 marking_sheet);
-        (* Html_static.Render.to_channel ~doctype:true ch doc); *)
     Printf.printf "%s,%s,Participant %s\n" regnum name partnum
   with exn ->
     Printf.eprintf "PROBLEM: %s: %s\n" partnum (Printexc.to_string exn)
 
 
 let () =
-  let css =
-    In_channel.with_open_text "assets/simple.min.css" In_channel.input_all
-    ^ In_channel.with_open_text "assets/local.css" In_channel.input_all
-  in
   match Sys.argv with
-  | [| _prog_name; question_spec_filename; marking_dir |] ->
-     let questions = In_channel.with_open_bin question_spec_filename Omd.of_channel in
-     let submission_dir = Filename.concat marking_dir "submissions" in
-     let outdir         = Filename.concat marking_dir "premarked" in
-     if not (Sys.file_exists outdir) then
-       Sys.mkdir outdir 0o700;
-     Sys.readdir submission_dir
-     |> (fun a -> Array.sort String.compare a; a)
-     |> Array.to_seq
-     |> Seq.filter (fun entry -> not (String.starts_with ~prefix:"." entry))
-     |> Seq.iter (do_submission css questions submission_dir outdir)
+  | [| _prog_name; filename |] ->
+     if Sys.is_directory filename then
+       (let marking_dir = filename in
+        let submission_dir = Filename.concat marking_dir "submissions" in
+        let outdir         = Filename.concat marking_dir "premarked" in
+        if not (Sys.file_exists outdir) then
+          Sys.mkdir outdir 0o700;
+        Sys.readdir submission_dir
+        |> (fun a -> Array.sort String.compare a; a)
+        |> Array.to_seq
+        |> Seq.filter (fun entry -> not (String.starts_with ~prefix:"." entry))
+        |> Seq.iter (do_submission submission_dir outdir))
+     else
+       let outfile = Filename.remove_extension filename ^ ".md" in
+       do_submission_file "" filename outfile
   | _ ->
-     Printf.eprintf "Usage: %s <question-spec-file> <submission-file>\n" Sys.argv.(0);
+     Printf.eprintf "Usage: %s <submission-file>\n" Sys.argv.(0);
      exit 1

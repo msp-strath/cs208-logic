@@ -54,9 +54,9 @@ let to_doc f =
     | f -> propositional f
   and quantifiers = function
     | Forall (x, f) ->
-       text "∀" ^^ variable x ^^ text ". " ^^ quantifiers f
+      tag "quantifier" (text "∀" ^^ variable x ^^ text ". ") ^^ quantifiers f
     | Exists (x, f) ->
-       text "∃" ^^ variable x ^^ text ". " ^^ quantifiers f
+      tag "quantifier" (text "∃" ^^ variable x ^^ text ". ") ^^ quantifiers f
     | f -> break ^^ propositional f
   and propositional = function
     | Imp _ as f -> align (group (imps f))
@@ -64,23 +64,23 @@ let to_doc f =
     | Or _ as f -> align (group (ors f))
     | f -> base f
   and imps = function
-    | Imp (f1, f2) -> base f1 ^^ text " →" ^^ break ^^ imps f2
+    | Imp (f1, f2) -> base f1 ^^ tag "connective" (text " →") ^^ break ^^ imps f2
     | f            -> base f
   and ands = function
-    | And (f1, f2) -> base f1 ^^ break ^^ text "∧" ^^ break ^^ ands f2
+    | And (f1, f2) -> base f1 ^^ break ^^ tag "connective" (text "∧") ^^ break ^^ ands f2
     | f -> base f
   and ors = function
-    | Or (f1, f2) -> base f1 ^^ break ^^ text "∨" ^^ break ^^ ors f2
+    | Or (f1, f2) -> base f1 ^^ break ^^ tag "connective" (text "∨") ^^ break ^^ ors f2
     | f -> base f
   and base = function
     | Atom ("=", [ t1; t2 ]) ->
-       Term.to_doc t1 ^^ text " = " ^^ Term.to_doc t2
+      Term.to_doc t1 ^^ tag "relation" (text " = ") ^^ Term.to_doc t2
     | Atom ("!=", [ t1; t2 ]) ->
-       Term.to_doc t1 ^^ text " != " ^^ Term.to_doc t2
+      Term.to_doc t1 ^^ tag "relation" (text " != ") ^^ Term.to_doc t2
     | Atom (a, []) ->
-       text a
+      tag "relation" (text a)
     | Atom (a, tms) ->
-       text a
+      tag "relation" (text a)
        ^^ text "("
        ^^ (tms |> List.to_seq
            |> Seq.map Term.to_doc
@@ -88,11 +88,11 @@ let to_doc f =
            |> concat)
        ^^ text ")"
     | Not f ->
-       text "¬" ^^ base f
-    | True -> text "T"
-    | False -> text "F"
+      tag "connective" (text "¬") ^^ base f
+    | True -> tag "connective" (text "T")
+    | False -> tag "connective" (text "F")
     | (Imp _ | And _ | Or _ | Forall _ | Exists _) as f ->
-       text "(" ^^ formula f ^^ text ")"
+      text "(" ^^ formula f ^^ text ")"
   in
   formula f
 

@@ -14,7 +14,7 @@ type inline =
 type block =
   | Paragraph of inline list
   | Preformatted of url
-  | Monospace of Pretty.document
+  | Monospace of unit Pretty.document
   | Itemise of block list list
   | Enumerate of block list list
 
@@ -52,13 +52,13 @@ val para : inline list -> block
 
 val preformatted : string -> block
 
-val monospace : Pretty.document -> block
+val monospace : unit Pretty.document -> block
 
 val itemise : block list list -> block
 
 val enumerate : block list list -> block
 
-(** {3 Inilne elements} *)
+(** {3 Inline elements} *)
 
 val text : string -> inline
 
@@ -70,10 +70,10 @@ val strong : inline list -> inline
 
 module ToPretty :
   sig
-    val pretty_of_inline : inline -> Pretty.document
-    val pretty_of_inlines : inline list -> Pretty.document
-    val pretty_of_block : block -> Pretty.document
-    val pretty_of_blocks : block list -> Pretty.document
-    val pretty_of_section : int -> section -> Pretty.document
-    val pretty_of_document : document -> Pretty.document
+    val pretty_of_inline : inline -> unit Pretty.document
+    val pretty_of_inlines : inline list -> unit Pretty.document
+    val pretty_of_block : block -> unit Pretty.document
+    val pretty_of_blocks : block list -> unit Pretty.document
+    val pretty_of_section : int -> section -> unit Pretty.document
+    val pretty_of_document : document -> unit Pretty.document
   end

@@ -6,7 +6,7 @@ type t =
   | JNull
   | JObject of (string * t) list
 
-val to_document : t -> Pretty.document
+val to_document : t -> _ Pretty.document
 
 val to_string : t -> string
 

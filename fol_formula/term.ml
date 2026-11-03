@@ -57,11 +57,11 @@ let parens d = Pretty.(text "(" ^^ d ^^ text ")")
 
 let rec to_doc = function
   | Var x ->
-     Pretty.text x
+    Pretty.(tag "variable" (text x))
   | Fun (f, []) when is_numeric_constant f ->
-     Pretty.text f
+    Pretty.(tag "function" (text f))
   | Fun (fname, terms) ->
-     Pretty.(text fname
+    Pretty.(tag "function" (text fname)
              ^^ parens (terms |> List.to_seq |> Seq.map to_doc |> Seq_ext.intersperse (text ", ") |> concat))
 
 let rec to_doc_prec l = function

@@ -39,7 +39,7 @@ let pp_structure structure =
     group (nest 2 (text "{" ^/^ d) ^/^ text "}")
   in
   let commas docs =
-    of_seq (Seq_ext.intersperse (text "," ^^ group break) docs)
+    concat (Seq_ext.intersperse (text "," ^^ group break) docs)
   in
   let universe_clause =
     let elems =
@@ -62,7 +62,7 @@ let pp_structure structure =
     |> IdentMap.to_seq
     |> Seq.map predicate_defn
     |> Seq_ext.intersperse break
-    |> of_seq
+    |> concat
   in
   curly_brak (universe_clause ^/^ predicate_clauses)
 
@@ -411,7 +411,7 @@ let check_axioms theory structure =
 
 type output_item =
   | Message of string
-  | Pretty  of Pretty.document
+  | Pretty  of Impossible.t Pretty.document
   | Table   of { headers : string list; rows : string list list }
 
 let messagef fmt = Printf.ksprintf (fun str -> Message str) fmt

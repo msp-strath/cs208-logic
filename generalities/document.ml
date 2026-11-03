@@ -10,7 +10,7 @@ type inline =
 type block =
   | Paragraph of inline list
   | Preformatted of string
-  | Monospace of Pretty.document
+  | Monospace of unit Pretty.document
   | Itemise of block list list
   | Enumerate of block list list
 (* FIXME: images, tables *)
