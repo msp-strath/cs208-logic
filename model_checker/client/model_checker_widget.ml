@@ -187,7 +187,7 @@ let component initial =
           | Exec_structure.Message msg ->
 	    text msg
 	  | Exec_structure.Pretty doc ->
-	    pre (text (Generalities.Pretty.to_string ~width:100 doc))
+	    pre (text (Generalities.Pretty.to_string ~width:80 doc))
 	  | Exec_structure.Table { headers; rows } ->
 	    text "Query results: " ^^
             table
@@ -219,6 +219,8 @@ let component initial =
 		(textarea
                   ~attrs:[ E.oninput (fun v -> Update v);
                     A.spellcheck false;
+		    A.autocomplete "off";
+		    (* A.autocorrect "off"; *)
                     A.rows (max (num_newlines state.input + 1) 4) ]
                   state.input);
               div

@@ -114,9 +114,9 @@ The [semantics of Predicate Logic](pred-logic-semantics.md) is inevitably more c
 
 [Lecture slides for this topic](topic08-slides.pdf).
 
-### Topic 9 : Applications of Predicate Logic Semantics {id=index:topics:topic9}
+### Topic 9 : Using Models of Predicate Logic {id=index:topics:topic9}
 
-Topic 9 is **Applications of Predicate Logic Semantics**.
+Topic 9 is **Using Models of Predicate Logic**.
 
 Models can be thought of as descriptions of the world in terms of individuals and relations. Predicate Logic is language for describing which models “make sense” and for asking questions about models. There are many possible [uses of models](using-models.md) for stating and solving problems, which we will explore this week.
 
