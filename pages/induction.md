@@ -277,7 +277,24 @@ These rules apply when there is a formula in focus. These rules either act upon 
 	(solution (Rule(Introduce x)((Rule(Induction x)((Rule(Introduce y)((Rule Left((Rule(Exists(Var y))((Rule(Use add-zero)((Rule(Instantiate(Var y))((Rule Close())))))))))))(Rule(Introduce y)((Rule(Induction y)((Rule Right((Rule(Exists(Fun S((Var x1))))((Rule(Use add-zero)((Rule(Instantiate(Fun S((Var x1))))((Rule Close())))))))))(Rule(Use induction-hypothesis)((Rule(Instantiate(Var y1))((Rule(Cases x1-le-y1 y1-le-x1)((Rule Left((Rule(Use x1-le-y1)((Rule(ExElim k add-x1-k-y1)((Rule(Exists(Var k))((Rule(Use add-succ)((Rule(Instantiate(Var x1))((Rule(Instantiate(Var k))((Rule(Rewrite ltr)((Rule(Use add-x1-k-y1)((Rule(Rewrite ltr)((Rule Refl())))))))))))))))))))))(Rule Right((Rule(Use y1-le-x1)((Rule(ExElim k add-y1-k-x1)((Rule(Exists(Var k))((Rule(Use add-succ)((Rule(Instantiate(Var y1))((Rule(Instantiate(Var k))((Rule(Rewrite ltr)((Rule(Use add-y1-k-x1)((Rule(Rewrite ltr)((Rule Refl())))))))))))))))))))))))))))))))))))))
    ```
 
-8. Multiplication distributes over addition.
+8. Every number is even or odd.
+
+   Even-ness of a number `n` is represented as “there exists a `k` such that `n = k + k`. Odd-ness of `n` is represented as “there exists a `k` such that `n = 1 + k + k`. Thus both are represented in terms of explicit evidence: the number `k` is the result of dividing `n` by `2` and the equality tells us whether the division is exact or if there is a remainder of `1`.
+
+   The fact that all numbers are either even or odd is proven by induction on `x`. The key to this proof is to notice that even-ness and odd-ness swap every time the number goes up by one. Therefore, in the step case you need to unpack the induction hypothesis to check whether `n` is even or odd, and use that fact to prove the corresponding odd-ness or even-ness of `1 + n`.
+
+   ```focused-nd {id=arith-proof-even-or-odd}
+   (config
+	(name "Question 3(b)")
+	(assumptions
+	 (add-zero "∀x. add(0, x) = x")
+	 (add-succ "∀x. ∀y. add(S(x), y) = S(add(x, y))")
+	 (add-x-zero "∀x. add(x, 0) = x")
+	 (add-x-succ "∀x. ∀y. add(x, S(y)) = S(add(x, y))"))
+	(goal "∀x. ∃k. x = add(k, k) ∨ x = S(add(k, k))"))
+   ```
+
+9. Multiplication distributes over addition.
 
    The proof of this fact depends on the associativity and commutativity properties of addition that we proved above. There is a tricky bit of rewriting at the end. It is best to work it out on paper first.
 
