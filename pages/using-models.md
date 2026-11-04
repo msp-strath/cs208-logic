@@ -10,15 +10,15 @@ One reason to study the semantics of Predicate Logic is to give us some faith th
 
 Given a collection of formulas `P1`, ..., `Pn`, it can be useful to build a model `M` of them. There are several uses:
 
-1. Building a model of a collection of formulas helps us check to see whether or not the formulas make sense. If we are able to build a model of some axioms that does not match our intuition, then perhaps we have made a mistake in our axioms? Or maybe we have learnt an unexpected fact about our axioms?
+1. Building a model that satisfies a collection of axioms but also falsifies another formula is a way of showing that there is no way of proving that formula from the axioms. We saw this in the previous topic to show that [certain formulas are unprovable](pred-logic-semantics.md#pred-sem:proof-counter).
 
-2. Building a model that satisfies a collection of axioms but also falsifies another formula is a way of showing that there is no way of proving that formula from the axioms. We will look at this to show that [certain formulas are unprovable](using-models.md#using-models:proof-counter).
+2. Building a model of a collection of formulas helps us check to see whether or not the formulas make sense. If we are able to build a model of some axioms that does not match our intuition, then perhaps we have made a mistake in our axioms? Or maybe we have learnt an unexpected fact about our axioms?
 
-3. If we specify some axioms and *part of* a model, we can get the computer to complete the rest of the model for us such that the axioms are validated. This gives a way of solving problems not by explicitly programming a way of solving them, but instead by stating what it is we want solved and getting the computer to do it for us. We will look at several examples below, including [package installations](using-models.md#using-models:packages) and [resource allocation](using-models.md#using-models:resource-alloc).
+3. If we specify some axioms and *part of* a model, we can get the computer to complete the rest of the model for us such that the axioms are validated. This gives a way of solving problems not by explicitly programming a way of solving them, but instead by stating what it is we want solved and getting the computer to do it for us. We will look at several examples below, including [package installations](using-models.md#using-models:packages) and [resource allocation](using-models.md#using-models:resource-alloc). This is a kind of [*Logic Programming*](using-models.md#using-models:logic-programming).
 
-## Models and Databases, Formulas and Queries {id=using-models:databases}
+## Models and Databases {id=using-models:databases}
 
-The *Relational Model* for databases was introduced by Edgar F. Codd in the 1969 paper [*A relational model of data for large shared data banks*](https://dl.acm.org/doi/10.1145/362384.362685). The core idea of the Relational Model is that databases are comprised of *relations* between values. A database that stores banking information could relate account holders to their names and addresses, and also relate account holders to their accounts, and each account to its transactions. The key innovation of the relational model is that these relations are unbiased, unlike the “navigational” or “hierarchical” models that predated it (or the attempts at “object oriented” databases that came after), which allow referencing of transtions *from* accounts, but not (easily) the reverse. This lack of bias makes the relational model very flexible in the face of changing requirements because it is easy to write queries that were not anticipated when the data was first collected.
+The *Relational Model* for databases was introduced by Edgar F. Codd in the 1969 paper [*A relational model of data for large shared data banks*](https://dl.acm.org/doi/10.1145/362384.362685). The core idea of the Relational Model is that databases are comprised of *relations* between values. A database that stores banking information could relate account holders to their names and addresses, and also relate account holders to their accounts, and each account to its transactions. The key innovation of the relational model is that these relations are unbiased, unlike the “navigational” or “hierarchical” models that predated it (or the attempts at “object oriented” databases that came after), which allow querying of transactions connected to an account, but not (easily) the reverse. This lack of bias makes the relational model very flexible in the face of changing requirements because it is easy to write queries that were not anticipated when the data was first collected.
 
 The connection to Predicate Logic arises from the fact that there is a tight correspondence between logical concepts and parts of the relational model:
 
@@ -44,176 +44,89 @@ or, more simply:
 within(x,scotland()) /\ city(x)
 ```
 
-**FIXME**: put in some more examples
+## Logic Programming {id=using-models:logic-programming}
 
-## Building Models {id=using-models:generating}
+Database query languages like SQL are an example of the style of programming called *Logic Programming*. Instead of writing down explicitly *how* to solve a problem, the programmer specifies *what* they want to see and it is the computer's job to find a solution. This idea is sometimes referred to as “declarative” programming. The programmer *declares* what they want, and the computer delivers it.
 
-Generating small models from collections of formulas is a useful skill for checking that such formulas make sense together, so let's step through an example using the `Places` vocabulary with the following three formulas:
+Concretely, the alternative to a language like SQL is for the programmer to write out explicitly all the steps involved in answering the query, explicitly saying at each stage where the data are coming from, how they are being looked up, where the data are going to, etc. As we saw above, SQL queries are essentially Predicate Logic formulas in disguise and therefore have an [interpretation](pred-logic-semantics.md#pred-sem:interp) independent of any particular implementation. Given an SQL query, the Database Management System (DBMS) is free to answer the query in any way it sees fit and in particular is able to optimise the way the query is answered according to how the data is stored. Therefore, the concerns of “what” and “how” are separated. One major benefit of this separation is that the data layout, indexes, and even schema can be rearranged without affecting the queries written on top. If the queries were written with a specific layout assumed, this would be much harder.
 
-1. ```formula
-   ex x. ex y. city(x) /\ city(y) /\ ¬x = y
-   ```
-2. ```formula
-   all x. city(x) -> (ex y. country(y) /\ within(x,y))
-   ```
-3. ```formula
-   all x. ¬(city(x) /\ country(x))
-   ```
+Another form of declarative programming is the use of *Cascading Style Sheets* (CSS) for styling web pages. A CSS author does not specify *how* to apply styles to a page, they just *declare* certain facts that ought to be true about stylying (e.g., “all elements with class `alert` are coloured red”), and the rendering engine makes it so. As with SQL, CSS's declarative approach ensures that stylesheets are robust to changes in the underlying document structure and styling can be changed independently of the document content.
 
-To construct a model for these formulas, we work through them in turn:
+CSS and SQL are special purpose programming languages designed for tasks in a single domain. It is difficult to see how one could code an entire application in them. The [Prolog programming language](https://www.metalevel.at/prolog) is a general purpose programming language based on the idea of proof search in a restricted subset of Predicate Logic. A Prolog program is a collection of logical rules, and program execution works by asking “for which values is this statement provable?”.
 
-1. We first try the empty model:
-   ```
-   model M0 for Places {
-     universe = { }
-	 city = { }
-	 country = { }
-	 within = { }
-   }
-   ```
-   But this does not satisfy the first formula, although it does satisfy the second and third.
-2. The first formula states that at least two cities exist, so we have to add them to the model:
+The class of Logic Programming we will look at here is sometimes called “solver-based” or “constraint-based” programming. It is another example of a domain-specific language, albeit for a domain chosen by the user. A program is a vocabulary and a collection of axioms (i.e., a theory) and a partial model describing the problem. Execution of a program results either in a completed model of the axioms, or a statement that a solution is not possible. So by setting up the axioms to accurately describe what solutions ought to look like, the language gives us a solver “for free”. There are many different kinds of solver, depending on the exact form that the axioms or constraints can take. Here, we will look at the use of Predicate Logic axioms over *finite* models (i.e., models with finite universes).
 
-   ```
-   model M1 for Places {
-     universe = { plockton, auchtermuchty }
-	 city = { plockton, auchtermuchty }
-	 country = { }
-	 within = { }
-   }
-   ```
-3. The model `M1` satisfies the first formula, but not the second, which states that every city is within a country. We can make this formula satisfied by resuing an element of our universe as a country:
-   ```
-   model M2 for Places {
-     universe = { plockton, auchtermuchty }
-	 city = { plockton, auchtermuchty }
-	 country = { plockton }
-	 within = { (auchtermuchty, plockton), (plockton, plockton) }
-   }
-   ```
-4. The model `M2` satisfies the first two formulas, but not the third. The formula states that nothing is both a city and a country, but the model has `plockton` as both. We fix this by introducing a third entity into the universe that is a country, and alter the `within` relation to keep the second formula true:
-   ```
-   model M3 for Places {
-     universe = { plockton, auchtermuchty, scotland }
-	 city = { plockton, auchtermuchty }
-	 country = { scotland }
-	 within = { (auchtermuchty, plockton), (plockton, plockton),
-	            (auchtermuchty, scotland), (plockton, scotland) }
-   }
-   ```
-   This model makes all of the formulas true.
-5. Finally, we can reduce the size of the model by removing the extra tuples in `within` that are not needed:
-   ```
-   model M4 for Places {
-     universe = { plockton, auchtermuchty, scotland }
-	 city = { plockton, auchtermuchty }
-	 country = { scotland }
-	 within = { (auchtermuchty, scotland), (plockton, scotland) }
-   }
-   ```
+The language we will use is a minor extension to the notation we used for [models](pred-logic-semantics.md#pred-sem:models). Instead of completely defining a model, we will leave some of the predicates undefined with a `?` symbol. When the computer checks the model, it tries to find a definition that satisfies all the axioms of the theory. The universe and the predicates that are defined are the “inputs” to the program, and the predicate to be defined is the “output”.
 
-You can test each of these models by typing them into the box below. Edit the `model M { ... }` part to change what exists and what is true. Clicking **Run** will tell you which of the formulas is verified by the model.
+For example, this theory says that there is exactly one thing that is in the `p` predicate. The `ExampleModel` says that there are three things in the universe, but that the `p` predicate's interpretation is not defined. Clicking **Run** will generate a definition of `p` that satisfies `ExampleTheory`.
 
-```model-checker {id=using-models-generating-places}
-theory Places {
-  predicate city/1
-  predicate country/1
-  predicate within/2
+```model-checker {id=using-models-generation-example}
+theory ExampleTheory {
+  predicate p/1
+  axiom one-p : "ex x. p(x) /\ (all y. p(y) -> x = y)"
 }
 
-model M for Places {
-  universe = { }
-  city = { }
-  country = { }
-  within = { }
+model ExampleModel for ExampleTheory {
+  universe = { a, b, c }
+  p = ?
 }
-
-check M |= "ex x. ex y. city(x) /\ city(y) /\ ¬x = y"
-
-check M |= "all x. city(x) -> (ex y. country(y) /\ within(x,y))"
-
-check M |= "all x. ¬(city(x) /\ country(x))"
 ```
 
-The three formulas listed above have finite models, but not all collections of formulas have finite models. An example is given in the box below, using the `Ordering` vocabulary. The first formula says that at least one thing exists. The second says that the `lessthan` relation “stacks”: if `x < y` and `y < z` then `x < z`. The third says that nothing is less than itself. The fourth says that everything has something greater than it.
+**Exercise**: Try rerunning the example with an empty universe in `ExampleModel`. Is it able to generate a completed model?
 
-The effect of these formulas on the model is:
-1. The model cannot be empty.
-2. Chains of `lessthan` can be combined
-3. ... and circles are not allowed
-4. ... and chains go on forever.
-
-*Combined*, these formulas prevent any model from being empty or finite.
-
-```model-checker {id=using-models-generating-order}
-theory Ordering {
-  lessthan/2
-}
-
-model M for Ordering {
-  universe = { }
-  lessthan = { }
-}
-
-// Something exists
-check M |= "ex x. T"
-
-// Transitivity
-check M |= "all x. all y. all z. lessthan(x,y) -> lessthan(y,z) -> lessthan(x,z)"
-
-// Irreflexive: nothing is less than itself
-check M |= "all x. ¬lessthan(x,x)"
-
-// No maximum: everything has something greater than it
-check M |= "all x. ex y. lessthan(x,y)"
-```
-
-**Exercise**. Convince yourself that there are no finite models that make all of these formulas true simultaneously. For each three of four of the formulas, write a model that satisfies those formulas.
-
-```details
-Solution...
-
-FIXME
-```
-
-## (Un)Proof and Counterexamples {id=using-models:proof-counter}
-
-Proof is a way to show that a formula is true in all models. Conversely, we can use models to show that certain formulas are not provable. To do this, it is not enough to simply fail to prove the formula, because it may be the case that a proof exists and we just did not work hard enough to find it.
-
-We can use the soundness of the proof system to show that a certain judgement `P1, ..., Pn ⊢ Q` is **not** provable as follows:
-
-1. Find a model `Mᶜ` that makes all of the `P1`, ..., `Pn` true (meaning `Mᶜ ⊧ Pi`, for all `i`), but does *not* make `Q` true (so `Mᶜ ⊭ Q`).
-2. *If* we could prove `P1, ..., Pn ⊧ Q` then, by soundness, for every model `M` if `M ⊧ P1`, ..., and `M ⊧ Pn` then `M ⊧ Q`.
-3. We have a model `Mᶜ` that supports `P1`, ..., `Pn`, so if the judgement is provable, we would have `Mᶜ ⊧ Q`.
-4. It is contradictory to have both `Mᶜ ⊧ Q` and `Mᶜ ⊭ Q`, so it must be the case that `P1, ..., Pn ⊧ Q` is not provable.
-
-**Example**. It is not possible to prove the formula
-```formula
-¬ (ex x. country(x))
-```
-from the assumptions
-1. ```formula
-   ex x. ex y. city(x) ∧ city(y) ∧ ¬x = y
-   ```
-2. ```formula
-   all x. city(x) -> (ex y. country(y) ∧ within(x,y))
-   ```
-3.
-   ```formula
-   all x. ¬(city(x) ∧ country(x))
-   ```
-
-This is because the model we [constructed above](using-models.md#using-models:generating) supports the three listed formulas, but not `¬ (∃ x. country(x))` (because there exists a `country` in the model). Therefore, the argument we just made shows that it is not possible to prove this formula.
-
-**Exercise**: FIXME
+The remainder of this page describes several examples of how to describe problems as logical theories in such a way that models of those theories are solutions to the problems. The range of problems that can be handled in this way is surprisingly diverse.
 
 ## Package Installations {id=using-models:packages}
 
-**FIXME**
+The Package Installation Problem goes as follows:
+
+1. There is a collection of packages that can be installed on a computer system. For example, `firefox`, `chrome`, `libc-v12`, `libc-v13`, `libc-v14`, ... .
+2. Some packages *depend* on other packages to work properly, so if one package is installed then all packages it depends on must be installed too. For example, `firefox` depends on `libc-v14`, or `chrome` depends on `libc-v12`.
+3. Some packages cannot be installed at the same time: they *conflict*. For example, only one of `libc-v12`, `libc-v13` and `libc-v14` can be installed at once.
+4. The user wants some packages installed. For example, `firefox` and `chrome`.
+
+Is it possible to fulfil the user's requirements, while also installing all the required dependencies and avoiding any conflicts?
+
+What makes this problem interesting is that conflicts between packages cause their dependents to be in conflict as well. In this example, because `libc-v12` and `libc-v14` conflict, their respective dependents `firefox` and `chrome` conflict as well. Therefore the user's wish to install both `firefox` and `chrome` cannot be fulfilled. If they relax their requirements to only install `firefox`, then it can be fulfilled as long as they install `libc-v14` as well.
 
 ### Version 1 {id=using-models:packages:version-1}
 
-TBD: explain `depends/2`, `conflict/2` and `required/1`.
+We will describe this problem in logic by making the following modelling decisions:
+
+1. The elements of the universe are the individual packages.
+2. We will have three predicates that describe the inputs to the problem:
+   - `depends/2`: `depends(p,q)` is true when package `p` depends on package `q`.
+   - `conflict/2`: `conflict(p,q)` is true when package `p` and package `q` conflict.
+   - `required/1`: `required(p)` is true when package `p` is required by the user.
+3. The output is described by a single predicate:
+   - `installed/1`: `installed(p)` is true if package `p` should be installed, and false if it shouldn't.
+
+To make sure that `installed/1` describes correct package installations, we need three axioms:
+
+1. If a package is required, it is installed:
+   ```formula
+   all p. required(p) -> installed(p)
+   ```
+2. If a package is installed, then all its dependencies are installed:
+   ```formula
+   all p. all q. installed(p) -> depends(p,q) -> installed(q)
+   ```
+
+   ````details
+   Note:
+
+   It is *really* tempting to write this the other way round, to express the idea that if `q` is installed, and `p` depends on `q`, then `p` *can be* installed. As a formula:
+   ```formula
+   all p. all q. installed(q) -> depends(p,q) -> installed(p)
+   ```
+   But this doesn't work! For a correct installation, we need to make sure that if a package is installed, then its dependencies are installed too, in order for it to work properly. This alternative version says that, for example, if the C library is installed, then everything that depends on it must be installed too, which would be nearly everything!
+   ````
+3. If two packages are installed, then they do not conflict:
+   ```formula
+   all p. all q. installed(p) -> installed(q) -> ¬conflict(p,q)
+   ```
+
+By setting up the `Packages` theory with these three axioms, and setting up a partial model with definitions of the `depends/2`, `conflict/2`, and `required/1` predicates, we can get the computer to deduce a possible solution to the Package Installation Problem:
 
 ```model-checker {id=packages-model-v1}
 theory Packages {
@@ -224,43 +137,124 @@ theory Packages {
 
   predicate installed/1
 
+  // Everything that is required is installed
   axiom required_installed :
     "all p. required(p) -> installed(p)"
 
+  // If something is installed, then everything it
+  // depends on is installed
   axiom dependency_installed :
     "all p. all q. installed(p) -> depends(p,q) -> installed(q)"
 
+  // If two packages are installed, they must not conflict
   axiom no_conflicts :
     "all p. all q. installed(p) -> installed(q) -> ¬conflict(p,q)"
 }
 
+// This one will work
 model Example1 for Packages {
-  universe = { a, b, c }
-  depends = { (a,b), (b, c) }
-  conflict = { }
-  required = { a }
+  universe = { firefox, chrome, libc-v12, libc-v13, libc-v14  }
+  depends = { (firefox, libc-v14), (chrome, libc-v12) }
+  conflict = { (libc-v12, libc-v14) }
+  required = { firefox }
+  installed = ?
+}
+
+// But this will not
+model Example2 for Packages {
+  universe = { firefox, chrome, libc-v12, libc-v13, libc-v14  }
+  depends = { (firefox, libc-v14), (chrome, libc-v12) }
+  conflict = { (libc-v12, libc-v14) }
+  required = { firefox, chrome }
   installed = ?
 }
 ```
 
 ### Version 2 {id=using-models:packages:version-2}
 
-The package installation scenarios we described above are not very realistic because for each package, all of the things it depended on needed to be installed. There was no way of saying, for example, that the `ChatServer` can depend on either `MySQL` or `PostgreSQL` databases. Or to say that a package can depend on
+The package installation scenarios we described above are not very realistic because for each package, there was one fixed set of dependencies. There was no way of saying that `firefox` could depend on `libc-v14` *or* `libc-v12`.
+
+We can fix this by adding another input predicate `depends-or/3`, where `depends-or(p,q1,q2)` means that installing `p` requires either `q1` or `q2` to be installed. As a formula:
+```formula
+all p. all q1. all q2. installed(p) -> depends-or(p,q1,q2) -> (installed(q1) \/ installed(q2))
+```
+Adding the predicate `depends-or/3` to the theory with this axiom allows more kinds of package installation problems to be expressed:
 
 ```model-checker {id=packages-model-v2}
+theory Packages {
+  predicate depends/2
+  predicate depends-or/3
+  predicate conflict/2
+
+  predicate required/1
+
+  predicate installed/1
+
+  // Everything that is required is installed
+  axiom required_installed :
+    "all p. required(p) -> installed(p)"
+
+  // If something is installed, then everything it
+  // depends on is installed
+  axiom dependency_installed :
+    "all p. all q. installed(p) -> depends(p,q) -> installed(q)"
+
+  // If two packages are installed, they must not conflict
+  axiom no_conflicts :
+    "all p. all q. installed(p) -> installed(q) -> ¬conflict(p,q)"
+
+  // One of the OR dependencies is installed:
+  axiom dependency_or :
+    "all p. all q1. all q2.
+	  installed(p) ->
+	  depends-or(p,q1,q2) ->
+	  (installed(q1) \/ installed(q2))"
+}
+
+// We can now install both firefox and chrome
+model Example2 for Packages {
+  universe = { firefox, chrome, libc-v12, libc-v13, libc-v14  }
+  depends = { (chrome, libc-v12) }
+  depends-or = { (firefox, libc-v14, libc-v12) }
+  conflict = { (libc-v12, libc-v14) }
+  required = { firefox, chrome }
+  installed = ?
+}
 ```
 
-### Exercise: Package Versions {id=using-models:package:exercise}
+### Exercise {id=using-models-packages-exercise}
 
-As an exercise, extend the `Packages` theory from above with the ability to specify versions of packages, where each
+Write another model that describes the following instance of the Package Installation Problem:
+
+1. `texteditor` depends on `libGUIv1` or `libGUIv2`
+2. `musicplayer` depends on `libGUIv2`
+3. `libGUIv1` and `libGUIv2` cannot be installed at the same time
+4. `texteditor` and `musicplayer` must be installed.
+
+````details
+Solution
+
+The universe needs to contain all the packages mentioned, and each of the predicate definitions (except `installed/1`, which the computer will compute for us) is filled in as described.
+
+```
+model Solution for Packages {
+  universe = { texteditor, libGUIv1, libGUIv2, musicplayer }
+  depends = { (musicplayer, libGUIv2) }
+  depends-or = { (texteditor, libGUIv1, libGUIv2) }
+  conflict = { (libGUIv1, libGUIv2) }
+  required = { texteditor, musicplayer }
+  installed = ?
+}
+```
+````
 
 ### Further Reading {id=using-models:packages:reading}
 
 1. The original source for logical modelling of the Package Installation Problem is the paper "[OPIUM: Optimal Package Install/Uninstall Manager](http://cseweb.ucsd.edu/~lerner/papers/opium.pdf)" by Tucker, Shuffelton, Jhala, and Lerner. The paper also describes some refinements, such as how to minimise solutions in terms of number of packages or size of downloads. Some experimental results are also given.
 
-2. The post [Version SAT](https://research.swtch.com/version-sat) by Russ Cox, a member of the Google Go team, explains how to encode *any* NP problem (see [SAT Solver](sat.md) for what NP means) into a package installation problem. This means that solving a package installation problem may be very hard indeed (for the computer) in the general case.
+2. The post [Version SAT](https://research.swtch.com/version-sat) by Russ Cox, a member of the Google Go team, explains how to encode *any* NP problem (see [the page on SAT Solvers](sat.md) for what NP means) into a package installation problem. This means that solving a package installation problem may be very hard indeed (for the computer) in the general case.
 
-3. FIXME: package calculus paper
+3. More recently, the 2026 paper [Package Managers à la Carte: A Formal Model of Dependency Resolution](https://dl.acm.org/doi/10.1145/3828699) describes a general way of translating many different kinds of package management into logic.
 
 ## Resource Allocation {id=using-models:resource-alloc}
 
@@ -340,7 +334,9 @@ line from N2.s to N5.nw
 
 This is because `N1`, `N2`, `N3`, and `N5` are all connected to each other which means that they all need different colours, but there are four of them and only three colours.
 
-### Encoding Graph Colouring in Logic {id=using-models:resource-alloc:logic}
+### Logical Representation {id=using-models:resource-alloc:logic}
+
+**FIXME**: explain how to encode this in logic
 
 ### Putting it all together {id=using-models:resource-alloc:completed}
 
@@ -392,9 +388,11 @@ model TestGraph for Colouring {
 
 If you add `(N5,N2)` to the `different-colours` definition, then you'll get no solutions as in the graph above, because there is no way to colour that graph with three colours.
 
-### Exercise : Tasks and Machines {id=using-models:resource-alloc:exercise}
+### Exercise {id=using-models:resource-alloc:exercise}
 
-Instead of nodes and colours, we'll look at tasks and machines, and some more flexible ways of stating constraints on the allocation than just edges in a graph. Tasks will be assigned to machines, under some constraints. These constraints are:
+**FIXME**: Adding requirements and anti-requirements
+
+Instead of nodes and colours, let's look at tasks and machines, and some more flexible ways of stating constraints on the allocation than just edges in a graph. Tasks will be assigned to machines, under some constraints. These constraints are:
 
 - The following pairs of tasks cannot be assigned to the same machine (because they need to be completed at the same time):
 
@@ -406,11 +404,16 @@ Instead of nodes and colours, we'll look at tasks and machines, and some more fl
 
 - Every solution must also satisfy these special cases:
 
-  1. `T1` must never be assigned to machine `M1` or machine `M3`.
-  2. `T2` must never be assigned to machine `M1`.
-  3. `T3` must never be assigned to machine `M3`.
-  4. If `T2` is assigned to a machine `m`, then `T4` must also be assigned to machine `m`.
+  6. `T1` must never be assigned to machine `M1` or machine `M3`.
+  7. `T2` must never be assigned to machine `M1`.
+  8. `T3` must never be assigned to machine `M3`.
+  9. If `T2` is assigned to a machine `m`, then `T4` must also be assigned to machine `m`.
 
 Edit the code below to add constraints to encode these additional properties, so that the computer finds a satisfying valuation. The `all_tasks_some_machine`, `all_tasks_one_machine` and `separate_machines` parts have already been filled in. You will need to fill in all the bits that say `fill_this_in`.
 
-**FIXME**: put the code here
+```model-checker {id=using-models-tasks}
+theory TasksAndMachines {
+
+
+}
+```

@@ -457,7 +457,7 @@ As with [Propositional Logic](natural-deduction-intro.md#natural-deduction:sound
 
    This property is relatively easy to prove by checking that all of the proof rules preserve valid entailments: for each rule, if the premises are valid entailments, then so is the conclusion. The `done`, `true`, and `refl` rules have no premises, so they get us started.
 
-   A very useful consequence of soundness, other than an assurance that what we prove is actually true, is that we can use it to [show that some formulas are *not* provable](using-models.md#using-models:proof-counter).
+   A very useful consequence of soundness, other than an assurance that what we prove is actually true, is that we can use it to [show that some formulas are *not* provable](pred-logic-semantics.md#pred-sem:proof-counter).
 
 2. If we add [excluded middle](natural-deduction-intro.md#natural-deduction:sound-complete) (the rule that says `P ∨ ¬P` for all `P`) to the proof system, then it is also **complete**. This means that if an entailment `P1, ..., Pn ⊧ Q` is valid, then the judgement `P1, ..., Pn ⊢ Q` is provable.
 
@@ -792,6 +792,233 @@ theory Category {
 ```
 
 ``````
+
+## Building Models {id=pred-sem:generating}
+
+Generating small models from collections of formulas is a useful skill for checking that such formulas make sense together, so let's step through an example using the `Places` vocabulary with the following three formulas as the axioms of the theory:
+
+1. There exist at least two distinct cities:
+   ```formula
+   ex x. ex y. city(x) /\ city(y) /\ ¬x = y
+   ```
+2. Every city is within a country:
+   ```formula
+   all x. city(x) -> (ex y. country(y) /\ within(x,y))
+   ```
+3. Nothing is both a city and a country.
+   ```formula
+   all x. ¬(city(x) /\ country(x))
+   ```
+
+To construct a model for these formulas, we work through them in turn:
+
+1. We first try the empty model:
+   ```
+   model M0 for Places {
+     universe = { }
+	 city = { }
+	 country = { }
+	 within = { }
+   }
+   ```
+   But this does not satisfy the first formula, although it does satisfy the second and third.
+2. The first formula states that at least two cities exist, so we have to add them to the model:
+
+   ```
+   model M1 for Places {
+     universe = { plockton, auchtermuchty }
+	 city = { plockton, auchtermuchty }
+	 country = { }
+	 within = { }
+   }
+   ```
+3. The model `M1` satisfies the first formula, but not the second, which states that every city is within a country. We can make this formula satisfied by resuing an element of our universe as a country:
+   ```
+   model M2 for Places {
+     universe = { plockton, auchtermuchty }
+	 city = { plockton, auchtermuchty }
+	 country = { plockton }
+	 within = { (auchtermuchty, plockton), (plockton, plockton) }
+   }
+   ```
+4. The model `M2` satisfies the first two formulas, but not the third. The formula states that nothing is both a city and a country, but the model has `plockton` as both. We fix this by introducing a third entity into the universe that is a country, and alter the `within` relation to keep the second formula true:
+   ```
+   model M3 for Places {
+     universe = { plockton, auchtermuchty, scotland }
+	 city = { plockton, auchtermuchty }
+	 country = { scotland }
+	 within = { (auchtermuchty, plockton), (plockton, plockton),
+	            (auchtermuchty, scotland), (plockton, scotland) }
+   }
+   ```
+   This model makes all of the formulas true.
+5. Finally, we can reduce the size of the model by removing the extra tuples in `within` that are not needed:
+   ```
+   model M4 for Places {
+     universe = { plockton, auchtermuchty, scotland }
+	 city = { plockton, auchtermuchty }
+	 country = { scotland }
+	 within = { (auchtermuchty, scotland), (plockton, scotland) }
+   }
+   ```
+
+You can test each of these models by typing them into the box below. Edit the `model M { ... }` part to change what exists and what is true. Clicking **Run** will tell you which of the formulas is verified by the model.
+
+```model-checker {id=using-models-generating-places}
+theory Places {
+  predicate city/1
+  predicate country/1
+  predicate within/2
+
+  axiom at-least-two-cities :
+    "ex x. ex y. city(x) /\ city(y) /\ ¬x = y"
+  axiom every-city-within-a-country :
+    "all x. city(x) -> (ex y. country(y) /\ within(x,y))"
+  axiom nothing-both-city-and-country :
+    "all x. ¬(city(x) /\ country(x))"
+}
+
+model M for Places {
+  universe = { }
+  city = { }
+  country = { }
+  within = { }
+}
+```
+
+## (Un)Proof and Counterexamples {id=pred-sem:proof-counter}
+
+[Soundness](pred-logic-semantics.md#pred-sem:sound-complete) tells us us that proof is a way to show that a formula is true in all models. Conversely, we can use models to show that certain formulas are not provable. To do this, it is not enough to simply fail to prove the formula, because it may be the case that a proof exists and we just did not work hard enough to find it.
+
+We can use the soundness of the proof system to show that a certain judgement `P1, ..., Pn ⊢ Q` is **not** provable as follows:
+
+1. Find a model `Mᶜ` that makes all of the `P1`, ..., `Pn` true (meaning `Mᶜ ⊧ Pi`, for all `i`), but does *not* make `Q` true (so `Mᶜ ⊭ Q`).
+2. *If* we could prove `P1, ..., Pn ⊧ Q` then, by soundness, for every model `M` if `M ⊧ P1`, ..., and `M ⊧ Pn` then `M ⊧ Q`.
+3. We have a model `Mᶜ` that supports `P1`, ..., `Pn`, so if the judgement is provable, we would have `Mᶜ ⊧ Q`.
+4. It is contradictory to have both `Mᶜ ⊧ Q` and `Mᶜ ⊭ Q`, so it must be the case that `P1, ..., Pn ⊧ Q` is not provable.
+
+**Example**. It is not possible to prove the formula
+```formula
+¬ (ex x. country(x))
+```
+from the assumptions
+1. ```formula
+   ex x. ex y. city(x) ∧ city(y) ∧ ¬x = y
+   ```
+2. ```formula
+   all x. city(x) -> (ex y. country(y) ∧ within(x,y))
+   ```
+3.
+   ```formula
+   all x. ¬(city(x) ∧ country(x))
+   ```
+
+This is because the model we [constructed for these three axioms above](pred-logic-semantics.md#pred-sem:generating) supports the three listed formulas, but not `¬ (∃ x. country(x))` (because there exists a `country` in the model). Therefore, the argument we just made shows that it is not possible to prove this formula.
+
+### Exercise: Specifying Encryption {id=pred-sem:proof-counter:encryption-exercise}
+
+Encryption and decryption with a key can be modelled in logic using two predicates:
+```formula
+encrypt(key, input, output)
+```
+and
+```formula
+decrypt(key, input, output)
+```
+The idea is that `encrypt(key, input, output)` is true exactly when encrypting `input` with `key` gives `output`, and similarly for `decrypt`.
+
+To make sure that encryption and decryption do the right things, we create a theory to specify properties that these predicate must have.
+
+1. Encryption with a key and an input gives exactly one output:
+   ```formula
+   all key. all input. ex output.
+	  encrypt(key, input, output)
+	  /\ (all other-output.
+	       encrypt(key, input, other-output) ->
+		   output = other-output)
+   ```
+2. Decryption with a key and an input gives exactly one output:
+   ```formula
+   all key. all input. ex output.
+	  decrypt(key, input, output)
+	  /\ (all other-output.
+	       decrypt(key, input, other-output) ->
+		   output = other-output)
+   ```
+3. Encrypting and then decrypting gives you the original input:
+   ```formula
+   all key. all plain-text. all cipher-text. all output.
+       encrypt(key, plain-text, cipher-text) ->
+       decrypt(key, cipher-text, output) ->
+       output = plain-text
+   ```
+
+A further axiom we might wish to have is that encryption actually does something: that is if we encrypt `input` with key `key`, then the output is not equal to the input:
+```formula
+all key. all input. all output.
+     encrypt(key, input, output) ->
+     input != output
+```
+
+Show, by constructing a model, that this last statement is not provable from the three axioms above. You should make a model of `Encryption` that does not satisfy the statement. The `check Impl |= "P"` at the end asks the tool to check the formula `P` in the model.
+
+```model-checker {id=encryption-exercise}
+theory Encryption {
+  predicate encrypt/3
+  predicate decrypt/3
+
+  axiom encrypt-unique-exists :
+    "all key. all input. ex output.
+	  encrypt(key, input, output)
+	  /\ (all other-output.
+	       encrypt(key, input, other-output) ->
+		   output = other-output)"
+
+  axiom decrypt-unique-exists :
+    "all key. all input. ex output.
+	  decrypt(key, input, output)
+	  /\ (all other-output.
+	       decrypt(key, input, other-output) ->
+		   output = other-output)"
+
+  axiom encrypt-then-decrypt :
+    "all key. all plain-text. all cipher-text. all output.
+       encrypt(key, plain-text, cipher-text) ->
+       decrypt(key, cipher-text, output) ->
+       output = plain-text"
+}
+
+// Alter this definition to make it a model of
+// the Encryption theory, but also make the formula
+// below false
+model Impl for Encryption {
+  universe = { }
+  encrypt = { }
+  decrypt = { }
+}
+
+// Does the model that make this statement false?
+check Impl |=
+  "all key. all input. all output.
+     encrypt(key, input, output) ->
+     input != output"
+```
+
+`````details
+Solution
+
+This model is a model of the theory, but fails to satisfy the statement:
+```
+model Impl for Encryption {
+  universe = { text }
+  encrypt = { (text, text, text) }
+  decrypt = { (text, text, text) }
+}
+```
+The five axioms of the theory say that encryption and decryption always give unique results, and encrypting and decrypting always give you back the same thing. But they do not imply that encrypting gives something different to the original text. This model demonstrates this by giving definitions of encryption and decryption that meet the theory's requirements, but fail the statement.
+`````
+
+Note that specifying precisely what encryption actually ought to do is quite subtle, and far beyond the scope of this course.
 
 ## The Theory of Theories {id=pred-sem:theory-of-theories}
 
