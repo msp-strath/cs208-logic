@@ -321,18 +321,20 @@ line from N4.e to N5.w
 line from N3.s to N5.n
 ```
 
-If we have three colours `Red`, `Green`, `Blue` to assign to these nodes, then there are many ways to do it. For example:
+The graph has edges between `N1` and `N2`, `N2` and `N3`, `N1` and `N3`, `N1` and `N5`, `N3` and `N5`, and `N4` and `N5`.
+
+If we have three colours `Magenta`, `Yellow`, `Cyan` to assign to these nodes, then there are many ways to do it. For example:
 
 ```pikchr
-N1: circle "N1" fit fill green
+N1: circle "N1" fit fill yellow
 move from N1 right 1.2cm up 0.6cm
-N2: circle "N2" fit fill blue
+N2: circle "N2" fit fill cyan
 move from N1 right 2cm
-N3: circle "N3" fit fill red
+N3: circle "N3" fit fill magenta
 move from N1 down 1cm
-N4: circle "N4" fit fill green
+N4: circle "N4" fit fill yellow
 move from N4 right 2cm
-N5: circle "N5" fit fill blue
+N5: circle "N5" fit fill cyan
 
 line from N1.ne to N2.sw
 line from N2.se to N3.nw
@@ -342,7 +344,7 @@ line from N4.e to N5.w
 line from N3.s to N5.n
 ```
 
-(here `N1` is `Green`, `N2` is `Blue`, `N3` is `Red`, `N4` is `Green` and `N5` is `Blue`.)
+(here `N1` is `Yellow`, `N2` is `Cyan`, `N3` is `Magenta`, `N4` is `Yellow` and `N5` is `Cyan`.)
 
 In fact, there are 12 ways of assigning three colours to this graph.
 
@@ -367,6 +369,8 @@ line from N4.e to N5.w
 line from N3.s to N5.n
 line from N2.s to N5.nw
 ```
+
+This graph is the same as the one above, except that there is an extra edge between `N2` and `N5`.
 
 This is because `N1`, `N2`, `N3`, and `N5` are all connected to each other which means that they all need different colours, but there are four of them and only three colours.
 
@@ -405,9 +409,9 @@ theory Colouring {
 }
 
 model TestGraph for Colouring {
-  universe = { N1, N2, N3, N4, N5, Red, Green, Blue }
+  universe = { N1, N2, N3, N4, N5, Magenta, Yellow, Cyan }
   node = { N1, N2, N3, N4, N5 }
-  colour = { Red, Green, Blue }
+  colour = { Magenta, Yellow, Cyan }
 
   different-colours = {
     (N1, N2),
