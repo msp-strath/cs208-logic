@@ -331,6 +331,13 @@ let build_structure theory defns =
       errorf "Missing predicate definitions: %s are not defined"
 	(String.concat ", " (List.map fst (IdentMap.bindings missing_predicates)))
   in
+  (* If the model is fully defined, then check all the axioms one by one,
+     reporting which ones are satisfied and which are not. *)
+
+  (* If the model is partial, then for each axiom, if it is definitely true
+     or false then say so. Otherwise, create a SAT problem and try to
+     solve it. *)
+
   (* Evaluate all the axioms of the theory in this partial model *)
   let module E = SolverStructure () in
   let module Ev = Formula_evaluator.Make (E) in
@@ -347,10 +354,9 @@ let build_structure theory defns =
   in
   match E.complete_model partial_model axiom_vars with
   | None ->
-    (* FIXME: why not? *)
-    errorf "Unable to complete model"
+    Ok None
   | Some model ->
-    Ok model
+    Ok (Some model)
 
 module QueryEngine = struct
 
@@ -439,12 +445,17 @@ let exec_structure_item env = function
 	| Some (Model _) ->
 	  errorf "'%s' refers to a model; expecting a theory to be referenced here" name
 	| Some (Theory theory) ->
-	  let+ structure = build_structure theory defns in
-	  [
-	    messagef "Model '%s' for theory '%s' defined" name theory_name;
-	    Pretty (pp_structure structure)
-	  ],
-	  IdentMap.add name (Model (theory_name, structure)) env
+	  let+ maybe_structure = build_structure theory defns in
+	  match maybe_structure with
+	  | None ->
+	    ([ messagef "Unable to solve '%s' for theory '%s'" name theory_name ],
+            env)
+	  | Some structure ->
+	    ([
+	      messagef "Model '%s' for theory '%s' defined" name theory_name;
+	      Pretty (pp_structure structure)
+	    ],
+	    IdentMap.add name (Model (theory_name, structure)) env)
     end
 
   | Check { model_name; formula } ->

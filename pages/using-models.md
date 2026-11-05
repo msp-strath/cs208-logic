@@ -231,6 +231,42 @@ Write another model that describes the following instance of the Package Install
 3. `libGUIv1` and `libGUIv2` cannot be installed at the same time
 4. `texteditor` and `musicplayer` must be installed.
 
+```model-checker {id=using-models-packages-exercise}
+theory Packages {
+  predicate depends/2
+  predicate depends-or/3
+  predicate conflict/2
+
+  predicate required/1
+
+  predicate installed/1
+
+  // Everything that is required is installed
+  axiom required_installed :
+    "all p. required(p) -> installed(p)"
+
+  // If something is installed, then everything it
+  // depends on is installed
+  axiom dependency_installed :
+    "all p. all q. installed(p) -> depends(p,q) -> installed(q)"
+
+  // If two packages are installed, they must not conflict
+  axiom no_conflicts :
+    "all p. all q. installed(p) -> installed(q) -> ¬conflict(p,q)"
+
+  // One of the OR dependencies is installed:
+  axiom dependency_or :
+    "all p. all q1. all q2.
+	  installed(p) ->
+	  depends-or(p,q1,q2) ->
+	  (installed(q1) \/ installed(q2))"
+}
+
+model Solution for Packages {
+   // Fill this in
+}
+```
+
 ````details
 Solution
 
