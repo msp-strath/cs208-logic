@@ -95,9 +95,11 @@ The [semantics of Predicate Logic](pred-logic-semantics.md) is inevitably more c
 
 [Lecture slides for this topic](topic08-slides.pdf).
 
-### Topic 9 : Using Models of Predicate Logic {id=index:topics:topic9}
+### Topic 9 : Programming with Logic {id=index:topics:topic9}
 
-Models can be thought of as descriptions of the world in terms of individuals and relations. Predicate Logic is language for describing which models “make sense” and for asking questions about models. There are many possible [uses of models](using-models.md) for stating and solving problems, which we will explore this week.
+[Logic Programming](logic-programming.md) is a style of programming where the programmer uses Logical formulas to describe *what* they want the computer to produce. This is in contrast to the usual style of programming where the programmer describes *how* they want the computer to produce the answer.
+
+There are no slides for this topic. Lectures will be live coding demonstrations.
 
 ### Topic 10 : Metatheory and Undecidability {id=index:topics:topic10}
 
@@ -109,7 +111,7 @@ Another fundamental result is that, once our theories become powerful enough to 
 
 [Slides on Metatheory and Incompleteness](topic10-slides.pdf)
 
-Turing's Undecidability and Gödel's Incompleteness Result mean that it is **impossible** to completely and reliably automate logic. However, for restricted subsets of logic, there are tools that can solve problems quickly and reliably. The model completion tool from [Using Models](using-models.md) works using a tool called a SAT solver. [SAT Solvers](sat.md) are a class of tool that can solve very large problems in Propositional Logic, and are used as a foundation for building tools that can solve problems in Predicate Logic. They use heuristic search techniques to try to avoid exponential runtime behaviour. [Conversion to CNF](converting-to-cnf.md) is required to convert Propositional Logic formulas into the format suitable for a SAT solver. There are two approaches, one is slow but relies on simple rewrites, the other is fast.
+Turing's Undecidability and Gödel's Incompleteness Result mean that it is **impossible** to completely and reliably automate logic. However, for restricted subsets of logic, there are tools that can solve problems quickly and reliably. The [model completion tool](logic-programming.md) works using a tool called a SAT solver. [SAT Solvers](sat.md) are a class of tool that find satisfying assignments for formulas in Propositional Logic. For models with finite universes, it is possible to translate predicate logic formulas into Propositional Logic formulas. SAT solvers use backtracking combined with heuristic search techniques to try to avoid exponential runtime behaviour. [Conversion to CNF](converting-to-cnf.md) is required to convert Propositional Logic formulas into the format suitable for a SAT solver. There are two approaches, one is slow but relies on simple rewrites, the other is fast.
 
 [Slides on SAT Solvers and Conversion to CNF](topic09-slides.pdf).
 

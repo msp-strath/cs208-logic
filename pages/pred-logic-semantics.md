@@ -19,7 +19,7 @@ Once we have a definition of model we can [interpret Predicate Logic formulas](p
 
 With an interpretation of formulas we can define [entailment for Predicate Logic](pred-logic-semantics.md#pred-sem:entailment). As with Propositional Logic, entailment means that, for all models, if all the assumptions are true then the conclusion is true. For Predicate Logic, there are infinitely many models and each one may itself be infinite; so checking them all one by one in a truth table is no longer possible. This is why proof for Predicate Logic is more essential than for Propositional Logic.
 
-The semantics of Predicate Logic demonstrates the tight connection between Logic and Databases. We can think of the semantics of a formula as a database table representing all the values of its variables that make it true. [Database queries are essentially the same thing as logical formulas](using-models.md#using-models:databases).
+The semantics of Predicate Logic demonstrates the tight connection between Logic and Databases. We can think of the semantics of a formula as a database table representing all the values of its variables that make it true. [Database queries are essentially the same thing as logical formulas](logic-programming.md#logic-programming:databases).
 
 ## Vocabularies {id=pred-sem:vocabs}
 
@@ -154,7 +154,7 @@ model UnitedKingdom for Places {
 }
 ```
 
-Once we understand how to [interpret formulas in models](pred-logic-semantics.md#pred-sem:interp), we will be able to *query* models by asking which formulas are true in that model. [There is a close connection](using-models.md#using-models:databases) between databases queries in a language like SQL and logical formulas.
+Once we understand how to [interpret formulas in models](pred-logic-semantics.md#pred-sem:interp), we will be able to *query* models by asking which formulas are true in that model. [There is a close connection](logic-programming.md#logic-programming:databases) between databases queries in a language like SQL and logical formulas.
 
 The predicate names we use in our vocabularies are just names. This means that there can exist models for vocabularies that may not match our intuitions about what the names mean.
 
@@ -864,7 +864,7 @@ To construct a model for these formulas, we work through them in turn:
 
 You can test each of these models by typing them into the box below. Edit the `model M { ... }` part to change what exists and what is true. Clicking **Run** will tell you which of the formulas is verified by the model.
 
-```model-checker {id=using-models-generating-places}
+```model-checker {id=generating-places}
 theory Places {
   predicate city/1
   predicate country/1
@@ -1024,9 +1024,9 @@ Note that specifying precisely what encryption actually ought to do is quite sub
 
 We have now seen several theories. The theory of theories in Predicate Logic is very rich, and is one of the core areas of the modern study of logic. We have seen that by imposing different axioms, we can restrict the range of possible models to those that are “meaningful” for the application we have in mind.
 
-In the [next topic](using-models.md) we will see some theories that describe situations of practical interest. It is also possible to use Predicate Logic to define theories for using in Mathematics, such as the [Peano Axioms for number theory](induction.md), and [Set Theory](pred-logic-rules.md#pred-logic:set-theory).
+In the [next topic](logic-programming.md) we will see some theories that describe situations of practical interest. It is also possible to use Predicate Logic to define theories for using in Mathematics, such as the [Peano Axioms for number theory](induction.md), and [Set Theory](pred-logic-rules.md#pred-logic:set-theory).
 
-As [we will see](using-models.md), if we can define a theory and get the computer to generate models for it, then we can use this to get the computer to solve problems for us, *just by writing down what it means to be the solution*.
+As [we will see](logic-programming.md), if we can define a theory and get the computer to generate models for it, then we can use this to get the computer to solve problems for us, *just by writing down what it means to be the solution*.
 
 There are many other questions about theories that are of interest that unfortunately we do not have time to cover in this course:
 

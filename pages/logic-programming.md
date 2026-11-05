@@ -1,4 +1,4 @@
-# Topic 9 : Using Models of Predicate Logic
+# Topic 9 : Programming with Logic
 
 ```aside
 This page assumes that you have read the [Introduction to Predicate Logic](pred-logic-intro.html) and about the [Semantics of Predicate Logic](pred-logic-semantics.html). You can also read the [proof rules for predicate logic](pred-logic-rules.html) to get a feel for how the quantifiers in predicate logic work.
@@ -14,9 +14,9 @@ Given a collection of formulas `P1`, ..., `Pn`, it can be useful to build a mode
 
 2. Building a model of a collection of formulas helps us check to see whether or not the formulas make sense. If we are able to build a model of some axioms that does not match our intuition, then perhaps we have made a mistake in our axioms? Or maybe we have learnt an unexpected fact about our axioms?
 
-3. If we specify some axioms and *part of* a model, we can get the computer to complete the rest of the model for us such that the axioms are validated. This gives a way of solving problems not by explicitly programming a way of solving them, but instead by stating what it is we want solved and getting the computer to do it for us. We will look at several examples below, including [package installations](using-models.md#using-models:packages) and [resource allocation](using-models.md#using-models:resource-alloc). This is a kind of [*Logic Programming*](using-models.md#using-models:logic-programming).
+3. If we specify some axioms and *part of* a model, we can get the computer to complete the rest of the model for us such that the axioms are validated. This gives a way of solving problems not by explicitly programming a way of solving them, but instead by stating what it is we want solved and getting the computer to do it for us. We will look at several examples below, including [package installations](logic-programming.md#logic-programming:packages) and [resource allocation](logic-programming.md#logic-programming:resource-alloc). This is a kind of [*Logic Programming*](logic-programming.md#logic-programming:logic-programming).
 
-## Models and Databases {id=using-models:databases}
+## Models and Databases {id=logic-programming:databases}
 
 The *Relational Model* for databases was introduced by Edgar F. Codd in the 1969 paper [*A relational model of data for large shared data banks*](https://dl.acm.org/doi/10.1145/362384.362685). The core idea of the Relational Model is that databases are comprised of *relations* between values. A database that stores banking information could relate account holders to their names and addresses, and also relate account holders to their accounts, and each account to its transactions. The key innovation of the relational model is that these relations are unbiased, unlike the “navigational” or “hierarchical” models that predated it (or the attempts at “object oriented” databases that came after), which allow querying of transactions connected to an account, but not (easily) the reverse. This lack of bias makes the relational model very flexible in the face of changing requirements because it is easy to write queries that were not anticipated when the data was first collected.
 
@@ -44,7 +44,7 @@ or, more simply:
 within(x,scotland()) /\ city(x)
 ```
 
-## Logic Programming {id=using-models:logic-programming}
+## Logic Programming {id=logic-programming:logic-programming}
 
 Database query languages like SQL are an example of the style of programming called *Logic Programming*. Instead of writing down explicitly *how* to solve a problem, the programmer specifies *what* they want to see and it is the computer's job to find a solution. This idea is sometimes referred to as “declarative” programming. The programmer *declares* what they want, and the computer delivers it.
 
@@ -60,7 +60,7 @@ The language we will use is a minor extension to the notation we used for [model
 
 For example, this theory says that there is exactly one thing that is in the `p` predicate. The `ExampleModel` says that there are three things in the universe, but that the `p` predicate's interpretation is not defined. Clicking **Run** will generate a definition of `p` that satisfies `ExampleTheory`.
 
-```model-checker {id=using-models-generation-example}
+```model-checker {id=logic-programming-generation-example}
 theory ExampleTheory {
   predicate p/1
   axiom one-p : "ex x. p(x) /\ (all y. p(y) -> x = y)"
@@ -76,7 +76,7 @@ model ExampleModel for ExampleTheory {
 
 The remainder of this page describes several examples of how to describe problems as logical theories in such a way that models of those theories are solutions to the problems. The range of problems that can be handled in this way is surprisingly diverse.
 
-## Package Installations {id=using-models:packages}
+## Package Installations {id=logic-programming:packages}
 
 The Package Installation Problem goes as follows:
 
@@ -89,7 +89,7 @@ Is it possible to fulfil the user's requirements, while also installing all the 
 
 What makes this problem interesting is that conflicts between packages cause their dependents to be in conflict as well. In this example, because `libc-v12` and `libc-v14` conflict, their respective dependents `firefox` and `chrome` conflict as well. Therefore the user's wish to install both `firefox` and `chrome` cannot be fulfilled. If they relax their requirements to only install `firefox`, then it can be fulfilled as long as they install `libc-v14` as well.
 
-### Version 1 {id=using-models:packages:version-1}
+### Version 1 {id=logic-programming:packages:version-1}
 
 We will describe this problem in logic by making the following modelling decisions:
 
@@ -170,7 +170,7 @@ model Example2 for Packages {
 }
 ```
 
-### Version 2 {id=using-models:packages:version-2}
+### Version 2 {id=logic-programming:packages:version-2}
 
 The package installation scenarios we described above are not very realistic because for each package, there was one fixed set of dependencies. There was no way of saying that `firefox` could depend on `libc-v14` *or* `libc-v12`.
 
@@ -222,7 +222,7 @@ model Example2 for Packages {
 }
 ```
 
-### Exercise {id=using-models-packages-exercise}
+### Exercise {id=logic-programming-packages-exercise}
 
 Write another model that describes the following instance of the Package Installation Problem:
 
@@ -231,7 +231,7 @@ Write another model that describes the following instance of the Package Install
 3. `libGUIv1` and `libGUIv2` cannot be installed at the same time
 4. `texteditor` and `musicplayer` must be installed.
 
-```model-checker {id=using-models-packages-exercise}
+```model-checker {id=logic-programming-packages-exercise}
 theory Packages {
   predicate depends/2
   predicate depends-or/3
@@ -284,7 +284,7 @@ model Solution for Packages {
 ```
 ````
 
-### Further Reading {id=using-models:packages:reading}
+### Further Reading {id=logic-programming:packages:reading}
 
 1. The original source for logical modelling of the Package Installation Problem is the paper "[OPIUM: Optimal Package Install/Uninstall Manager](http://cseweb.ucsd.edu/~lerner/papers/opium.pdf)" by Tucker, Shuffelton, Jhala, and Lerner. The paper also describes some refinements, such as how to minimise solutions in terms of number of packages or size of downloads. Some experimental results are also given.
 
@@ -292,11 +292,11 @@ model Solution for Packages {
 
 3. More recently, the 2026 paper [Package Managers à la Carte: A Formal Model of Dependency Resolution](https://dl.acm.org/doi/10.1145/3828699) describes a general way of translating many different kinds of package management into logic.
 
-## Resource Allocation {id=using-models:resource-alloc}
+## Resource Allocation {id=logic-programming:resource-alloc}
 
 Many kinds of problem that we might ask a computer to solver can be seen as a kind of “resource allocation” problem, where we have some number of resources to distribute among some number of tasks according to some constraints. Logical modelling is a good way of expressing these problems in cases where the constraints complicated.
 
-### Graph Colouring {id=using-models:resource-alloc:graph-coloring}
+### Graph Colouring {id=logic-programming:resource-alloc:graph-coloring}
 
 One way of thinking about resource allocation is to think of colouring the nodes of a graph in such a way that no two connected nodes have the same colour. We think of the nodes as "tasks" and the colours as "resources". An edge between two nodes means that those two nodes cannot be assigned the same colour. In terms of resources, this might be because those two tasks must run at the same time and so cannot be assigned the same physical space, for example.
 
@@ -374,15 +374,15 @@ This graph is the same as the one above, except that there is an extra edge betw
 
 This is because `N1`, `N2`, `N3`, and `N5` are all connected to each other which means that they all need different colours, but there are four of them and only three colours.
 
-### Logical Representation {id=using-models:resource-alloc:logic}
+### Logical Representation {id=logic-programming:resource-alloc:logic}
 
 **FIXME**: explain how to encode this in logic
 
-### Putting it all together {id=using-models:resource-alloc:completed}
+### Putting it all together {id=logic-programming:resource-alloc:completed}
 
 Putting together all the parts above, we get the following theory and example partial model. If you click ‘Run’, the computer will fill in the missing definition of `is-colour` in a way that satisifies the given axioms.
 
-```model-checker {id=using-models-resource-alloc}
+```model-checker {id=logic-programming-resource-alloc}
 theory Colouring {
   predicate node/1
   predicate colour/1
@@ -428,9 +428,11 @@ model TestGraph for Colouring {
 
 If you add `(N5,N2)` to the `different-colours` definition, then you'll get no solutions as in the graph above, because there is no way to colour that graph with three colours.
 
-### Exercise {id=using-models:resource-alloc:exercise}
+### Exercise {id=logic-programming:resource-alloc:exercise}
 
 **FIXME**: Adding requirements and anti-requirements
+
+```comment
 
 Instead of nodes and colours, let's look at tasks and machines, and some more flexible ways of stating constraints on the allocation than just edges in a graph. Tasks will be assigned to machines, under some constraints. These constraints are:
 
@@ -451,7 +453,9 @@ Instead of nodes and colours, let's look at tasks and machines, and some more fl
 
 Edit the code below to add constraints to encode these additional properties, so that the computer finds a satisfying valuation. The `all_tasks_some_machine`, `all_tasks_one_machine` and `separate_machines` parts have already been filled in. You will need to fill in all the bits that say `fill_this_in`.
 
-```model-checker {id=using-models-tasks}
+```
+
+```model-checker {id=logic-programming-tasks}
 theory TasksAndMachines {
 
 
