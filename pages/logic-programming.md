@@ -6,15 +6,37 @@ This page assumes that you have read the [Introduction to Predicate Logic](pred-
 
 **DRAFT**
 
-One reason to study the semantics of Predicate Logic is to give us some faith that the proof system we have been using actually means something. Another reason is that it gives us another view of logical formulas that is very useful for many purposes.
+Logic Programming is a style of programming where, instead of writing down explicitly *how* to solve a problem, the programmer specifies *what* they want to see and it is the computer's job to find a solution. This idea is sometimes referred to as “declarative” programming. The programmer *declares* what they want, and the computer delivers it.
 
-Given a collection of formulas `P1`, ..., `Pn`, it can be useful to build a model `M` of them. There are several uses:
+Database query languages like *Structured Query Language* (SQL) are an example of Logic Programming that is used extensively. SQL queries express *what* the user wants to see in the result, not how to compute that result. The alternative is that the programmer to writes explicitly all the steps involved in answering the query, explicitly saying at each stage where the data are coming from, how they are being looked up, where the data are going to, etc. SQL queries are essentially Predicate Logic formulas in disguise ([see below](logic-programming.md#logic-programming:databases)) and therefore have an [interpretation](pred-logic-semantics.md#pred-sem:interp) independent of any particular implementation or data storage layout. Given an SQL query, the *Database Management System* (DBMS) is free to answer the query in any way it sees fit and in particular is able to optimise the way the query is answered according to how the data is stored. Therefore, the concerns of “what” and “how” are separated. One major benefit of this separation is that the data layout, indexes, and even schema can be rearranged without affecting the queries written on top. If the queries were written with a specific layout assumed, this would be much harder.
 
-1. Building a model that satisfies a collection of axioms but also falsifies another formula is a way of showing that there is no way of proving that formula from the axioms. We saw this in the previous topic to show that [certain formulas are unprovable](pred-logic-semantics.md#pred-sem:proof-counter).
+Another form of declarative programming in widespread use is the *Cascading Style Sheets* (CSS) language for styling web pages. A CSS author does not specify *how* to apply styles to a page, they just *declare* certain facts that ought to be true about styling (e.g., “all elements with class `alert` are coloured red”), and the rendering engine makes it so. As with SQL, CSS's declarative approach ensures that stylesheets are robust to changes in the underlying document structure and styling can be changed independently of the document content.
 
-2. Building a model of a collection of formulas helps us check to see whether or not the formulas make sense. If we are able to build a model of some axioms that does not match our intuition, then perhaps we have made a mistake in our axioms? Or maybe we have learnt an unexpected fact about our axioms?
+CSS and SQL are special purpose programming languages designed for tasks in a single domain. It is difficult to see how one could code an entire application in them. The [Prolog programming language](https://www.metalevel.at/prolog) is a general purpose programming language based on the idea of proof search in a restricted subset of Predicate Logic. A Prolog program is a collection of logical rules, and program execution works by asking “for which values is this statement provable?”.
 
-3. If we specify some axioms and *part of* a model, we can get the computer to complete the rest of the model for us such that the axioms are validated. This gives a way of solving problems not by explicitly programming a way of solving them, but instead by stating what it is we want solved and getting the computer to do it for us. We will look at several examples below, including [package installations](logic-programming.md#logic-programming:packages) and [resource allocation](logic-programming.md#logic-programming:resource-alloc). This is a kind of [*Logic Programming*](logic-programming.md#logic-programming:logic-programming).
+The class of Logic Programming we will look at here is sometimes called “solver-based” or “constraint-based” programming. It is another example of a domain-specific language, albeit for a domain chosen by the user. A program is a vocabulary and a collection of axioms (i.e., a [theory](pred-logic-semantics.md#pred-sem:theories)) and a partial model describing the problem. Execution of a program results either in a completed model of the axioms, or a statement that a solution is not possible. So by setting up the axioms to accurately describe what solutions ought to look like, the language gives us a solver “for free”. There are many different kinds of solver, depending on the exact form that the axioms or constraints can take. Here, we will look at the use of Predicate Logic axioms over *finite* models (i.e., models with finite universes).
+
+The language we will use is a minor extension to the notation we used for [models](pred-logic-semantics.md#pred-sem:models). Instead of completely defining a model, we will leave some of the predicates undefined with a `?` symbol. When the computer checks the model, it tries to find a definition that satisfies all the axioms of the theory. The universe and the predicates that are defined are the “inputs” to the program, and the predicate to be defined is the “output”.
+
+For example, this theory says that there is exactly one thing that is in the `p` predicate. The `ExampleModel` says that there are three things in the universe, but that the `p` predicate's interpretation is not defined. Clicking **Run** will generate a definition of `p` that satisfies `ExampleTheory`.
+
+```model-checker {id=logic-programming-generation-example}
+theory ExampleTheory {
+  predicate p/1
+  axiom one-p : "ex x. p(x) /\ (all y. p(y) -> x = y)"
+}
+
+model ExampleModel for ExampleTheory {
+  universe = { a, b, c }
+  p = ?
+}
+```
+
+**Exercise**: Try rerunning the example with an empty universe in `ExampleModel`. Is it able to generate a completed model?
+
+The remainder of this page describes several examples of how to describe problems as logical theories in such a way that models of those theories are solutions to the problems. The range of problems that can be handled in this way is surprisingly diverse.
+
+But first we'll see how SQL is essentially a form of Logic in disguise.
 
 ## Models and Databases {id=logic-programming:databases}
 
@@ -44,39 +66,11 @@ or, more simply:
 within(x,scotland()) /\ city(x)
 ```
 
-## Logic Programming {id=logic-programming:logic-programming}
-
-Database query languages like SQL are an example of the style of programming called *Logic Programming*. Instead of writing down explicitly *how* to solve a problem, the programmer specifies *what* they want to see and it is the computer's job to find a solution. This idea is sometimes referred to as “declarative” programming. The programmer *declares* what they want, and the computer delivers it.
-
-Concretely, the alternative to a language like SQL is for the programmer to write out explicitly all the steps involved in answering the query, explicitly saying at each stage where the data are coming from, how they are being looked up, where the data are going to, etc. As we saw above, SQL queries are essentially Predicate Logic formulas in disguise and therefore have an [interpretation](pred-logic-semantics.md#pred-sem:interp) independent of any particular implementation. Given an SQL query, the Database Management System (DBMS) is free to answer the query in any way it sees fit and in particular is able to optimise the way the query is answered according to how the data is stored. Therefore, the concerns of “what” and “how” are separated. One major benefit of this separation is that the data layout, indexes, and even schema can be rearranged without affecting the queries written on top. If the queries were written with a specific layout assumed, this would be much harder.
-
-Another form of declarative programming is the use of *Cascading Style Sheets* (CSS) for styling web pages. A CSS author does not specify *how* to apply styles to a page, they just *declare* certain facts that ought to be true about stylying (e.g., “all elements with class `alert` are coloured red”), and the rendering engine makes it so. As with SQL, CSS's declarative approach ensures that stylesheets are robust to changes in the underlying document structure and styling can be changed independently of the document content.
-
-CSS and SQL are special purpose programming languages designed for tasks in a single domain. It is difficult to see how one could code an entire application in them. The [Prolog programming language](https://www.metalevel.at/prolog) is a general purpose programming language based on the idea of proof search in a restricted subset of Predicate Logic. A Prolog program is a collection of logical rules, and program execution works by asking “for which values is this statement provable?”.
-
-The class of Logic Programming we will look at here is sometimes called “solver-based” or “constraint-based” programming. It is another example of a domain-specific language, albeit for a domain chosen by the user. A program is a vocabulary and a collection of axioms (i.e., a theory) and a partial model describing the problem. Execution of a program results either in a completed model of the axioms, or a statement that a solution is not possible. So by setting up the axioms to accurately describe what solutions ought to look like, the language gives us a solver “for free”. There are many different kinds of solver, depending on the exact form that the axioms or constraints can take. Here, we will look at the use of Predicate Logic axioms over *finite* models (i.e., models with finite universes).
-
-The language we will use is a minor extension to the notation we used for [models](pred-logic-semantics.md#pred-sem:models). Instead of completely defining a model, we will leave some of the predicates undefined with a `?` symbol. When the computer checks the model, it tries to find a definition that satisfies all the axioms of the theory. The universe and the predicates that are defined are the “inputs” to the program, and the predicate to be defined is the “output”.
-
-For example, this theory says that there is exactly one thing that is in the `p` predicate. The `ExampleModel` says that there are three things in the universe, but that the `p` predicate's interpretation is not defined. Clicking **Run** will generate a definition of `p` that satisfies `ExampleTheory`.
-
-```model-checker {id=logic-programming-generation-example}
-theory ExampleTheory {
-  predicate p/1
-  axiom one-p : "ex x. p(x) /\ (all y. p(y) -> x = y)"
-}
-
-model ExampleModel for ExampleTheory {
-  universe = { a, b, c }
-  p = ?
-}
-```
-
-**Exercise**: Try rerunning the example with an empty universe in `ExampleModel`. Is it able to generate a completed model?
-
-The remainder of this page describes several examples of how to describe problems as logical theories in such a way that models of those theories are solutions to the problems. The range of problems that can be handled in this way is surprisingly diverse.
-
 ## Package Installations {id=logic-programming:packages}
+
+As we saw when introducing the [semantics of Predicate Logic](pred-logic-semantics.md), formulas in Predicate Logic can be used to describe collections of models that “make sense” for some purpose. The idea behind constraint-based logic programming is to get the computer to generate models for some theory. If the theory is set up correctly, then the generated models will be solutions to problems we want to solve.
+
+To illustrate this, we'll use the example of the Package Installation Problem. This is a problem that needs to be solved by package managers such as those found in Linux distributions (e.g., Debian's [APT](https://wiki.debian.org/DebianPackageManagement), Fedora's [DNF](https://docs.fedoraproject.org/en-US/quick-docs/dnf/), or Arch Linux's [Pacman](https://wiki.archlinux.org/title/Pacman)) or in Programming Language ecosystems (e.g., Python's [PIP](https://packaging.python.org/en/latest/), Rust's [Cargo](https://doc.rust-lang.org/cargo/), or Haskell's [Cabal](https://cabal.readthedocs.io/en/latest/cabal-context.html)).
 
 The Package Installation Problem goes as follows:
 
@@ -95,11 +89,11 @@ We will describe this problem in logic by making the following modelling decisio
 
 1. The elements of the universe are the individual packages.
 2. We will have three predicates that describe the inputs to the problem:
-   - `depends/2`: `depends(p,q)` is true when package `p` depends on package `q`.
-   - `conflict/2`: `conflict(p,q)` is true when package `p` and package `q` conflict.
-   - `required/1`: `required(p)` is true when package `p` is required by the user.
+   - `depends/2`: where `depends(p,q)` is true when package `p` depends on package `q`.
+   - `conflict/2`: where `conflict(p,q)` is true when package `p` and package `q` conflict.
+   - `required/1`: where `required(p)` is true when package `p` is required by the user.
 3. The output is described by a single predicate:
-   - `installed/1`: `installed(p)` is true if package `p` should be installed, and false if it shouldn't.
+   - `installed/1`: where `installed(p)` is true if package `p` should be installed, and false if it shouldn't.
 
 To make sure that `installed/1` describes correct package installations, we need three axioms:
 
