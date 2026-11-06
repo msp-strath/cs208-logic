@@ -370,9 +370,40 @@ This is because `N1`, `N2`, `N3`, and `N5` are all connected to each other which
 
 ### Logical Representation {id=logic-programming:resource-alloc:logic}
 
-**FIXME**: explain how to encode this in logic
+To describe the graph colouring problem in logic, we'll use the following representation:
 
-### Putting it all together {id=logic-programming:resource-alloc:completed}
+1. The elements of the universe will either be colours or graph nodes.
+2. We will have three predicates that describe the inputs to the problem:
+   - `node/1`: where `node(x)` is true if `x` is a node;
+   - `colour/1`: where `colour(x)` is true if `x` is a colour;
+   - `different-colours/2`: where `different-colours(x,y)` is true if `x` and `y` are nodes that ought to have different colours (i.e., there is an edge between them in the graph)
+3. The output is described by a single predicate:
+   - `is-colour/2`: where `is-colour(n,c)` is true if node `n` has colour `c`.
+
+To make sure that `is-colour/2` is a valid colouring of the graph, we need four axioms in our theory of `Colouring`:
+
+1. The `is-colour` predicate relates nodes and colours:
+   ```formula
+   all x. all y. is-colour(x,y) -> (node(x) /\ colour(y))
+   ```
+   This ensures that we don't get nonsensical answers where nodes are coloured with nodes or colours are coloured, for example.
+2. Every node is some colour:
+   ```formula
+   all n. node(n) -> (ex c. colour(c) /\ is-colour(n,c))
+   ```
+3. Every node has at most one colour:
+   ```formula
+   all n. all c1. all c2. is-colour(n,c1) -> is-colour(n,c2) -> c1 = c2
+   ```
+   Note: this axiom and the previous could be combined into one shorter axiom. Also, we didn't need to specify that `n` was a node or that `c1` and `c2` are colours here, because that is implied by the first axiom.
+4. Connected nodes have different colours:
+   ```formula
+   all n1. all n2. all c1. all c2.
+	  is-colour(n1,c1) ->
+	  is-colour(n2,c2) ->
+	  different-colours(n1,n2) ->
+	  c1 != c2
+   ```
 
 Putting together all the parts above, we get the following theory and example partial model. If you click ‘Run’, the computer will fill in the missing definition of `is-colour` in a way that satisifies the given axioms.
 
@@ -386,7 +417,7 @@ theory Colouring {
   predicate is-colour/2
 
   axiom nodes-are-coloured :
-    "all x. all y. is-colour(x,y) -> (node (x) /\ colour(y))"
+    "all x. all y. is-colour(x,y) -> (node(x) /\ colour(y))"
 
   axiom all-nodes-some-colour :
     "all n. node(n) -> (ex c. colour(c) /\ is-colour(n,c))"
