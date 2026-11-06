@@ -191,6 +191,8 @@ module ConcreteStructure = struct
 
   module Domain = Boolean_algebra.Bool
 
+  let is_false = not
+
   let universe model = IdentSet.to_seq model.universe
   let predicate model pred tuple =
     let tuples = IdentMap.find pred model.predicate_defns in
@@ -209,11 +211,15 @@ module SolverStructure () = struct
   type t = {
     universe : IdentSet.t;
     predicate_defns : TupleSet.t IdentMap.t;
-    mutable predicate_vars : Domain.t TupleMap.t IdentMap.t
+    mutable predicate_vars : S.Ops.t TupleMap.t IdentMap.t
   }
 
   (* 'predicate_vars' should be initialised with all the undefined
      predicates. *)
+
+  let is_false = function
+    | S.False -> true
+    | _       -> false
 
   let universe t =
     IdentSet.to_seq t.universe
@@ -225,12 +231,13 @@ module SolverStructure () = struct
     | None ->
       let tuples = IdentMap.find pred model.predicate_vars in
       match TupleMap.find_opt tuple tuples with
-      | Some v -> v
+      | Some v ->
+	S.Indet v
       | None ->
 	let v = S.gen () in
 	model.predicate_vars <-
            IdentMap.add pred (TupleMap.add tuple v tuples) model.predicate_vars;
-	v
+	S.Indet v
 
   let equal x y =
     if String.equal x y then Domain.one else Domain.zero
@@ -341,6 +348,7 @@ let build_structure theory defns =
   (* Evaluate all the axioms of the theory in this partial model *)
   let module E = SolverStructure () in
   let module Ev = Formula_evaluator.Make (E) in
+  Printf.eprintf "Building..\n%!";
   let partial_model =
     let u = universe in
     E.{ universe = u; predicate_defns; predicate_vars = incomplete }
@@ -349,9 +357,10 @@ let build_structure theory defns =
     theory.axioms
     |> IdentMap.to_seq
     |> Seq.map (fun (_, { formula = fmla; location = _}) ->
-                  Ev.eval_formula partial_model IdentMap.empty fmla)
+      Ev.eval_formula partial_model IdentMap.empty fmla)
     |> List.of_seq
   in
+  Printf.eprintf "Solving..\n%!";
   match E.complete_model partial_model axiom_vars with
   | None ->
     Ok None

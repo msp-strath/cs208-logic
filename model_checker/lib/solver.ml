@@ -1,8 +1,6 @@
+open! Generalities
+
 module Make () = struct
-
-  type t = Msat_sat.Int_lit.t
-
-  let neg = Msat_sat.Int_lit.neg
 
   let solver =
     Msat_sat.create ~store_proof:false ()
@@ -13,37 +11,36 @@ module Make () = struct
     incr next_var;
     Msat_sat.Int_lit.make v
 
-  let one =
-    let v = gen () in
-    Msat_sat.assume solver [ [ v ] ] ();
-    v
+  module Ops = struct
+    type t = Msat_sat.Int_lit.t
 
-  let zero =
-    let v = gen () in
-    Msat_sat.assume solver [ [ neg v ] ] ();
-    v
+    let neg = Msat_sat.Int_lit.neg
 
-  let conj vs =
-    let x = gen () in
-    Msat_sat.assume solver
-      ((x :: List.map neg vs) :: List.map (fun v -> [ neg x; v ]) vs)
-      ();
-    x
+    let conj vs =
+      let x = gen () in
+      Msat_sat.assume solver
+	((x :: List.map neg vs) :: List.map (fun v -> [ neg x; v ]) vs)
+	();
+      x
 
-  let disj vs =
-    let x = gen () in
-    Msat_sat.assume solver
-      ((neg x :: vs) :: List.map (fun v -> [ x; neg v ]) vs)
-      ();
-    x
+    let disj vs =
+      let x = gen () in
+      Msat_sat.assume solver
+	((neg x :: vs) :: List.map (fun v -> [ x; neg v ]) vs)
+	();
+      x
+  end
 
-  let add_assert v =
-    Msat_sat.assume solver [ [ v ] ] ()
+  include Boolean_algebra.PartialEval (Ops)
 
-  let add_clause vs =
-    Msat_sat.assume solver
-      [ List.map (fun (b, v) -> if b then v else neg v) vs ]
+  let add_assert = function
+    | True ->
       ()
+    | False ->
+      let v = gen () in
+      Msat_sat.assume solver [ [ v ]; [ Ops.neg v ] ] ()
+    | Indet v ->
+      Msat_sat.assume solver [ [ v ] ] ()
 
   let solve () =
     match Msat_sat.solve solver with

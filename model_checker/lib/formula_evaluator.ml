@@ -9,6 +9,8 @@ module type STRUCTURE = sig
 
   module Domain : Boolean_algebra.S
 
+  val is_false : Domain.t -> bool
+
   val universe : t -> individual Seq.t
 
   val predicate : t -> predicate_symbol -> individual list -> Domain.t
@@ -57,10 +59,11 @@ struct
       let tuple = List.map (eval_term local_env) tms in
       S.predicate model pred tuple
     | Imp (p, q) ->
-      Domain.disj [
-	Domain.neg (eval_formula model local_env p);
-	eval_formula model local_env q;
-      ]
+      let p = eval_formula model local_env p in
+      if S.is_false p then Domain.one
+      else
+	let q = eval_formula model local_env q in
+	Domain.disj [ Domain.neg p; q ]
     | And (p, q) ->
       Domain.conj [
 	eval_formula model local_env p;
@@ -77,14 +80,14 @@ struct
       model
       |> S.universe
       |> Seq.map (fun x ->
-	   eval_formula model (Env.add vnm x local_env) p)
+	eval_formula model (Env.add vnm x local_env) p)
       |> List.of_seq
       |> Domain.conj
     | Exists (vnm, p) ->
       model
       |> S.universe
       |> Seq.map (fun x ->
-	   eval_formula model (Env.add vnm x local_env) p)
+	eval_formula model (Env.add vnm x local_env) p)
       |> List.of_seq
       |> Domain.disj
 
