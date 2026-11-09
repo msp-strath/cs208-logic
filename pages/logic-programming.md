@@ -106,21 +106,24 @@ To make sure that `installed/1` describes correct package installations, we need
    all p. all q. installed(p) -> depends(p,q) -> installed(q)
    ```
 
-   ````details
-   Note:
-
-   It is *really* tempting to write this the other way round, to express the idea that if `q` is installed, and `p` depends on `q`, then `p` *can be* installed. As a formula:
-   ```formula
-   all p. all q. installed(q) -> depends(p,q) -> installed(p)
-   ```
-   But this doesn't work! For a correct installation, we need to make sure that if a package is installed, then its dependencies are installed too, in order for it to work properly. This alternative version says that, for example, if the C library is installed, then everything that depends on it must be installed too, which would be nearly everything!
-   ````
 3. If two packages are installed, then they do not conflict:
    ```formula
    all p. all q. installed(p) -> installed(q) -> ¬conflict(p,q)
    ```
 
-By setting up the `Packages` theory with these three axioms, and setting up a partial model with definitions of the `depends/2`, `conflict/2`, and `required/1` predicates, we can get the computer to deduce a possible solution to the Package Installation Problem:
+````details
+Note:
+
+It is tempting to write Axiom 2 the other way round, to express the idea that if `q` is installed, and `p` depends on `q`, then `p` *can be* installed. As a formula:
+```formula
+all p. all q. installed(q) -> depends(p,q) -> installed(p)
+```
+But this doesn't work! For a correct installation, we need to make sure that if a package is installed, then its dependencies are installed too, in order for it to work properly. This alternative version says that, for example, if the C library is installed, then everything that depends on it must be installed too, which would be nearly everything!
+
+An important thing to remember is that the axioms are *constraints* on the models. With no axioms, the models can have any possible definition for the predicates. Each axiom, if it is not implied by the others, reduces the range of possible models. It is tempting to think of the axioms as *generating* the answers, but really they are *constraining* the possible answers to the right ones.
+````
+
+By setting up the `Packages` theory with these three axioms, and setting up a partial model with definitions of the `depends/2`, `conflict/2`, and `required/1` predicates, we can get the computer to deduce possible solutions to the Package Installation Problem in different situations:
 
 ```model-checker {id=packages-model-v1}
 theory Packages {
@@ -154,7 +157,7 @@ model Example1 for Packages {
   installed = ?
 }
 
-// But this will not
+// But this will not, because it is not solvable
 model Example2 for Packages {
   universe = { firefox, chrome, libc-v12, libc-v13, libc-v14  }
   depends = { (firefox, libc-v14), (chrome, libc-v12) }
@@ -366,7 +369,7 @@ line from N2.s to N5.nw
 
 This graph is the same as the one above, except that there is an extra edge between `N2` and `N5`.
 
-This is because `N1`, `N2`, `N3`, and `N5` are all connected to each other which means that they all need different colours, but there are four of them and only three colours.
+This graph is not colourable because `N1`, `N2`, `N3`, and `N5` are all connected to each other which means that they all need different colours, but there are four of them and only three colours.
 
 ### Logical Representation {id=logic-programming:resource-alloc:logic}
 
@@ -423,7 +426,10 @@ theory Colouring {
     "all n. node(n) -> (ex c. colour(c) /\ is-colour(n,c))"
 
   axiom all-nodes-at-most-one-colour :
-    "all n. all c1. all c2. is-colour(n,c1) -> is-colour(n,c2) -> c1 = c2"
+    "all n. all c1. all c2.
+	  is-colour(n,c1) ->
+	  is-colour(n,c2) ->
+	  c1 = c2"
 
   axiom diff-colours :
     "all n1. all n2. all c1. all c2.
@@ -454,6 +460,9 @@ model TestGraph for Colouring {
 If you add `(N5,N2)` to the `different-colours` definition, then you'll get no solutions as in the graph above, because there is no way to colour that graph with three colours.
 
 ### Exercise {id=logic-programming:resource-alloc:exercise}
+
+Sometimes when modelling resource allocation problems as graph colourings,
+
 
 **FIXME**: Adding requirements and anti-requirements
 
