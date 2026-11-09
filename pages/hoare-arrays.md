@@ -120,7 +120,7 @@ As in the [previous loop examples](hoare-loops.md), we annotate the program with
 I := 0
 assert (equalTo(A,0,I,VALUE))
 while (I != LEN) {
-  A := set(A,VALUE)
+  A := set(A,I,VALUE)
   assert (equalTo(A, 0, add(I, 1), VALUE))
   I := add(I,1)
 }
