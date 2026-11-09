@@ -169,7 +169,7 @@ model Example2 for Packages {
 
 ### Version 2 {id=logic-programming:packages:version-2}
 
-The package installation scenarios we described above are not very realistic because for each package, there was one fixed set of dependencies. There was no way of saying that `firefox` could depend on `libc-v14` *or* `libc-v12`.
+The package installation scenarios we described above are not very realistic because for each package there was one fixed set of dependencies. There was no way of saying that `firefox` could depend on `libc-v14` *or* `libc-v12`.
 
 We can fix this by adding another input predicate `depends-or/3`, where `depends-or(p,q1,q2)` means that installing `p` requires either `q1` or `q2` to be installed. As a formula:
 ```formula
